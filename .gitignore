@@ -1,0 +1,9 @@
+abci/vendor/**
+abci/_vendor-*
+
+tendermint/nodes/*/data/**
+
+!tendermint/nodes
+tendermint/nodes/**
+
+docker-compose.override.yml

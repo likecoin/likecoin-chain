@@ -1,0 +1,25 @@
+version: "3.6"
+services:
+  abci-1: &abci-node
+    build: ./abci
+    container_name: likechain_abci-1
+    image: likechain/abci
+    volumes:
+      - ./abci:/go/src/github.com/likecoin/likechain
+      - /go/src/github.com/likecoin/likechain/vendor
+  tendermint-1: &tendermint-node
+    build: ./tendermint
+    image: likechain/tendermint
+    container_name: likechain_tendermint-1
+    hostname: tendermint-1
+    depends_on:
+      - abci-1
+    volumes:
+      - ./tendermint/nodes/1:/tendermint
+    ports:
+      - 26657:26657
+    entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname` --p2p.persistent_peers=""
+    command:
+      - --proxy_app=tcp://abci-1:26658
+
+  # Auto-generated configs
