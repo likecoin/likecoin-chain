@@ -1,0 +1,60 @@
+syntax = "proto3";
+package types;
+
+message Signature {
+    uint32 version = 1;
+    bytes signatureContent = 2;
+}
+
+message BigInteger {
+    bytes content = 1;
+}
+
+message Identifier {
+    oneof id {
+        bytes likeChainId = 1;
+        bytes addr = 2;
+    }
+}
+
+message Transaction {
+    oneof tx {
+        RegisterTransaction registerTx = 1;
+        TransferTransaction transferTx = 2;
+        DepositTransaction depositTx = 3;
+        WithdrawTransaction withdrawTx = 4;
+    }
+}
+
+message RegisterTransaction {
+    bytes addr = 1;
+    Signature sig = 2;
+}
+
+message TransferTransaction {
+    message TransferTarget {
+        Identifier to = 1;
+        BigInteger value = 2;
+        bytes remark = 3;
+    }
+    Identifier from = 1;
+    TransferTarget toList = 2;
+    uint64 nonce = 3;
+    BigInteger fee = 4;
+    Signature sig = 5;
+}
+
+message DepositTransaction {
+    uint64 blockNumber = 1;
+    uint32 eventCount = 2;
+    bytes checksum = 3;
+}
+
+message WithdrawTransaction {
+    Identifier from = 1;
+    bytes toAddr = 2;
+    BigInteger value = 3;
+    uint64 nonce = 4;
+    BigInteger fee = 5;
+    Signature sig = 6;
+}
