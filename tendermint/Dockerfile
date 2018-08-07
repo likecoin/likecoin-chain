@@ -18,7 +18,8 @@ RUN apk update && apk upgrade && apk add --no-cache build-base git
 RUN mkdir -p $GOPATH/src/github.com/tendermint && \
     cd $GOPATH/src/github.com/tendermint && \
     git clone https://github.com/tendermint/tendermint.git && \
-    cd tendermint
+    cd tendermint && \
+    git checkout v0.22.8
 
 WORKDIR $GOPATH/src/github.com/tendermint/tendermint
 
