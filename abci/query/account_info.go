@@ -1,10 +1,11 @@
 package query
 
 import (
+	"github.com/likecoin/likechain/abci/context"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func queryAccountInfo(reqQuery abci.RequestQuery) abci.ResponseQuery {
+func queryAccountInfo(context *context.Context, reqQuery abci.RequestQuery) abci.ResponseQuery {
 	return abci.ResponseQuery{}
 }
 

@@ -3,17 +3,18 @@ package handlers
 import (
 	"reflect"
 
+	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkTransfer(rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkTransfer(context *context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
 	_ = tx.From
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverTransfer(rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverTransfer(context *context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
 	_ = tx.From
 	return abci.ResponseDeliverTx{} // TODO

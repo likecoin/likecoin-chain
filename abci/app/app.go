@@ -1,12 +1,14 @@
 package app
 
 import (
+	"github.com/likecoin/likechain/abci/context"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 type LikeChainApplication struct {
 	abci.BaseApplication
-	// TODO
+
+	context *context.Context
 }
 
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
