@@ -45,10 +45,14 @@ message TransferTransaction {
 }
 
 message DepositTransaction {
+    message DepositEvent {
+        bytes fromAddr = 1;
+        BigInteger value = 2;
+    }
     uint64 blockNumber = 1;
-    uint32 eventCount = 2;
-    bytes checksum = 3;
+    repeated DepositEvent deposits = 2;
 }
+
 
 message WithdrawTransaction {
     Identifier from = 1;
