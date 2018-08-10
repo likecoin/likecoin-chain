@@ -3,7 +3,7 @@ package types;
 
 message Signature {
     uint32 version = 1;
-    bytes signatureContent = 2;
+    bytes content = 2;
 }
 
 message BigInteger {
