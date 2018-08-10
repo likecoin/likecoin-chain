@@ -3,12 +3,17 @@ package handlers
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 )
 
 func TestCheckRegister(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := checkRegister(ctx, rawTx)
 	t.Log(res)
@@ -16,7 +21,10 @@ func TestCheckRegister(t *testing.T) {
 }
 
 func TestDeliverRegister(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := deliverRegister(ctx, rawTx)
 	t.Log(res)
@@ -39,7 +47,10 @@ func TestValidateRegisterTransaction(t *testing.T) {
 }
 
 func TestRegister(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	tx := &types.RegisterTransaction{}
 	register(ctx, tx)
 	// TODO

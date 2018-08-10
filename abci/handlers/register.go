@@ -32,7 +32,7 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		panic("Invalid RegisterTransaction in DeliverTx")
 	}
 
-	err := register(context, tx)
+	err := register(ctx, tx)
 	if err {
 		panic("Register error")
 	}

@@ -3,12 +3,16 @@ package handlers
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 )
 
 func TestCheckTransfer(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := checkTransfer(ctx, rawTx)
 	t.Log(res)
@@ -16,7 +20,10 @@ func TestCheckTransfer(t *testing.T) {
 }
 
 func TestDeliverTransfer(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := deliverTransfer(ctx, rawTx)
 	t.Log(res)
@@ -38,7 +45,10 @@ func TestValidateTransferTransaction(t *testing.T) {
 }
 
 func TestTransfer(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	tx := &types.TransferTransaction{}
 	transfer(ctx, tx)
 	// TODO

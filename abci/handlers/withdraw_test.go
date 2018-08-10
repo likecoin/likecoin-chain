@@ -3,12 +3,16 @@ package handlers
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 )
 
 func TestCheckWithdraw(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := checkWithdraw(ctx, rawTx)
 	t.Log(res)
@@ -16,7 +20,10 @@ func TestCheckWithdraw(t *testing.T) {
 }
 
 func TestDeliverWithdraw(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	rawTx := &types.Transaction{}
 	res := deliverWithdraw(ctx, rawTx)
 	t.Log(res)
@@ -31,7 +38,10 @@ func TestValidateWithdrawTransaction(t *testing.T) {
 }
 
 func TestWithdraw(t *testing.T) {
-	ctx := context.Context{}
+	mockCtrl := gomock.NewController(t)
+	ctx := context.NewMockContext(mockCtrl)
+	// TODO: mock ctx calls
+
 	tx := &types.WithdrawTransaction{}
 	withdraw(ctx, tx)
 	// TODO

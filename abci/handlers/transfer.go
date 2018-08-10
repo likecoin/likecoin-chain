@@ -26,8 +26,8 @@ func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		panic("Invalid TransferTransaction in TransferTx")
 	}
 
-	_ = account.FetchBalance(context, tx.From)
-	_ = account.FetchNextNonce(context, tx.From)
+	_ = account.FetchBalance(ctx, tx.From)
+	_ = account.FetchNextNonce(ctx, tx.From)
 	// Increment nonce
 	// Adjust balance of sender and receiver
 
