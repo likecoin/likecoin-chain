@@ -8,6 +8,12 @@
   revision = "cf05f92c3f815bbd5091ed6c73eff51f7b1945e8"
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/ethereum/go-ethereum"
   packages = [
     "common",
@@ -112,6 +118,21 @@
   revision = "c4c61651e9e37fa117f53c5a906d3b63090d8445"
 
 [[projects]]
+  name = "github.com/tendermint/go-amino"
+  packages = ["."]
+  revision = "2106ca61d91029c931fd54968c2bb02dc96b1412"
+  version = "0.10.1"
+
+[[projects]]
+  name = "github.com/tendermint/iavl"
+  packages = [
+    ".",
+    "sha256truncated"
+  ]
+  revision = "2de525d09cca7c45c3f43d178817947a6cfa242c"
+  version = "v0.8.1"
+
+[[projects]]
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/server",
@@ -207,6 +228,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d10e5627675b80b9c5b2b38b13409db9f912b403ada3dd5a0ed0d68e8b0f9c2f"
+  inputs-digest = "2f4dda2e92a280ab52389e89e406c2c8352ec922e0d05cb8c506774f1dde9c8f"
   solver-name = "gps-cdcl"
   solver-version = 1
