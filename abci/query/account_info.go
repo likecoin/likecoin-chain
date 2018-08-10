@@ -5,7 +5,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func queryAccountInfo(context *context.Context, reqQuery abci.RequestQuery) abci.ResponseQuery {
+func queryAccountInfo(ctx context.Context, reqQuery abci.RequestQuery) abci.ResponseQuery {
 	return abci.ResponseQuery{}
 }
 

@@ -8,13 +8,13 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkTransfer(context *context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
 	_ = tx.From
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverTransfer(context *context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
 	_ = tx.From
 	return abci.ResponseDeliverTx{} // TODO

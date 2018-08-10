@@ -8,13 +8,13 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkRegister(context *context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetRegisterTx()
 	_ = tx.Addr
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverRegister(context *context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetRegisterTx()
 	_ = tx.Addr
 	return abci.ResponseDeliverTx{} // TODO

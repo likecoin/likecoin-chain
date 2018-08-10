@@ -8,13 +8,13 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkDeposit(context *context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetDepositTx()
 	_ = tx.BlockNumber
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverDeposit(context *context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetDepositTx()
 	_ = tx.BlockNumber
 	return abci.ResponseDeliverTx{} // TODO
