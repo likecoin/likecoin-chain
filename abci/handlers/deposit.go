@@ -17,7 +17,20 @@ func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCh
 func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetDepositTx()
 	_ = tx.BlockNumber
+
+	if validateDepositTransaction(tx) {
+		panic("Invalid DepositTransaction in DeliverTx")
+	}
+
 	return abci.ResponseDeliverTx{} // TODO
+}
+
+func validateDepositTransaction(tx *types.DepositTransaction) bool {
+	return false // TODO
+}
+
+func deposit(ctx context.Context, tx *types.DepositTransaction) {
+	// TODO
 }
 
 func init() {

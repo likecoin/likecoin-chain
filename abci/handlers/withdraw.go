@@ -16,8 +16,28 @@ func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 
 func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetWithdrawTx()
-	_ = tx.From
+
+	if !validateWithdrawSignature(tx.Sig) {
+		panic("Invalid signature")
+	}
+
+	if !validateWithdrawTransaction(tx) {
+		panic("Invalid WithdrawTransaction in WithdrawTx")
+	}
+
 	return abci.ResponseDeliverTx{} // TODO
+}
+
+func validateWithdrawSignature(sig *types.Signature) bool {
+	return false // TODO
+}
+
+func validateWithdrawTransaction(tx *types.WithdrawTransaction) bool {
+	return false // TODO
+}
+
+func withdraw(ctx context.Context, tx *types.WithdrawTransaction) {
+	// TODO
 }
 
 func init() {
