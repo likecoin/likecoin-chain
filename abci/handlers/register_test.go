@@ -7,6 +7,8 @@ import (
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCheckRegister(t *testing.T) {
@@ -39,11 +41,12 @@ func TestValidateRegisterSignature(t *testing.T) {
 }
 
 func TestValidateRegisterTransaction(t *testing.T) {
-	tx := &types.RegisterTransaction{}
-	if !validateRegisterTransaction(tx) {
-		t.Error("Validate RegisterTransaction failed")
-	}
-	// TODO
+	Convey("Given a valid Register transaction", t, func() {
+		tx := &types.RegisterTransaction{} // TODO
+		Convey("The Register transaction should pass the validation", func() {
+			So(validateRegisterTransaction(tx), ShouldBeTrue)
+		})
+	})
 }
 
 func TestRegister(t *testing.T) {
