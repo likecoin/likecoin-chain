@@ -5,34 +5,194 @@ import (
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestCheckWithdraw(t *testing.T) {
-	ctx := context.NewMock()
-	rawTx := &types.Transaction{}
-	res := checkWithdraw(ctx, rawTx)
-	t.Log(res)
-	// TODO
-}
-
-func TestDeliverWithdraw(t *testing.T) {
-	ctx := context.NewMock()
-	rawTx := &types.Transaction{}
-	res := deliverWithdraw(ctx, rawTx)
-	t.Log(res)
-	// TODO
-}
-
-func TestValidateWithdrawTransaction(t *testing.T) {
-	tx := &types.WithdrawTransaction{}
-	if !validateWithdrawTransaction(tx) {
-		t.Error("Validate WithdrawTransaction failed")
+func wrapWithdrawTransaction(tx *types.WithdrawTransaction) *types.Transaction {
+	return &types.Transaction{
+		Tx: &types.Transaction_WithdrawTx{
+			WithdrawTx: tx,
+		},
 	}
+}
+
+func TestCheckAndDeliverWithdraw(t *testing.T) {
+	ctx := context.NewMock()
+
+	Convey("Given a Withdraw Transaction", t, func() {
+
+		Convey("If it is a valid transaction", func() {
+			ctx.Reset()
+			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
+				// TODO
+			})
+
+			Convey("CheckTx should return Code 0", func() {
+				res := checkWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 0)
+			})
+
+			Convey("DeliverTx should return Code 0", func() {
+				res := deliverWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 0)
+
+				Convey("Should be able to query the transaction info afterwards", func() {
+					_ = res.Data // TODO: ID
+					// TODO: query
+				})
+			})
+		})
+
+		Convey("If it is an invalid address format", func() {
+			ctx.Reset()
+
+			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
+				// TODO
+			})
+
+			Convey("CheckTx should return Code 1001", func() {
+				res := checkWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+
+			Convey("DeliverTx should return Code 1001", func() {
+				res := deliverWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+		})
+
+		Convey("If it is an invalid signature version", func() {
+			ctx.Reset()
+
+			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
+				// TODO
+			})
+
+			Convey("CheckTx should return Code 1001", func() {
+				res := checkWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+
+			Convey("DeliverTx should return Code 1001", func() {
+				res := deliverWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+		})
+
+		Convey("If it is an invalid signature format", func() {
+			ctx.Reset()
+
+			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
+				// TODO
+			})
+
+			Convey("CheckTx should return Code 1001", func() {
+				res := checkWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+
+			Convey("DeliverTx should return Code 1001", func() {
+				res := deliverWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1001)
+			})
+		})
+
+		Convey("If it is a replayed transaction", func() {
+			ctx.Reset()
+
+			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
+				// TODO
+			})
+
+			Convey("CheckTx should return Code 1002", func() {
+				res := checkWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1002)
+			})
+
+			Convey("DeliverTx should return Code 1002", func() {
+				res := deliverWithdraw(ctx, rawTx)
+
+				So(res.Code, ShouldEqual, 1002)
+			})
+		})
+	})
+}
+
+func TestvalidateWithdrawTransactionFormat(t *testing.T) {
+	Convey("Given a Withdraw transaction in valid format", t, func() {
+		tx := &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeTrue)
+		})
+	})
+
+	Convey("Given a Withdraw transaction in invalid format", t, func() {
+		tx := &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should not pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+		})
+	})
+
+	Convey("Given a Withdraw transaction with invalid nouce", t, func() {
+		tx := &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should not pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+		})
+	})
 }
 
 func TestWithdraw(t *testing.T) {
 	ctx := context.NewMock()
-	tx := &types.WithdrawTransaction{}
-	withdraw(ctx, tx)
-	// TODO
+
+	Convey("Given a valid Withdraw transaction", t, func() {
+		ctx.Reset()
+		tx := &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should be pass", func() {
+			withdraw(ctx, tx)
+			// TODO: checking
+		})
+
+		Convey("But the same Withdraw transaction cannot be replayed", func() {
+			withdraw(ctx, tx)
+			// TODO: checking
+		})
+	})
+
+	Convey("Given an invalid Withdraw transaction", t, func() {
+		ctx.Reset()
+		tx := &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should not be pass if sender not exist ", func() {
+			withdraw(ctx, tx)
+			// TODO: checking
+		})
+
+		tx = &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should not be pass if receiver not exist", func() {
+			withdraw(ctx, tx)
+			// TODO: checking
+		})
+
+		tx = &types.WithdrawTransaction{} // TODO
+
+		Convey("The transaction should not be pass if there is not enough balance", func() {
+			withdraw(ctx, tx)
+			// TODO: checking
+		})
+	})
 }

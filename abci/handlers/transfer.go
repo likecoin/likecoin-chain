@@ -22,7 +22,7 @@ func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		panic("Invalid signature")
 	}
 
-	if !validateTransferTransaction(tx) {
+	if !validateTransferTransactionFormat(tx) {
 		panic("Invalid TransferTransaction in TransferTx")
 	}
 
@@ -38,7 +38,7 @@ func validateTransferSignature(sig *types.Signature) bool {
 	return false // TODO
 }
 
-func validateTransferTransaction(tx *types.TransferTransaction) bool {
+func validateTransferTransactionFormat(tx *types.TransferTransaction) bool {
 	return false // TODO
 }
 

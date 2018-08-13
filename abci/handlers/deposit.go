@@ -18,14 +18,14 @@ func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.Response
 	tx := rawTx.GetDepositTx()
 	_ = tx.BlockNumber
 
-	if validateDepositTransaction(tx) {
 		panic("Invalid DepositTransaction in DeliverTx")
+	if !validateDepositTransactionFormat(tx) {
 	}
 
 	return abci.ResponseDeliverTx{} // TODO
 }
 
-func validateDepositTransaction(tx *types.DepositTransaction) bool {
+func validateDepositTransactionFormat(tx *types.DepositTransaction) bool {
 	return false // TODO
 }
 

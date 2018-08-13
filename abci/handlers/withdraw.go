@@ -21,7 +21,7 @@ func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		panic("Invalid signature")
 	}
 
-	if !validateWithdrawTransaction(tx) {
+	if !validateWithdrawTransactionFormat(tx) {
 		panic("Invalid WithdrawTransaction in WithdrawTx")
 	}
 
@@ -32,7 +32,7 @@ func validateWithdrawSignature(sig *types.Signature) bool {
 	return false // TODO
 }
 
-func validateWithdrawTransaction(tx *types.WithdrawTransaction) bool {
+func validateWithdrawTransactionFormat(tx *types.WithdrawTransaction) bool {
 	return false // TODO
 }
 
