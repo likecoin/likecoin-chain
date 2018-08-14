@@ -12,24 +12,38 @@ import (
 func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetRegisterTx()
 
-	if validateRegisterTransaction(tx) {
-		panic("Invalid RegisterTransaction in CheckTx")
+	if !validateRegisterTransaction(tx) {
+		return abci.ResponseCheckTx{
+			Code: 1001,
+			Info: "Invalid RegisterTransaction format",
+		}
 	}
 
-	_ = tx.Addr
+	if !validateRegisterSignature(ctx, tx) {
+		return abci.ResponseCheckTx{
+			Code: 1002,
+			Info: "Duplicated registration",
+		}
+	}
 
-	return abci.ResponseCheckTx{} // TODO
+	return abci.ResponseCheckTx{Code: 0}
 }
 
 func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetRegisterTx()
 
-	if !validateRegisterSignature(tx.Sig) {
-		panic("Invalid signature")
+	if !validateRegisterTransaction(tx) {
+		return abci.ResponseDeliverTx{
+			Code: 1001,
+			Info: "Invalid RegisterTransaction format",
+		}
 	}
 
-	if !validateRegisterTransaction(tx) {
-		panic("Invalid RegisterTransaction in DeliverTx")
+	if !validateRegisterSignature(ctx, tx) {
+		return abci.ResponseDeliverTx{
+			Code: 1002,
+			Info: "Duplicated registration",
+		}
 	}
 
 	err := register(ctx, tx)
@@ -37,11 +51,11 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		panic("Register error")
 	}
 
-	return abci.ResponseDeliverTx{} // TODO
+	return abci.ResponseDeliverTx{Code: 0}
 }
 
 // validateRegisterSignature validates register transaction
-func validateRegisterSignature(sig *types.Signature) bool {
+func validateRegisterSignature(ctx context.Context, tx *types.RegisterTransaction) bool {
 	return false // TODO
 }
 
