@@ -7,3 +7,4 @@ tendermint/nodes/*/data/**
 tendermint/nodes/**
 
 docker-compose.override.yml
+.vscode
