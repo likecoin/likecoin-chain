@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -53,18 +55,21 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.RegisterCheckTxInvalidFormat()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.RegisterDeliverTxInvalidFormat()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
+
 		Convey("If it is a Register transaction with invalid signature version", func() {
 			ctx.Reset()
 
@@ -72,18 +77,21 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.RegisterCheckTxInvalidSignature()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.RegisterDeliverTxInvalidSignature()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
+
 		Convey("If it is a Register transaction with invalid signature format", func() {
 			ctx.Reset()
 
@@ -91,18 +99,21 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.RegisterCheckTxInvalidSignature()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.RegisterCheckTxInvalidSignature()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
+
 		Convey("If it is a Register transaction with address already registered", func() {
 			ctx.Reset()
 
@@ -112,16 +123,18 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			deliverRegister(ctx, rawTx)
 
-			Convey("CheckTx should return Code 1002", func() {
+			code, _ := error.RegisterCheckTxDuplicated()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1002", func() {
+			code, _ = error.RegisterDeliverTxDuplicated()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 	})

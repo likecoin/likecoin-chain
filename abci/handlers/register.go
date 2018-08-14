@@ -5,6 +5,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -13,16 +14,18 @@ func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	tx := rawTx.GetRegisterTx()
 
 	if !validateRegisterTransaction(tx) {
+		code, info := error.RegisterCheckTxInvalidFormat()
 		return abci.ResponseCheckTx{
-			Code: 1001,
-			Info: "Invalid RegisterTransaction format",
+			Code: code,
+			Info: info,
 		}
 	}
 
 	if !validateRegisterSignature(ctx, tx) {
+		code, info := error.RegisterCheckTxInvalidSignature()
 		return abci.ResponseCheckTx{
-			Code: 1002,
-			Info: "Duplicated registration",
+			Code: code,
+			Info: info,
 		}
 	}
 
@@ -33,16 +36,18 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	tx := rawTx.GetRegisterTx()
 
 	if !validateRegisterTransaction(tx) {
+		code, info := error.RegisterDeliverTxInvalidFormat()
 		return abci.ResponseDeliverTx{
-			Code: 1001,
-			Info: "Invalid RegisterTransaction format",
+			Code: code,
+			Info: info,
 		}
 	}
 
 	if !validateRegisterSignature(ctx, tx) {
+		code, info := error.RegisterDeliverTxInvalidSignature()
 		return abci.ResponseDeliverTx{
-			Code: 1002,
-			Info: "Duplicated registration",
+			Code: code,
+			Info: info,
 		}
 	}
 

@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -53,16 +55,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.TransferCheckTxInvalidFormat()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.TransferDeliverTxInvalidFormat()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 
@@ -73,16 +77,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.TransferCheckTxInvalidSignature()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.TransferDeliverTxInvalidSignature()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 
@@ -93,16 +99,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.TransferCheckTxInvalidSignature()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.TransferDeliverTxInvalidSignature()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 
@@ -113,16 +121,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1002", func() {
+			code, _ := error.TransferCheckTxDuplicated()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1002", func() {
+			code, _ = error.TransferDeliverTxDuplicated()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 	})

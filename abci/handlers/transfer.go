@@ -5,25 +5,50 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
-	_ = tx.From
+
+	if !validateTransferTransactionFormat(tx) {
+		code, info := error.TransferCheckTxInvalidFormat()
+		return abci.ResponseCheckTx{
+			Code: code,
+			Info: info,
+		}
+	}
+
+	if !validateTransferSignature(tx.Sig) {
+		code, info := error.TransferCheckTxInvalidSignature()
+		return abci.ResponseCheckTx{
+			Code: code,
+			Info: info,
+		}
+	}
+
 	return abci.ResponseCheckTx{} // TODO
 }
 
 func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
 
-	if !validateTransferSignature(tx.Sig) {
-		panic("Invalid signature")
+	if !validateTransferTransactionFormat(tx) {
+		code, info := error.TransferDeliverTxInvalidFormat()
+		return abci.ResponseDeliverTx{
+			Code: code,
+			Info: info,
+		}
 	}
 
-	if !validateTransferTransactionFormat(tx) {
-		panic("Invalid TransferTransaction in TransferTx")
+	if !validateTransferSignature(tx.Sig) {
+		code, info := error.TransferDeliverTxInvalidSignature()
+		return abci.ResponseDeliverTx{
+			Code: code,
+			Info: info,
+		}
 	}
 
 	_ = account.FetchBalance(ctx, tx.From)

@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -11,18 +12,43 @@ import (
 func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetWithdrawTx()
 	_ = tx.From
+
+	if !validateWithdrawTransactionFormat(tx) {
+		code, info := error.WithdrawCheckTxInvalidFormat()
+		return abci.ResponseCheckTx{
+			Code: code,
+			Info: info,
+		}
+	}
+
+	if !validateWithdrawSignature(tx.Sig) {
+		code, info := error.WithdrawCheckTxInvalidSignature()
+		return abci.ResponseCheckTx{
+			Code: code,
+			Info: info,
+		}
+	}
+
 	return abci.ResponseCheckTx{} // TODO
 }
 
 func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetWithdrawTx()
 
-	if !validateWithdrawSignature(tx.Sig) {
-		panic("Invalid signature")
+	if !validateWithdrawTransactionFormat(tx) {
+		code, info := error.WithdrawDeliverTxInvalidFormat()
+		return abci.ResponseDeliverTx{
+			Code: code,
+			Info: info,
+		}
 	}
 
-	if !validateWithdrawTransactionFormat(tx) {
-		panic("Invalid WithdrawTransaction in WithdrawTx")
+	if !validateWithdrawSignature(tx.Sig) {
+		code, info := error.RegisterCheckTxInvalidFormat()
+		return abci.ResponseDeliverTx{
+			Code: code,
+			Info: info,
+		}
 	}
 
 	return abci.ResponseDeliverTx{} // TODO

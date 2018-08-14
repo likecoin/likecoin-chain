@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -53,16 +55,18 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1001", func() {
+			code, _ := error.DepositCheckTxInvalidFormat()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkDeposit(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1001", func() {
+			code, _ = error.DepositDeliverTxInvalidFormat()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverDeposit(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1001)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 
@@ -73,16 +77,18 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				// TODO
 			})
 
-			Convey("CheckTx should return Code 1002", func() {
+			code, _ := error.DepositCheckTxDuplicated()
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkDeposit(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 
-			Convey("DeliverTx should return Code 1002", func() {
+			code, _ = error.DepositDeliverTxDuplicated()
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverDeposit(ctx, rawTx)
 
-				So(res.Code, ShouldEqual, 1002)
+				So(res.Code, ShouldEqual, code)
 			})
 		})
 	})
