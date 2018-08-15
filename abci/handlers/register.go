@@ -3,6 +3,7 @@ package handlers
 import (
 	"reflect"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/error"
@@ -72,7 +73,8 @@ func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
 // register creates a new LikeChain account
 func register(ctx context.Context, tx *types.RegisterTransaction) bool {
 	err := true
-	account.NewAccount(tx.Addr)
+	ethAddr := common.BytesToAddress(tx.Addr)
+	account.NewAccount(ethAddr)
 	return err // TODO
 }
 

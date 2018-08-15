@@ -51,8 +51,13 @@ func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		}
 	}
 
-	_ = account.FetchBalance(ctx, tx.From)
-	_ = account.FetchNextNonce(ctx, tx.From)
+	fromID, exist := account.GetLikeChainID(ctx, *tx.From)
+	if !exist {
+		return abci.ResponseDeliverTx{} // TODO: error code for sender account does not exist
+	}
+
+	_ = account.FetchBalance(ctx, fromID)
+	_ = account.FetchNextNonce(ctx, fromID)
 	// Increment nonce
 	// Adjust balance of sender and receiver
 
