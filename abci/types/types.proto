@@ -10,10 +10,18 @@ message BigInteger {
     bytes content = 1;
 }
 
+message Address {
+    bytes content = 1;
+}
+
+message LikeChainID {
+    bytes content = 1;
+}
+
 message Identifier {
     oneof id {
-        bytes likeChainId = 1;
-        bytes addr = 2;
+        LikeChainID likeChainID = 1;
+        Address addr = 2;
     }
 }
 
@@ -27,7 +35,7 @@ message Transaction {
 }
 
 message RegisterTransaction {
-    bytes addr = 1;
+    Address addr = 1;
     Signature sig = 2;
 }
 
@@ -46,7 +54,7 @@ message TransferTransaction {
 
 message DepositTransaction {
     message DepositEvent {
-        bytes fromAddr = 1;
+        Address fromAddr = 1;
         BigInteger value = 2;
     }
     uint64 blockNumber = 1;
@@ -56,7 +64,7 @@ message DepositTransaction {
 
 message WithdrawTransaction {
     Identifier from = 1;
-    bytes toAddr = 2;
+    Address toAddr = 2;
     BigInteger value = 3;
     uint64 nonce = 4;
     BigInteger fee = 5;
