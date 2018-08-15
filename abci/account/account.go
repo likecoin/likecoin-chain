@@ -9,8 +9,12 @@ import (
 )
 
 // NewAccount creates a new account
-func NewAccount(address common.Address) (types.Identifier, error) {
-	return types.Identifier{}, nil // TODO
+func NewAccount(ctx context.Context, address common.Address) (types.LikeChainID, error) {
+	id := generateLikeChainID(ctx)
+	// TODO: save to db
+	// TODO: initialize account info
+	// TODO: check if address already has balance
+	return id, nil // TODO
 }
 
 func generateLikeChainID(ctx context.Context) types.LikeChainID {
@@ -36,6 +40,10 @@ func SaveBalance(ctx context.Context, id types.LikeChainID, balance types.BigInt
 }
 
 func FetchBalance(ctx context.Context, id types.LikeChainID) *big.Int {
+	return nil // TODO
+}
+
+func FetchEthereumAddressBalance(ctx context.Context, addr common.Address) *big.Int {
 	return nil // TODO
 }
 

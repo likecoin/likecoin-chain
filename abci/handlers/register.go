@@ -3,11 +3,11 @@ package handlers
 import (
 	"reflect"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/error"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -60,6 +60,9 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 		}
 	}
 
+	addr := tx.Addr.ToEthereum()
+	_ = addr // TODO: check if address is already registered
+
 	err := register(ctx, tx)
 	if err {
 		panic("Register error")
@@ -70,20 +73,34 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 
 // validateRegisterSignature validates register transaction
 func validateRegisterSignature(ctx context.Context, tx *types.RegisterTransaction) bool {
-	return false // TODO
+	hashedMsg, err := tx.GenerateSigningMessageHash()
+	if err != nil {
+		// TODO: log
+		return false
+	}
+
+	sigAddr, err := utils.RecoverSignature(hashedMsg, *tx.Sig)
+	if err != nil {
+		return false
+	}
+
+	if tx.Addr.ToEthereum() != sigAddr {
+		return false
+	}
+
+	return true
 }
 
 // validateRegisterTransaction validates register transaction
 func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
-	return false // TODO
+	return tx.Sig.IsValidFormat() && tx.Addr.IsValidFormat()
 }
 
 // register creates a new LikeChain account
-func register(ctx context.Context, tx *types.RegisterTransaction) bool {
+func register(ctx context.Context, tx *types.RegisterTransaction) types.LikeChainID {
 	err := true
-	ethAddr := common.BytesToAddress(tx.Addr)
-	account.NewAccount(ethAddr)
-	return err // TODO
+	ethAddr := tx.Addr.ToEthereum()
+	return account.NewAccount(ethAddr)
 }
 
 func init() {
