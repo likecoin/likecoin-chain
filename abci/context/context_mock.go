@@ -11,9 +11,8 @@ type ContextMock struct {
 }
 
 func NewMock() *ContextMock {
-	memdb := db.NewMemDB()
-	stateTree := iavl.NewVersionedTree(memdb, 128)
-	withdrawTree := iavl.NewVersionedTree(memdb, 128)
+	stateTree := iavl.NewVersionedTree(db.NewMemDB(), 128)
+	withdrawTree := iavl.NewVersionedTree(db.NewMemDB(), 128)
 	return &ContextMock{stateTree, withdrawTree}
 }
 
