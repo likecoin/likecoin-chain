@@ -1,7 +1,10 @@
 package app
 
 import (
+	"github.com/gogo/protobuf/proto"
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/handlers"
+	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -12,11 +15,19 @@ type LikeChainApplication struct {
 }
 
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
-	return abci.ResponseCheckTx{} // TODO
+	tx := &types.Transaction{}
+	if err := proto.Unmarshal(rawTx, tx); err != nil {
+		return abci.ResponseCheckTx{Code: 1, Info: "Cannot parse transaction"}
+	}
+	return handlers.CheckTx(app.ctx, tx)
 }
 
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
-	return abci.ResponseDeliverTx{} // TODO
+	tx := &types.Transaction{}
+	if err := proto.Unmarshal(rawTx, tx); err != nil {
+		return abci.ResponseDeliverTx{Code: 1, Info: "Cannot parse transaction"}
+	}
+	return handlers.DeliverTx(app.ctx, tx)
 }
 
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
