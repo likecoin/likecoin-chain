@@ -13,6 +13,10 @@ import (
 
 func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetRegisterTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect RegisterTx but got nil")
+	}
 
 	if !validateRegisterTransaction(tx) {
 		code, info := error.RegisterCheckTxInvalidFormat()
@@ -35,6 +39,10 @@ func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 
 func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetRegisterTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect RegisterTx but got nil")
+	}
 
 	if !validateRegisterTransaction(tx) {
 		code, info := error.RegisterDeliverTxInvalidFormat()

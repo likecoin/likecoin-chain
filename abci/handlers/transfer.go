@@ -12,6 +12,10 @@ import (
 
 func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect TransferTx but got nil")
+	}
 
 	if !validateTransferTransactionFormat(tx) {
 		code, info := error.TransferCheckTxInvalidFormat()
@@ -34,6 +38,10 @@ func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 
 func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect TransferTx but got nil")
+	}
 
 	if !validateTransferTransactionFormat(tx) {
 		code, info := error.TransferDeliverTxInvalidFormat()

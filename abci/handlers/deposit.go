@@ -11,6 +11,11 @@ import (
 
 func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetDepositTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect DepositTx but got nil")
+	}
+
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {
@@ -26,6 +31,11 @@ func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCh
 
 func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetDepositTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect DepositTx but got nil")
+	}
+
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {

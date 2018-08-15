@@ -11,6 +11,11 @@ import (
 
 func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetWithdrawTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect WithdrawTx but got nil")
+	}
+
 	_ = tx.From
 
 	if !validateWithdrawTransactionFormat(tx) {
@@ -34,6 +39,10 @@ func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 
 func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetWithdrawTx()
+	if tx == nil {
+		// TODO: log
+		panic("Expect WithdrawTx but got nil")
+	}
 
 	if !validateWithdrawTransactionFormat(tx) {
 		code, info := error.WithdrawDeliverTxInvalidFormat()
