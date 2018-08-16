@@ -2,17 +2,17 @@ package context
 
 import (
 	"github.com/tendermint/iavl"
-	"github.com/tendermint/tmlibs/db" // TODO: change to "github.com/tendermint/tendermint/libs/db" after iavl update
+	"github.com/tendermint/tendermint/libs/db"
 )
 
 type ContextMock struct {
-	stateTree    *iavl.VersionedTree
-	withdrawTree *iavl.VersionedTree
+	stateTree    *iavl.MutableTree
+	withdrawTree *iavl.MutableTree
 }
 
 func NewMock() *ContextMock {
-	stateTree := iavl.NewVersionedTree(db.NewMemDB(), 128)
-	withdrawTree := iavl.NewVersionedTree(db.NewMemDB(), 128)
+	stateTree := iavl.NewMutableTree(db.NewMemDB(), 128)
+	withdrawTree := iavl.NewMutableTree(db.NewMemDB(), 128)
 	return &ContextMock{stateTree, withdrawTree}
 }
 
@@ -22,10 +22,10 @@ func (ctx *ContextMock) Reset() {
 	ctx.withdrawTree.Rollback()
 }
 
-func (ctx *ContextMock) StateTree() *iavl.VersionedTree {
+func (ctx *ContextMock) StateTree() *iavl.MutableTree {
 	return ctx.stateTree
 }
 
-func (ctx *ContextMock) WithdrawTree() *iavl.VersionedTree {
+func (ctx *ContextMock) WithdrawTree() *iavl.MutableTree {
 	return ctx.withdrawTree
 }

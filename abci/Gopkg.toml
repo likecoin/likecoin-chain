@@ -33,8 +33,8 @@
   version = "0.22.8"
 
 [[constraint]]
-  name = "github.com/tendermint/tmlibs"
-  version = "0.9.0"
+  name = "github.com/tendermint/iavl"
+  version = "0.10.0"
 
 [prune]
   go-tests = true

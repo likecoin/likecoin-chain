@@ -63,12 +63,6 @@
   version = "v1.1.1"
 
 [[projects]]
-  name = "github.com/golang/mock"
-  packages = ["gomock"]
-  revision = "c34cdb4725f4c3844d095133c6e40e448b86589b"
-  version = "v1.1.1"
-
-[[projects]]
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -163,33 +157,22 @@
 
 [[projects]]
   name = "github.com/tendermint/iavl"
-  packages = [
-    ".",
-    "sha256truncated"
-  ]
-  revision = "2de525d09cca7c45c3f43d178817947a6cfa242c"
-  version = "v0.8.1"
+  packages = ["."]
+  revision = "e5726c0066ccdd299a2ec9262f93c7896cdfcd87"
+  version = "v0.10.0"
 
 [[projects]]
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/server",
     "abci/types",
+    "crypto/tmhash",
     "libs/common",
+    "libs/db",
     "libs/log"
   ]
   revision = "d542d2c3945116697f60451e6a407082c41c3cc9"
   version = "v0.22.8"
-
-[[projects]]
-  name = "github.com/tendermint/tmlibs"
-  packages = [
-    "common",
-    "db",
-    "log"
-  ]
-  revision = "49596e0a1f48866603813df843c9409fc19805c6"
-  version = "v0.9.0"
 
 [[projects]]
   name = "golang.org/x/net"
@@ -266,6 +249,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "32ca0cebbd3b611043e683973599e60465d055649290e1313aea30f9958463e1"
+  inputs-digest = "5a159effaf2f070bf621d90d0e257530e9e76e82c05fe841e0fa1cb95b5de9c6"
   solver-name = "gps-cdcl"
   solver-version = 1
