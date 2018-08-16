@@ -13,10 +13,39 @@ import (
 func TestGenerateLikeChainID(t *testing.T) {
 	ctx := context.NewMock()
 
-	Convey("Generated LikeChain ID should match the format and fulfil some criteria", t, func() {
-		_ = generateLikeChainID(ctx)
+	Convey("Given there is no LikeChain ID has generated before", t, func() {
+		ctx.Reset()
 
-		// TODO: Checking
+		Convey("The seed of LikeChain ID should not exist in state tree", func() {
+			_, seed := ctx.StateTree().Get(likeChainIDSeedKey)
+			So(seed, ShouldBeNil)
+		})
+
+		Convey("After generating the first LikeChain ID", func() {
+			likeChainID1 := generateLikeChainID(ctx)
+
+			Convey("The length of generated LikeChain ID should be 20", func() {
+				So(len(likeChainID1.Content), ShouldEqual, 20)
+			})
+
+			Convey("The seed of LikeChain ID should exist in state tree", func() {
+				_, seed1 := ctx.StateTree().Get(likeChainIDSeedKey)
+				So(seed1, ShouldNotBeNil)
+
+				Convey("After generating the second LikeChain ID", func() {
+					likeChainID2 := generateLikeChainID(ctx)
+
+					Convey("The seed of LikeChain ID should be difference", func() {
+						_, seed2 := ctx.StateTree().Get(likeChainIDSeedKey)
+						So(seed2, ShouldNotEqual, seed1)
+
+						Convey("The generated LikeChain ID should be difference", func() {
+							So(likeChainID2.Content, ShouldNotEqual, likeChainID1.Content)
+						})
+					})
+				})
+			})
+		})
 	})
 }
 

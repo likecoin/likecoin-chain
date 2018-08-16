@@ -1,9 +1,11 @@
 package account
 
 import (
+	"encoding/binary"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 )
@@ -17,8 +19,34 @@ func NewAccount(ctx context.Context, address common.Address) (types.LikeChainID,
 	return id, nil // TODO
 }
 
+var likeChainIDSeedKey = []byte("$account.likeChainIDSeed")
+
 func generateLikeChainID(ctx context.Context) types.LikeChainID {
-	return types.LikeChainID{} // TODO
+	var seedInt uint64
+	_, seed := ctx.StateTree().Get(likeChainIDSeedKey)
+	if seed == nil {
+		seedInt = 1
+		seed = make([]byte, 8)
+		binary.BigEndian.PutUint64(seed, seedInt)
+	} else {
+		seedInt = uint64(binary.BigEndian.Uint64(seed))
+	}
+
+	blockHash := ctx.GetBlockHash()
+
+	// Concat the seed and the block's hash
+	content := make([]byte, len(seed)+len(blockHash))
+	copy(content, seed)
+	copy(content[len(seed):], blockHash)
+	// Take first 20 bytes of Keccak256 hash to be LikeChainID
+	content = crypto.Keccak256(content)[:20]
+
+	// Increment and save seed
+	seedInt++
+	binary.BigEndian.PutUint64(seed, seedInt)
+	ctx.StateTree().Set(likeChainIDSeedKey, seed)
+
+	return types.LikeChainID{Content: content}
 }
 
 func AddressToLikeChainID(ctx context.Context, addr types.Address) (types.LikeChainID, bool) {

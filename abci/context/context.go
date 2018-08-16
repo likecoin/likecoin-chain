@@ -8,6 +8,8 @@ import (
 type Context interface {
 	StateTree() *iavl.MutableTree
 	WithdrawTree() *iavl.MutableTree
+
+	GetBlockHash() []byte
 	// TODO
 }
 

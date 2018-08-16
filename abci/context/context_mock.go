@@ -29,3 +29,8 @@ func (ctx *ContextMock) StateTree() *iavl.MutableTree {
 func (ctx *ContextMock) WithdrawTree() *iavl.MutableTree {
 	return ctx.withdrawTree
 }
+
+// GetBlockHash returns current block hash in state
+func (ctx *ContextMock) GetBlockHash() []byte {
+	return nil // TODO
+}
