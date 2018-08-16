@@ -63,12 +63,12 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	addr := tx.Addr.ToEthereum()
 	_ = addr // TODO: check if address is already registered
 
-	err := register(ctx, tx)
-	if err {
+	id, err := register(ctx, tx)
+	if err != nil {
 		panic("Register error")
 	}
 
-	return abci.ResponseDeliverTx{Code: 0}
+	return abci.ResponseDeliverTx{Code: 0, Data: id.Content} // TODO: format Data better?
 }
 
 // validateRegisterSignature validates register transaction
@@ -97,10 +97,9 @@ func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
 }
 
 // register creates a new LikeChain account
-func register(ctx context.Context, tx *types.RegisterTransaction) types.LikeChainID {
-	err := true
+func register(ctx context.Context, tx *types.RegisterTransaction) (types.LikeChainID, error) {
 	ethAddr := tx.Addr.ToEthereum()
-	return account.NewAccount(ethAddr)
+	return account.NewAccount(ctx, ethAddr)
 }
 
 func init() {

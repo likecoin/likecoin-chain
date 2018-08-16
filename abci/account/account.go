@@ -35,7 +35,7 @@ func GetLikeChainID(ctx context.Context, identifier types.Identifier) (types.Lik
 	return AddressToLikeChainID(ctx, *addr)
 }
 
-func SaveBalance(ctx context.Context, id types.LikeChainID, balance types.BigInteger) error {
+func SaveBalance(ctx context.Context, id types.LikeChainID, balance *big.Int) error {
 	return nil // TODO
 }
 
@@ -47,8 +47,8 @@ func FetchEthereumAddressBalance(ctx context.Context, addr common.Address) *big.
 	return nil // TODO
 }
 
-func SaveNextNonce(ctx context.Context, id types.LikeChainID, nonce uint64) error {
-	return nil
+func IncrementNextNonce(ctx context.Context, id types.LikeChainID) {
+	// TODO
 }
 
 func FetchNextNonce(ctx context.Context, id types.LikeChainID) uint64 {
