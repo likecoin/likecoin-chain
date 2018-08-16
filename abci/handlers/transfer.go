@@ -5,7 +5,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/error"
+	"github.com/likecoin/likechain/abci/errcode"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -18,7 +18,7 @@ func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	}
 
 	if !validateTransferTransactionFormat(tx) {
-		code, info := error.TransferCheckTxInvalidFormat()
+		code, info := errcode.TransferCheckTxInvalidFormat()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -26,7 +26,7 @@ func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	}
 
 	if !validateTransferSignature(tx.Sig) {
-		code, info := error.TransferCheckTxInvalidSignature()
+		code, info := errcode.TransferCheckTxInvalidSignature()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -44,7 +44,7 @@ func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateTransferTransactionFormat(tx) {
-		code, info := error.TransferDeliverTxInvalidFormat()
+		code, info := errcode.TransferDeliverTxInvalidFormat()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,
@@ -52,7 +52,7 @@ func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateTransferSignature(tx.Sig) {
-		code, info := error.TransferDeliverTxInvalidSignature()
+		code, info := errcode.TransferDeliverTxInvalidSignature()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,

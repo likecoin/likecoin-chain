@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/error"
+	"github.com/likecoin/likechain/abci/errcode"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -55,14 +55,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := error.RegisterCheckTxInvalidFormat()
+			code, _ := errcode.RegisterCheckTxInvalidFormat()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = error.RegisterDeliverTxInvalidFormat()
+			code, _ = errcode.RegisterDeliverTxInvalidFormat()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
@@ -77,14 +77,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := error.RegisterCheckTxInvalidSignature()
+			code, _ := errcode.RegisterCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = error.RegisterDeliverTxInvalidSignature()
+			code, _ = errcode.RegisterDeliverTxInvalidSignature()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
@@ -99,14 +99,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := error.RegisterCheckTxInvalidSignature()
+			code, _ := errcode.RegisterCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = error.RegisterCheckTxInvalidSignature()
+			code, _ = errcode.RegisterCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 
@@ -123,14 +123,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			deliverRegister(ctx, rawTx)
 
-			code, _ := error.RegisterCheckTxDuplicated()
+			code, _ := errcode.RegisterCheckTxDuplicated()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkRegister(ctx, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = error.RegisterDeliverTxDuplicated()
+			code, _ = errcode.RegisterDeliverTxDuplicated()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverRegister(ctx, rawTx)
 

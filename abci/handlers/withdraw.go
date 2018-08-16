@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/error"
+	"github.com/likecoin/likechain/abci/errcode"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -19,7 +19,7 @@ func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	_ = tx.From
 
 	if !validateWithdrawTransactionFormat(tx) {
-		code, info := error.WithdrawCheckTxInvalidFormat()
+		code, info := errcode.WithdrawCheckTxInvalidFormat()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -27,7 +27,7 @@ func checkWithdraw(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	}
 
 	if !validateWithdrawSignature(tx.Sig) {
-		code, info := error.WithdrawCheckTxInvalidSignature()
+		code, info := errcode.WithdrawCheckTxInvalidSignature()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -45,7 +45,7 @@ func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateWithdrawTransactionFormat(tx) {
-		code, info := error.WithdrawDeliverTxInvalidFormat()
+		code, info := errcode.WithdrawDeliverTxInvalidFormat()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,
@@ -53,7 +53,7 @@ func deliverWithdraw(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateWithdrawSignature(tx.Sig) {
-		code, info := error.RegisterCheckTxInvalidFormat()
+		code, info := errcode.RegisterCheckTxInvalidFormat()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,

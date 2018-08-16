@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/error"
+	"github.com/likecoin/likechain/abci/errcode"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -19,7 +19,7 @@ func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCh
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {
-		code, info := error.DepositCheckTxInvalidFormat()
+		code, info := errcode.DepositCheckTxInvalidFormat()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -39,7 +39,7 @@ func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.Response
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {
-		code, info := error.DepositDeliverTxInvalidFormat()
+		code, info := errcode.DepositDeliverTxInvalidFormat()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,

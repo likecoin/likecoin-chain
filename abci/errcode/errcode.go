@@ -1,4 +1,4 @@
-package error
+package errcode
 
 // Error Code Definition (5 digits)
 // 1 0 0 0 0

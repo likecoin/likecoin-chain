@@ -5,7 +5,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/error"
+	"github.com/likecoin/likechain/abci/errcode"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -19,7 +19,7 @@ func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	}
 
 	if !validateRegisterTransaction(tx) {
-		code, info := error.RegisterCheckTxInvalidFormat()
+		code, info := errcode.RegisterCheckTxInvalidFormat()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -27,7 +27,7 @@ func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	}
 
 	if !validateRegisterSignature(ctx, tx) {
-		code, info := error.RegisterCheckTxInvalidSignature()
+		code, info := errcode.RegisterCheckTxInvalidSignature()
 		return abci.ResponseCheckTx{
 			Code: code,
 			Info: info,
@@ -45,7 +45,7 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateRegisterTransaction(tx) {
-		code, info := error.RegisterDeliverTxInvalidFormat()
+		code, info := errcode.RegisterDeliverTxInvalidFormat()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,
@@ -53,7 +53,7 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 	}
 
 	if !validateRegisterSignature(ctx, tx) {
-		code, info := error.RegisterDeliverTxInvalidSignature()
+		code, info := errcode.RegisterDeliverTxInvalidSignature()
 		return abci.ResponseDeliverTx{
 			Code: code,
 			Info: info,
