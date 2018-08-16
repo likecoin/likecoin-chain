@@ -9,7 +9,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkDeposit(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetDepositTx()
 	if tx == nil {
 		// TODO: log
@@ -29,7 +29,7 @@ func checkDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseCh
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverDeposit(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverDeposit(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetDepositTx()
 	if tx == nil {
 		// TODO: log
@@ -53,7 +53,7 @@ func validateDepositTransactionFormat(tx *types.DepositTransaction) bool {
 	return false // TODO
 }
 
-func deposit(ctx context.Context, tx *types.DepositTransaction) {
+func deposit(ctx context.MutableContext, tx *types.DepositTransaction) {
 	// TODO
 }
 

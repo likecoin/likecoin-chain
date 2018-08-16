@@ -11,7 +11,7 @@ import (
 )
 
 // NewAccount creates a new account
-func NewAccount(ctx context.Context, address common.Address) (types.LikeChainID, error) {
+func NewAccount(ctx context.MutableContext, address common.Address) (types.LikeChainID, error) {
 	id := generateLikeChainID(ctx)
 	// TODO: save to db
 	// TODO: initialize account info
@@ -21,7 +21,7 @@ func NewAccount(ctx context.Context, address common.Address) (types.LikeChainID,
 
 var likeChainIDSeedKey = []byte("$account.likeChainIDSeed")
 
-func generateLikeChainID(ctx context.Context) types.LikeChainID {
+func generateLikeChainID(ctx context.MutableContext) types.LikeChainID {
 	var seedInt uint64
 	_, seed := ctx.StateTree().Get(likeChainIDSeedKey)
 	if seed == nil {
@@ -44,16 +44,16 @@ func generateLikeChainID(ctx context.Context) types.LikeChainID {
 	// Increment and save seed
 	seedInt++
 	binary.BigEndian.PutUint64(seed, seedInt)
-	ctx.StateTree().Set(likeChainIDSeedKey, seed)
+	ctx.MutableStateTree().Set(likeChainIDSeedKey, seed)
 
 	return types.LikeChainID{Content: content}
 }
 
-func AddressToLikeChainID(ctx context.Context, addr types.Address) (types.LikeChainID, bool) {
+func AddressToLikeChainID(ctx context.ImmutableContext, addr types.Address) (types.LikeChainID, bool) {
 	return types.LikeChainID{}, false // TODO
 }
 
-func GetLikeChainID(ctx context.Context, identifier types.Identifier) (types.LikeChainID, bool) {
+func GetLikeChainID(ctx context.ImmutableContext, identifier types.Identifier) (types.LikeChainID, bool) {
 	id := identifier.GetLikeChainID()
 	if id != nil {
 		return *id, false // TODO: check the existence of this LikeChainID
@@ -63,22 +63,22 @@ func GetLikeChainID(ctx context.Context, identifier types.Identifier) (types.Lik
 	return AddressToLikeChainID(ctx, *addr)
 }
 
-func SaveBalance(ctx context.Context, id types.LikeChainID, balance *big.Int) error {
+func SaveBalance(ctx context.MutableContext, id types.LikeChainID, balance *big.Int) error {
 	return nil // TODO
 }
 
-func FetchBalance(ctx context.Context, id types.LikeChainID) *big.Int {
+func FetchBalance(ctx context.ImmutableContext, id types.LikeChainID) *big.Int {
 	return nil // TODO
 }
 
-func FetchEthereumAddressBalance(ctx context.Context, addr common.Address) *big.Int {
+func FetchEthereumAddressBalance(ctx context.MutableContext, addr common.Address) *big.Int {
 	return nil // TODO
 }
 
-func IncrementNextNonce(ctx context.Context, id types.LikeChainID) {
+func IncrementNextNonce(ctx context.MutableContext, id types.LikeChainID) {
 	// TODO
 }
 
-func FetchNextNonce(ctx context.Context, id types.LikeChainID) uint64 {
+func FetchNextNonce(ctx context.ImmutableContext, id types.LikeChainID) uint64 {
 	return 0 // TODO
 }

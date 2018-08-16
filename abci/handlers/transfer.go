@@ -10,7 +10,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkTransfer(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -36,7 +36,7 @@ func checkTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverTransfer(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverTransfer(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -80,7 +80,7 @@ func validateTransferTransactionFormat(tx *types.TransferTransaction) bool {
 	return false // TODO
 }
 
-func transfer(ctx context.Context, tx *types.TransferTransaction) {
+func transfer(ctx context.MutableContext, tx *types.TransferTransaction) {
 	// TODO
 }
 

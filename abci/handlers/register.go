@@ -11,7 +11,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -37,7 +37,7 @@ func checkRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseC
 	return abci.ResponseCheckTx{Code: 0}
 }
 
-func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -72,7 +72,7 @@ func deliverRegister(ctx context.Context, rawTx *types.Transaction) abci.Respons
 }
 
 // validateRegisterSignature validates register transaction
-func validateRegisterSignature(ctx context.Context, tx *types.RegisterTransaction) bool {
+func validateRegisterSignature(ctx context.ImmutableContext, tx *types.RegisterTransaction) bool {
 	hashedMsg, err := tx.GenerateSigningMessageHash()
 	if err != nil {
 		// TODO: log
@@ -97,7 +97,7 @@ func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
 }
 
 // register creates a new LikeChain account
-func register(ctx context.Context, tx *types.RegisterTransaction) (types.LikeChainID, error) {
+func register(ctx context.MutableContext, tx *types.RegisterTransaction) (types.LikeChainID, error) {
 	ethAddr := tx.Addr.ToEthereum()
 	return account.NewAccount(ctx, ethAddr)
 }

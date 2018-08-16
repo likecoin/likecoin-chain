@@ -11,7 +11,7 @@ import (
 type LikeChainApplication struct {
 	abci.BaseApplication
 
-	ctx context.Context
+	ctx *context.LikeContext
 }
 
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {

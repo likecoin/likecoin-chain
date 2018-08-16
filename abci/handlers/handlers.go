@@ -8,8 +8,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type checkTxHandler = func(context.Context, *types.Transaction) abci.ResponseCheckTx
-type deliverTxHandler = func(context.Context, *types.Transaction) abci.ResponseDeliverTx
+type checkTxHandler = func(context.ImmutableContext, *types.Transaction) abci.ResponseCheckTx
+type deliverTxHandler = func(context.MutableContext, *types.Transaction) abci.ResponseDeliverTx
 
 var checkTxHandlerTable = make(map[reflect.Type]checkTxHandler)
 var deliverTxHandlerTable = make(map[reflect.Type]deliverTxHandler)
@@ -22,7 +22,7 @@ func registerDeliverTxHandler(t reflect.Type, f deliverTxHandler) {
 	deliverTxHandlerTable[t] = f
 }
 
-func CheckTx(ctx context.Context, tx *types.Transaction) abci.ResponseCheckTx {
+func CheckTx(ctx context.ImmutableContext, tx *types.Transaction) abci.ResponseCheckTx {
 	t := reflect.TypeOf(tx.GetTx())
 	f, exist := checkTxHandlerTable[t]
 	if !exist {
@@ -31,7 +31,7 @@ func CheckTx(ctx context.Context, tx *types.Transaction) abci.ResponseCheckTx {
 	return f(ctx, tx)
 }
 
-func DeliverTx(ctx context.Context, tx *types.Transaction) abci.ResponseDeliverTx {
+func DeliverTx(ctx context.MutableContext, tx *types.Transaction) abci.ResponseDeliverTx {
 	t := reflect.TypeOf(tx.GetTx())
 	f, exist := deliverTxHandlerTable[t]
 	if !exist {
