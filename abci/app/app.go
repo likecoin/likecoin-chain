@@ -11,7 +11,7 @@ import (
 type LikeChainApplication struct {
 	abci.BaseApplication
 
-	ctx *context.LikeContext
+	ctx *context.DeliverTxContext
 }
 
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
@@ -19,7 +19,7 @@ func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
 		return abci.ResponseCheckTx{Code: 1, Info: "Cannot parse transaction"}
 	}
-	return handlers.CheckTx(app.ctx, tx)
+	return handlers.CheckTx(app.ctx.ToCheckTxContext(), tx)
 }
 
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
