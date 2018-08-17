@@ -5,7 +5,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func queryTxState(ctx context.Context, reqQuery abci.RequestQuery) abci.ResponseQuery {
+func queryTxState(ctx context.ImmutableContext, reqQuery abci.RequestQuery) abci.ResponseQuery {
 	return abci.ResponseQuery{}
 }
 
