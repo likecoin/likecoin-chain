@@ -55,7 +55,6 @@ func (ctx *DeliverTxContext) SetBlockHash(blockHash []byte) {
 }
 
 func (ctx *DeliverTxContext) Save() (hash []byte) {
-	hash = make([]byte, 40) // TODO: remove magic number
 	stateHash, _, err := ctx.stateTree.SaveVersion()
 	if err != nil {
 		panic("Cannot save state tree")
@@ -64,8 +63,11 @@ func (ctx *DeliverTxContext) Save() (hash []byte) {
 	if err != nil {
 		panic("Cannot save withdraw tree")
 	}
-	copy(hash, withdrawHash[:20]) // Indended to put withdraw tree hash first, easier for Relay contract to parse
-	copy(hash[20:], stateHash[:20])
+	hash = make([]byte, 40) // TODO: remove magic number
+	if len(stateHash) >= 20 && len(withdrawHash) >= 20 {
+		copy(hash, withdrawHash[:20]) // Indended to put withdraw tree hash first, easier for Relay contract to parse
+		copy(hash[20:], stateHash[:20])
+	}
 	return hash
 }
 

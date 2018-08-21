@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+// IsValidFormat checks the signature version and its length
 func (sig *Signature) IsValidFormat() bool {
 	switch sig.Version {
 	case 1:
@@ -24,15 +25,18 @@ func (sig *Signature) IsValidFormat() bool {
 	}
 }
 
+// IsValidFormat checks the length of the address
 func (rawAddr *Address) IsValidFormat() bool {
 	return len(rawAddr.Content) == 20
 }
 
+// ToEthereum converts Address struct to Ethereum address
 func (rawAddr *Address) ToEthereum() common.Address {
 	addrBytes := rawAddr.Content
 	return common.BytesToAddress(addrBytes)
 }
 
+// ToBigInt converts BigInteger struct to big Int
 func (rawBigInt *BigInteger) ToBigInt() *big.Int {
 	bigInt := new(big.Int)
 	return bigInt.SetBytes(rawBigInt.Content)
@@ -44,14 +48,7 @@ var sigPrefix = []byte("\x19Ethereum Signed Message:\n")
 // `\x19Ethereum Signed Message:\n" + len(message) + message`
 // and return Keccak256 hash
 func generateSigningMessageHash(msg []byte) []byte {
-	msgLen := len(msg)
-	msgLenStr := fmt.Sprintf("%d", msgLen)
-
-	hashingMsg := make([]byte, len(sigPrefix)+len(msgLenStr)+msgLen)
-	copy(hashingMsg, sigPrefix)
-	copy(hashingMsg[len(sigPrefix):], []byte(msgLenStr))
-	copy(hashingMsg[len(sigPrefix)+len(msgLenStr):], msg)
-
+	hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
 	return crypto.Keccak256(hashingMsg)
 }
 

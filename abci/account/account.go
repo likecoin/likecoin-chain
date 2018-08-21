@@ -8,14 +8,27 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 )
 
 // NewAccount creates a new account
-func NewAccount(ctx context.MutableContext, address common.Address) (types.LikeChainID, error) {
+func NewAccount(ctx context.MutableContext, ethAddr common.Address) (types.LikeChainID, error) {
 	id := generateLikeChainID(ctx)
-	// TODO: save to db
-	// TODO: initialize account info
-	// TODO: check if address already has balance
+
+	// Save address mapping
+	ctx.MutableStateTree().Set(utils.DbAddrKey(ethAddr), id.Content)
+	ctx.MutableStateTree().Set(utils.DbIDKey(id, "acc", "addr"), ethAddr.Bytes())
+
+	// Initialize account info
+	SaveBalance(ctx, id, big.NewInt(0))
+	IncrementNextNonce(ctx, id)
+
+	// Check if address already has balance
+	balanceInEthAddr := fetchEthereumAddressBalance(ctx, ethAddr)
+	if balanceInEthAddr != nil {
+		// TODO: Transfer balance from ETH address to LikeChain ID
+	}
+
 	return id, nil // TODO
 }
 
@@ -63,22 +76,41 @@ func GetLikeChainID(ctx context.ImmutableContext, identifier types.Identifier) (
 	return AddressToLikeChainID(ctx, *addr)
 }
 
+// SaveBalance saves account balance by LikeChain ID
 func SaveBalance(ctx context.MutableContext, id types.LikeChainID, balance *big.Int) error {
-	return nil // TODO
+	ctx.MutableStateTree().Set(utils.DbIDKey(id, "acc", "balance"), balance.Bytes())
+	return nil
 }
 
+// FetchBalance fetches account balance by LikeChain ID
 func FetchBalance(ctx context.ImmutableContext, id types.LikeChainID) *big.Int {
+	_, bytes := ctx.StateTree().Get(utils.DbIDKey(id, "acc", "balance"))
+
+	balance := big.NewInt(0)
+	balance = balance.SetBytes(bytes)
+
+	return balance
+}
+
+func fetchEthereumAddressBalance(ctx context.MutableContext, addr common.Address) *big.Int {
 	return nil // TODO
 }
 
-func FetchEthereumAddressBalance(ctx context.MutableContext, addr common.Address) *big.Int {
-	return nil // TODO
-}
-
+// IncrementNextNonce increments next nonce of an account by LikeChain ID
+// This also initialize next nonce of an account
 func IncrementNextNonce(ctx context.MutableContext, id types.LikeChainID) {
-	// TODO
+	nextNonceInt := FetchNextNonce(ctx, id) + 1
+	nextNonce := make([]byte, 8)
+	binary.BigEndian.PutUint64(nextNonce, nextNonceInt)
+	ctx.MutableStateTree().Set(utils.DbIDKey(id, "acc", "nextNonce"), nextNonce)
 }
 
+// FetchNextNonce fetches next nonce of an account by LikeChain ID
 func FetchNextNonce(ctx context.ImmutableContext, id types.LikeChainID) uint64 {
-	return 0 // TODO
+	_, bytes := ctx.StateTree().Get(utils.DbIDKey(id, "acc", "nextNonce"))
+
+	if bytes == nil {
+		return uint64(0)
+	}
+	return uint64(binary.BigEndian.Uint64(bytes))
 }
