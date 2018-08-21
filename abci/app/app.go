@@ -11,23 +11,29 @@ import (
 type LikeChainApplication struct {
 	abci.BaseApplication
 
-	ctx *context.DeliverTxContext
+	ctx *context.ApplicationContext
 }
 
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
-		return abci.ResponseCheckTx{Code: 1, Info: "Cannot parse transaction"}
+		return abci.ResponseCheckTx{
+			Code: 1, 
+			Info: "Cannot parse transaction"
+		}
 	}
-	return handlers.CheckTx(app.ctx.ToCheckTxContext(), tx)
+	return handlers.CheckTx(app.ctx.GetImmutableState(), tx)
 }
 
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
-		return abci.ResponseDeliverTx{Code: 1, Info: "Cannot parse transaction"}
+		return abci.ResponseDeliverTx{
+			Code: 1,
+			Info: "Cannot parse transaction"
+		}
 	}
-	return handlers.DeliverTx(app.ctx, tx)
+	return handlers.DeliverTx(app.ctx.GetMutableState(), tx)
 }
 
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {

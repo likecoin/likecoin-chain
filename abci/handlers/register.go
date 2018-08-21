@@ -12,7 +12,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkRegister(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -27,7 +27,7 @@ func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	if !validateRegisterSignature(ctx, tx) {
+	if !validateRegisterSignature(state, tx) {
 		code, info := errcode.RegisterCheckTxInvalidSignature()
 		return abci.ResponseCheckTx{
 			Code: code,
@@ -35,7 +35,7 @@ func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	_, existed := ctx.StateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
+	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
 	if existed != nil {
 		code, info := errcode.RegisterCheckTxDuplicated()
 		return abci.ResponseCheckTx{
@@ -47,7 +47,7 @@ func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 	return abci.ResponseCheckTx{Code: 0}
 }
 
-func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverRegister(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -62,7 +62,7 @@ func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	if !validateRegisterSignature(ctx, tx) {
+	if !validateRegisterSignature(state, tx) {
 		code, info := errcode.RegisterDeliverTxInvalidSignature()
 		return abci.ResponseDeliverTx{
 			Code: code,
@@ -70,7 +70,7 @@ func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	_, existed := ctx.StateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
+	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
 	if existed != nil {
 		code, info := errcode.RegisterDeliverTxDuplicated()
 		return abci.ResponseDeliverTx{
@@ -79,7 +79,7 @@ func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	id, err := register(ctx, tx)
+	id, err := register(state, tx)
 	if err != nil {
 		panic(fmt.Sprintf("Error occurs during registration, details: %v", err))
 	}
@@ -91,7 +91,7 @@ func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.
 }
 
 // validateRegisterSignature validates register transaction
-func validateRegisterSignature(ctx context.ImmutableContext, tx *types.RegisterTransaction) bool {
+func validateRegisterSignature(state context.IImmutableState, tx *types.RegisterTransaction) bool {
 	hashedMsg, err := tx.GenerateSigningMessageHash()
 	if err != nil {
 		// TODO: log
@@ -116,9 +116,9 @@ func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
 }
 
 // register creates a new LikeChain account
-func register(ctx context.MutableContext, tx *types.RegisterTransaction) (types.LikeChainID, error) {
+func register(state context.IMutableState, tx *types.RegisterTransaction) (types.LikeChainID, error) {
 	ethAddr := tx.Addr.ToEthereum()
-	return account.NewAccount(ctx, ethAddr)
+	return account.NewAccount(state, ethAddr)
 }
 
 func init() {

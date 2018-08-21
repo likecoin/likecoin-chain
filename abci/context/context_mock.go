@@ -5,21 +5,25 @@ import (
 	"github.com/tendermint/tendermint/libs/db"
 )
 
-type LikeContextMock struct {
-	*DeliverTxContext
+// MockApplicationContext is a struct mocking ApplicationContext for testing
+type MockApplicationContext struct {
+	*ApplicationContext
 }
 
-func NewMock() *LikeContextMock {
-	return &LikeContextMock{
-		DeliverTxContext: &DeliverTxContext{
-			stateTree:    iavl.NewMutableTree(db.NewMemDB(), 0),
-			withdrawTree: iavl.NewMutableTree(db.NewMemDB(), 0),
-			blockHash:    []byte{1, 3, 3, 7},
+// NewMock creates an MockApplicationContext using MemDB
+func NewMock() *MockApplicationContext {
+	return &MockApplicationContext{
+		ApplicationContext: &ApplicationContext{
+			state: &MutableState{
+				stateTree:    iavl.NewMutableTree(db.NewMemDB(), 0),
+				withdrawTree: iavl.NewMutableTree(db.NewMemDB(), 0),
+			},
 		},
 	}
 }
 
-func (ctx *DeliverTxContext) Reset() {
-	ctx.MutableStateTree().Rollback()
-	ctx.MutableWithdrawTree().Rollback()
+// Reset resets state tree and withdraw tree to last saved version
+func (appCtx *MockApplicationContext) Reset() {
+	appCtx.GetMutableState().MutableStateTree().Rollback()
+	appCtx.GetMutableState().MutableWithdrawTree().Rollback()
 }

@@ -9,7 +9,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkWithdraw(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetWithdrawTx()
 	if tx == nil {
 		// TODO: log
@@ -37,7 +37,7 @@ func checkWithdraw(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverWithdraw(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetWithdrawTx()
 	if tx == nil {
 		// TODO: log
@@ -71,7 +71,7 @@ func validateWithdrawTransactionFormat(tx *types.WithdrawTransaction) bool {
 	return false // TODO
 }
 
-func withdraw(ctx context.MutableContext, tx *types.WithdrawTransaction) {
+func withdraw(state context.IMutableState, tx *types.WithdrawTransaction) {
 	// TODO
 }
 

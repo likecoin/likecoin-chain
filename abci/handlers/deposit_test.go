@@ -20,24 +20,25 @@ func wrapDepositTransaction(tx *types.DepositTransaction) *types.Transaction {
 }
 
 func TestCheckAndDeliverDeposit(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a Deposit Transaction", t, func() {
 
 		Convey("If it is a valid transaction", func() {
-			ctx.Reset()
+			appCtx.Reset()
 			rawTx := wrapDepositTransaction(&types.DepositTransaction{
 				// TODO
 			})
 
 			Convey("CheckTx should return Code 0", func() {
-				res := checkDeposit(ctx, rawTx)
+				res := checkDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 			})
 
 			Convey("DeliverTx should return Code 0", func() {
-				res := deliverDeposit(ctx, rawTx)
+				res := deliverDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 
@@ -49,7 +50,7 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 		})
 
 		Convey("If it is an invalid address format", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapDepositTransaction(&types.DepositTransaction{
 				// TODO
@@ -57,21 +58,21 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 
 			code, _ := errcode.DepositCheckTxInvalidFormat()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkDeposit(ctx, rawTx)
+				res := checkDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.DepositDeliverTxInvalidFormat()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverDeposit(ctx, rawTx)
+				res := deliverDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is a replayed transaction", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapDepositTransaction(&types.DepositTransaction{
 				// TODO
@@ -79,14 +80,14 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 
 			code, _ := errcode.DepositCheckTxDuplicated()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkDeposit(ctx, rawTx)
+				res := checkDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.DepositDeliverTxDuplicated()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverDeposit(ctx, rawTx)
+				res := deliverDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -113,29 +114,29 @@ func TestValidateDepositTransactionFormat(t *testing.T) {
 }
 
 func TestDeposit(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a valid Deposit transaction", t, func() {
-		ctx.Reset()
 		tx := &types.DepositTransaction{} // TODO
 
 		Convey("The transaction should be pass", func() {
-			deposit(ctx, tx)
+			deposit(state, tx)
 			// TODO: checking
 		})
 
 		Convey("But the same Deposit transaction cannot be replayed", func() {
-			deposit(ctx, tx)
+			deposit(state, tx)
 			// TODO: checking
 		})
 	})
 
 	Convey("Given an invalid Deposit transaction", t, func() {
-		ctx.Reset()
+		appCtx.Reset()
 		tx := &types.DepositTransaction{} // TODO
 
 		Convey("The transaction should not be pass if receiver not exist", func() {
-			deposit(ctx, tx)
+			deposit(state, tx)
 			// TODO: checking
 		})
 	})

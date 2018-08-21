@@ -10,7 +10,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkTransfer(ctx context.ImmutableContext, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -36,7 +36,7 @@ func checkTransfer(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 	return abci.ResponseCheckTx{} // TODO
 }
 
-func deliverTransfer(ctx context.MutableContext, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -59,13 +59,13 @@ func deliverTransfer(ctx context.MutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	fromID, exist := account.GetLikeChainID(ctx, *tx.From)
+	fromID, exist := account.GetLikeChainID(state, *tx.From)
 	if !exist {
 		return abci.ResponseDeliverTx{} // TODO: error code for sender account does not exist
 	}
 
-	_ = account.FetchBalance(ctx, fromID)
-	_ = account.FetchNextNonce(ctx, fromID)
+	_ = account.FetchBalance(state, fromID)
+	_ = account.FetchNextNonce(state, fromID)
 	// Increment nonce
 	// Adjust balance of sender and receiver
 
@@ -80,7 +80,7 @@ func validateTransferTransactionFormat(tx *types.TransferTransaction) bool {
 	return false // TODO
 }
 
-func transfer(ctx context.MutableContext, tx *types.TransferTransaction) {
+func transfer(state context.IMutableState, tx *types.TransferTransaction) {
 	// TODO
 }
 

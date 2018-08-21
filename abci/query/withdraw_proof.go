@@ -5,7 +5,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func queryWithdrawProof(ctx context.ImmutableContext, reqQuery abci.RequestQuery) abci.ResponseQuery {
+func queryWithdrawProof(state context.IImmutableState, reqQuery abci.RequestQuery) abci.ResponseQuery {
 	return abci.ResponseQuery{}
 }
 

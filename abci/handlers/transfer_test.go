@@ -20,24 +20,24 @@ func wrapTransferTransaction(tx *types.TransferTransaction) *types.Transaction {
 }
 
 func TestCheckAndDeliverTransfer(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a Transfer Transaction", t, func() {
 
 		Convey("If it is a valid transaction", func() {
-			ctx.Reset()
 			rawTx := wrapTransferTransaction(&types.TransferTransaction{
 				// TODO
 			})
 
 			Convey("CheckTx should return Code 0", func() {
-				res := checkTransfer(ctx, rawTx)
+				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 			})
 
 			Convey("DeliverTx should return Code 0", func() {
-				res := deliverTransfer(ctx, rawTx)
+				res := deliverTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 
@@ -49,7 +49,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 
 		Convey("If it is an invalid address format", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapTransferTransaction(&types.TransferTransaction{
 				// TODO
@@ -57,21 +57,21 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code, _ := errcode.TransferCheckTxInvalidFormat()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkTransfer(ctx, rawTx)
+				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.TransferDeliverTxInvalidFormat()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(ctx, rawTx)
+				res := deliverTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is an invalid signature version", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapTransferTransaction(&types.TransferTransaction{
 				// TODO
@@ -79,21 +79,21 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code, _ := errcode.TransferCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkTransfer(ctx, rawTx)
+				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.TransferDeliverTxInvalidSignature()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(ctx, rawTx)
+				res := deliverTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is an invalid signature format", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapTransferTransaction(&types.TransferTransaction{
 				// TODO
@@ -101,21 +101,21 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code, _ := errcode.TransferCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkTransfer(ctx, rawTx)
+				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.TransferDeliverTxInvalidSignature()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(ctx, rawTx)
+				res := deliverTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is a replayed transaction", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapTransferTransaction(&types.TransferTransaction{
 				// TODO
@@ -123,14 +123,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code, _ := errcode.TransferCheckTxDuplicated()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkTransfer(ctx, rawTx)
+				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.TransferDeliverTxDuplicated()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(ctx, rawTx)
+				res := deliverTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -183,43 +183,43 @@ func TestvalidateTransferTransactionFormat(t *testing.T) {
 }
 
 func TestTransfer(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a valid Transfer transaction", t, func() {
-		ctx.Reset()
 		tx := &types.TransferTransaction{} // TODO
 
 		Convey("The transaction should be pass", func() {
-			transfer(ctx, tx)
+			transfer(state, tx)
 			// TODO check
 		})
 
 		Convey("But the same transaction cannot be replayed", func() {
-			transfer(ctx, tx)
+			transfer(state, tx)
 			// TODO check
 		})
 	})
 
 	Convey("Given an invalid Transfer transaction", t, func() {
-		ctx.Reset()
+		appCtx.Reset()
 		tx := &types.TransferTransaction{} // TODO
 
 		Convey("The transaction should not be pass if sender not exist ", func() {
-			transfer(ctx, tx)
+			transfer(state, tx)
 			// TODO check
 		})
 
 		tx = &types.TransferTransaction{} // TODO
 
 		Convey("The transaction should not be pass if receiver not exist", func() {
-			transfer(ctx, tx)
+			transfer(state, tx)
 			// TODO check
 		})
 
 		tx = &types.TransferTransaction{} // TODO
 
 		Convey("The transaction should not be pass if there is not enough balance", func() {
-			transfer(ctx, tx)
+			transfer(state, tx)
 			// TODO check
 		})
 	})

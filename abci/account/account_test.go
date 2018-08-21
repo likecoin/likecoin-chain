@@ -10,32 +10,31 @@ import (
 )
 
 func TestGenerateLikeChainID(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given there is no LikeChain ID has generated before", t, func() {
-		ctx.Reset()
-
 		Convey("The seed of LikeChain ID should not exist in state tree", func() {
-			_, seed := ctx.StateTree().Get(likeChainIDSeedKey)
+			_, seed := state.ImmutableStateTree().Get(likeChainIDSeedKey)
 			So(seed, ShouldBeNil)
 		})
 
 		Convey("After generating the first LikeChain ID", func() {
-			likeChainID1 := generateLikeChainID(ctx)
+			likeChainID1 := generateLikeChainID(state)
 
 			Convey("The length of generated LikeChain ID should be 20", func() {
 				So(len(likeChainID1.Content), ShouldEqual, 20)
 			})
 
 			Convey("The seed of LikeChain ID should exist in state tree", func() {
-				_, seed1 := ctx.StateTree().Get(likeChainIDSeedKey)
+				_, seed1 := state.ImmutableStateTree().Get(likeChainIDSeedKey)
 				So(seed1, ShouldNotBeNil)
 
 				Convey("After generating the second LikeChain ID", func() {
-					likeChainID2 := generateLikeChainID(ctx)
+					likeChainID2 := generateLikeChainID(state)
 
 					Convey("The seed of LikeChain ID should be difference", func() {
-						_, seed2 := ctx.StateTree().Get(likeChainIDSeedKey)
+						_, seed2 := state.ImmutableStateTree().Get(likeChainIDSeedKey)
 						So(seed2, ShouldNotEqual, seed1)
 
 						Convey("The generated LikeChain ID should be difference", func() {
@@ -49,13 +48,14 @@ func TestGenerateLikeChainID(t *testing.T) {
 }
 
 func TestNewAccount(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
+
 	Convey("Given a valid Ethereum address", t, func() {
-		ctx.Reset()
 		addr := common.HexToAddress("")
 
 		Convey("An account is created with the address", func() {
-			_, err := NewAccount(ctx, addr)
+			_, err := NewAccount(state, addr)
 
 			So(err, ShouldBeNil)
 		})
@@ -63,18 +63,18 @@ func TestNewAccount(t *testing.T) {
 }
 
 func TestSaveAndFetchBalance(t *testing.T) {
-	ctx := context.NewMock()
-	ctx.Reset()
-	id := generateLikeChainID(ctx)
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
+	id := generateLikeChainID(state)
 
 	Convey("Given a valid balance", t, func() {
 		balance, _ := new(big.Int).SetString("1000000000000000000", 10)
 
 		Convey("The balance can be sucessfully saved to DB", func() {
-			So(SaveBalance(ctx, id, balance), ShouldBeNil)
+			So(SaveBalance(state, id, balance), ShouldBeNil)
 
 			Convey("The balance can be sucessfully fetched from DB", func() {
-				fetchedBalance := FetchBalance(ctx, id)
+				fetchedBalance := FetchBalance(state, id)
 				So(fetchedBalance.Cmp(balance), ShouldEqual, 0)
 			})
 		})
@@ -82,23 +82,23 @@ func TestSaveAndFetchBalance(t *testing.T) {
 }
 
 func TestIncrementAndFetchNextNounce(t *testing.T) {
-	ctx := context.NewMock()
-	ctx.Reset()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("For a newly created account", t, func() {
-		id, err := NewAccount(ctx, common.HexToAddress(""))
+		id, err := NewAccount(state, common.HexToAddress(""))
 		if err != nil {
 			panic("Unable to create new account")
 		}
 
 		Convey("The nonce should be 1", func() {
-			So(FetchNextNonce(ctx, id), ShouldEqual, 1)
+			So(FetchNextNonce(state, id), ShouldEqual, 1)
 
 			Convey("After incrementing nonce", func() {
-				IncrementNextNonce(ctx, id)
+				IncrementNextNonce(state, id)
 
 				Convey("It should become 2", func() {
-					So(FetchNextNonce(ctx, id), ShouldEqual, 2)
+					So(FetchNextNonce(state, id), ShouldEqual, 2)
 				})
 			})
 		})

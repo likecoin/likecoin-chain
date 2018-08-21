@@ -24,11 +24,10 @@ func wrapRegisterTransaction(tx *types.RegisterTransaction) *types.Transaction {
 }
 
 func TestCheckAndDeliverRegister(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a Register Transaction", t, func() {
-		ctx.Reset()
-
 		Convey("If it is a valid Register transaction", func() {
 			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
 				Addr: addr,
@@ -39,30 +38,30 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			})
 
 			Convey("CheckTx should return Code 0", func() {
-				res := checkRegister(ctx, rawTx)
+				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 			})
 
 			Convey("DeliverTx should return Code 0", func() {
-				res := deliverRegister(ctx, rawTx)
+				res := deliverRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 			})
 
-			ctx.Save()
+			state.Save()
 
 			Convey("If it is given the same transaction", func() {
 				code, _ := errcode.RegisterCheckTxDuplicated()
 				Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-					res := checkRegister(ctx, rawTx)
+					res := checkRegister(state, rawTx)
 
 					So(res.Code, ShouldEqual, code)
 				})
 
 				code, _ = errcode.RegisterDeliverTxDuplicated()
 				Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-					res := deliverRegister(ctx, rawTx)
+					res := deliverRegister(state, rawTx)
 
 					So(res.Code, ShouldEqual, code)
 				})
@@ -70,7 +69,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 		})
 
 		Convey("If it is a Register transaction with invalid address format", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
 				Addr: &types.Address{Content: []byte{}},
@@ -82,21 +81,21 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code, _ := errcode.RegisterCheckTxInvalidFormat()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkRegister(ctx, rawTx)
+				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.RegisterDeliverTxInvalidFormat()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(ctx, rawTx)
+				res := deliverRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is a Register transaction with invalid signature version", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
 				Addr: addr,
@@ -108,21 +107,21 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code, _ := errcode.RegisterCheckTxInvalidFormat()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkRegister(ctx, rawTx)
+				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.RegisterDeliverTxInvalidFormat()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(ctx, rawTx)
+				res := deliverRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 		})
 
 		Convey("If it is a Register transaction with invalid signature format", func() {
-			ctx.Reset()
+			appCtx.Reset()
 
 			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
 				Addr: addr,
@@ -134,14 +133,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code, _ := errcode.RegisterCheckTxInvalidSignature()
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkRegister(ctx, rawTx)
+				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
 			code, _ = errcode.RegisterDeliverTxInvalidSignature()
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(ctx, rawTx)
+				res := deliverRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -150,7 +149,8 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 }
 
 func TestValidateRegisterSignature(t *testing.T) {
-	ctx := context.NewMock()
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
 	Convey("Given a Register transaction with valid signature", t, func() {
 		tx := &types.RegisterTransaction{
@@ -162,7 +162,7 @@ func TestValidateRegisterSignature(t *testing.T) {
 		}
 
 		Convey("The signature should pass the validation", func() {
-			So(validateRegisterSignature(ctx, tx), ShouldBeTrue)
+			So(validateRegisterSignature(state, tx), ShouldBeTrue)
 		})
 	})
 
@@ -176,7 +176,7 @@ func TestValidateRegisterSignature(t *testing.T) {
 		}
 
 		Convey("The signature should not pass the validation", func() {
-			So(validateRegisterSignature(ctx, tx), ShouldBeFalse)
+			So(validateRegisterSignature(state, tx), ShouldBeFalse)
 		})
 	})
 }
