@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/account"
@@ -34,6 +35,15 @@ func checkRegister(ctx context.ImmutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
+	_, existed := ctx.StateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
+	if existed != nil {
+		code, info := errcode.RegisterCheckTxDuplicated()
+		return abci.ResponseCheckTx{
+			Code: code,
+			Info: info,
+		}
+	}
+
 	return abci.ResponseCheckTx{Code: 0}
 }
 
@@ -60,15 +70,24 @@ func deliverRegister(ctx context.MutableContext, rawTx *types.Transaction) abci.
 		}
 	}
 
-	addr := tx.Addr.ToEthereum()
-	_ = addr // TODO: check if address is already registered
+	_, existed := ctx.StateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
+	if existed != nil {
+		code, info := errcode.RegisterDeliverTxDuplicated()
+		return abci.ResponseDeliverTx{
+			Code: code,
+			Info: info,
+		}
+	}
 
 	id, err := register(ctx, tx)
 	if err != nil {
-		panic("Register error")
+		panic(fmt.Sprintf("Error occurs during registration, details: %v", err))
 	}
 
-	return abci.ResponseDeliverTx{Code: 0, Data: id.Content} // TODO: format Data better?
+	return abci.ResponseDeliverTx{
+		Code: 0,
+		Data: id.Content,
+	}
 }
 
 // validateRegisterSignature validates register transaction
@@ -79,7 +98,7 @@ func validateRegisterSignature(ctx context.ImmutableContext, tx *types.RegisterT
 		return false
 	}
 
-	sigAddr, err := utils.RecoverSignature(hashedMsg, *tx.Sig)
+	sigAddr, err := utils.RecoverSignature(hashedMsg, tx.Sig)
 	if err != nil {
 		return false
 	}
@@ -93,7 +112,7 @@ func validateRegisterSignature(ctx context.ImmutableContext, tx *types.RegisterT
 
 // validateRegisterTransaction validates register transaction
 func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
-	return tx.Sig.IsValidFormat() && tx.Addr.IsValidFormat()
+	return tx.Addr.IsValidFormat() && tx.Sig.IsValidFormat()
 }
 
 // register creates a new LikeChain account
