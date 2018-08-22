@@ -4,12 +4,11 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkDeposit(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkDeposit(state context.IImmutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetDepositTx()
 	if tx == nil {
 		// TODO: log
@@ -19,17 +18,13 @@ func checkDeposit(state context.IImmutableState, rawTx *types.Transaction) abci.
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {
-		code, info := errcode.DepositCheckTxInvalidFormat()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.DepositCheckTxInvalidFormat
 	}
 
-	return abci.ResponseCheckTx{} // TODO
+	return response.Success // TODO
 }
 
-func deliverDeposit(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverDeposit(state context.IMutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetDepositTx()
 	if tx == nil {
 		// TODO: log
@@ -39,14 +34,10 @@ func deliverDeposit(state context.IMutableState, rawTx *types.Transaction) abci.
 	_ = tx.BlockNumber
 
 	if !validateDepositTransactionFormat(tx) {
-		code, info := errcode.DepositDeliverTxInvalidFormat()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.DepositDeliverTxInvalidFormat
 	}
 
-	return abci.ResponseDeliverTx{} // TODO
+	return response.Success // TODO
 }
 
 func validateDepositTransactionFormat(tx *types.DepositTransaction) bool {

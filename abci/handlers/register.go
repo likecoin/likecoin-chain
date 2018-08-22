@@ -6,13 +6,12 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkRegister(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkRegister(state context.IImmutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -20,34 +19,22 @@ func checkRegister(state context.IImmutableState, rawTx *types.Transaction) abci
 	}
 
 	if !validateRegisterTransaction(tx) {
-		code, info := errcode.RegisterCheckTxInvalidFormat()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterCheckTxInvalidFormat
 	}
 
 	if !validateRegisterSignature(state, tx) {
-		code, info := errcode.RegisterCheckTxInvalidSignature()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterCheckTxInvalidSignature
 	}
 
 	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
 	if existed != nil {
-		code, info := errcode.RegisterCheckTxDuplicated()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterCheckTxDuplicated
 	}
 
-	return abci.ResponseCheckTx{Code: 0}
+	return response.Success
 }
 
-func deliverRegister(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverRegister(state context.IMutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		// TODO: log
@@ -55,28 +42,16 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) abci
 	}
 
 	if !validateRegisterTransaction(tx) {
-		code, info := errcode.RegisterDeliverTxInvalidFormat()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterDeliverTxInvalidFormat
 	}
 
 	if !validateRegisterSignature(state, tx) {
-		code, info := errcode.RegisterDeliverTxInvalidSignature()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterDeliverTxInvalidSignature
 	}
 
 	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
 	if existed != nil {
-		code, info := errcode.RegisterDeliverTxDuplicated()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterDeliverTxDuplicated
 	}
 
 	id, err := register(state, tx)
@@ -84,10 +59,9 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) abci
 		panic(fmt.Sprintf("Error occurs during registration, details: %v", err))
 	}
 
-	return abci.ResponseDeliverTx{
-		Code: 0,
+	return response.Success.Merge(response.R{
 		Data: id.Content,
-	}
+	})
 }
 
 // validateRegisterSignature validates register transaction

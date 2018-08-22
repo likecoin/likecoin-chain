@@ -5,12 +5,11 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -18,25 +17,17 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) abci
 	}
 
 	if !validateTransferTransactionFormat(tx) {
-		code, info := errcode.TransferCheckTxInvalidFormat()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.TransferCheckTxInvalidFormat
 	}
 
 	if !validateTransferSignature(tx.Sig) {
-		code, info := errcode.TransferCheckTxInvalidSignature()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.TransferCheckTxInvalidSignature
 	}
 
-	return abci.ResponseCheckTx{} // TODO
+	return response.Success // TODO
 }
 
-func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		// TODO: log
@@ -44,24 +35,16 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) abci
 	}
 
 	if !validateTransferTransactionFormat(tx) {
-		code, info := errcode.TransferDeliverTxInvalidFormat()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.TransferDeliverTxInvalidFormat
 	}
 
 	if !validateTransferSignature(tx.Sig) {
-		code, info := errcode.TransferDeliverTxInvalidSignature()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.TransferDeliverTxInvalidSignature
 	}
 
 	fromID, exist := account.GetLikeChainID(state, *tx.From)
 	if !exist {
-		return abci.ResponseDeliverTx{} // TODO: error code for sender account does not exist
+		return response.Success // TODO: error code for sender account does not exist
 	}
 
 	_ = account.FetchBalance(state, fromID)
@@ -69,7 +52,7 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) abci
 	// Increment nonce
 	// Adjust balance of sender and receiver
 
-	return abci.ResponseDeliverTx{} // TODO
+	return response.Success // TODO
 }
 
 func validateTransferSignature(sig *types.Signature) bool {

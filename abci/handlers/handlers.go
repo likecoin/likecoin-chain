@@ -3,13 +3,15 @@ package handlers
 import (
 	"reflect"
 
+	"github.com/likecoin/likechain/abci/response"
+
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type checkTxHandler = func(context.IImmutableState, *types.Transaction) abci.ResponseCheckTx
-type deliverTxHandler = func(context.IMutableState, *types.Transaction) abci.ResponseDeliverTx
+type checkTxHandler = func(context.IImmutableState, *types.Transaction) response.R
+type deliverTxHandler = func(context.IMutableState, *types.Transaction) response.R
 
 var checkTxHandlerTable = make(map[reflect.Type]checkTxHandler)
 var deliverTxHandlerTable = make(map[reflect.Type]deliverTxHandler)
@@ -28,7 +30,7 @@ func CheckTx(state context.IImmutableState, tx *types.Transaction) abci.Response
 	if !exist {
 		return abci.ResponseCheckTx{} // TODO
 	}
-	return f(state, tx)
+	return f(state, tx).ToResponseCheckTx()
 }
 
 func DeliverTx(state context.IMutableState, tx *types.Transaction) abci.ResponseDeliverTx {
@@ -37,5 +39,5 @@ func DeliverTx(state context.IMutableState, tx *types.Transaction) abci.Response
 	if !exist {
 		return abci.ResponseDeliverTx{} // TODO
 	}
-	return f(state, tx)
+	return f(state, tx).ToResponseDeliverTx()
 }

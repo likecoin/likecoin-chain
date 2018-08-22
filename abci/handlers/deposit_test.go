@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -56,14 +56,14 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.DepositCheckTxInvalidFormat()
+			code := response.DepositCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.DepositDeliverTxInvalidFormat()
+			code = response.DepositDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverDeposit(state, rawTx)
 
@@ -78,14 +78,14 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.DepositCheckTxDuplicated()
+			code := response.DepositCheckTxDuplicated.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkDeposit(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.DepositDeliverTxDuplicated()
+			code = response.DepositDeliverTxDuplicated.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverDeposit(state, rawTx)
 

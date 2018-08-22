@@ -4,12 +4,11 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) abci.ResponseCheckTx {
+func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetWithdrawTx()
 	if tx == nil {
 		// TODO: log
@@ -19,25 +18,17 @@ func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) abci
 	_ = tx.From
 
 	if !validateWithdrawTransactionFormat(tx) {
-		code, info := errcode.WithdrawCheckTxInvalidFormat()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.WithdrawCheckTxInvalidFormat
 	}
 
 	if !validateWithdrawSignature(tx.Sig) {
-		code, info := errcode.WithdrawCheckTxInvalidSignature()
-		return abci.ResponseCheckTx{
-			Code: code,
-			Info: info,
-		}
+		return response.WithdrawCheckTxInvalidSignature
 	}
 
-	return abci.ResponseCheckTx{} // TODO
+	return response.Success // TODO
 }
 
-func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction) abci.ResponseDeliverTx {
+func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetWithdrawTx()
 	if tx == nil {
 		// TODO: log
@@ -45,22 +36,14 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction) abci
 	}
 
 	if !validateWithdrawTransactionFormat(tx) {
-		code, info := errcode.WithdrawDeliverTxInvalidFormat()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.WithdrawDeliverTxInvalidFormat
 	}
 
 	if !validateWithdrawSignature(tx.Sig) {
-		code, info := errcode.RegisterCheckTxInvalidFormat()
-		return abci.ResponseDeliverTx{
-			Code: code,
-			Info: info,
-		}
+		return response.RegisterCheckTxInvalidFormat
 	}
 
-	return abci.ResponseDeliverTx{} // TODO
+	return response.Success // TODO
 }
 
 func validateWithdrawSignature(sig *types.Signature) bool {

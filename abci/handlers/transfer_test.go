@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -55,14 +55,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.TransferCheckTxInvalidFormat()
+			code := response.TransferCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.TransferDeliverTxInvalidFormat()
+			code = response.TransferDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 
@@ -77,14 +77,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.TransferCheckTxInvalidSignature()
+			code := response.TransferCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.TransferDeliverTxInvalidSignature()
+			code = response.TransferDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 
@@ -99,14 +99,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.TransferCheckTxInvalidSignature()
+			code := response.TransferCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.TransferDeliverTxInvalidSignature()
+			code = response.TransferDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 
@@ -121,14 +121,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.TransferCheckTxDuplicated()
+			code := response.TransferCheckTxDuplicated.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.TransferDeliverTxDuplicated()
+			code = response.TransferDeliverTxDuplicated.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 

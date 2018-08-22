@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/errcode"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -56,14 +56,14 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.WithdrawCheckTxInvalidFormat()
+			code := response.WithdrawCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkWithdraw(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.WithdrawDeliverTxInvalidFormat()
+			code = response.WithdrawDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverWithdraw(state, rawTx)
 
@@ -78,14 +78,14 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.WithdrawCheckTxInvalidSignature()
+			code := response.WithdrawCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkWithdraw(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.WithdrawDeliverTxInvalidSignature()
+			code = response.WithdrawDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverWithdraw(state, rawTx)
 
@@ -100,14 +100,14 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.WithdrawCheckTxInvalidSignature()
+			code := response.WithdrawCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkWithdraw(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.WithdrawDeliverTxInvalidSignature()
+			code = response.WithdrawDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverWithdraw(state, rawTx)
 
@@ -122,14 +122,14 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 				// TODO
 			})
 
-			code, _ := errcode.WithdrawCheckTxDuplicated()
+			code := response.WithdrawCheckTxDuplicated.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkWithdraw(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code, _ = errcode.WithdrawDeliverTxDuplicated()
+			code = response.WithdrawDeliverTxDuplicated.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverWithdraw(state, rawTx)
 
