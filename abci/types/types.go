@@ -36,6 +36,14 @@ func (rawAddr *Address) ToEthereum() common.Address {
 	return common.BytesToAddress(addrBytes)
 }
 
+func (rawAddr *Address) ToHex() string {
+	return rawAddr.ToEthereum().Hex()
+}
+
+func (rawSig *Signature) ToHex() string {
+	return common.ToHex(rawSig.Content)
+}
+
 // ToBigInt converts BigInteger struct to big Int
 func (rawBigInt *BigInteger) ToBigInt() *big.Int {
 	bigInt := new(big.Int)
@@ -64,4 +72,12 @@ func (tx *RegisterTransaction) GenerateSigningMessageHash() ([]byte, error) {
 	}
 
 	return generateSigningMessageHash(msg), nil
+}
+
+func (tx *RegisterTransaction) ToString() string {
+	return fmt.Sprintf(
+		"<Addr: %s, Sig: %s>",
+		tx.Addr.ToHex(),
+		tx.Sig.ToHex(),
+	)
 }

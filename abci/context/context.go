@@ -1,11 +1,12 @@
 package context
 
 import (
-	"fmt"
-
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
 )
+
+var log = logger.L
 
 // IImmutableState is an interface for accessing mutable context
 type IImmutableState interface {
@@ -42,21 +43,31 @@ func New(dbPath string) *ApplicationContext {
 func newTree(dbPath, dir string) *iavl.MutableTree {
 	db, err := db.NewGoLevelDB(dbPath, dir)
 	if err != nil {
-		panic(fmt.Sprintf("Unable to create GoLevelDB: %v", err))
+		log.WithError(err).Panic("Unable to create GoLevelDB")
 	}
 	return iavl.NewMutableTree(db, cacheSize)
 }
 
 // GetImmutableState returns an immutable context
 func (ctx *ApplicationContext) GetImmutableState() *ImmutableState {
-	stateTree, err := ctx.state.stateTree.GetImmutable(ctx.state.stateTree.Version64())
+	stateTreeVersion := ctx.state.stateTree.Version64()
+	stateTree, err := ctx.state.stateTree.GetImmutable(stateTreeVersion)
 	if err != nil {
-		panic(fmt.Sprintf("Unable to get versioned state tree: %v", err))
+		log.
+			WithError(err).
+			WithField("version", stateTreeVersion).
+			Panic("Unable to get versioned state tree")
 	}
-	withdrawTree, err := ctx.state.withdrawTree.GetImmutable(ctx.state.withdrawTree.Version64())
+
+	withdrawTreeVersion := ctx.state.withdrawTree.Version64()
+	withdrawTree, err := ctx.state.withdrawTree.GetImmutable(withdrawTreeVersion)
 	if err != nil {
-		panic(fmt.Sprintf("Unable to get versioned withdraw tree: %v", err))
+		log.
+			WithError(err).
+			WithField("version", withdrawTreeVersion).
+			Panic("Unable to get versioned withdraw tree")
 	}
+
 	return &ImmutableState{
 		stateTree:    stateTree,
 		withdrawTree: withdrawTree,

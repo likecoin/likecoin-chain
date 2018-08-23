@@ -36,6 +36,14 @@
   name = "github.com/tendermint/iavl"
   version = "0.10.0"
 
+[[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.0.6"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/banzaicloud/logrus-runtime-formatter"
+
 [prune]
   go-tests = true
   unused-packages = true

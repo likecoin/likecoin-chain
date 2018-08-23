@@ -6,9 +6,12 @@ import (
 	"github.com/likecoin/likechain/abci/response"
 
 	"github.com/likecoin/likechain/abci/context"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
+
+var log = logger.L
 
 type checkTxHandler = func(context.IImmutableState, *types.Transaction) response.R
 type deliverTxHandler = func(context.IMutableState, *types.Transaction) response.R
