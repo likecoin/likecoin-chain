@@ -4,12 +4,16 @@ import (
 	"os"
 
 	runtime "github.com/banzaicloud/logrus-runtime-formatter"
-	"github.com/likecoin/likechain/abci/env"
+	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/sirupsen/logrus"
 )
 
-// L is an instance of a logger
-var L = logrus.New()
+var (
+	// L is an instance of a logger
+	L = logrus.New()
+
+	config = appConf.GetConfig()
+)
 
 func init() {
 	formatter := &runtime.Formatter{
@@ -26,8 +30,11 @@ func init() {
 	// Output to stdout instead of the default stderr
 	L.Out = os.Stdout
 
-	if env.IsProduction {
-		L.Level = logrus.InfoLevel
+	logLevel, err := logrus.ParseLevel(config.Log.Level)
+	if err == nil {
+		L.Level = logLevel
+	} else if config.IsProduction() {
+		L.Level = logrus.ErrorLevel
 	} else {
 		L.Level = logrus.DebugLevel
 	}

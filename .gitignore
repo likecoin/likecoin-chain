@@ -1,3 +1,4 @@
+abci/config.toml
 abci/vendor/**
 abci/_vendor-*
 
