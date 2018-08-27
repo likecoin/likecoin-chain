@@ -7,9 +7,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/likecoin/likechain/abci/context"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 )
+
+var log = logger.L
 
 // NewAccount creates a new account
 func NewAccount(state context.IMutableState, ethAddr common.Address) (types.LikeChainID, error) {

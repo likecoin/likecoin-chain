@@ -46,11 +46,11 @@ func (state *MutableState) SetBlockHash(blockHash []byte) {
 func (state *MutableState) Save() (hash []byte) {
 	stateHash, _, err := state.stateTree.SaveVersion()
 	if err != nil {
-		panic("Cannot save state tree")
+		log.WithError(err).Panic("Cannot save state tree")
 	}
 	withdrawHash, _, err := state.withdrawTree.SaveVersion()
 	if err != nil {
-		panic("Cannot save withdraw tree")
+		log.WithError(err).Panic("Cannot save withdraw tree")
 	}
 	hash = make([]byte, 40) // TODO: remove magic number
 	// TODO: After InitChain implementation, the hash will be no longer empty

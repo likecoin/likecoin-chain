@@ -1,4 +1,4 @@
-package handlers
+package transfer
 
 import (
 	"fmt"

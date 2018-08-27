@@ -88,7 +88,7 @@ func TestIncrementAndFetchNextNounce(t *testing.T) {
 	Convey("For a newly created account", t, func() {
 		id, err := NewAccount(state, common.HexToAddress(""))
 		if err != nil {
-			panic("Unable to create new account")
+			log.WithError(err).Panic("Unable to create new account")
 		}
 
 		Convey("The nonce should be 1", func() {

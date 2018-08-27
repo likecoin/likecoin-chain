@@ -19,11 +19,11 @@ type deliverTxHandler = func(context.IMutableState, *types.Transaction) response
 var checkTxHandlerTable = make(map[reflect.Type]checkTxHandler)
 var deliverTxHandlerTable = make(map[reflect.Type]deliverTxHandler)
 
-func registerCheckTxHandler(t reflect.Type, f checkTxHandler) {
+func RegisterCheckTxHandler(t reflect.Type, f checkTxHandler) {
 	checkTxHandlerTable[t] = f
 }
 
-func registerDeliverTxHandler(t reflect.Type, f deliverTxHandler) {
+func RegisterDeliverTxHandler(t reflect.Type, f deliverTxHandler) {
 	deliverTxHandlerTable[t] = f
 }
 

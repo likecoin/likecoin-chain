@@ -1,15 +1,19 @@
-package handlers
+package register
 
 import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
+	handler "github.com/likecoin/likechain/abci/handlers"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	"github.com/sirupsen/logrus"
 )
+
+var log = logger.L
 
 func logTx(tx *types.RegisterTransaction) *logrus.Entry {
 	return log.WithField("tx", tx.ToString())
@@ -110,6 +114,6 @@ func register(state context.IMutableState, tx *types.RegisterTransaction) (types
 
 func init() {
 	t := reflect.TypeOf((*types.Transaction_RegisterTx)(nil))
-	registerCheckTxHandler(t, checkRegister)
-	registerDeliverTxHandler(t, deliverRegister)
+	handler.RegisterCheckTxHandler(t, checkRegister)
+	handler.RegisterDeliverTxHandler(t, deliverRegister)
 }

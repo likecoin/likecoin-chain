@@ -1,26 +1,36 @@
-package handlers
+package transfer
 
 import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
+	handler "github.com/likecoin/likechain/abci/handlers"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/sirupsen/logrus"
 )
+
+var log = logger.L
+
+func logTx(tx *types.TransferTransaction) *logrus.Entry {
+	return log.WithField("tx", tx)
+}
 
 func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
-		// TODO: log
-		panic("Expect TransferTx but got nil")
+		log.Panic("Expect TransferTx but got nil")
 	}
 
 	if !validateTransferTransactionFormat(tx) {
+		logTx(tx).Info(response.TransferCheckTxInvalidFormat.Info)
 		return response.TransferCheckTxInvalidFormat
 	}
 
 	if !validateTransferSignature(tx.Sig) {
+		logTx(tx).Info(response.TransferCheckTxInvalidSignature.Info)
 		return response.TransferCheckTxInvalidSignature
 	}
 
@@ -30,15 +40,16 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) response.R {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
-		// TODO: log
-		panic("Expect TransferTx but got nil")
+		log.Panic("Expect TransferTx but got nil")
 	}
 
 	if !validateTransferTransactionFormat(tx) {
+		logTx(tx).Info(response.TransferDeliverTxInvalidFormat.Info)
 		return response.TransferDeliverTxInvalidFormat
 	}
 
 	if !validateTransferSignature(tx.Sig) {
+		logTx(tx).Info(response.TransferDeliverTxInvalidSignature.Info)
 		return response.TransferDeliverTxInvalidSignature
 	}
 
@@ -69,6 +80,6 @@ func transfer(state context.IMutableState, tx *types.TransferTransaction) {
 
 func init() {
 	t := reflect.TypeOf((*types.Transaction_TransferTx)(nil))
-	registerCheckTxHandler(t, checkTransfer)
-	registerDeliverTxHandler(t, deliverTransfer)
+	handler.RegisterCheckTxHandler(t, checkTransfer)
+	handler.RegisterDeliverTxHandler(t, deliverTransfer)
 }
