@@ -50,6 +50,17 @@
   version = "v1.4.7"
 
 [[projects]]
+  branch = "master"
+  digest = "1:c674bcd29808505de4cce2f1814eb6ad720e419991ef43ed25158ea8ba768ba9"
+  name = "github.com/go-akka/configuration"
+  packages = [
+    ".",
+    "hocon",
+  ]
+  pruneopts = "UT"
+  revision = "6065b2d05c3b6fe74694a73c9673806a970679e0"
+
+[[projects]]
   digest = "1:704b145137b5555c6bac6a7e52875e4df8a0a1b7ea74aaae864abcab61e672b0"
   name = "github.com/go-kit/kit"
   packages = [
@@ -76,6 +87,25 @@
   pruneopts = "UT"
   revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
   version = "v1.7.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:545053512529415ccbe9309a3e428dfaaff408772ed5f0c405ec7d467f47b8e0"
+  name = "github.com/gogap/config"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a1522129698c2ffaf1089351ad23156a1208ed09"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8bf2b921dd559d72cd0056f2bae7c316eb3a1b8f72f8f68b818fc1be40bce68c"
+  name = "github.com/gogap/logrus_mate"
+  packages = [
+    ".",
+    "writers/rotatelogs",
+  ]
+  pruneopts = "UT"
+  revision = "e0c993a9f3739cc6fe6ae7a92eb4a3ff334b420a"
 
 [[projects]]
   digest = "1:35621fe20f140f05a0c4ef662c26c0ab4ee50bca78aa30fe87d33120bd28165e"
@@ -164,6 +194,25 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
+
+[[projects]]
+  digest = "1:8f5579a88f14ca4029f38f7491f12f578e38d942d9343e63aaa68f14c31df053"
+  name = "github.com/lestrrat-go/file-rotatelogs"
+  packages = [
+    ".",
+    "internal/option",
+  ]
+  pruneopts = "UT"
+  revision = "3b4f34a036f374c18d604e1b8006d9fbb9593c06"
+  version = "v2.2.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8654122ef85f2bc03859b0a7ea2d36c9965888689cdac7640cceaa6edb11cff6"
+  name = "github.com/lestrrat-go/strftime"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8b31f9c59b0feb56c456ce49a7b3d2b2e93a6f18"
 
 [[projects]]
   digest = "1:c568d7727aa262c32bdf8a3f7db83614f7af0ed661474b24588de635c20024c7"
@@ -438,6 +487,9 @@
     "github.com/banzaicloud/logrus-runtime-formatter",
     "github.com/ethereum/go-ethereum/common",
     "github.com/ethereum/go-ethereum/crypto",
+    "github.com/gogap/config",
+    "github.com/gogap/logrus_mate",
+    "github.com/gogap/logrus_mate/writers/rotatelogs",
     "github.com/gogo/protobuf/proto",
     "github.com/golang/protobuf/proto",
     "github.com/sirupsen/logrus",

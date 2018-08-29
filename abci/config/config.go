@@ -10,6 +10,7 @@ import (
 
 var (
 	c         *Config
+	v         *viper.Viper
 	envPrefix = "LIKECHAIN"
 )
 
@@ -18,24 +19,30 @@ func GetConfig() *Config {
 	return c
 }
 
+// GetViper returns a viper
+func GetViper() *viper.Viper {
+	return v
+}
+
 func prefixKey(key string) string {
 	return strings.ToUpper(envPrefix + "_" + key)
 }
 
 func readConfig() {
-	v := viper.New()
+	v = viper.New()
 	v.SetConfigType("toml")
 
 	v.AddConfigPath(".")
-	v.AddConfigPath("..")
+	v.AddConfigPath("$GOPATH/src/github.com/likecoin/likechain/abci")
 	v.SetConfigName("config")
 
 	// If a config file is found, read it in
-	if err := v.ReadInConfig(); err == nil {
+	err := v.ReadInConfig()
+	if err == nil {
 		log.Printf("Using config file:\n\t%s\n", v.ConfigFileUsed())
 	} else {
 		// Otherwise load default config
-		log.Println("Using default config")
+		log.Printf("Unable to read config file:\n%v\nUsing default config\n", err)
 		v.ReadConfig(bytes.NewBuffer(defaultConf))
 	}
 

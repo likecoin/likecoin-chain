@@ -1,4 +1,38 @@
+
 env = "dev"
 
-[log]
-level = "debug"
+log_config = """{
+  level = "debug"
+
+  out.name = "rotatelogs"
+  out.options {
+    path            = log_%Y%m%d.log
+    # clock         =
+    # location      =
+    link-name       = log_current.log
+    # rotation-time = # default 24hour (nanosecond)
+    # max-age       = # default 24hour * 7 (nanosecond)
+  }
+
+  formatter.name = "json"
+  formatter.options {
+    force-colors      = true
+    disable-colors    = false
+    disable-timestamp = false
+    full-timestamp    = true
+    timestamp-format  = "2018-01-01 23:59:59"
+    disable-sorting   = false
+  }
+
+  hooks {
+
+    # net {
+    #   network = "tcp"
+    #   address = "127.0.0.1:13350"
+    # }
+
+    stdout {
+      level = 2 # 0 is panic, 5 is debug
+    }
+  }
+}"""
