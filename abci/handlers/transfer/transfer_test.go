@@ -2,7 +2,10 @@ package transfer
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
+
+	"github.com/likecoin/likechain/abci/account"
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
@@ -156,28 +159,60 @@ func TestValidateTransferSignature(t *testing.T) {
 	})
 }
 
-func TestvalidateTransferTransactionFormat(t *testing.T) {
-	Convey("Given a Transfer transaction in valid format", t, func() {
-		tx := &types.TransferTransaction{} // TODO
+func TestValidateTransferTransactionFormat(t *testing.T) {
+	appCtx := context.NewMock()
+	state := appCtx.GetMutableState()
 
-		Convey("The transaction should pass the validation", func() {
-			So(validateTransferTransactionFormat(tx), ShouldBeTrue)
+	aliceID := types.NewLikeChainID([]byte("alice"))
+	account.SaveBalance(state, aliceID, big.NewInt(1000000000000000000))
+	account.IncrementNextNonce(state, aliceID)
+
+	bobID := types.NewLikeChainID([]byte("bob"))
+	account.SaveBalance(state, bobID, big.NewInt(0))
+
+	Convey("Given a Transfer transaction", t, func() {
+		tx := &types.TransferTransaction{
+			From: aliceID.ToIdentifier(),
+			ToList: []*types.TransferTransaction_TransferTarget{
+				types.NewTransferTarget(bobID.ToIdentifier(), "1000000000000000000", ""),
+			},
+			Nonce: 1,
+			Fee:   types.NewBigInteger("10000000000"),
+			Sig:   types.NewSignatureFromHex("0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		}
+
+		Convey("If its format is valid", func() {
+			Convey("It should pass the validation", func() {
+				So(validateTransferTransactionFormat(state, tx), ShouldBeTrue)
+			})
 		})
-	})
 
-	Convey("Given a Transfer transaction in invalid format ", t, func() {
-		tx := &types.TransferTransaction{} // TODO
+		Convey("If its sender is invalid", func() {
+			tx.From = &types.Identifier{
+				Id: &types.Identifier_LikeChainID{
+					LikeChainID: &types.LikeChainID{Content: []byte{}},
+				},
+			}
 
-		Convey("The transaction should not pass the validation", func() {
-			So(validateTransferTransactionFormat(tx), ShouldBeFalse)
+			Convey("It should not pass the validation", func() {
+				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
+			})
 		})
-	})
 
-	Convey("Given a Transfer transaction with invalid nouce", t, func() {
-		tx := &types.TransferTransaction{} // TODO
+		Convey("If its receivers are invalid", func() {
+			tx.ToList = []*types.TransferTransaction_TransferTarget{}
 
-		Convey("The transaction should not pass the validation", func() {
-			So(validateTransferTransactionFormat(tx), ShouldBeFalse)
+			Convey("It should not pass the validation", func() {
+				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
+			})
+		})
+
+		Convey("If its signature format is invalid", func() {
+			tx.Sig = types.NewSignatureFromHex("")
+
+			Convey("It should not pass the validation", func() {
+				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
+			})
 		})
 	})
 }

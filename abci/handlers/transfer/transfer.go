@@ -1,6 +1,7 @@
 package transfer
 
 import (
+	"math/big"
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/account"
@@ -24,7 +25,7 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		log.Panic("Expect TransferTx but got nil")
 	}
 
-	if !validateTransferTransactionFormat(tx) {
+	if !validateTransferTransactionFormat(state, tx) {
 		logTx(tx).Info(response.TransferCheckTxInvalidFormat.Info)
 		return response.TransferCheckTxInvalidFormat
 	}
@@ -43,7 +44,7 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 		log.Panic("Expect TransferTx but got nil")
 	}
 
-	if !validateTransferTransactionFormat(tx) {
+	if !validateTransferTransactionFormat(state, tx) {
 		logTx(tx).Info(response.TransferDeliverTxInvalidFormat.Info)
 		return response.TransferDeliverTxInvalidFormat
 	}
@@ -70,8 +71,35 @@ func validateTransferSignature(sig *types.Signature) bool {
 	return false // TODO
 }
 
-func validateTransferTransactionFormat(tx *types.TransferTransaction) bool {
-	return false // TODO
+func validateTransferTransactionFormat(state context.IImmutableState, tx *types.TransferTransaction) bool {
+	if !tx.From.IsValidFormat() {
+		log.Debug("Invalid sender format in transfer transaction")
+		return false
+	}
+
+	if len(tx.ToList) > 0 {
+		for _, target := range tx.ToList {
+			if !target.IsValidFormat() {
+				log.Debug("Invalid receiver format in transfer transaction")
+				return false
+			}
+		}
+	} else {
+		log.Debug("No receiver in transfer transaction")
+		return false
+	}
+
+	if tx.Fee.ToBigInt().Cmp(big.NewInt(0)) < 0 {
+		log.Debug("Invalid fee in transfer transaction")
+		return false
+	}
+
+	if !tx.Sig.IsValidFormat() {
+		log.Debug("Invalid signature format in transfer transaction")
+		return false
+	}
+
+	return true
 }
 
 func transfer(state context.IMutableState, tx *types.TransferTransaction) {
