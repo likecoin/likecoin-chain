@@ -46,7 +46,7 @@ message TransferTransaction {
         bytes remark = 3;
     }
     Identifier from = 1;
-    TransferTarget toList = 2;
+    repeated TransferTarget toList = 2;
     uint64 nonce = 3;
     BigInteger fee = 4;
     Signature sig = 5;
