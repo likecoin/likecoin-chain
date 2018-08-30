@@ -1,6 +1,7 @@
 package account
 
 import (
+	"bytes"
 	"encoding/binary"
 	"math/big"
 
@@ -14,17 +15,37 @@ import (
 
 var log = logger.L
 
+func getIDAddrPairPrefixKey(id *types.LikeChainID) []byte {
+	var buf bytes.Buffer
+	buf.WriteString("acc_")
+	buf.Write(id.Content)
+	buf.WriteString("_addr_")
+	return buf.Bytes()
+}
+
+func getIDAddrPairKey(id *types.LikeChainID, ethAddr common.Address) []byte {
+	var buf bytes.Buffer
+	buf.Write(getIDAddrPairPrefixKey(id))
+	buf.Write(ethAddr.Bytes())
+	return buf.Bytes()
+}
+
 // NewAccount creates a new account
 func NewAccount(state context.IMutableState, ethAddr common.Address) (types.LikeChainID, error) {
 	id := generateLikeChainID(state)
+	err := NewAccountFromID(state, &id, ethAddr)
+	return id, err
+}
 
+// NewAccountFromID creates a new account from a given LikeChain ID
+func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAddr common.Address) error {
 	// Save address mapping
 	state.MutableStateTree().Set(utils.DbAddrKey(ethAddr), id.Content)
-	state.MutableStateTree().Set(utils.DbIDKey(id, "acc", "addr"), ethAddr.Bytes())
+	state.MutableStateTree().Set(getIDAddrPairKey(id, ethAddr), []byte{})
 
 	// Initialize account info
-	SaveBalance(state, id, big.NewInt(0))
-	IncrementNextNonce(state, id)
+	SaveBalance(state, *id, big.NewInt(0))
+	IncrementNextNonce(state, *id)
 
 	// Check if address already has balance
 	balanceInEthAddr := fetchEthereumAddressBalance(state, ethAddr)
@@ -32,7 +53,25 @@ func NewAccount(state context.IMutableState, ethAddr common.Address) (types.Like
 		// TODO: Transfer balance from ETH address to LikeChain ID
 	}
 
-	return id, nil // TODO
+	return nil
+}
+
+// IsLikeChainIDHasAddress checks whether the given address is bind to the given LikeChain ID
+func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainID, ethAddr *common.Address) bool {
+	startingKey := getIDAddrPairPrefixKey(id)
+
+	// Iterate the tree to check all addresses the given LikeChain ID has bound
+	isExist := false
+	state.ImmutableStateTree().IterateRange(startingKey, nil, true, func(key, _ []byte) bool {
+		splitKey := bytes.Split(key, []byte("_addr_"))
+		if len(splitKey) == 2 {
+			isExist = bytes.Equal(ethAddr.Bytes(), splitKey[1])
+		}
+		// If isExist becomes true, iteration will be stopped
+		return isExist
+	})
+
+	return isExist
 }
 
 var likeChainIDSeedKey = []byte("$account.likeChainIDSeed")

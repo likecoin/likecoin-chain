@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,19 +12,37 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+// NewAddressFromHex creates Address from hex string
+func NewAddressFromHex(hex string) *Address {
+	return &Address{Content: common.FromHex(hex)}
+}
+
 // IsValidFormat checks the length of the address
-func (rawAddr *Address) IsValidFormat() bool {
-	return len(rawAddr.Content) == 20
+func (addr *Address) IsValidFormat() bool {
+	return len(addr.Content) == 20
+}
+
+// ToIdentifier converts Address to Identifier
+func (addr *Address) ToIdentifier() *Identifier {
+	return &Identifier{
+		Id: &Identifier_Addr{
+			Addr: addr,
+		},
+	}
 }
 
 // ToEthereum converts Address struct to Ethereum address
-func (rawAddr *Address) ToEthereum() common.Address {
-	addrBytes := rawAddr.Content
+func (addr *Address) ToEthereum() common.Address {
+	addrBytes := addr.Content
 	return common.BytesToAddress(addrBytes)
 }
 
-func (rawAddr *Address) ToHex() string {
-	return rawAddr.ToEthereum().Hex()
+// ToHex converts Address to hex string
+func (addr *Address) ToHex() string {
+	if addr != nil {
+		return addr.ToEthereum().Hex()
+	}
+	return ""
 }
 
 // NewSignatureFromHex creates Signature from hex string
@@ -79,9 +98,24 @@ func (id *Identifier) IsValidFormat() bool {
 		(id.GetAddr() != nil && len(id.GetAddr().Content) > 0)
 }
 
+// ToString converts Identifier to hex string
+func (id *Identifier) ToString() string {
+	if likeChainID := id.GetLikeChainID(); likeChainID != nil {
+		return likeChainID.ToString()
+	} else if addr := id.GetAddr(); addr != nil {
+		return strings.ToLower(addr.ToHex())
+	}
+	return ""
+}
+
 // NewLikeChainID creates a LikeChainID from bytes
-func NewLikeChainID(content []byte) LikeChainID {
-	return LikeChainID{Content: content}
+func NewLikeChainID(content []byte) *LikeChainID {
+	return &LikeChainID{Content: content}
+}
+
+// ToString converts LikeChain ID to base64-encoded strings
+func (id *LikeChainID) ToString() string {
+	return base64.StdEncoding.EncodeToString(id.Content)
 }
 
 // ToIdentifier converts LikeChainID to Identifier
@@ -139,10 +173,36 @@ func (tx *RegisterTransaction) GenerateSigningMessageHash() ([]byte, error) {
 	return generateSigningMessageHash(msg), nil
 }
 
+// ToString converts RegisterTransaction to formatted string
 func (tx *RegisterTransaction) ToString() string {
 	return fmt.Sprintf(
 		"<Addr: %s, Sig: %s>",
 		tx.Addr.ToHex(),
 		tx.Sig.ToHex(),
 	)
+}
+
+// GenerateSigningMessageHash generates a signature from a TransferTx
+func (tx *TransferTransaction) GenerateSigningMessageHash() ([]byte, error) {
+	to := make([]map[string]interface{}, len(tx.ToList))
+	for i, target := range tx.ToList {
+		to[i] = map[string]interface{}{
+			"identity": target.To.ToString(),
+			"remark":   string(target.Remark),
+			"value":    target.Value.ToString(),
+		}
+	}
+	m := map[string]interface{}{
+		"fee":      tx.Fee.ToString(),
+		"identity": tx.From.ToString(),
+		"nonce":    tx.Nonce,
+		"to":       to,
+	}
+
+	msg, err := json.Marshal(m)
+	if err != nil {
+		return nil, errors.New("Unable to marshal JSON string for TransferTx")
+	}
+
+	return generateSigningMessageHash(msg), nil
 }

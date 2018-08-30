@@ -10,6 +10,7 @@ import (
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,7 +31,7 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.TransferCheckTxInvalidFormat
 	}
 
-	if !validateTransferSignature(tx.Sig) {
+	if !validateTransferSignature(state, tx) {
 		logTx(tx).Info(response.TransferCheckTxInvalidSignature.Info)
 		return response.TransferCheckTxInvalidSignature
 	}
@@ -49,7 +50,7 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.TransferDeliverTxInvalidFormat
 	}
 
-	if !validateTransferSignature(tx.Sig) {
+	if !validateTransferSignature(state, tx) {
 		logTx(tx).Info(response.TransferDeliverTxInvalidSignature.Info)
 		return response.TransferDeliverTxInvalidSignature
 	}
@@ -67,8 +68,42 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 	return response.Success // TODO
 }
 
-func validateTransferSignature(sig *types.Signature) bool {
-	return false // TODO
+func validateTransferSignature(state context.IImmutableState, tx *types.TransferTransaction) bool {
+	hashedMsg, err := tx.GenerateSigningMessageHash()
+	if err != nil {
+		log.WithError(err).Info("Unable to generate signing message hash when validating signature")
+		return false
+	}
+
+	sigAddr, err := utils.RecoverSignature(hashedMsg, tx.Sig)
+	if err != nil {
+		log.WithError(err).Info("Unable to recover signature when validating signature")
+		return false
+	}
+
+	senderAddr := tx.From.GetAddr()
+	if senderAddr != nil {
+		if senderAddr.ToEthereum() == sigAddr {
+			return true
+		}
+		log.WithFields(logrus.Fields{
+			"txAddr":  senderAddr.ToHex(),
+			"sigAddr": sigAddr.Hex(),
+		}).Info("Recovered address is not match")
+	} else {
+		id := tx.From.GetLikeChainID()
+		if id != nil {
+			if account.IsLikeChainIDHasAddress(state, id, &sigAddr) {
+				return true
+			}
+			log.WithFields(logrus.Fields{
+				"likeChainID": id.ToString(),
+				"sigAddr":     sigAddr.Hex(),
+			}).Info("Recovered address is not bind to the LikeChain ID of the sender")
+		}
+	}
+
+	return false
 }
 
 func validateTransferTransactionFormat(state context.IImmutableState, tx *types.TransferTransaction) bool {
