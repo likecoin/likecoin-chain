@@ -53,6 +53,11 @@ func NewSignatureFromHex(hex string) *Signature {
 	}
 }
 
+// NewZeroSignature creates a Signature with all zeros
+func NewZeroSignature() *Signature {
+	return NewSignatureFromHex("0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+}
+
 // ToHex converts Signature to hex string
 func (sig *Signature) ToHex() string {
 	return common.ToHex(sig.Content)
@@ -183,7 +188,7 @@ func (tx *RegisterTransaction) ToString() string {
 }
 
 // GenerateSigningMessageHash generates a signature from a TransferTx
-func (tx *TransferTransaction) GenerateSigningMessageHash() ([]byte, error) {
+func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 	to := make([]map[string]interface{}, len(tx.ToList))
 	for i, target := range tx.ToList {
 		to[i] = map[string]interface{}{
@@ -200,9 +205,8 @@ func (tx *TransferTransaction) GenerateSigningMessageHash() ([]byte, error) {
 	}
 
 	msg, err := json.Marshal(m)
-	if err != nil {
-		return nil, errors.New("Unable to marshal JSON string for TransferTx")
+	if err == nil {
+		hash = generateSigningMessageHash(msg)
 	}
-
-	return generateSigningMessageHash(msg), nil
+	return hash
 }

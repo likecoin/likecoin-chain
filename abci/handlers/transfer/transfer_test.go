@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/account"
 
 	"github.com/likecoin/likechain/abci/context"
@@ -26,37 +27,83 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
+	Convey("Given an empty Transaction, CheckTx and DeliverTx should panic", t, func() {
+		rawTx := &types.Transaction{}
+
+		So(func() { checkTransfer(state, rawTx) }, ShouldPanic)
+		So(func() { deliverTransfer(state, rawTx) }, ShouldPanic)
+	})
+
+	aliceID := types.NewLikeChainID([]byte("alice"))
+	bobID := types.NewLikeChainID([]byte("bob"))
+	carolID := types.NewLikeChainID([]byte("carol"))
+
 	Convey("Given a Transfer Transaction", t, func() {
+		appCtx.Reset()
+		account.NewAccountFromID(state, aliceID, common.HexToAddress("0x064b663abf9d74277a07aa7563a8a64a54de8c0a"))
+		account.AddBalance(state, aliceID, big.NewInt(9000000000000000000))
+		account.NewAccountFromID(state, bobID, common.HexToAddress("0xbef509a0ab4a60111a8957322fee016cdf713ad2"))
+		account.NewAccountFromID(state, carolID, common.HexToAddress("0xba0ad74ab6cfea30e0cfa4998392873ad1a11388"))
+
+		rawTx := wrapTransferTransaction(&types.TransferTransaction{
+			From: aliceID.ToIdentifier(),
+			ToList: []*types.TransferTransaction_TransferTarget{
+				types.NewTransferTarget(bobID.ToIdentifier(), "1000000000000000000", ""),
+				types.NewTransferTarget(carolID.ToIdentifier(), "1000000000000000000", ""),
+			},
+			Nonce: 1,
+			Fee:   types.NewBigInteger("1"),
+			Sig:   types.NewSignatureFromHex("0xcfa49131425aba2a3c089a69db5b9d4c1f793d9f3c448084564304485df2b5da46bb2274730cb8bf81b794e77096dbee9156b52c9592e95b0bd9b3dc054e7fb91b"),
+		})
 
 		Convey("If it is a valid transaction", func() {
-			rawTx := wrapTransferTransaction(&types.TransferTransaction{
-				// TODO
-			})
-
-			Convey("CheckTx should return Code 0", func() {
+			Convey("CheckTx should return code 0", func() {
 				res := checkTransfer(state, rawTx)
-
 				So(res.Code, ShouldEqual, 0)
 			})
 
-			Convey("DeliverTx should return Code 0", func() {
+			Convey("For DeliverTx", func() {
 				res := deliverTransfer(state, rawTx)
 
-				So(res.Code, ShouldEqual, 0)
+				Convey("Should return Code 0", func() {
+					So(res.Code, ShouldEqual, 0)
+				})
 
-				Convey("Should be able to query the transaction info afterwards", func() {
-					_ = res.Data // TODO: ID
-					// TODO: query
+				Convey("Balance of those accounts in the state should be updated correctly ", func() {
+					aliceBalance := account.FetchBalance(state, *aliceID)
+					So(aliceBalance.String(), ShouldEqual, "6999999999999999999")
+
+					bobBalance := account.FetchBalance(state, *bobID)
+					So(bobBalance.String(), ShouldEqual, "1000000000000000000")
+
+					carolBalance := account.FetchBalance(state, *carolID)
+					So(carolBalance.String(), ShouldEqual, "1000000000000000000")
+				})
+
+				Convey("If replay this transaction", func() {
+					Convey("For CheckTx", func() {
+						res := checkTransfer(state, rawTx)
+
+						code := response.TransferCheckTxDuplicated.Code
+						Convey(fmt.Sprintf("Should return Code %d", code), func() {
+							So(res.Code, ShouldEqual, code)
+						})
+					})
+
+					Convey("For DeliverTx", func() {
+						res := deliverTransfer(state, rawTx)
+
+						code := response.TransferDeliverTxDuplicated.Code
+						Convey(fmt.Sprintf("Should return Code %d", code), func() {
+							So(res.Code, ShouldEqual, code)
+						})
+					})
 				})
 			})
 		})
 
-		Convey("If it is an invalid address format", func() {
-			appCtx.Reset()
-
-			rawTx := wrapTransferTransaction(&types.TransferTransaction{
-				// TODO
-			})
+		Convey("If its format is invalid", func() {
+			rawTx.GetTransferTx().ToList = []*types.TransferTransaction_TransferTarget{}
 
 			code := response.TransferCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -73,12 +120,26 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 
-		Convey("If it is an invalid signature version", func() {
-			appCtx.Reset()
+		Convey("If the sender is not registered", func() {
+			rawTx.GetTransferTx().From = types.NewLikeChainID([]byte("mallory")).ToIdentifier()
 
-			rawTx := wrapTransferTransaction(&types.TransferTransaction{
-				// TODO
+			code := response.TransferCheckTxSenderNotRegistered.Code
+			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
+				res := checkTransfer(state, rawTx)
+
+				So(res.Code, ShouldEqual, code)
 			})
+
+			code = response.TransferDeliverTxSenderNotRegistered.Code
+			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+				res := deliverTransfer(state, rawTx)
+
+				So(res.Code, ShouldEqual, code)
+			})
+		})
+
+		Convey("If its signature is invalid", func() {
+			rawTx.GetTransferTx().Sig = types.NewZeroSignature()
 
 			code := response.TransferCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -95,21 +156,19 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 
-		Convey("If it is an invalid signature format", func() {
-			appCtx.Reset()
+		Convey("If its nonce is invalid", func() {
+			tx := rawTx.GetTransferTx()
+			tx.Nonce = 2
+			tx.Sig = types.NewSignatureFromHex("0x2dddc89b34896c0ab3622a3d2c4b1192b85606b6ed72a9f7e372ce0795498f830c4823cd461d80169ff666a6a55f23153dc820fc42a322ce1cad63b48cfc42a41b")
 
-			rawTx := wrapTransferTransaction(&types.TransferTransaction{
-				// TODO
-			})
-
-			code := response.TransferCheckTxInvalidSignature.Code
+			code := response.TransferCheckTxInvalidNonce.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code = response.TransferDeliverTxInvalidSignature.Code
+			code = response.TransferDeliverTxInvalidNonce.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 
@@ -117,21 +176,17 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 
-		Convey("If it is a replayed transaction", func() {
-			appCtx.Reset()
+		Convey("If the sender balance is not enough", func() {
+			account.SaveBalance(state, *aliceID, big.NewInt(0))
 
-			rawTx := wrapTransferTransaction(&types.TransferTransaction{
-				// TODO
-			})
-
-			code := response.TransferCheckTxDuplicated.Code
+			code := response.TransferCheckTxNotEnoughBalance.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
 			})
 
-			code = response.TransferDeliverTxDuplicated.Code
+			code = response.TransferDeliverTxNotEnoughBalance.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
 				res := deliverTransfer(state, rawTx)
 
@@ -220,7 +275,7 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 			},
 			Nonce: 1,
 			Fee:   types.NewBigInteger("10000000000"),
-			Sig:   types.NewSignatureFromHex("0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+			Sig:   types.NewZeroSignature(),
 		}
 
 		Convey("If its format is valid", func() {
@@ -242,7 +297,9 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 		})
 
 		Convey("If its receivers are invalid", func() {
-			tx.ToList = []*types.TransferTransaction_TransferTarget{}
+			tx.ToList = []*types.TransferTransaction_TransferTarget{
+				types.NewTransferTarget(nil, "0", ""),
+			}
 
 			Convey("It should not pass the validation", func() {
 				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
@@ -255,49 +312,6 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 			Convey("It should not pass the validation", func() {
 				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
 			})
-		})
-	})
-}
-
-func TestTransfer(t *testing.T) {
-	appCtx := context.NewMock()
-	state := appCtx.GetMutableState()
-
-	Convey("Given a valid Transfer transaction", t, func() {
-		tx := &types.TransferTransaction{} // TODO
-
-		Convey("The transaction should be pass", func() {
-			transfer(state, tx)
-			// TODO check
-		})
-
-		Convey("But the same transaction cannot be replayed", func() {
-			transfer(state, tx)
-			// TODO check
-		})
-	})
-
-	Convey("Given an invalid Transfer transaction", t, func() {
-		appCtx.Reset()
-		tx := &types.TransferTransaction{} // TODO
-
-		Convey("The transaction should not be pass if sender not exist ", func() {
-			transfer(state, tx)
-			// TODO check
-		})
-
-		tx = &types.TransferTransaction{} // TODO
-
-		Convey("The transaction should not be pass if receiver not exist", func() {
-			transfer(state, tx)
-			// TODO check
-		})
-
-		tx = &types.TransferTransaction{} // TODO
-
-		Convey("The transaction should not be pass if there is not enough balance", func() {
-			transfer(state, tx)
-			// TODO check
 		})
 	})
 }

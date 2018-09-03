@@ -31,12 +31,46 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.TransferCheckTxInvalidFormat
 	}
 
+	senderID := account.IdentifierToLikeChainID(state, tx.From)
+	if senderID == nil {
+		logTx(tx).Info(response.TransferCheckTxSenderNotRegistered.Info)
+		return response.TransferCheckTxSenderNotRegistered
+	}
+
 	if !validateTransferSignature(state, tx) {
 		logTx(tx).Info(response.TransferCheckTxInvalidSignature.Info)
 		return response.TransferCheckTxInvalidSignature
 	}
 
-	return response.Success // TODO
+	nextNonce := account.FetchNextNonce(state, *senderID)
+	if tx.Nonce > nextNonce {
+		logTx(tx).Info(response.TransferCheckTxInvalidNonce.Info)
+		return response.TransferCheckTxInvalidNonce
+	} else if tx.Nonce < nextNonce {
+		logTx(tx).Info(response.TransferCheckTxDuplicated.Info)
+		return response.TransferCheckTxDuplicated
+	}
+
+	senderBalance := account.FetchBalance(state, *senderID)
+	total := tx.Fee.ToBigInt()
+	for _, target := range tx.ToList {
+		receiverID := account.IdentifierToLikeChainID(state, target.To)
+		if receiverID == nil {
+			logTx(tx).Info(response.TransferCheckTxReceiverNotRegistered.Info)
+			return response.TransferCheckTxReceiverNotRegistered
+		}
+
+		amount := target.Value.ToBigInt()
+		total.Add(total, amount)
+		if senderBalance.Cmp(total) < 0 {
+			logTx(tx).
+				WithField("receiver_id", receiverID.ToString()).
+				Info(response.TransferCheckTxNotEnoughBalance.Info)
+			return response.TransferCheckTxNotEnoughBalance
+		}
+	}
+
+	return response.Success
 }
 
 func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) response.R {
@@ -50,31 +84,60 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.TransferDeliverTxInvalidFormat
 	}
 
+	senderID := account.IdentifierToLikeChainID(state, tx.From)
+	if senderID == nil {
+		logTx(tx).Info(response.TransferDeliverTxSenderNotRegistered.Info)
+		return response.TransferDeliverTxSenderNotRegistered
+	}
+
 	if !validateTransferSignature(state, tx) {
 		logTx(tx).Info(response.TransferDeliverTxInvalidSignature.Info)
 		return response.TransferDeliverTxInvalidSignature
 	}
 
-	fromID, exist := account.GetLikeChainID(state, *tx.From)
-	if !exist {
-		return response.Success // TODO: error code for sender account does not exist
+	nextNonce := account.FetchNextNonce(state, *senderID)
+	if tx.Nonce > nextNonce {
+		logTx(tx).Info(response.TransferDeliverTxInvalidNonce.Info)
+		return response.TransferDeliverTxInvalidNonce
+	} else if tx.Nonce < nextNonce {
+		logTx(tx).Info(response.TransferDeliverTxDuplicated.Info)
+		return response.TransferDeliverTxDuplicated
 	}
 
-	_ = account.FetchBalance(state, fromID)
-	_ = account.FetchNextNonce(state, fromID)
-	// Increment nonce
-	// Adjust balance of sender and receiver
+	senderBalance := account.FetchBalance(state, *senderID)
+	total := tx.Fee.ToBigInt()
+	transfers := make(map[*types.LikeChainID]*big.Int, len(tx.ToList))
+	for _, target := range tx.ToList {
+		receiverID := account.IdentifierToLikeChainID(state, target.To)
+		if receiverID == nil {
+			logTx(tx).Info(response.TransferDeliverTxReceiverNotRegistered.Info)
+			return response.TransferDeliverTxReceiverNotRegistered
+		}
 
-	return response.Success // TODO
+		amount := target.Value.ToBigInt()
+		total.Add(total, amount)
+		if senderBalance.Cmp(total) < 0 {
+			logTx(tx).
+				WithField("receiver_id", receiverID.ToString()).
+				Info(response.TransferDeliverTxNotEnoughBalance.Info)
+			return response.TransferDeliverTxNotEnoughBalance
+		}
+
+		transfers[receiverID] = amount
+	}
+
+	for receiverID, amount := range transfers {
+		account.AddBalance(state, receiverID, amount)
+	}
+	account.MinusBalance(state, senderID, total)
+
+	account.IncrementNextNonce(state, *senderID)
+
+	return response.Success
 }
 
 func validateTransferSignature(state context.IImmutableState, tx *types.TransferTransaction) bool {
-	hashedMsg, err := tx.GenerateSigningMessageHash()
-	if err != nil {
-		log.WithError(err).Info("Unable to generate signing message hash when validating signature")
-		return false
-	}
-
+	hashedMsg := tx.GenerateSigningMessageHash()
 	sigAddr, err := utils.RecoverSignature(hashedMsg, tx.Sig)
 	if err != nil {
 		log.WithError(err).Info("Unable to recover signature when validating signature")
@@ -124,21 +187,12 @@ func validateTransferTransactionFormat(state context.IImmutableState, tx *types.
 		return false
 	}
 
-	if tx.Fee.ToBigInt().Cmp(big.NewInt(0)) < 0 {
-		log.Debug("Invalid fee in transfer transaction")
-		return false
-	}
-
 	if !tx.Sig.IsValidFormat() {
 		log.Debug("Invalid signature format in transfer transaction")
 		return false
 	}
 
 	return true
-}
-
-func transfer(state context.IMutableState, tx *types.TransferTransaction) {
-	// TODO
 }
 
 func init() {

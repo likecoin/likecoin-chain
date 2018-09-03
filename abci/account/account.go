@@ -56,22 +56,31 @@ func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAdd
 	return nil
 }
 
-// IsLikeChainIDHasAddress checks whether the given address is bind to the given LikeChain ID
-func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainID, ethAddr *common.Address) bool {
+func iterateLikeChainIDAddrPair(state context.IImmutableState, id *types.LikeChainID, fn func(addr []byte) bool) (isExist bool) {
 	startingKey := getIDAddrPairPrefixKey(id)
 
-	// Iterate the tree to check all addresses the given LikeChain ID has bound
-	isExist := false
+	// Iterate the tree to check all addresses the given LikeChain ID has been bound
 	state.ImmutableStateTree().IterateRange(startingKey, nil, true, func(key, _ []byte) bool {
 		splitKey := bytes.Split(key, []byte("_addr_"))
 		if len(splitKey) == 2 {
-			isExist = bytes.Equal(ethAddr.Bytes(), splitKey[1])
+			isExist = fn(splitKey[1])
 		}
 		// If isExist becomes true, iteration will be stopped
 		return isExist
 	})
 
 	return isExist
+}
+
+// IsLikeChainIDRegistered checks whether the given LikeChain ID has registered or not
+func IsLikeChainIDRegistered(state context.IImmutableState, id *types.LikeChainID) bool {
+	return iterateLikeChainIDAddrPair(state, id, func(_ []byte) bool { return true })
+}
+
+// IsLikeChainIDHasAddress checks whether the given address has been bound to the given LikeChain ID
+func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainID, ethAddr *common.Address) bool {
+	_, value := state.ImmutableStateTree().Get(getIDAddrPairKey(id, *ethAddr))
+	return value != nil
 }
 
 var likeChainIDSeedKey = []byte("$account.likeChainIDSeed")
@@ -104,18 +113,23 @@ func generateLikeChainID(state context.IMutableState) types.LikeChainID {
 	return types.LikeChainID{Content: content}
 }
 
-func AddressToLikeChainID(state context.IImmutableState, addr types.Address) (types.LikeChainID, bool) {
-	return types.LikeChainID{}, false // TODO
+// AddressToLikeChainID gets LikeChain ID by address
+func AddressToLikeChainID(state context.IImmutableState, addr *types.Address) *types.LikeChainID {
+	_, idBytes := state.ImmutableStateTree().Get(utils.DbRawAddrKey(addr.Content))
+	return types.NewLikeChainID(idBytes)
 }
 
-func GetLikeChainID(state context.IImmutableState, identifier types.Identifier) (types.LikeChainID, bool) {
+// IdentifierToLikeChainID converts a Identifier to LikeChain ID using
+// address - LikeChain ID mapping
+func IdentifierToLikeChainID(state context.IImmutableState, identifier *types.Identifier) *types.LikeChainID {
 	id := identifier.GetLikeChainID()
-	if id != nil {
-		return *id, false // TODO: check the existence of this LikeChainID
+	if id != nil && IsLikeChainIDRegistered(state, id) {
+		return id
+	} else if addr := identifier.GetAddr(); addr != nil {
+		return AddressToLikeChainID(state, addr)
 	}
-	addr := identifier.GetAddr()
-	// TODO: assert addr != nil
-	return AddressToLikeChainID(state, *addr)
+
+	return nil
 }
 
 // SaveBalance saves account balance by LikeChain ID
@@ -132,6 +146,20 @@ func FetchBalance(state context.IImmutableState, id types.LikeChainID) *big.Int 
 	balance = balance.SetBytes(bytes)
 
 	return balance
+}
+
+// AddBalance adds account balance by LikeChain ID
+func AddBalance(state context.IMutableState, id *types.LikeChainID, amount *big.Int) error {
+	balance := FetchBalance(state, *id)
+	balance.Add(balance, amount)
+	return SaveBalance(state, *id, balance)
+}
+
+// MinusBalance minus account balance by LikeChain ID
+func MinusBalance(state context.IMutableState, id *types.LikeChainID, amount *big.Int) error {
+	balance := FetchBalance(state, *id)
+	balance.Add(balance, amount.Mul(amount, big.NewInt(-1)))
+	return SaveBalance(state, *id, balance)
 }
 
 func fetchEthereumAddressBalance(state context.IMutableState, addr common.Address) *big.Int {

@@ -153,6 +153,46 @@ var TransferDeliverTxDuplicated = R{
 	Info: "Duplicated TransferTransaction in DeliverTx",
 }
 
+var TransferCheckTxSenderNotRegistered = R{
+	Code: 12030,
+	Info: "Sender of TransferTransaction not register in CheckTx",
+}
+
+var TransferDeliverTxSenderNotRegistered = R{
+	Code: 12031,
+	Info: "Sender of TransferTransaction not register in DeliverTx",
+}
+
+var TransferCheckTxReceiverNotRegistered = R{
+	Code: 12040,
+	Info: "Receiver of TransferTransaction not register in CheckTx",
+}
+
+var TransferDeliverTxReceiverNotRegistered = R{
+	Code: 12041,
+	Info: "Receiver of TransferTransaction not register in DeliverTx",
+}
+
+var TransferCheckTxNotEnoughBalance = R{
+	Code: 12050,
+	Info: "Sender's balance of TransferTransaction not enough in CheckTx",
+}
+
+var TransferDeliverTxNotEnoughBalance = R{
+	Code: 12051,
+	Info: "Sender's balance of TransferTransaction not enough in DeliverTx",
+}
+
+var TransferCheckTxInvalidNonce = R{
+	Code: 12600,
+	Info: "Invalid TransferTransaction nonce in CheckTx",
+}
+
+var TransferDeliverTxInvalidNonce = R{
+	Code: 12601,
+	Info: "Invalid TransferTransaction nonce in DeliverTx",
+}
+
 var WithdrawCheckTxInvalidFormat = R{
 	Code: 13000,
 	Info: "Invalid WithdrawTransaction format in CheckTx",

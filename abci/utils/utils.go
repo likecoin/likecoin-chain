@@ -54,7 +54,12 @@ func DbIDKey(id types.LikeChainID, prefix string, suffix string) []byte {
 	return DbKeyRaw(id.Content, prefix, suffix)
 }
 
-// DbAddrKey returns a key with Ethereum address in `addr_{addr}_id`` format
+// DbAddrKey returns a key with Ethereum address in `addr_{addr}_id` format
 func DbAddrKey(ethAddr common.Address) []byte {
-	return DbKeyRaw(ethAddr.Bytes(), "addr", "id")
+	return DbRawAddrKey(ethAddr.Bytes())
+}
+
+// DbRawAddrKey returns a key with protobuf address in `addr_{addr}_id` format
+func DbRawAddrKey(addr []byte) []byte {
+	return DbKeyRaw(addr, "addr", "id")
 }
