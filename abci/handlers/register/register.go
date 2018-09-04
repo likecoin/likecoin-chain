@@ -25,7 +25,7 @@ func checkRegister(state context.IImmutableState, rawTx *types.Transaction) resp
 		log.Panic("Expect RegisterTx but got nil")
 	}
 
-	if !validateRegisterTransaction(tx) {
+	if !validateRegisterTransactionFormat(tx) {
 		logTx(tx).Info(response.RegisterCheckTxInvalidFormat.Info)
 		return response.RegisterCheckTxInvalidFormat
 	}
@@ -50,7 +50,7 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) resp
 		log.Panic("Expect RegisterTx but got nil")
 	}
 
-	if !validateRegisterTransaction(tx) {
+	if !validateRegisterTransactionFormat(tx) {
 		logTx(tx).Info(response.RegisterDeliverTxInvalidFormat.Info)
 		return response.RegisterDeliverTxInvalidFormat
 	}
@@ -66,10 +66,8 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.RegisterDeliverTxDuplicated
 	}
 
-	id, err := register(state, tx)
-	if err != nil {
-		log.WithError(err).Panic("Error occurs during registration")
-	}
+	ethAddr := tx.Addr.ToEthereum()
+	id, _ := account.NewAccount(state, ethAddr)
 
 	return response.Success.Merge(response.R{
 		Data: id.Content,
@@ -78,12 +76,7 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) resp
 
 // validateRegisterSignature validates register transaction
 func validateRegisterSignature(state context.IImmutableState, tx *types.RegisterTransaction) bool {
-	hashedMsg, err := tx.GenerateSigningMessageHash()
-	if err != nil {
-		log.WithError(err).Info("Unable to generate signing message hash when validating signature")
-		return false
-	}
-
+	hashedMsg := tx.GenerateSigningMessageHash()
 	sigAddr, err := utils.RecoverSignature(hashedMsg, tx.Sig)
 	if err != nil {
 		log.WithError(err).Info("Unable to recover signature when validating signature")
@@ -101,15 +94,9 @@ func validateRegisterSignature(state context.IImmutableState, tx *types.Register
 	return true
 }
 
-// validateRegisterTransaction validates register transaction
-func validateRegisterTransaction(tx *types.RegisterTransaction) bool {
+// validateRegisterTransactionFormat validates register transaction
+func validateRegisterTransactionFormat(tx *types.RegisterTransaction) bool {
 	return tx.Addr.IsValidFormat() && tx.Sig.IsValidFormat()
-}
-
-// register creates a new LikeChain account
-func register(state context.IMutableState, tx *types.RegisterTransaction) (types.LikeChainID, error) {
-	ethAddr := tx.Addr.ToEthereum()
-	return account.NewAccount(state, ethAddr)
 }
 
 func init() {

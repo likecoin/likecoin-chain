@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -15,6 +14,11 @@ import (
 // NewAddressFromHex creates Address from hex string
 func NewAddressFromHex(hex string) *Address {
 	return &Address{Content: common.FromHex(hex)}
+}
+
+// NewZeroAddress creates Address from all zeros
+func NewZeroAddress() *Address {
+	return NewAddressFromHex("0x0000000000000000000000000000000000000000")
 }
 
 // IsValidFormat checks the length of the address
@@ -156,26 +160,23 @@ func (t *TransferTransaction_TransferTarget) IsValidFormat() bool {
 
 var sigPrefix = []byte("\x19Ethereum Signed Message:\n")
 
-// generateSigningMessageHash wraps a message in follwing format
+// generateSigningMessageHash wraps a JSON in map in follwing format
 // `\x19Ethereum Signed Message:\n" + len(message) + message`
 // and return Keccak256 hash
-func generateSigningMessageHash(msg []byte) []byte {
-	hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
-	return crypto.Keccak256(hashingMsg)
+func generateSigningMessageHash(jsonMap map[string]interface{}) (hash []byte) {
+	msg, err := json.Marshal(jsonMap)
+	if err == nil {
+		hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
+		hash = crypto.Keccak256(hashingMsg)
+	}
+	return hash
 }
 
 // GenerateSigningMessageHash generates a signature from a RegisterTx
-func (tx *RegisterTransaction) GenerateSigningMessageHash() ([]byte, error) {
-	m := map[string]interface{}{
+func (tx *RegisterTransaction) GenerateSigningMessageHash() []byte {
+	return generateSigningMessageHash(map[string]interface{}{
 		"addr": strings.ToLower(tx.Addr.ToEthereum().Hex()),
-	}
-
-	msg, err := json.Marshal(m)
-	if err != nil {
-		return nil, errors.New("Unable to marshal JSON string for RegisterTx")
-	}
-
-	return generateSigningMessageHash(msg), nil
+	})
 }
 
 // ToString converts RegisterTransaction to formatted string
@@ -197,16 +198,10 @@ func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 			"value":    target.Value.ToString(),
 		}
 	}
-	m := map[string]interface{}{
+	return generateSigningMessageHash(map[string]interface{}{
 		"fee":      tx.Fee.ToString(),
 		"identity": tx.From.ToString(),
 		"nonce":    tx.Nonce,
 		"to":       to,
-	}
-
-	msg, err := json.Marshal(m)
-	if err == nil {
-		hash = generateSigningMessageHash(msg)
-	}
-	return hash
+	})
 }

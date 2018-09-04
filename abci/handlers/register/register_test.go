@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -12,8 +11,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var addr = &types.Address{Content: common.FromHex("0x064b663abf9d74277a07aa7563a8a64a54de8c0a")}
-var sig = common.FromHex("0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b")
+const addrHex = "0x064b663abf9d74277a07aa7563a8a64a54de8c0a"
+const sigHex = "0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b"
 
 func wrapRegisterTransaction(tx *types.RegisterTransaction) *types.Transaction {
 	return &types.Transaction{
@@ -27,57 +26,61 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
-	Convey("Given a Register Transaction", t, func() {
-		Convey("If it is a valid Register transaction", func() {
-			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Content: sig,
-					Version: 1,
-				},
-			})
+	Convey("Given an empty Transaction, CheckTx and DeliverTx should panic", t, func() {
+		rawTx := &types.Transaction{}
 
+		So(func() { checkRegister(state, rawTx) }, ShouldPanic)
+		So(func() { deliverRegister(state, rawTx) }, ShouldPanic)
+	})
+
+	Convey("Given a Register Transaction", t, func() {
+		appCtx.Reset()
+
+		rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
+			Addr: types.NewAddressFromHex(addrHex),
+			Sig:  types.NewSignatureFromHex(sigHex),
+		})
+
+		Convey("If it is a valid transaction", func() {
 			Convey("CheckTx should return Code 0", func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
 			})
 
-			Convey("DeliverTx should return Code 0 and non-empty Data", func() {
+			Convey("For DeliverTx", func() {
 				res := deliverRegister(state, rawTx)
 
-				So(res.Code == 0 && len(res.Data) > 0, ShouldBeTrue)
-			})
-
-			state.Save()
-
-			Convey("If it is given the same transaction", func() {
-				code := response.RegisterCheckTxDuplicated.Code
-				Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-					res := checkRegister(state, rawTx)
-
-					So(res.Code, ShouldEqual, code)
+				Convey("It should return Code 0 and non-empty Data", func() {
+					So(res.Code == 0 && len(res.Data) > 0, ShouldBeTrue)
 				})
 
-				code = response.RegisterDeliverTxDuplicated.Code
-				Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-					res := deliverRegister(state, rawTx)
+				state.Save()
 
-					So(res.Code, ShouldEqual, code)
+				Convey("If replay transaction", func() {
+					Convey("For CheckTx", func() {
+						res := checkRegister(state, rawTx)
+
+						code := response.RegisterCheckTxDuplicated.Code
+						Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
+							So(res.Code, ShouldEqual, code)
+						})
+					})
+
+					Convey("For DeliverTx", func() {
+						res := deliverRegister(state, rawTx)
+
+						code := response.RegisterDeliverTxDuplicated.Code
+						Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+							So(res.Code, ShouldEqual, code)
+						})
+					})
 				})
 			})
 		})
 
-		Convey("If it is a Register transaction with invalid address format", func() {
-			appCtx.Reset()
-
-			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
-				Addr: &types.Address{Content: []byte{}},
-				Sig: &types.Signature{
-					Content: sig,
-					Version: 1,
-				},
-			})
+		Convey("If its address format is invalid", func() {
+			rawTx.GetRegisterTx().Addr = &types.Address{Content: []byte{}}
 
 			code := response.RegisterCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -94,16 +97,8 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			})
 		})
 
-		Convey("If it is a Register transaction with invalid signature version", func() {
-			appCtx.Reset()
-
-			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Content: sig,
-					Version: 2,
-				},
-			})
+		Convey("If its signature version is invalid", func() {
+			rawTx.GetRegisterTx().Sig.Version = 2
 
 			code := response.RegisterCheckTxInvalidFormat.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -120,16 +115,8 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			})
 		})
 
-		Convey("If it is a Register transaction with invalid signature format", func() {
-			appCtx.Reset()
-
-			rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Content: common.FromHex("0xd880732022a41a404669ded27f41564df20e728280264860a968a2d3ae0e745f6a576539b36ac4a27e4e9bde1e74cdf58144dd130dc6d6328ab6440129c344f51c"),
-					Version: 1,
-				},
-			})
+		Convey("If its signature is invalid", func() {
+			rawTx.GetRegisterTx().Sig = types.NewZeroSignature()
 
 			code := response.RegisterCheckTxInvalidSignature.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -152,87 +139,71 @@ func TestValidateRegisterSignature(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
-	Convey("Given a Register transaction with valid signature", t, func() {
+	Convey("Given a Register transaction", t, func() {
+		appCtx.Reset()
 		tx := &types.RegisterTransaction{
-			Addr: addr,
-			Sig: &types.Signature{
-				Content: sig,
-				Version: 1,
-			},
+			Addr: types.NewAddressFromHex(addrHex),
+			Sig:  types.NewSignatureFromHex(sigHex),
 		}
 
-		Convey("The signature should pass the validation", func() {
-			So(validateRegisterSignature(state, tx), ShouldBeTrue)
+		Convey("If its signature is valid", func() {
+			Convey("It should pass the validation", func() {
+				So(validateRegisterSignature(state, tx), ShouldBeTrue)
+			})
 		})
-	})
 
-	Convey("Given a Register transaction with invalid signature", t, func() {
-		tx := &types.RegisterTransaction{
-			Addr: addr,
-			Sig: &types.Signature{
-				Content: common.FromHex(""),
-				Version: 1,
-			},
-		}
+		Convey("If its signature is invalid", func() {
+			tx.Sig = types.NewZeroSignature()
 
-		Convey("The signature should not pass the validation", func() {
-			So(validateRegisterSignature(state, tx), ShouldBeFalse)
+			Convey("It should fail the validation", func() {
+				So(validateRegisterSignature(state, tx), ShouldBeFalse)
+			})
+		})
+
+		Convey("If its signing address is not match", func() {
+			tx.Sig = types.NewSignatureFromHex("0x87671a38598a89a850c0883f7e6882fad980d1cd82498dfe6e5cdf512f3988fe599b9fd1f1b5ec6da32d721f466fa956c2248a58ee801dc144ac4b80cc8b35941b")
+
+			Convey("It should fail the validation", func() {
+				So(validateRegisterSignature(state, tx), ShouldBeFalse)
+			})
 		})
 	})
 }
 
-func TestValidateRegisterTransaction(t *testing.T) {
+func TestValidateRegisterTransactionFormat(t *testing.T) {
 	Convey("Given a Register transaction", t, func() {
-		Convey("With valid format", func() {
-			tx := &types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Version: 1,
-					Content: sig,
-				},
-			}
+		tx := &types.RegisterTransaction{
+			Addr: types.NewZeroAddress(),
+			Sig:  types.NewZeroSignature(),
+		}
 
+		Convey("If its format is valid", func() {
 			Convey("It should pass the validation", func() {
-				So(validateRegisterTransaction(tx), ShouldBeTrue)
+				So(validateRegisterTransactionFormat(tx), ShouldBeTrue)
 			})
 		})
 
-		Convey("With invalid address format", func() {
-			tx := &types.RegisterTransaction{
-				Addr: &types.Address{Content: common.FromHex("")},
-				Sig: &types.Signature{
-					Version: 1,
-					Content: sig,
-				},
-			}
+		Convey("If its address format is invalid", func() {
+			tx.Addr = types.NewAddressFromHex("")
+
 			Convey("It should fail the validation", func() {
-				So(validateRegisterTransaction(tx), ShouldBeFalse)
+				So(validateRegisterTransactionFormat(tx), ShouldBeFalse)
 			})
 		})
 
-		Convey("With invalid signature version", func() {
-			tx := &types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Version: 0,
-					Content: sig,
-				},
-			}
+		Convey("If its signature version is invalid", func() {
+			tx.Sig.Version = 2
+
 			Convey("It should fail the validation", func() {
-				So(validateRegisterTransaction(tx), ShouldBeFalse)
+				So(validateRegisterTransactionFormat(tx), ShouldBeFalse)
 			})
 		})
 
 		Convey("With invalid signature format", func() {
-			tx := &types.RegisterTransaction{
-				Addr: addr,
-				Sig: &types.Signature{
-					Version: 1,
-					Content: common.FromHex(""),
-				},
-			}
+			tx.Sig = types.NewSignatureFromHex("")
+
 			Convey("It should fail the validation", func() {
-				So(validateRegisterTransaction(tx), ShouldBeFalse)
+				So(validateRegisterTransactionFormat(tx), ShouldBeFalse)
 			})
 		})
 	})
