@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-const addrHex = "0x064b663abf9d74277a07aa7563a8a64a54de8c0a"
-const sigHex = "0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b"
+var sigHex = types.NewSignatureFromHex("0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b")
 
 func wrapRegisterTransaction(tx *types.RegisterTransaction) *types.Transaction {
 	return &types.Transaction{
@@ -37,8 +37,8 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 		appCtx.Reset()
 
 		rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
-			Addr: types.NewAddressFromHex(addrHex),
-			Sig:  types.NewSignatureFromHex(sigHex),
+			Addr: fixture.Alice.RawAddress,
+			Sig:  sigHex,
 		})
 
 		Convey("If it is a valid transaction", func() {
@@ -142,8 +142,8 @@ func TestValidateRegisterSignature(t *testing.T) {
 	Convey("Given a Register transaction", t, func() {
 		appCtx.Reset()
 		tx := &types.RegisterTransaction{
-			Addr: types.NewAddressFromHex(addrHex),
-			Sig:  types.NewSignatureFromHex(sigHex),
+			Addr: fixture.Alice.RawAddress,
+			Sig:  sigHex,
 		}
 
 		Convey("If its signature is valid", func() {

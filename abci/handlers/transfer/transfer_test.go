@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/account"
+	"github.com/likecoin/likechain/abci/fixture"
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
@@ -34,22 +34,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		So(func() { deliverTransfer(state, rawTx) }, ShouldPanic)
 	})
 
-	aliceID := types.NewLikeChainID([]byte("alice"))
-	bobID := types.NewLikeChainID([]byte("bob"))
-	carolID := types.NewLikeChainID([]byte("carol"))
-
 	Convey("Given a Transfer Transaction", t, func() {
 		appCtx.Reset()
-		account.NewAccountFromID(state, aliceID, common.HexToAddress("0x064b663abf9d74277a07aa7563a8a64a54de8c0a"))
-		account.AddBalance(state, aliceID, big.NewInt(9000000000000000000))
-		account.NewAccountFromID(state, bobID, common.HexToAddress("0xbef509a0ab4a60111a8957322fee016cdf713ad2"))
-		account.NewAccountFromID(state, carolID, common.HexToAddress("0xba0ad74ab6cfea30e0cfa4998392873ad1a11388"))
+		account.NewAccountFromID(state, fixture.Alice.ID, fixture.Alice.Address)
+		account.AddBalance(state, fixture.Alice.ID, big.NewInt(9000000000000000000))
+		account.NewAccountFromID(state, fixture.Bob.ID, fixture.Bob.Address)
+		account.NewAccountFromID(state, fixture.Carol.ID, fixture.Carol.Address)
 
 		rawTx := wrapTransferTransaction(&types.TransferTransaction{
-			From: aliceID.ToIdentifier(),
+			From: fixture.Alice.ID.ToIdentifier(),
 			ToList: []*types.TransferTransaction_TransferTarget{
-				types.NewTransferTarget(bobID.ToIdentifier(), "1000000000000000000", ""),
-				types.NewTransferTarget(carolID.ToIdentifier(), "1000000000000000000", ""),
+				types.NewTransferTarget(fixture.Bob.ID.ToIdentifier(), "1000000000000000000", ""),
+				types.NewTransferTarget(fixture.Carol.ID.ToIdentifier(), "1000000000000000000", ""),
 			},
 			Nonce: 1,
 			Fee:   types.NewBigInteger("1"),
@@ -70,13 +66,13 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				})
 
 				Convey("Balance of those accounts in the state should be updated correctly ", func() {
-					aliceBalance := account.FetchBalance(state, *aliceID)
+					aliceBalance := account.FetchBalance(state, *fixture.Alice.ID)
 					So(aliceBalance.String(), ShouldEqual, "6999999999999999999")
 
-					bobBalance := account.FetchBalance(state, *bobID)
+					bobBalance := account.FetchBalance(state, *fixture.Bob.ID)
 					So(bobBalance.String(), ShouldEqual, "1000000000000000000")
 
-					carolBalance := account.FetchBalance(state, *carolID)
+					carolBalance := account.FetchBalance(state, *fixture.Carol.ID)
 					So(carolBalance.String(), ShouldEqual, "1000000000000000000")
 				})
 
@@ -177,7 +173,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 
 		Convey("If the sender balance is not enough", func() {
-			account.SaveBalance(state, *aliceID, big.NewInt(0))
+			account.SaveBalance(state, *fixture.Alice.ID, big.NewInt(0))
 
 			code := response.TransferCheckTxNotEnoughBalance.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -200,14 +196,12 @@ func TestValidateTransferSignature(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
-	senderAddr := types.NewAddressFromHex("0x064b663abf9d74277a07aa7563a8a64a54de8c0a")
-
 	Convey("Given a Transfer transaction", t, func() {
 		tx := &types.TransferTransaction{
-			From: senderAddr.ToIdentifier(),
+			From: fixture.Alice.RawAddress.ToIdentifier(),
 			ToList: []*types.TransferTransaction_TransferTarget{
 				types.NewTransferTarget(
-					types.NewAddressFromHex("0xbef509a0ab4a60111a8957322fee016cdf713ad2").ToIdentifier(),
+					fixture.Bob.RawAddress.ToIdentifier(),
 					"1000000000000000000",
 					"",
 				),
@@ -224,7 +218,7 @@ func TestValidateTransferSignature(t *testing.T) {
 		})
 
 		Convey("If its sender address is not match with the signing address", func() {
-			tx.From = types.NewAddressFromHex("0xbef509a0ab4a60111a8957322fee016cdf713ad2").ToIdentifier()
+			tx.From = types.NewZeroAddress().ToIdentifier()
 
 			Convey("It should not pass the validation", func() {
 				So(validateTransferSignature(state, tx), ShouldBeFalse)
@@ -235,9 +229,8 @@ func TestValidateTransferSignature(t *testing.T) {
 			tx.Sig = types.NewSignatureFromHex("0x61235afd564c0b96c44342edd4456ef26ed142da9528bd88a7c321aa8595c96044a7a9c7747e049f88e89df6db0419c0aaee6c4d795c5540424379efd7e7a6731c")
 
 			Convey("If the LikeChain ID has been bound to the signing address", func() {
-				aliceID := types.NewLikeChainID([]byte("alice"))
-				account.NewAccountFromID(state, aliceID, senderAddr.ToEthereum())
-				tx.From = aliceID.ToIdentifier()
+				account.NewAccountFromID(state, fixture.Alice.ID, fixture.Alice.Address)
+				tx.From = fixture.Alice.ID.ToIdentifier()
 
 				Convey("It should pass the validation", func() {
 					So(validateTransferSignature(state, tx), ShouldBeTrue)
@@ -245,8 +238,8 @@ func TestValidateTransferSignature(t *testing.T) {
 			})
 
 			Convey("If the LikeChain ID has not been bound to the signing address", func() {
-				malloryID := types.NewLikeChainID([]byte("mallory"))
-				tx.From = malloryID.ToIdentifier()
+				mallory := fixture.NewUser("mallory", "")
+				tx.From = mallory.ID.ToIdentifier()
 
 				Convey("It should not pass the validation", func() {
 					So(validateTransferSignature(state, tx), ShouldBeFalse)
@@ -260,18 +253,16 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
-	aliceID := types.NewLikeChainID([]byte("alice"))
-	account.SaveBalance(state, *aliceID, big.NewInt(1000000000000000000))
-	account.IncrementNextNonce(state, *aliceID)
+	account.SaveBalance(state, *fixture.Alice.ID, big.NewInt(1000000000000000000))
+	account.IncrementNextNonce(state, *fixture.Alice.ID)
 
-	bobID := types.NewLikeChainID([]byte("bob"))
-	account.SaveBalance(state, *bobID, big.NewInt(0))
+	account.SaveBalance(state, *fixture.Bob.ID, big.NewInt(0))
 
 	Convey("Given a Transfer transaction", t, func() {
 		tx := &types.TransferTransaction{
-			From: aliceID.ToIdentifier(),
+			From: fixture.Alice.ID.ToIdentifier(),
 			ToList: []*types.TransferTransaction_TransferTarget{
-				types.NewTransferTarget(bobID.ToIdentifier(), "1000000000000000000", ""),
+				types.NewTransferTarget(fixture.Bob.ID.ToIdentifier(), "1000000000000000000", ""),
 			},
 			Nonce: 1,
 			Fee:   types.NewBigInteger("10000000000"),
