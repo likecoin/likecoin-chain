@@ -127,7 +127,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				So(res.Code, ShouldEqual, code)
 
 				Convey("Tx Status should be failed", func() {
-					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusFailed)
+					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusFail)
 				})
 			})
 		})

@@ -82,14 +82,14 @@ func deliverTransfer(
 
 	var status types.TxStatus
 	if r.Code != 0 {
-		status = types.TxStatusFailed
+		status = types.TxStatusFail
 	} else {
 		status = types.TxStatusSuccess
 	}
 
 	prevStatus := GetStatus(state, txHash)
 	if prevStatus == types.TxStatusNotSet {
-		setStatus(state, txHash, status)
+		SetStatus(state, txHash, status)
 	}
 
 	return r
@@ -230,7 +230,7 @@ func GetStatus(state context.IImmutableState, txHash []byte) types.TxStatus {
 	return types.BytesToTxStatus(statusBytes)
 }
 
-func setStatus(
+func SetStatus(
 	state context.IMutableState,
 	txHash []byte,
 	status types.TxStatus,

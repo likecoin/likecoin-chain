@@ -124,6 +124,15 @@ func NewLikeChainID(content []byte) *LikeChainID {
 	return &LikeChainID{Content: content}
 }
 
+// NewLikeChainIDFromString creates a LikeChainID from string
+func NewLikeChainIDFromString(s string) (*LikeChainID, error) {
+	b, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		return nil, err
+	}
+	return NewLikeChainID(b), nil
+}
+
 // ToString converts LikeChain ID to base64-encoded strings
 func (id *LikeChainID) ToString() string {
 	return base64.StdEncoding.EncodeToString(id.Content)
@@ -190,6 +199,15 @@ func (tx *RegisterTransaction) ToString() string {
 	)
 }
 
+// ToTransaction wraps RegisterTransaction into Transaction
+func (tx *RegisterTransaction) ToTransaction() *Transaction {
+	return &Transaction{
+		Tx: &Transaction_RegisterTx{
+			RegisterTx: tx,
+		},
+	}
+}
+
 // GenerateSigningMessageHash generates a signature from a TransferTx
 func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 	to := make([]map[string]interface{}, len(tx.ToList))
@@ -214,9 +232,9 @@ type TxStatus int8
 // List of TxStatus
 const (
 	TxStatusNotSet TxStatus = iota - 1
-	TxStatusFailed
-	TxStatusPending
+	TxStatusFail
 	TxStatusSuccess
+	TxStatusPending
 )
 
 // BytesToTxStatus converts []byte to TxStatus
@@ -243,12 +261,12 @@ func (status TxStatus) Bytes() []byte {
 
 func (status TxStatus) String() string {
 	switch status {
-	case TxStatusFailed:
-		return "failed"
-	case TxStatusPending:
-		return "pending"
+	case TxStatusFail:
+		return "fail"
 	case TxStatusSuccess:
 		return "success"
+	case TxStatusPending:
+		return "pending"
 	}
 	return ""
 }

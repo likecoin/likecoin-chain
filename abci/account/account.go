@@ -60,14 +60,15 @@ func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAdd
 	return nil
 }
 
-func iterateLikeChainIDAddrPair(state context.IImmutableState, id *types.LikeChainID, fn func(addr []byte) bool) (isExist bool) {
+func iterateLikeChainIDAddrPair(state context.IImmutableState, id *types.LikeChainID, fn func(id, addr []byte) bool) (isExist bool) {
 	startingKey := getIDAddrPairPrefixKey(id)
 
 	// Iterate the tree to check all addresses the given LikeChain ID has been bound
 	state.ImmutableStateTree().IterateRange(startingKey, nil, true, func(key, _ []byte) bool {
-		splitKey := bytes.Split(key, []byte("_addr_"))
+		splitKey := bytes.Split(key, []byte("acc_"))
+		splitKey = bytes.Split(splitKey[1], []byte("_addr_"))
 		if len(splitKey) == 2 {
-			isExist = fn(splitKey[1])
+			isExist = fn(splitKey[0], splitKey[1])
 		}
 		// If isExist becomes true, iteration will be stopped
 		return isExist
@@ -78,7 +79,9 @@ func iterateLikeChainIDAddrPair(state context.IImmutableState, id *types.LikeCha
 
 // IsLikeChainIDRegistered checks whether the given LikeChain ID has registered or not
 func IsLikeChainIDRegistered(state context.IImmutableState, id *types.LikeChainID) bool {
-	return iterateLikeChainIDAddrPair(state, id, func(_ []byte) bool { return true })
+	return iterateLikeChainIDAddrPair(state, id, func(idBytes, _ []byte) bool {
+		return bytes.Compare(idBytes, id.Content) == 0
+	})
 }
 
 // IsAddressRegistered checks whether the given Address has registered or not

@@ -7,6 +7,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers"
 	logger "github.com/likecoin/likechain/abci/log"
+	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -88,7 +89,7 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 
 func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.ResponseQuery {
 	log.Info("APP Query")
-	return abci.ResponseQuery{} // TODO
+	return query.Query(app.ctx.GetImmutableState(), reqQuery)
 }
 
 func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {

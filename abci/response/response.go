@@ -36,6 +36,16 @@ func (r R) ToResponseDeliverTx() abci.ResponseDeliverTx {
 	}
 }
 
+// ToResponseQuery converts R to abci ResponseQuery
+func (r R) ToResponseQuery() abci.ResponseQuery {
+	return abci.ResponseQuery{
+		Code:  r.Code,
+		Log:   r.Log,
+		Info:  r.Info,
+		Value: r.Data,
+	}
+}
+
 // Merge merges R2 into R1
 func (r1 R) Merge(r2 R) R {
 	if r2.Code > 0 {
@@ -211,4 +221,24 @@ var WithdrawCheckTxDuplicated = R{
 var WithdrawDeliverTxDuplicated = R{
 	Code: 13021,
 	Info: "Duplicated WithdrawTransaction in DeliverTx",
+}
+
+var QueryPathNotExist = R{
+	Code: 60010,
+	Info: "Invalid query path",
+}
+
+var QueryParsingRequestError = R{
+	Code: 60020,
+	Info: "Unable to parse request data in Query",
+}
+
+var QueryParsingResponseError = R{
+	Code: 60030,
+	Info: "Unable to parse response data in Query",
+}
+
+var QueryInvalidIdentifier = R{
+	Code: 60020,
+	Info: "Identifier is invalid in Query",
 }

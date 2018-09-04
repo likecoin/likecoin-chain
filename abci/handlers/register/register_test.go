@@ -16,13 +16,6 @@ import (
 
 var sigHex = types.NewSignatureFromHex("0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b")
 
-func wrapRegisterTransaction(tx *types.RegisterTransaction) *types.Transaction {
-	return &types.Transaction{
-		Tx: &types.Transaction_RegisterTx{
-			RegisterTx: tx,
-		},
-	}
-}
 func TestCheckAndDeliverRegister(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
@@ -37,10 +30,10 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 	Convey("Given a Register Transaction", t, func() {
 		appCtx.Reset()
 
-		rawTx := wrapRegisterTransaction(&types.RegisterTransaction{
+		rawTx := types.RegisterTransaction{
 			Addr: fixture.Alice.RawAddress,
 			Sig:  sigHex,
-		})
+		}.ToTransaction()
 
 		rawTxBytes, _ := proto.Marshal(rawTx)
 		txHash := utils.HashRawTx(rawTxBytes)
