@@ -9,3 +9,5 @@ tendermint/nodes/**
 
 docker-compose.override.yml
 .vscode
+
+*.log
