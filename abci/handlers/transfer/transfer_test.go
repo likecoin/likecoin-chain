@@ -37,19 +37,18 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 	Convey("Given a Transfer Transaction", t, func() {
 		appCtx.Reset()
 		account.NewAccountFromID(state, fixture.Alice.ID, fixture.Alice.Address)
-		account.AddBalance(state, fixture.Alice.ID, big.NewInt(9000000000000000000))
+		account.AddBalance(state, fixture.Alice.ID.ToIdentifier(), big.NewInt(9000000000000000000))
 		account.NewAccountFromID(state, fixture.Bob.ID, fixture.Bob.Address)
-		account.NewAccountFromID(state, fixture.Carol.ID, fixture.Carol.Address)
 
 		rawTx := wrapTransferTransaction(&types.TransferTransaction{
 			From: fixture.Alice.ID.ToIdentifier(),
 			ToList: []*types.TransferTransaction_TransferTarget{
 				types.NewTransferTarget(fixture.Bob.ID.ToIdentifier(), "1000000000000000000", ""),
-				types.NewTransferTarget(fixture.Carol.ID.ToIdentifier(), "1000000000000000000", ""),
+				types.NewTransferTarget(fixture.Carol.RawAddress.ToIdentifier(), "1000000000000000000", ""),
 			},
 			Nonce: 1,
 			Fee:   types.NewBigInteger("1"),
-			Sig:   types.NewSignatureFromHex("0xcfa49131425aba2a3c089a69db5b9d4c1f793d9f3c448084564304485df2b5da46bb2274730cb8bf81b794e77096dbee9156b52c9592e95b0bd9b3dc054e7fb91b"),
+			Sig:   types.NewSignatureFromHex("0xf194fd5457c6a25bda697821283b9e2cc81279362215e448cc80d9c36c17cc2a3dc29ecf46f11f4263af85339cb47bc0c576ec32da184d396e8312b0fac0bb201b"),
 		})
 
 		Convey("If it is a valid transaction", func() {
@@ -66,13 +65,13 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				})
 
 				Convey("Balance of those accounts in the state should be updated correctly ", func() {
-					aliceBalance := account.FetchBalance(state, *fixture.Alice.ID)
+					aliceBalance := account.FetchBalance(state, fixture.Alice.ID.ToIdentifier())
 					So(aliceBalance.String(), ShouldEqual, "6999999999999999999")
 
-					bobBalance := account.FetchBalance(state, *fixture.Bob.ID)
+					bobBalance := account.FetchBalance(state, fixture.Bob.ID.ToIdentifier())
 					So(bobBalance.String(), ShouldEqual, "1000000000000000000")
 
-					carolBalance := account.FetchBalance(state, *fixture.Carol.ID)
+					carolBalance := account.FetchBalance(state, fixture.Carol.RawAddress.ToIdentifier())
 					So(carolBalance.String(), ShouldEqual, "1000000000000000000")
 				})
 
@@ -155,7 +154,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		Convey("If its nonce is invalid", func() {
 			tx := rawTx.GetTransferTx()
 			tx.Nonce = 2
-			tx.Sig = types.NewSignatureFromHex("0x2dddc89b34896c0ab3622a3d2c4b1192b85606b6ed72a9f7e372ce0795498f830c4823cd461d80169ff666a6a55f23153dc820fc42a322ce1cad63b48cfc42a41b")
+			tx.Sig = types.NewSignatureFromHex("0xe3af48868498f69b792905b653ee11533af5dac613c1fb4a358a2776c277e7f800149e1f8af68ec5f4c01a1a24909bc339ce9f70cf0addc8635f54b3981a66561b0x2dddc89b34896c0ab3622a3d2c4b1192b85606b6ed72a9f7e372ce0795498f830c4823cd461d80169ff666a6a55f23153dc820fc42a322ce1cad63b48cfc42a41b")
 
 			code := response.TransferCheckTxInvalidNonce.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -173,7 +172,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 
 		Convey("If the sender balance is not enough", func() {
-			account.SaveBalance(state, *fixture.Alice.ID, big.NewInt(0))
+			account.SaveBalance(state, fixture.Alice.ID.ToIdentifier(), big.NewInt(0))
 
 			code := response.TransferCheckTxNotEnoughBalance.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -253,10 +252,10 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
 
-	account.SaveBalance(state, *fixture.Alice.ID, big.NewInt(1000000000000000000))
-	account.IncrementNextNonce(state, *fixture.Alice.ID)
+	account.SaveBalance(state, fixture.Alice.ID.ToIdentifier(), big.NewInt(1000000000000000000))
+	account.IncrementNextNonce(state, fixture.Alice.ID)
 
-	account.SaveBalance(state, *fixture.Bob.ID, big.NewInt(0))
+	account.SaveBalance(state, fixture.Bob.ID.ToIdentifier(), big.NewInt(0))
 
 	Convey("Given a Transfer transaction", t, func() {
 		tx := &types.TransferTransaction{

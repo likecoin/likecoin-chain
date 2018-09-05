@@ -30,6 +30,10 @@ func getIDAddrPairKey(id *types.LikeChainID, ethAddr common.Address) []byte {
 	return buf.Bytes()
 }
 
+func getAddrIDPairKey(ethAddr common.Address) []byte {
+	return utils.DbRawKey(ethAddr.Bytes(), "acc", "id")
+}
+
 // NewAccount creates a new account
 func NewAccount(state context.IMutableState, ethAddr common.Address) (types.LikeChainID, error) {
 	id := generateLikeChainID(state)
@@ -40,15 +44,15 @@ func NewAccount(state context.IMutableState, ethAddr common.Address) (types.Like
 // NewAccountFromID creates a new account from a given LikeChain ID
 func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAddr common.Address) error {
 	// Save address mapping
-	state.MutableStateTree().Set(utils.DbAddrKey(ethAddr), id.Content)
+	state.MutableStateTree().Set(getAddrIDPairKey(ethAddr), id.Content)
 	state.MutableStateTree().Set(getIDAddrPairKey(id, ethAddr), []byte{})
 
 	// Initialize account info
-	SaveBalance(state, *id, big.NewInt(0))
-	IncrementNextNonce(state, *id)
+	SaveBalance(state, id.ToIdentifier(), big.NewInt(0))
+	IncrementNextNonce(state, id)
 
 	// Check if address already has balance
-	balanceInEthAddr := fetchEthereumAddressBalance(state, ethAddr)
+	balanceInEthAddr := FetchBalance(state, id.ToIdentifier())
 	if balanceInEthAddr != nil {
 		// TODO: Transfer balance from ETH address to LikeChain ID
 	}
@@ -77,9 +81,15 @@ func IsLikeChainIDRegistered(state context.IImmutableState, id *types.LikeChainI
 	return iterateLikeChainIDAddrPair(state, id, func(_ []byte) bool { return true })
 }
 
+// IsAddressRegistered checks whether the given Address has registered or not
+func IsAddressRegistered(state context.IImmutableState, ethAddr common.Address) bool {
+	_, value := state.ImmutableStateTree().Get(getAddrIDPairKey(ethAddr))
+	return value != nil
+}
+
 // IsLikeChainIDHasAddress checks whether the given address has been bound to the given LikeChain ID
-func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainID, ethAddr *common.Address) bool {
-	_, value := state.ImmutableStateTree().Get(getIDAddrPairKey(id, *ethAddr))
+func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainID, ethAddr common.Address) bool {
+	_, value := state.ImmutableStateTree().Get(getIDAddrPairKey(id, ethAddr))
 	return value != nil
 }
 
@@ -113,10 +123,13 @@ func generateLikeChainID(state context.IMutableState) types.LikeChainID {
 	return types.LikeChainID{Content: content}
 }
 
-// AddressToLikeChainID gets LikeChain ID by address
-func AddressToLikeChainID(state context.IImmutableState, addr *types.Address) *types.LikeChainID {
-	_, idBytes := state.ImmutableStateTree().Get(utils.DbRawAddrKey(addr.Content))
-	return types.NewLikeChainID(idBytes)
+// AddressToLikeChainID gets LikeChain ID by Address
+func AddressToLikeChainID(state context.IImmutableState, ethAddr common.Address) *types.LikeChainID {
+	_, value := state.ImmutableStateTree().Get(getAddrIDPairKey(ethAddr))
+	if value != nil {
+		return types.NewLikeChainID(value)
+	}
+	return nil
 }
 
 // IdentifierToLikeChainID converts a Identifier to LikeChain ID using
@@ -126,49 +139,49 @@ func IdentifierToLikeChainID(state context.IImmutableState, identifier *types.Id
 	if id != nil && IsLikeChainIDRegistered(state, id) {
 		return id
 	} else if addr := identifier.GetAddr(); addr != nil {
-		return AddressToLikeChainID(state, addr)
+		return AddressToLikeChainID(state, addr.ToEthereum())
 	}
 
 	return nil
 }
 
 // SaveBalance saves account balance by LikeChain ID
-func SaveBalance(state context.IMutableState, id types.LikeChainID, balance *big.Int) error {
-	state.MutableStateTree().Set(utils.DbIDKey(id, "acc", "balance"), balance.Bytes())
+func SaveBalance(state context.IMutableState, identifier *types.Identifier, balance *big.Int) error {
+	state.
+		MutableStateTree().
+		Set(utils.DbIdentifierKey(identifier, "acc", "balance"), balance.Bytes())
 	return nil
 }
 
 // FetchBalance fetches account balance by LikeChain ID
-func FetchBalance(state context.IImmutableState, id types.LikeChainID) *big.Int {
-	_, bytes := state.ImmutableStateTree().Get(utils.DbIDKey(id, "acc", "balance"))
+func FetchBalance(state context.IImmutableState, identifier *types.Identifier) *big.Int {
+	_, value := state.
+		ImmutableStateTree().
+		Get(utils.DbIdentifierKey(identifier, "acc", "balance"))
 
 	balance := big.NewInt(0)
-	balance = balance.SetBytes(bytes)
+	balance = balance.SetBytes(value)
 
 	return balance
 }
 
-// AddBalance adds account balance by LikeChain ID
-func AddBalance(state context.IMutableState, id *types.LikeChainID, amount *big.Int) error {
-	balance := FetchBalance(state, *id)
+// AddBalance adds account balance by Identifier
+func AddBalance(state context.IMutableState, identifier *types.Identifier, amount *big.Int) error {
+	balance := FetchBalance(state, identifier)
 	balance.Add(balance, amount)
-	return SaveBalance(state, *id, balance)
+	return SaveBalance(state, identifier, balance)
 }
 
-// MinusBalance minus account balance by LikeChain ID
-func MinusBalance(state context.IMutableState, id *types.LikeChainID, amount *big.Int) error {
-	balance := FetchBalance(state, *id)
-	balance.Add(balance, amount.Mul(amount, big.NewInt(-1)))
-	return SaveBalance(state, *id, balance)
-}
-
-func fetchEthereumAddressBalance(state context.IMutableState, addr common.Address) *big.Int {
-	return nil // TODO
+// MinusBalance minus account balance by Identifier
+func MinusBalance(state context.IMutableState, identifier *types.Identifier, amount *big.Int) error {
+	balance := FetchBalance(state, identifier)
+	balance.Sub(balance, amount)
+	return SaveBalance(state, identifier, balance)
 }
 
 // IncrementNextNonce increments next nonce of an account by LikeChain ID
 // This also initialize next nonce of an account
-func IncrementNextNonce(state context.IMutableState, id types.LikeChainID) {
+func IncrementNextNonce(state context.IMutableState, id *types.LikeChainID) {
 	nextNonceInt := FetchNextNonce(state, id) + 1
 	nextNonce := make([]byte, 8)
 	binary.BigEndian.PutUint64(nextNonce, nextNonceInt)
@@ -176,7 +189,7 @@ func IncrementNextNonce(state context.IMutableState, id types.LikeChainID) {
 }
 
 // FetchNextNonce fetches next nonce of an account by LikeChain ID
-func FetchNextNonce(state context.IImmutableState, id types.LikeChainID) uint64 {
+func FetchNextNonce(state context.IImmutableState, id *types.LikeChainID) uint64 {
 	_, bytes := state.ImmutableStateTree().Get(utils.DbIDKey(id, "acc", "nextNonce"))
 
 	if bytes == nil {

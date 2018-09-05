@@ -42,7 +42,7 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.TransferCheckTxInvalidSignature
 	}
 
-	nextNonce := account.FetchNextNonce(state, *senderID)
+	nextNonce := account.FetchNextNonce(state, senderID)
 	if tx.Nonce > nextNonce {
 		logTx(tx).Info(response.TransferCheckTxInvalidNonce.Info)
 		return response.TransferCheckTxInvalidNonce
@@ -51,20 +51,14 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.TransferCheckTxDuplicated
 	}
 
-	senderBalance := account.FetchBalance(state, *senderID)
+	senderBalance := account.FetchBalance(state, tx.From)
 	total := tx.Fee.ToBigInt()
 	for _, target := range tx.ToList {
-		receiverID := account.IdentifierToLikeChainID(state, target.To)
-		if receiverID == nil {
-			logTx(tx).Info(response.TransferCheckTxReceiverNotRegistered.Info)
-			return response.TransferCheckTxReceiverNotRegistered
-		}
-
 		amount := target.Value.ToBigInt()
 		total.Add(total, amount)
 		if senderBalance.Cmp(total) < 0 {
 			logTx(tx).
-				WithField("receiver_id", receiverID.ToString()).
+				WithField("to", target.To.ToString()).
 				Info(response.TransferCheckTxNotEnoughBalance.Info)
 			return response.TransferCheckTxNotEnoughBalance
 		}
@@ -95,7 +89,7 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.TransferDeliverTxInvalidSignature
 	}
 
-	nextNonce := account.FetchNextNonce(state, *senderID)
+	nextNonce := account.FetchNextNonce(state, senderID)
 	if tx.Nonce > nextNonce {
 		logTx(tx).Info(response.TransferDeliverTxInvalidNonce.Info)
 		return response.TransferDeliverTxInvalidNonce
@@ -104,34 +98,28 @@ func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.TransferDeliverTxDuplicated
 	}
 
-	senderBalance := account.FetchBalance(state, *senderID)
+	senderBalance := account.FetchBalance(state, tx.From)
 	total := tx.Fee.ToBigInt()
-	transfers := make(map[*types.LikeChainID]*big.Int, len(tx.ToList))
+	transfers := make(map[*types.Identifier]*big.Int, len(tx.ToList))
 	for _, target := range tx.ToList {
-		receiverID := account.IdentifierToLikeChainID(state, target.To)
-		if receiverID == nil {
-			logTx(tx).Info(response.TransferDeliverTxReceiverNotRegistered.Info)
-			return response.TransferDeliverTxReceiverNotRegistered
-		}
-
 		amount := target.Value.ToBigInt()
 		total.Add(total, amount)
 		if senderBalance.Cmp(total) < 0 {
 			logTx(tx).
-				WithField("receiver_id", receiverID.ToString()).
+				WithField("to", target.To.ToString()).
 				Info(response.TransferDeliverTxNotEnoughBalance.Info)
 			return response.TransferDeliverTxNotEnoughBalance
 		}
 
-		transfers[receiverID] = amount
+		transfers[target.To] = amount
 	}
 
-	for receiverID, amount := range transfers {
-		account.AddBalance(state, receiverID, amount)
+	for to, amount := range transfers {
+		account.AddBalance(state, to, amount)
 	}
-	account.MinusBalance(state, senderID, total)
+	account.MinusBalance(state, tx.From, total)
 
-	account.IncrementNextNonce(state, *senderID)
+	account.IncrementNextNonce(state, senderID)
 
 	return response.Success
 }
@@ -156,7 +144,7 @@ func validateTransferSignature(state context.IImmutableState, tx *types.Transfer
 	} else {
 		id := tx.From.GetLikeChainID()
 		if id != nil {
-			if account.IsLikeChainIDHasAddress(state, id, &sigAddr) {
+			if account.IsLikeChainIDHasAddress(state, id, sigAddr) {
 				return true
 			}
 			log.WithFields(logrus.Fields{

@@ -30,8 +30,8 @@ func RecoverSignature(hash []byte, sig *types.Signature) (common.Address, error)
 	return crypto.PubkeyToAddress(*pubKey), nil
 }
 
-// DbKeyRaw composes a key with prefix and suffix for IAVL tree
-func DbKeyRaw(content []byte, prefix string, suffix string) []byte {
+// DbRawKey composes a key with prefix and suffix for IAVL tree
+func DbRawKey(content []byte, prefix string, suffix string) []byte {
 	var buf bytes.Buffer
 
 	if len(prefix) > 0 {
@@ -49,17 +49,34 @@ func DbKeyRaw(content []byte, prefix string, suffix string) []byte {
 	return buf.Bytes()
 }
 
-// DbIDKey composes a key with LikeChain ID in `{prefix}_{id}_{suffix}` format
-func DbIDKey(id types.LikeChainID, prefix string, suffix string) []byte {
-	return DbKeyRaw(id.Content, prefix, suffix)
+// DbIDKey composes a key with LikeChain ID in
+// `{prefix}:id:_{id}_{suffix}` format
+func DbIDKey(id *types.LikeChainID, prefix string, suffix string) []byte {
+	var buf bytes.Buffer
+	buf.WriteString(prefix)
+	buf.WriteString(":id:")
+	return DbRawKey(id.Content, buf.String(), suffix)
 }
 
-// DbAddrKey returns a key with Ethereum address in `addr_{addr}_id` format
-func DbAddrKey(ethAddr common.Address) []byte {
-	return DbRawAddrKey(ethAddr.Bytes())
+// DbAddrKey returns a key with Ethereum address in
+// `{prefix}:addr:_{addr}_{suffix}` format
+func DbAddrKey(addr *types.Address, prefix string, suffix string) []byte {
+	var buf bytes.Buffer
+	buf.WriteString(prefix)
+	buf.WriteString(":addr:")
+	return DbRawKey(addr.Content, buf.String(), suffix)
 }
 
-// DbRawAddrKey returns a key with protobuf address in `addr_{addr}_id` format
-func DbRawAddrKey(addr []byte) []byte {
-	return DbKeyRaw(addr, "addr", "id")
+// DbIdentifierKey returns a key either with Ethereum address or LikeChain ID
+func DbIdentifierKey(
+	identifier *types.Identifier,
+	prefix string,
+	suffix string,
+) (key []byte) {
+	if addr := identifier.GetAddr(); addr != nil {
+		key = DbAddrKey(addr, prefix, suffix)
+	} else if id := identifier.GetLikeChainID(); id != nil {
+		key = DbIDKey(id, prefix, suffix)
+	}
+	return key
 }

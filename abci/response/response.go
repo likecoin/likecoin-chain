@@ -163,23 +163,13 @@ var TransferDeliverTxSenderNotRegistered = R{
 	Info: "Sender of TransferTransaction not register in DeliverTx",
 }
 
-var TransferCheckTxReceiverNotRegistered = R{
-	Code: 12040,
-	Info: "Receiver of TransferTransaction not register in CheckTx",
-}
-
-var TransferDeliverTxReceiverNotRegistered = R{
-	Code: 12041,
-	Info: "Receiver of TransferTransaction not register in DeliverTx",
-}
-
 var TransferCheckTxNotEnoughBalance = R{
-	Code: 12050,
+	Code: 12040,
 	Info: "Sender's balance of TransferTransaction not enough in CheckTx",
 }
 
 var TransferDeliverTxNotEnoughBalance = R{
-	Code: 12051,
+	Code: 12041,
 	Info: "Sender's balance of TransferTransaction not enough in DeliverTx",
 }
 

@@ -35,8 +35,7 @@ func checkRegister(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.RegisterCheckTxInvalidSignature
 	}
 
-	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
-	if existed != nil {
+	if account.IsAddressRegistered(state, tx.Addr.ToEthereum()) {
 		logTx(tx).Info(response.RegisterCheckTxDuplicated.Info)
 		return response.RegisterCheckTxDuplicated
 	}
@@ -60,8 +59,7 @@ func deliverRegister(state context.IMutableState, rawTx *types.Transaction) resp
 		return response.RegisterDeliverTxInvalidSignature
 	}
 
-	_, existed := state.ImmutableStateTree().Get(utils.DbAddrKey(tx.Addr.ToEthereum()))
-	if existed != nil {
+	if account.IsAddressRegistered(state, tx.Addr.ToEthereum()) {
 		logTx(tx).Info(response.RegisterDeliverTxDuplicated.Info)
 		return response.RegisterDeliverTxDuplicated
 	}
