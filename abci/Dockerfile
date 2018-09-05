@@ -9,8 +9,8 @@ RUN apk update && apk upgrade && apk add --no-cache build-base git
 ADD https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 /usr/local/bin/dep
 RUN chmod +x /usr/local/bin/dep
 
-RUN mkdir -p /go/src/github.com/likecoin/likechain/
-WORKDIR /go/src/github.com/likecoin/likechain/
+RUN mkdir -p /go/src/github.com/likecoin/likechain/abci
+WORKDIR /go/src/github.com/likecoin/likechain/abci
 
 # Copy the Gopkg.toml and Gopkg.lock to WORKDIR
 COPY Gopkg.lock Gopkg.toml ./

@@ -5,8 +5,8 @@ services:
     container_name: likechain_abci-1
     image: likechain/abci
     volumes:
-      - ./abci:/go/src/github.com/likecoin/likechain
-      - /go/src/github.com/likecoin/likechain/vendor
+      - ./abci:/go/src/github.com/likecoin/likechain/abci
+      - /go/src/github.com/likecoin/likechain/abci/vendor
   tendermint-1: &tendermint-node
     build: ./tendermint
     image: likechain/tendermint
