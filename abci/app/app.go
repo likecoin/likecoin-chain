@@ -5,6 +5,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -18,8 +19,8 @@ func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
 		return abci.ResponseCheckTx{
-			Code: 1, 
-			Info: "Cannot parse transaction"
+			Code: 1,
+			Info: "Cannot parse transaction",
 		}
 	}
 	return handlers.CheckTx(app.ctx.GetImmutableState(), tx)
@@ -30,10 +31,10 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
 		return abci.ResponseDeliverTx{
 			Code: 1,
-			Info: "Cannot parse transaction"
+			Info: "Cannot parse transaction",
 		}
 	}
-	return handlers.DeliverTx(app.ctx.GetMutableState(), tx)
+	return handlers.DeliverTx(app.ctx.GetMutableState(), tx, utils.HashRawTx(rawTx))
 }
 
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {

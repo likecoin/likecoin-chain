@@ -80,3 +80,13 @@ func DbIdentifierKey(
 	}
 	return key
 }
+
+// DbTxHashKey returns a key with txHash
+func DbTxHashKey(txHash []byte, suffix string) []byte {
+	return DbRawKey(txHash, "tx:hash:", suffix)
+}
+
+// HashRawTx hash a rawTx in byte
+func HashRawTx(rawTx []byte) []byte {
+	return crypto.Keccak256(rawTx)
+}

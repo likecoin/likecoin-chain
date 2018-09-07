@@ -43,7 +43,7 @@ func checkRegister(state context.IImmutableState, rawTx *types.Transaction) resp
 	return response.Success
 }
 
-func deliverRegister(state context.IMutableState, rawTx *types.Transaction) response.R {
+func deliverRegister(state context.IMutableState, rawTx *types.Transaction, txHash []byte) response.R {
 	tx := rawTx.GetRegisterTx()
 	if tx == nil {
 		log.Panic("Expect RegisterTx but got nil")

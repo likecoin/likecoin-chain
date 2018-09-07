@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -21,7 +23,6 @@ func wrapRegisterTransaction(tx *types.RegisterTransaction) *types.Transaction {
 		},
 	}
 }
-
 func TestCheckAndDeliverRegister(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
@@ -30,7 +31,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 		rawTx := &types.Transaction{}
 
 		So(func() { checkRegister(state, rawTx) }, ShouldPanic)
-		So(func() { deliverRegister(state, rawTx) }, ShouldPanic)
+		So(func() { deliverRegister(state, rawTx, nil) }, ShouldPanic)
 	})
 
 	Convey("Given a Register Transaction", t, func() {
@@ -41,6 +42,9 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			Sig:  sigHex,
 		})
 
+		rawTxBytes, _ := proto.Marshal(rawTx)
+		txHash := utils.HashRawTx(rawTxBytes)
+
 		Convey("If it is a valid transaction", func() {
 			Convey("CheckTx should return Code 0", func() {
 				res := checkRegister(state, rawTx)
@@ -49,7 +53,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			})
 
 			Convey("For DeliverTx", func() {
-				res := deliverRegister(state, rawTx)
+				res := deliverRegister(state, rawTx, txHash)
 
 				Convey("It should return Code 0 and non-empty Data", func() {
 					So(res.Code == 0 && len(res.Data) > 0, ShouldBeTrue)
@@ -68,7 +72,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 					})
 
 					Convey("For DeliverTx", func() {
-						res := deliverRegister(state, rawTx)
+						res := deliverRegister(state, rawTx, txHash)
 
 						code := response.RegisterDeliverTxDuplicated.Code
 						Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
@@ -91,7 +95,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code = response.RegisterDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(state, rawTx)
+				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -109,7 +113,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code = response.RegisterDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(state, rawTx)
+				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -127,7 +131,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 
 			code = response.RegisterDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverRegister(state, rawTx)
+				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})

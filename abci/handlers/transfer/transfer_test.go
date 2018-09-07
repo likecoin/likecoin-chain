@@ -5,8 +5,10 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/fixture"
+	"github.com/likecoin/likechain/abci/utils"
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
@@ -31,7 +33,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		rawTx := &types.Transaction{}
 
 		So(func() { checkTransfer(state, rawTx) }, ShouldPanic)
-		So(func() { deliverTransfer(state, rawTx) }, ShouldPanic)
+		So(func() { deliverTransfer(state, rawTx, nil) }, ShouldPanic)
 	})
 
 	Convey("Given a Transfer Transaction", t, func() {
@@ -51,6 +53,9 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			Sig:   types.NewSignatureFromHex("0xf194fd5457c6a25bda697821283b9e2cc81279362215e448cc80d9c36c17cc2a3dc29ecf46f11f4263af85339cb47bc0c576ec32da184d396e8312b0fac0bb201b"),
 		})
 
+		rawTxBytes, _ := proto.Marshal(rawTx)
+		txHash := utils.HashRawTx(rawTxBytes)
+
 		Convey("If it is a valid transaction", func() {
 			Convey("CheckTx should return code 0", func() {
 				res := checkTransfer(state, rawTx)
@@ -58,10 +63,14 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 
 			Convey("For DeliverTx", func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				Convey("Should return Code 0", func() {
 					So(res.Code, ShouldEqual, 0)
+				})
+
+				Convey("Tx Status should be success", func() {
+					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusSuccess)
 				})
 
 				Convey("Balance of those accounts in the state should be updated correctly ", func() {
@@ -86,11 +95,15 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					})
 
 					Convey("For DeliverTx", func() {
-						res := deliverTransfer(state, rawTx)
+						res := deliverTransfer(state, rawTx, txHash)
 
 						code := response.TransferDeliverTxDuplicated.Code
 						Convey(fmt.Sprintf("Should return Code %d", code), func() {
 							So(res.Code, ShouldEqual, code)
+						})
+
+						Convey("Tx Status should be success", func() {
+							So(GetStatus(state, txHash), ShouldEqual, types.TxStatusSuccess)
 						})
 					})
 				})
@@ -109,9 +122,13 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code = response.TransferDeliverTxInvalidFormat.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
+
+				Convey("Tx Status should be failed", func() {
+					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusFailed)
+				})
 			})
 		})
 
@@ -127,7 +144,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code = response.TransferDeliverTxSenderNotRegistered.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -145,7 +162,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code = response.TransferDeliverTxInvalidSignature.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -165,7 +182,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code = response.TransferDeliverTxInvalidNonce.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})
@@ -183,7 +200,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 
 			code = response.TransferDeliverTxNotEnoughBalance.Code
 			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverTransfer(state, rawTx)
+				res := deliverTransfer(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
 			})

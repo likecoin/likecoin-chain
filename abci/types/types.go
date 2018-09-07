@@ -1,7 +1,9 @@
 package types
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -204,4 +206,49 @@ func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 		"nonce":    tx.Nonce,
 		"to":       to,
 	})
+}
+
+// TxStatus is an integer representation of transaction status
+type TxStatus int8
+
+// List of TxStatus
+const (
+	TxStatusNotSet TxStatus = iota - 1
+	TxStatusFailed
+	TxStatusPending
+	TxStatusSuccess
+)
+
+// BytesToTxStatus converts []byte to TxStatus
+func BytesToTxStatus(b []byte) TxStatus {
+	if b != nil {
+		var status TxStatus
+		err := binary.Read(bytes.NewReader(b), binary.BigEndian, &status)
+		if err == nil {
+			return status
+		}
+	}
+	return TxStatusNotSet
+}
+
+// Bytes converts TxStatus to []byte
+func (status TxStatus) Bytes() []byte {
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, status)
+	if err == nil {
+		return buf.Bytes()
+	}
+	return nil
+}
+
+func (status TxStatus) String() string {
+	switch status {
+	case TxStatusFailed:
+		return "failed"
+	case TxStatusPending:
+		return "pending"
+	case TxStatusSuccess:
+		return "success"
+	}
+	return ""
 }

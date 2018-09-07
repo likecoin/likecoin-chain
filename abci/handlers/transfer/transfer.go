@@ -67,7 +67,33 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 	return response.Success
 }
 
-func deliverTransfer(state context.IMutableState, rawTx *types.Transaction) response.R {
+func deliverTransfer(
+	state context.IMutableState,
+	rawTx *types.Transaction,
+	txHash []byte,
+) response.R {
+	r := deliver(state, rawTx, txHash)
+
+	var status types.TxStatus
+	if r.Code != 0 {
+		status = types.TxStatusFailed
+	} else {
+		status = types.TxStatusSuccess
+	}
+
+	prevStatus := GetStatus(state, txHash)
+	if prevStatus == types.TxStatusNotSet {
+		setStatus(state, txHash, status)
+	}
+
+	return r
+}
+
+func deliver(
+	state context.IMutableState,
+	rawTx *types.Transaction,
+	txHash []byte,
+) response.R {
 	tx := rawTx.GetTransferTx()
 	if tx == nil {
 		log.Panic("Expect TransferTx but got nil")
@@ -181,6 +207,24 @@ func validateTransferTransactionFormat(state context.IImmutableState, tx *types.
 	}
 
 	return true
+}
+
+func getStatusKey(txHash []byte) []byte {
+	return utils.DbTxHashKey(txHash, "status")
+}
+
+// GetStatus returns transaction status by txHash
+func GetStatus(state context.IImmutableState, txHash []byte) types.TxStatus {
+	_, statusBytes := state.ImmutableStateTree().Get(getStatusKey(txHash))
+	return types.BytesToTxStatus(statusBytes)
+}
+
+func setStatus(
+	state context.IMutableState,
+	txHash []byte,
+	status types.TxStatus,
+) {
+	state.MutableStateTree().Set(getStatusKey(txHash), status.Bytes())
 }
 
 func init() {
