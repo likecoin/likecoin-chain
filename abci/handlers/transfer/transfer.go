@@ -14,6 +14,7 @@ import (
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	"github.com/sirupsen/logrus"
+	"github.com/tendermint/tendermint/libs/common"
 )
 
 const maxRemarkSize = 4096
@@ -77,6 +78,7 @@ func deliverTransfer(
 	txHash []byte,
 ) response.R {
 	r := deliver(state, rawTx, txHash)
+	r.Tags = []common.KVPair{{Key: []byte("tx.hash"), Value: txHash}}
 
 	var status types.TxStatus
 	if r.Code != 0 {
