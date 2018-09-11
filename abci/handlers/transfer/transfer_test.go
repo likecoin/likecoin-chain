@@ -313,6 +313,14 @@ func TestValidateTransferTransactionFormat(t *testing.T) {
 			})
 		})
 
+		Convey("If the remark of its receiver exceed the size limit", func() {
+			tx.ToList[0].Remark = make([]byte, maxRemarkSize+1)
+
+			Convey("It should not pass the validation", func() {
+				So(validateTransferTransactionFormat(state, tx), ShouldBeFalse)
+			})
+		})
+
 		Convey("If its signature format is invalid", func() {
 			tx.Sig = types.NewSignatureFromHex("")
 

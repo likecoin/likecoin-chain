@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
 // RecoverSignature returns the address for the account that was used to create the signature.
@@ -88,5 +89,5 @@ func DbTxHashKey(txHash []byte, suffix string) []byte {
 
 // HashRawTx hash a rawTx in byte
 func HashRawTx(rawTx []byte) []byte {
-	return crypto.Keccak256(rawTx)
+	return tmhash.Sum(rawTx)
 }

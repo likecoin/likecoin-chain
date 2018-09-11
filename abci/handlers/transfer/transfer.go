@@ -1,6 +1,8 @@
 package transfer
 
 import (
+	"encoding/binary"
+	"fmt"
 	"math/big"
 	"reflect"
 
@@ -13,6 +15,8 @@ import (
 	"github.com/likecoin/likechain/abci/utils"
 	"github.com/sirupsen/logrus"
 )
+
+const maxRemarkSize = 4096
 
 var log = logger.L
 
@@ -193,6 +197,11 @@ func validateTransferTransactionFormat(state context.IImmutableState, tx *types.
 		for _, target := range tx.ToList {
 			if !target.IsValidFormat() {
 				log.Debug("Invalid receiver format in transfer transaction")
+				return false
+			}
+			if size := binary.Size(target.Remark); size > maxRemarkSize {
+				log.WithField("size", size).
+					Debug(fmt.Sprintf("Size of the remark exceeds %dB", maxRemarkSize))
 				return false
 			}
 		}
