@@ -1,6 +1,8 @@
 package context
 
 import (
+	"encoding/binary"
+
 	"github.com/tendermint/iavl"
 )
 
@@ -32,18 +34,43 @@ func (state *MutableState) MutableWithdrawTree() *iavl.MutableTree {
 
 // GetBlockHash returns the block hash of the current state
 func (state *MutableState) GetBlockHash() []byte {
-	return nil // TODO
+	_, value := state.MutableStateTree().Get(appBlockHashKey)
+	return value
 }
 
-// SetBlockHash saves a block hash to the current state
+// SetBlockHash saves the block hash to the current state
 func (state *MutableState) SetBlockHash(blockHash []byte) {
-	// TODO
+	state.MutableStateTree().Set(appBlockHashKey, blockHash)
+}
+
+// GetHeight returns the block height of the current state
+func (state *MutableState) GetHeight() int64 {
+	_, value := state.MutableStateTree().Get(appHeightKey)
+	if value == nil {
+		return 0
+	}
+	return int64(binary.BigEndian.Uint64(value))
+}
+
+// SetHeight saves the block height to the current state
+func (state *MutableState) SetHeight(height int64) {
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(height))
+	state.MutableStateTree().Set(appHeightKey, buf)
+}
+
+// GetAppHash returns the app hash of the current state
+func (state *MutableState) GetAppHash() []byte {
+	if state.GetHeight() == 0 {
+		return nil
+	}
+	return generateAppHash(state.stateTree.Hash(), state.withdrawTree.Hash())
 }
 
 // Save saves a new state tree version and a new state withdraw tree version,
 // based on the current state of those trees.
 // Returns a merged hash from those trees
-func (state *MutableState) Save() (hash []byte) {
+func (state *MutableState) Save() []byte {
 	stateHash, _, err := state.stateTree.SaveVersion()
 	if err != nil {
 		log.WithError(err).Panic("Cannot save state tree")
@@ -52,14 +79,12 @@ func (state *MutableState) Save() (hash []byte) {
 	if err != nil {
 		log.WithError(err).Panic("Cannot save withdraw tree")
 	}
-	hash = make([]byte, 40) // TODO: remove magic number
-	// TODO: After InitChain implementation, the hash will be no longer empty
-	// the following if checking can be removed by then
-	if len(stateHash) >= 20 && len(withdrawHash) >= 20 {
-		// Indended to put withdraw tree hash first,
-		// easier for Relay contract to parse
-		copy(hash, withdrawHash[:20])
-		copy(hash[20:], stateHash[:20])
-	}
-	return hash
+	return generateAppHash(stateHash, withdrawHash)
+}
+
+// Init initializes states
+func (state *MutableState) Init() {
+	log.Info("Init states")
+	state.SetHeight(0)
+	state.MutableWithdrawTree().Set(initKey, []byte{})
 }

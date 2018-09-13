@@ -3,6 +3,8 @@
 node_count=${NODE_COUNT:=1}
 tendermint_image="likechain/tendermint"
 
+rm -rf tendermint/nodes/*
+
 is_osx () {
     [[ "$OSTYPE" =~ ^darwin ]] || return 1
 }

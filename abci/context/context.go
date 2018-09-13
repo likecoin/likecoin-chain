@@ -13,6 +13,7 @@ type IImmutableState interface {
 	ImmutableStateTree() *iavl.ImmutableTree
 	ImmutableWithdrawTree() *iavl.ImmutableTree
 	GetBlockHash() []byte
+	GetHeight() int64
 }
 
 // IMutableState is an interface for accessing immutable context
@@ -34,14 +35,14 @@ type ApplicationContext struct {
 func New(dbPath string) *ApplicationContext {
 	return &ApplicationContext{
 		state: &MutableState{
-			stateTree:    newTree(dbPath, "state"),
-			withdrawTree: newTree(dbPath, "withdraw"),
+			stateTree:    newTree("state", dbPath),
+			withdrawTree: newTree("withdraw", dbPath),
 		},
 	}
 }
 
-func newTree(dbPath, dir string) *iavl.MutableTree {
-	db, err := db.NewGoLevelDB(dbPath, dir)
+func newTree(name, path string) *iavl.MutableTree {
+	db, err := db.NewGoLevelDB(name, path)
 	if err != nil {
 		log.WithError(err).Panic("Unable to create GoLevelDB")
 	}
@@ -50,6 +51,13 @@ func newTree(dbPath, dir string) *iavl.MutableTree {
 
 // GetImmutableState returns an immutable context
 func (ctx *ApplicationContext) GetImmutableState() *ImmutableState {
+	if ctx.state.GetHeight() == 0 {
+		return &ImmutableState{
+			stateTree:    ctx.state.stateTree.ImmutableTree,
+			withdrawTree: ctx.state.withdrawTree.ImmutableTree,
+		}
+	}
+
 	stateTreeVersion := ctx.state.stateTree.Version64()
 	stateTree, err := ctx.state.stateTree.GetImmutable(stateTreeVersion)
 	if err != nil {

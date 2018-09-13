@@ -1,13 +1,18 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
+
+var log = logger.L
 
 type LikeChainApplication struct {
 	abci.BaseApplication
@@ -15,9 +20,22 @@ type LikeChainApplication struct {
 	ctx *context.ApplicationContext
 }
 
+func NewLikeChainApplication(dbPath string) *LikeChainApplication {
+	return &LikeChainApplication{
+		ctx: context.New(dbPath),
+	}
+}
+
+func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	log.Info("APP BeginBlock")
+	return abci.ResponseBeginBlock{}
+}
+
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
+	log.Info("APP CheckTx")
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
+		log.WithError(err).Debug("APP CheckTx cannot parse transaction")
 		return abci.ResponseCheckTx{
 			Code: 1,
 			Info: "Cannot parse transaction",
@@ -27,8 +45,10 @@ func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 }
 
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
+	log.Info("APP DeliverTx")
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
+		log.WithError(err).Debug("APP DeliverTx Cannot parse transaction")
 		return abci.ResponseDeliverTx{
 			Code: 1,
 			Info: "Cannot parse transaction",
@@ -38,21 +58,53 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 }
 
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
+	log.WithField("height", req.Height).Info("APP EndBlock")
 	return abci.ResponseEndBlock{} // TODO
 }
 
 func (app *LikeChainApplication) Commit() abci.ResponseCommit {
-	return abci.ResponseCommit{} // TODO
+	state := app.ctx.GetMutableState()
+	state.SetHeight(state.GetHeight() + 1)
+	hash := state.Save()
+
+	log.
+		WithField("hash", hash).
+		Info("APP Commit")
+
+	return abci.ResponseCommit{Data: hash}
 }
 
 func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.ResponseInitChain {
-	return abci.ResponseInitChain{} // TODO
+	app.ctx.GetMutableState().Init()
+
+	log.
+		Info("APP InitChain")
+
+	return abci.ResponseInitChain{
+		ConsensusParams: params.ConsensusParams,
+		Validators:      params.Validators,
+	}
 }
 
 func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.ResponseQuery {
+	log.Info("APP Query")
 	return abci.ResponseQuery{} // TODO
 }
 
 func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {
-	return abci.ResponseInfo{} // TODO
+	state := app.ctx.GetImmutableState()
+	height := state.GetHeight()
+	appHash := state.GetAppHash()
+
+	log.
+		WithField("height", height).
+		WithField("hash", appHash).
+		Info("APP Info")
+
+	return abci.ResponseInfo{
+		Data:             fmt.Sprintf("{\"hash\":\"%v\"}", appHash),
+		Version:          fmt.Sprintf("LikeChain v1.0 (Tendermint v%s", req.Version),
+		LastBlockHeight:  height,
+		LastBlockAppHash: appHash,
+	}
 }
