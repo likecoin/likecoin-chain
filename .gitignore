@@ -2,6 +2,8 @@ abci/config.toml
 abci/vendor/**
 abci/_vendor-*
 
+api/vendor/**
+
 tendermint/nodes/*/data/**
 
 !tendermint/nodes

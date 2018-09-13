@@ -1,5 +1,14 @@
 version: "3.6"
 services:
+  api:
+    build: ./api
+    container_name: likechain_api
+    image: likechain/api
+    volumes:
+      - ./api:/go/src/github.com/likecoin/likechain/api
+      - /go/src/github.com/likecoin/likechain/api/vendor
+    ports:
+      - 3000:3000
   abci-1: &abci-node
     build: ./abci
     container_name: likechain_abci-1
