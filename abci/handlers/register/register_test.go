@@ -1,6 +1,7 @@
 package register
 
 import (
+	"encoding/binary"
 	"fmt"
 	"testing"
 
@@ -30,10 +31,10 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 	Convey("Given a Register Transaction", t, func() {
 		appCtx.Reset()
 
-		rawTx := types.RegisterTransaction{
+		rawTx := (&types.RegisterTransaction{
 			Addr: fixture.Alice.RawAddress,
 			Sig:  sigHex,
-		}.ToTransaction()
+		}).ToTransaction()
 
 		rawTxBytes, _ := proto.Marshal(rawTx)
 		txHash := utils.HashRawTx(rawTxBytes)
@@ -49,7 +50,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 				res := deliverRegister(state, rawTx, txHash)
 
 				Convey("It should return Code 0 and non-empty Data", func() {
-					So(res.Code == 0 && len(res.Data) > 0, ShouldBeTrue)
+					So(res.Code == 0 && binary.Size(res.Data) > 0, ShouldBeTrue)
 				})
 
 				state.Save()

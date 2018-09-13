@@ -5,7 +5,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	handler "github.com/likecoin/likechain/abci/handlers"
+	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -98,7 +98,8 @@ func validateRegisterTransactionFormat(tx *types.RegisterTransaction) bool {
 }
 
 func init() {
-	t := reflect.TypeOf((*types.Transaction_RegisterTx)(nil))
-	handler.RegisterCheckTxHandler(t, checkRegister)
-	handler.RegisterDeliverTxHandler(t, deliverRegister)
+	log.Info("Init register handlers")
+	_type := reflect.TypeOf((*types.Transaction_RegisterTx)(nil))
+	table.RegisterCheckTxHandler(_type, checkRegister)
+	table.RegisterDeliverTxHandler(_type, deliverRegister)
 }

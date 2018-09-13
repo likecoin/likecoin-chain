@@ -8,7 +8,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	handler "github.com/likecoin/likechain/abci/handlers"
+	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -239,7 +239,8 @@ func SetStatus(
 }
 
 func init() {
-	t := reflect.TypeOf((*types.Transaction_TransferTx)(nil))
-	handler.RegisterCheckTxHandler(t, checkTransfer)
-	handler.RegisterDeliverTxHandler(t, deliverTransfer)
+	log.Info("Init transfer handlers")
+	_type := reflect.TypeOf((*types.Transaction_TransferTx)(nil))
+	table.RegisterCheckTxHandler(_type, checkTransfer)
+	table.RegisterDeliverTxHandler(_type, deliverTransfer)
 }

@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	handler "github.com/likecoin/likechain/abci/handlers"
+	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -38,7 +38,7 @@ func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) resp
 	return response.Success // TODO
 }
 
-func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction) response.R {
+func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHash []byte) response.R {
 	tx := rawTx.GetWithdrawTx()
 	if tx == nil {
 		log.Panic("Expect WithdrawTx but got nil")
@@ -70,7 +70,8 @@ func withdraw(state context.IMutableState, tx *types.WithdrawTransaction) {
 }
 
 func init() {
-	t := reflect.TypeOf((*types.Transaction_WithdrawTx)(nil))
-	handler.RegisterCheckTxHandler(t, checkWithdraw)
-	handler.RegisterDeliverTxHandler(t, deliverWithdraw)
+	log.Info("Init withdraw handlers")
+	_type := reflect.TypeOf((*types.Transaction_WithdrawTx)(nil))
+	table.RegisterCheckTxHandler(_type, checkWithdraw)
+	table.RegisterDeliverTxHandler(_type, deliverWithdraw)
 }
