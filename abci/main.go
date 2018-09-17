@@ -21,6 +21,7 @@ func main() {
 		log.WithError(err).Panic("Error when starting server")
 	}
 	cmn.TrapSignal(func() {
+		app.Stop()
 		svr.Stop()
 	})
 }

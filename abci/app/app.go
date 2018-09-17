@@ -29,6 +29,7 @@ func NewLikeChainApplication(dbPath string) *LikeChainApplication {
 
 func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	log.Info("APP BeginBlock")
+	app.ctx.GetMutableState().SetBlockHash(req.Hash)
 	return abci.ResponseBeginBlock{}
 }
 
@@ -108,4 +109,9 @@ func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {
 		LastBlockHeight:  height,
 		LastBlockAppHash: appHash,
 	}
+}
+
+// Stop handles quit app
+func (app *LikeChainApplication) Stop() {
+	app.ctx.CloseDb()
 }

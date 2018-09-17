@@ -19,6 +19,7 @@ func NewMock() *MockApplicationContext {
 	return &MockApplicationContext{
 		ApplicationContext: &ApplicationContext{
 			state: &MutableState{
+				appDb:        db.NewMemDB(),
 				stateTree:    iavl.NewMutableTree(db.NewMemDB(), 0),
 				withdrawTree: iavl.NewMutableTree(db.NewMemDB(), 0),
 			},
@@ -28,6 +29,10 @@ func NewMock() *MockApplicationContext {
 
 // Reset resets state tree and withdraw tree to last saved version
 func (appCtx *MockApplicationContext) Reset() {
-	appCtx.GetMutableState().MutableStateTree().Rollback()
-	appCtx.GetMutableState().MutableWithdrawTree().Rollback()
+	itr := appCtx.state.appDb.Iterator(nil, nil)
+	for ; itr.Valid(); itr.Next() {
+		appCtx.state.appDb.Delete(itr.Key())
+	}
+	appCtx.state.stateTree.Rollback()
+	appCtx.state.withdrawTree.Rollback()
 }

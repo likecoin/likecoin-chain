@@ -4,10 +4,15 @@ import (
 	"encoding/binary"
 
 	"github.com/tendermint/iavl"
+	"github.com/tendermint/tendermint/libs/db"
 )
 
 // MutableState is a struct contains mutable state
 type MutableState struct {
+	appDb      db.DB
+	stateDb    db.DB
+	withdrawDb db.DB
+
 	stateTree    *iavl.MutableTree
 	withdrawTree *iavl.MutableTree
 }
@@ -34,18 +39,18 @@ func (state *MutableState) MutableWithdrawTree() *iavl.MutableTree {
 
 // GetBlockHash returns the block hash of the current state
 func (state *MutableState) GetBlockHash() []byte {
-	_, value := state.MutableStateTree().Get(appBlockHashKey)
+	value := state.appDb.Get(appBlockHashKey)
 	return value
 }
 
 // SetBlockHash saves the block hash to the current state
 func (state *MutableState) SetBlockHash(blockHash []byte) {
-	state.MutableStateTree().Set(appBlockHashKey, blockHash)
+	state.appDb.Set(appBlockHashKey, blockHash)
 }
 
 // GetHeight returns the block height of the current state
 func (state *MutableState) GetHeight() int64 {
-	_, value := state.MutableStateTree().Get(appHeightKey)
+	value := state.appDb.Get(appHeightKey)
 	if value == nil {
 		return 0
 	}
@@ -56,7 +61,7 @@ func (state *MutableState) GetHeight() int64 {
 func (state *MutableState) SetHeight(height int64) {
 	buf := make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, uint64(height))
-	state.MutableStateTree().Set(appHeightKey, buf)
+	state.appDb.Set(appHeightKey, buf)
 }
 
 // GetAppHash returns the app hash of the current state
@@ -86,5 +91,5 @@ func (state *MutableState) Save() []byte {
 func (state *MutableState) Init() {
 	log.Info("Init states")
 	state.SetHeight(0)
-	state.MutableWithdrawTree().Set(initKey, []byte{})
+	state.withdrawTree.Set(initKey, []byte{})
 }

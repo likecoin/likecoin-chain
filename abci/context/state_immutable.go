@@ -4,10 +4,12 @@ import (
 	"encoding/binary"
 
 	"github.com/tendermint/iavl"
+	"github.com/tendermint/tendermint/libs/db"
 )
 
 // ImmutableState is a struct contains the most recently saved state
 type ImmutableState struct {
+	appDb        db.DB
 	stateTree    *iavl.ImmutableTree
 	withdrawTree *iavl.ImmutableTree
 }
@@ -24,13 +26,13 @@ func (state *ImmutableState) ImmutableWithdrawTree() *iavl.ImmutableTree {
 
 // GetBlockHash returns the most recently saved block hash
 func (state *ImmutableState) GetBlockHash() []byte {
-	_, value := state.ImmutableStateTree().Get(appBlockHashKey)
+	value := state.appDb.Get(appBlockHashKey)
 	return value
 }
 
 // GetHeight returns the most recently block height
 func (state *ImmutableState) GetHeight() int64 {
-	_, value := state.ImmutableStateTree().Get(appHeightKey)
+	value := state.appDb.Get(appHeightKey)
 	if value == nil {
 		return 0
 	}
