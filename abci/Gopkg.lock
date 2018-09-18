@@ -359,11 +359,12 @@
   version = "v0.10.0"
 
 [[projects]]
-  digest = "1:3ee378181392a53d204838e6ce34cae096365a22c81b6ddbc2a8eae1932ebc05"
+  digest = "1:1137ac70dfca6318db3cf2ac27359d569038645694bfdbe38e0011d518b7733e"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/server",
     "abci/types",
+    "crypto",
     "crypto/tmhash",
     "libs/common",
     "libs/db",
@@ -375,9 +376,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  digest = "1:9c2ed66f474408b23cdc4a845f0236897f7b826bf1c4b19eab6e90df998905cb"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "ripemd160",
+    "ssh/terminal",
+  ]
   pruneopts = "UT"
   revision = "614d502a4dac94afa3a6ce146bd1736da82514c6"
 
@@ -498,6 +502,7 @@
     "github.com/tendermint/iavl",
     "github.com/tendermint/tendermint/abci/server",
     "github.com/tendermint/tendermint/abci/types",
+    "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/crypto/tmhash",
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",
