@@ -9,6 +9,8 @@ services:
       - /go/src/github.com/likecoin/likechain/api/vendor
     ports:
       - 3000:3000
+    environment:
+      - LIKECHAIN_API_CLIENT_HOST=tendermint-1:26657
   abci-1: &abci-node
     build: ./abci
     container_name: likechain_abci-1
