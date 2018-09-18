@@ -166,14 +166,7 @@ func getAccountInfoRes(data []byte) *accountInfoRes {
 }
 
 func getTxStateRes(data []byte) string {
-	txState := struct {
-		Status string `json:"status"`
-	}{}
-	err := json.Unmarshal(data, &txState)
-	if err != nil {
-		return ""
-	}
-	return txState.Status
+	return string(data)
 }
 
 func TestRegistration(t *testing.T) {

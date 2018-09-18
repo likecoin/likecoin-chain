@@ -38,7 +38,7 @@ func TestQueryTxState(t *testing.T) {
 
 				Convey(fmt.Sprintf("Should return code 0 and %s", s), func() {
 					So(res.Code, ShouldEqual, 0)
-					So(string(res.Value), ShouldEqual, fmt.Sprintf(`{"status":"%s"}`, s))
+					So(string(res.Value), ShouldEqual, s)
 				})
 			})
 		}

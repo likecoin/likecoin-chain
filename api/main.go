@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -63,6 +64,68 @@ func register(c *gin.Context) {
 	})
 }
 
+type transferTargetParams struct {
+	Identity string `json:"identity" binding:"required"`
+	Value    string `json:"value" binding:"required"`
+	Remark   string `json:"remark"`
+}
+type transferBody struct {
+	Identity string                 `json:"identity" binding:"required"`
+	To       []transferTargetParams `json:"to" binding:"required"`
+	Nonce    int64                  `json:"nonce" binding:"required"`
+	Fee      string                 `json:"fee" binding:"required"`
+	Sig      string                 `json:"sig" binding:"required"`
+}
+
+func transfer(c *gin.Context) {
+	var json transferBody
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	tx := types.TransferTransaction{
+		From:   types.NewIdentifier(json.Identity),
+		ToList: make([]*types.TransferTransaction_TransferTarget, len(json.To)),
+		Nonce:  uint64(json.Nonce),
+		Fee:    types.NewBigInteger(json.Fee),
+		Sig:    types.NewSignatureFromHex(json.Sig),
+	}
+
+	for i, t := range json.To {
+		tx.ToList[i] = &types.TransferTransaction_TransferTarget{
+			To:     types.NewIdentifier(t.Identity),
+			Value:  types.NewBigInteger(t.Value),
+			Remark: []byte(t.Remark),
+		}
+	}
+
+	data, err := proto.Marshal(tx.ToTransaction())
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := client.BroadcastTxCommit(data)
+	if res := result.CheckTx; res.IsErr() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  res.Code,
+			"error": res.Info,
+		})
+		return
+	}
+
+	if res := result.DeliverTx; res.IsErr() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  res.Code,
+			"error": res.Info,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
 type accountInfoQuery struct {
 	Identity string `form:"identity" binding:"required"`
 }
@@ -96,6 +159,43 @@ func accountInfo(c *gin.Context) {
 	)
 }
 
+type txStateQuery struct {
+	TxHash string `form:"tx_hash" binding:"required"`
+}
+
+func txState(c *gin.Context) {
+	var query txStateQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	txHash, err := base64.StdEncoding.DecodeString(query.TxHash)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := client.ABCIQuery("tx_state", txHash)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resQuery := result.Response
+	if resQuery.IsErr() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  resQuery.Code,
+			"error": resQuery.Info,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": string(resQuery.Value),
+	})
+}
+
 type blockQuery struct {
 	Height int64 `form:"height" binding:"required"`
 }
@@ -124,8 +224,10 @@ func main() {
 	router := gin.Default()
 
 	router.POST("/register", register)
+	router.POST("/transfer", transfer)
 
 	router.GET("/account_info", accountInfo)
+	router.GET("/tx_state", txState)
 	router.GET("/block", block)
 
 	router.Run(":3000")

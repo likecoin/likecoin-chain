@@ -17,14 +17,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func wrapTransferTransaction(tx *types.TransferTransaction) *types.Transaction {
-	return &types.Transaction{
-		Tx: &types.Transaction_TransferTx{
-			TransferTx: tx,
-		},
-	}
-}
-
 func TestCheckAndDeliverTransfer(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
@@ -42,7 +34,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		account.AddBalance(state, fixture.Alice.ID.ToIdentifier(), big.NewInt(9000000000000000000))
 		account.NewAccountFromID(state, fixture.Bob.ID, fixture.Bob.Address)
 
-		rawTx := wrapTransferTransaction(&types.TransferTransaction{
+		rawTx := (&types.TransferTransaction{
 			From: fixture.Alice.ID.ToIdentifier(),
 			ToList: []*types.TransferTransaction_TransferTarget{
 				types.NewTransferTarget(fixture.Bob.ID.ToIdentifier(), "1000000000000000000", ""),
@@ -51,7 +43,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			Nonce: 1,
 			Fee:   types.NewBigInteger("1"),
 			Sig:   types.NewSignatureFromHex("0xf194fd5457c6a25bda697821283b9e2cc81279362215e448cc80d9c36c17cc2a3dc29ecf46f11f4263af85339cb47bc0c576ec32da184d396e8312b0fac0bb201b"),
-		})
+		}).ToTransaction()
 
 		rawTxBytes, _ := proto.Marshal(rawTx)
 		txHash := utils.HashRawTx(rawTxBytes)

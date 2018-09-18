@@ -48,7 +48,11 @@ func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 }
 
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
-	log.Info("APP DeliverTx")
+	hash := utils.HashRawTx(rawTx)
+	log.
+		WithField("hash", cmn.HexBytes(hash)).
+		Info("APP DeliverTx")
+
 	tx := &types.Transaction{}
 	if err := proto.Unmarshal(rawTx, tx); err != nil {
 		log.WithError(err).Debug("APP DeliverTx Cannot parse transaction")
@@ -57,7 +61,7 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 			Info: "Cannot parse transaction",
 		}
 	}
-	return handlers.DeliverTx(app.ctx.GetMutableState(), tx, utils.HashRawTx(rawTx))
+	return handlers.DeliverTx(app.ctx.GetMutableState(), tx, hash)
 }
 
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
@@ -96,7 +100,7 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 }
 
 func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.ResponseQuery {
-	log.Info("APP Query")
+	log.WithField("path", reqQuery.Path).Info("APP Query")
 	return query.Query(app.ctx.GetMutableState(), reqQuery)
 }
 
