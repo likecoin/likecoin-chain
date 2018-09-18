@@ -14,7 +14,9 @@ func queryTxState(
 	txHash := reqQuery.Data
 	txStatus := transfer.GetStatus(state, txHash)
 
-	return jsonMap{"status": txStatus.String()}.ToResponse()
+	return response.Success.Merge(response.R{
+		Data: []byte(txStatus.String()),
+	})
 }
 
 func init() {

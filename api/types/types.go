@@ -103,6 +103,18 @@ func (i *BigInteger) ToString() string {
 	return bigInt.String()
 }
 
+// NewIdentifier creates Identifier from string
+func NewIdentifier(s string) *Identifier {
+	if strings.ToLower(s[0:2]) == "0x" {
+		return NewAddressFromHex(s).ToIdentifier()
+	}
+	id, _ := NewLikeChainIDFromString(s)
+	if id == nil {
+		id = &LikeChainID{}
+	}
+	return id.ToIdentifier()
+}
+
 // IsValidFormat checks Identifier format
 func (id *Identifier) IsValidFormat() bool {
 	return (id.GetLikeChainID() != nil && len(id.GetLikeChainID().Content) > 0) ||
@@ -224,6 +236,15 @@ func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 		"nonce":    tx.Nonce,
 		"to":       to,
 	})
+}
+
+// ToTransaction wraps TransferTransaction into Transaction
+func (tx *TransferTransaction) ToTransaction() *Transaction {
+	return &Transaction{
+		Tx: &Transaction_TransferTx{
+			TransferTx: tx,
+		},
+	}
 }
 
 // TxStatus is an integer representation of transaction status
