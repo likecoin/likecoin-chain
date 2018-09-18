@@ -11,7 +11,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	logger "github.com/likecoin/likechain/abci/log"
+	"github.com/sirupsen/logrus"
 )
+
+var log = logger.L
 
 // NewAddressFromHex creates Address from hex string
 func NewAddressFromHex(hex string) *Address {
@@ -224,6 +228,43 @@ func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 		"nonce":    tx.Nonce,
 		"to":       to,
 	})
+}
+
+// GenerateSigningMessageHash generates a signature from a WithdrawTx
+func (tx *WithdrawTransaction) GenerateSigningMessageHash() (hash []byte) {
+	return generateSigningMessageHash(map[string]interface{}{
+		"fee":      tx.Fee.ToString(),
+		"identity": tx.From.ToString(),
+		"nonce":    tx.Nonce,
+		"to_addr":  strings.ToLower(tx.ToAddr.ToEthereum().Hex()),
+		"value":    tx.Value.ToString(),
+	})
+}
+
+func bigIntToUint256Bytes(n *big.Int) []byte {
+	result := make([]byte, 32)
+	b := n.Bytes()
+	l := len(b)
+	if l > 32 {
+		log.WithFields(logrus.Fields{
+			"number": n.String(),
+		}).Panic("Transforming big.Int to uint256 bytes with overflowing value")
+	}
+	copy(result[32-l:], b)
+	return result
+}
+
+// Pack generates a packed version for the WithdrawTx, used when storing and proving withdraw records in withdraw tree
+// Packing format: 20-byte From, 20-byte ToAddr, 32-byte Value, 32-Byte Fee, 8-byte Nonce
+// All numbers are in big endian
+func (tx *WithdrawTransaction) Pack() []byte {
+	buf := new(bytes.Buffer)
+	buf.Write(tx.From.GetLikeChainID().Content)
+	buf.Write(tx.ToAddr.Content)
+	buf.Write(bigIntToUint256Bytes(tx.Value.ToBigInt()))
+	buf.Write(bigIntToUint256Bytes(tx.Fee.ToBigInt()))
+	binary.Write(buf, binary.BigEndian, tx.Nonce)
+	return buf.Bytes()
 }
 
 // TxStatus is an integer representation of transaction status

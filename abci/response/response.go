@@ -223,6 +223,36 @@ var WithdrawDeliverTxDuplicated = R{
 	Info: "Duplicated WithdrawTransaction in DeliverTx",
 }
 
+var WithdrawCheckTxSenderNotRegistered = R{
+	Code: 13030,
+	Info: "Sender of WithdrawTransaction not register in CheckTx",
+}
+
+var WithdrawDeliverTxSenderNotRegistered = R{
+	Code: 13031,
+	Info: "Sender of WithdrawTransaction not register in DeliverTx",
+}
+
+var WithdrawCheckTxNotEnoughBalance = R{
+	Code: 13040,
+	Info: "Sender's balance of WithdrawTransaction not enough in CheckTx",
+}
+
+var WithdrawDeliverTxNotEnoughBalance = R{
+	Code: 13041,
+	Info: "Sender's balance of WithdrawTransaction not enough in DeliverTx",
+}
+
+var WithdrawCheckTxInvalidNonce = R{
+	Code: 13600,
+	Info: "Invalid WithdrawTransaction nonce in CheckTx",
+}
+
+var WithdrawDeliverTxInvalidNonce = R{
+	Code: 13601,
+	Info: "Invalid WithdrawTransaction nonce in DeliverTx",
+}
+
 var QueryPathNotExist = R{
 	Code: 60010,
 	Info: "Invalid query path",
