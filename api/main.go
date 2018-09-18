@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
@@ -219,7 +220,18 @@ func block(c *gin.Context) {
 }
 
 func main() {
-	client = rpcClient.NewHTTP("tcp://localhost:26657", "/websocket")
+	// TODO: Put in config file
+	host := os.Getenv("LIKECHAIN_API_CLIENT_HOST")
+	if host == "" {
+		host = "localhost:26657"
+	}
+
+	port := os.Getenv("LIKECHAIN_API_PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	client = rpcClient.NewHTTP("tcp://"+host, "/websocket")
 
 	router := gin.Default()
 
@@ -230,5 +242,5 @@ func main() {
 	router.GET("/tx_state", txState)
 	router.GET("/block", block)
 
-	router.Run(":3000")
+	router.Run(":" + port)
 }
