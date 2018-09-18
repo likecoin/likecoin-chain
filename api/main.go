@@ -96,13 +96,37 @@ func accountInfo(c *gin.Context) {
 	)
 }
 
+type blockQuery struct {
+	Height int64 `form:"height" binding:"required"`
+}
+
+func block(c *gin.Context) {
+	var query blockQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := client.Block(&query.Height)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result.Block,
+	})
+}
+
 func main() {
 	client = rpcClient.NewHTTP("tcp://localhost:26657", "/websocket")
 
 	router := gin.Default()
 
 	router.POST("/register", register)
+
 	router.GET("/account_info", accountInfo)
+	router.GET("/block", block)
 
 	router.Run(":3000")
 }
