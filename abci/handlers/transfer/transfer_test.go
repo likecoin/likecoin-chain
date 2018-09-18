@@ -110,6 +110,30 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 
+		Convey("If it is a valid transaction with address as identifer", func() {
+			tx := rawTx.GetTransferTx()
+			tx.From = fixture.Alice.RawAddress.ToIdentifier()
+			tx.Sig = types.NewSignatureFromHex("0x5230c3812031d4049216dfa25a4e9663a7634843d0f87a5142a77c29072cefa12095fd4fc362cf3852df38ce85c50fe3d56d021ae9bafe05a54eafd35a2e8e4f1b")
+
+			rawTxBytes, _ = proto.Marshal(rawTx)
+			txHash = utils.HashRawTx(rawTxBytes)
+
+			Convey("CheckTx should return code 0", func() {
+				res := checkTransfer(state, rawTx)
+				So(res.Code, ShouldEqual, 0)
+			})
+
+			Convey("DeliverTx should return Code 0", func() {
+				res := deliverTransfer(state, rawTx, txHash)
+				So(res.Code, ShouldEqual, 0)
+
+				Convey("Balance should be updated correctly ", func() {
+					aliceBalance := account.FetchBalance(state, fixture.Alice.ID.ToIdentifier())
+					So(aliceBalance.String(), ShouldEqual, "6999999999999999999")
+				})
+			})
+		})
+
 		Convey("If its format is invalid", func() {
 			rawTx.GetTransferTx().ToList = []*types.TransferTransaction_TransferTarget{}
 

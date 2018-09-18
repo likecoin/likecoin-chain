@@ -148,19 +148,36 @@ func IdentifierToLikeChainID(state context.IImmutableState, identifier *types.Id
 	return nil
 }
 
+// NormalizeIdentifier converts an identifier with an address to an identifier
+// with LikeChain ID if the address has registered
+func NormalizeIdentifier(
+	state context.IImmutableState,
+	identifier *types.Identifier,
+) *types.Identifier {
+	if addr := identifier.GetAddr(); addr != nil {
+		id := AddressToLikeChainID(state, addr.ToEthereum())
+		if id != nil {
+			return id.ToIdentifier()
+		}
+	}
+	return identifier
+}
+
 // SaveBalance saves account balance by LikeChain ID
 func SaveBalance(state context.IMutableState, identifier *types.Identifier, balance *big.Int) error {
-	state.
-		MutableStateTree().
-		Set(utils.DbIdentifierKey(identifier, "acc", "balance"), balance.Bytes())
+	key := utils.DbIdentifierKey(
+		NormalizeIdentifier(state, identifier), "acc", "balance")
+
+	state.MutableStateTree().Set(key, balance.Bytes())
 	return nil
 }
 
 // FetchBalance fetches account balance by LikeChain ID
 func FetchBalance(state context.IImmutableState, identifier *types.Identifier) *big.Int {
-	_, value := state.
-		ImmutableStateTree().
-		Get(utils.DbIdentifierKey(identifier, "acc", "balance"))
+	key := utils.DbIdentifierKey(
+		NormalizeIdentifier(state, identifier), "acc", "balance")
+
+	_, value := state.ImmutableStateTree().Get(key)
 
 	balance := big.NewInt(0)
 	balance = balance.SetBytes(value)
