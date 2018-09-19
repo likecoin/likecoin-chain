@@ -35,9 +35,9 @@ func getAddrIDPairKey(ethAddr common.Address) []byte {
 }
 
 // NewAccount creates a new account
-func NewAccount(state context.IMutableState, ethAddr common.Address) (types.LikeChainID, error) {
+func NewAccount(state context.IMutableState, ethAddr common.Address) (*types.LikeChainID, error) {
 	id := generateLikeChainID(state)
-	err := NewAccountFromID(state, &id, ethAddr)
+	err := NewAccountFromID(state, id, ethAddr)
 	return id, err
 }
 
@@ -98,7 +98,7 @@ func IsLikeChainIDHasAddress(state context.IImmutableState, id *types.LikeChainI
 
 var likeChainIDSeedKey = []byte("$account.likeChainIDSeed")
 
-func generateLikeChainID(state context.IMutableState) types.LikeChainID {
+func generateLikeChainID(state context.IMutableState) *types.LikeChainID {
 	var seedInt uint64
 	_, seed := state.ImmutableStateTree().Get(likeChainIDSeedKey)
 	if seed == nil {
@@ -123,7 +123,7 @@ func generateLikeChainID(state context.IMutableState) types.LikeChainID {
 	binary.BigEndian.PutUint64(seed, seedInt)
 	state.MutableStateTree().Set(likeChainIDSeedKey, seed)
 
-	return types.LikeChainID{Content: content}
+	return &types.LikeChainID{Content: content}
 }
 
 // AddressToLikeChainID gets LikeChain ID by Address

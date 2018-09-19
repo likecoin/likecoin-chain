@@ -71,10 +71,10 @@ func TestSaveAndFetchBalance(t *testing.T) {
 		balance, _ := new(big.Int).SetString("1000000000000000000", 10)
 
 		Convey("The balance can be sucessfully saved to DB", func() {
-			So(SaveBalance(state, id, balance), ShouldBeNil)
+			So(SaveBalance(state, id.ToIdentifier(), balance), ShouldBeNil)
 
 			Convey("The balance can be sucessfully fetched from DB", func() {
-				fetchedBalance := FetchBalance(state, id)
+				fetchedBalance := FetchBalance(state, id.ToIdentifier())
 				So(fetchedBalance.Cmp(balance), ShouldEqual, 0)
 			})
 		})
