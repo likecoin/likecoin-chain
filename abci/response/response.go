@@ -269,6 +269,16 @@ var QueryParsingResponseError = R{
 }
 
 var QueryInvalidIdentifier = R{
-	Code: 60020,
+	Code: 60040,
 	Info: "Identifier is invalid in Query",
+}
+
+var QueryWithdrawProofInvalidHeight = R{
+	Code: 61000,
+	Info: "Invalid height in withdraw proof",
+}
+
+var QueryWithdrawProofNotExist = R{
+	Code: 61010,
+	Info: "Withdraw record does not exist",
 }

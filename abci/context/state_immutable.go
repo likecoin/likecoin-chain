@@ -39,6 +39,24 @@ func (state *ImmutableState) GetHeight() int64 {
 	return int64(binary.BigEndian.Uint64(value))
 }
 
+// SetHeightWithdrawVersion is used to store the withdraw tree version mapping corresponding to the block height
+func (state *ImmutableState) SetHeightWithdrawVersion(height int64, version int64) {
+	key := heightWithdrawVersionKey(height)
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(height))
+	state.appDb.Set(key, buf)
+}
+
+// GetHeightWithdrawVersion gets the withdraw tree version corresponding to the block height
+func (state *ImmutableState) GetHeightWithdrawVersion(height int64) int64 {
+	key := heightWithdrawVersionKey(height)
+	buf := state.appDb.Get(key)
+	if buf == nil {
+		return -1
+	}
+	return int64(binary.BigEndian.Uint64(buf))
+}
+
 const appHashLength = 40
 
 func generateAppHash(stateHash, withdrawHash []byte) (hash []byte) {

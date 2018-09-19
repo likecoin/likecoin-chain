@@ -1,6 +1,7 @@
 package context
 
 import (
+	"bytes"
 	"encoding/binary"
 
 	"github.com/tendermint/iavl"
@@ -85,6 +86,31 @@ func (state *MutableState) Save() []byte {
 		log.WithError(err).Panic("Cannot save withdraw tree")
 	}
 	return generateAppHash(stateHash, withdrawHash)
+}
+
+func heightWithdrawVersionKey(height int64) []byte {
+	buf := new(bytes.Buffer)
+	buf.Write(appHeightWithdrawVersion)
+	binary.Write(buf, binary.BigEndian, uint64(height))
+	return buf.Bytes()
+}
+
+// SetHeightWithdrawVersion is used to store the withdraw tree version mapping corresponding to the block height
+func (state *MutableState) SetHeightWithdrawVersion(height int64, version int64) {
+	key := heightWithdrawVersionKey(height)
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(height))
+	state.appDb.Set(key, buf)
+}
+
+// GetHeightWithdrawVersion gets the withdraw tree version corresponding to the block height
+func (state *MutableState) GetHeightWithdrawVersion(height int64) int64 {
+	key := heightWithdrawVersionKey(height)
+	buf := state.appDb.Get(key)
+	if buf == nil {
+		return -1
+	}
+	return int64(binary.BigEndian.Uint64(buf))
 }
 
 // Init initializes states
