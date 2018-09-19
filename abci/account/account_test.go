@@ -6,6 +6,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/fixture"
+	"github.com/likecoin/likechain/abci/types"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -50,14 +52,32 @@ func TestGenerateLikeChainID(t *testing.T) {
 func TestNewAccount(t *testing.T) {
 	appCtx := context.NewMock()
 	state := appCtx.GetMutableState()
+	ethAddr := fixture.Alice.Address
 
 	Convey("Given a valid Ethereum address", t, func() {
-		addr := common.HexToAddress("")
+		appCtx.Reset()
 
 		Convey("An account is created with the address", func() {
-			_, err := NewAccount(state, addr)
-
+			_, err := NewAccount(state, ethAddr)
 			So(err, ShouldBeNil)
+		})
+
+		Convey("If the address has existing balance", func() {
+			addrBalance := big.NewInt(100)
+
+			addrIdentifier := types.NewAddressFromHex(ethAddr.Hex()).ToIdentifier()
+			SaveBalance(state, addrIdentifier, addrBalance)
+
+			id, _ := NewAccount(state, ethAddr)
+
+			Convey("The balance is transferred to the LikeChain ID", func() {
+				idBalance := FetchBalance(state, id.ToIdentifier())
+
+				So(idBalance.String(), ShouldEqual, addrBalance.String())
+
+				addrBalance = FetchRawBalance(state, addrIdentifier)
+				So(addrBalance.String(), ShouldEqual, "0")
+			})
 		})
 	})
 }

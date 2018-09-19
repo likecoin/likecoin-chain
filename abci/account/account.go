@@ -47,15 +47,25 @@ func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAdd
 	state.MutableStateTree().Set(getAddrIDPairKey(ethAddr), id.Content)
 	state.MutableStateTree().Set(getIDAddrPairKey(id, ethAddr), []byte{})
 
-	// Initialize account info
-	SaveBalance(state, id.ToIdentifier(), big.NewInt(0))
-	IncrementNextNonce(state, id)
-
 	// Check if address already has balance
-	balanceInEthAddr := FetchBalance(state, id.ToIdentifier())
-	if balanceInEthAddr != nil {
-		// TODO: Transfer balance from ETH address to LikeChain ID
+	addrIdentifier := types.NewAddressFromHex(ethAddr.Hex()).ToIdentifier()
+	addrBalance := FetchRawBalance(state, addrIdentifier)
+
+	var balance *big.Int
+	if addrBalance.Cmp(big.NewInt(0)) > 0 {
+		// Transfer balance to LikeChain ID
+		balance = addrBalance
+
+		// Remove key from db
+		key := utils.DbIdentifierKey(addrIdentifier, "acc", "balance")
+		state.MutableStateTree().Remove(key)
+	} else {
+		balance = big.NewInt(0)
 	}
+
+	// Initialize account info
+	SaveBalance(state, id.ToIdentifier(), balance)
+	IncrementNextNonce(state, id)
 
 	return nil
 }
@@ -172,10 +182,14 @@ func SaveBalance(state context.IMutableState, identifier *types.Identifier, bala
 	return nil
 }
 
-// FetchBalance fetches account balance by LikeChain ID
+// FetchBalance fetches account balance by normalized Identifier
 func FetchBalance(state context.IImmutableState, identifier *types.Identifier) *big.Int {
-	key := utils.DbIdentifierKey(
-		NormalizeIdentifier(state, identifier), "acc", "balance")
+	return FetchRawBalance(state, NormalizeIdentifier(state, identifier))
+}
+
+// FetchRawBalance fetches account balance by Identifier
+func FetchRawBalance(state context.IImmutableState, identifier *types.Identifier) *big.Int {
+	key := utils.DbIdentifierKey(identifier, "acc", "balance")
 
 	_, value := state.ImmutableStateTree().Get(key)
 
