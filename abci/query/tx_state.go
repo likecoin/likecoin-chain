@@ -8,7 +8,7 @@ import (
 )
 
 func queryTxState(
-	state context.IImmutableState,
+	state context.IMutableState,
 	reqQuery abci.RequestQuery,
 ) response.R {
 	txHash := reqQuery.Data

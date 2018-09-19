@@ -11,7 +11,7 @@ import (
 
 var log = logger.L
 
-type queryHandler = func(context.IImmutableState, abci.RequestQuery) response.R
+type queryHandler = func(context.IMutableState, abci.RequestQuery) response.R
 
 var queryHandlerTable = make(map[string]queryHandler)
 
@@ -20,7 +20,7 @@ func registerQueryHandler(path string, f queryHandler) {
 }
 
 func Query(
-	state context.IImmutableState,
+	state context.IMutableState,
 	reqQuery abci.RequestQuery,
 ) abci.ResponseQuery {
 	f, exist := queryHandlerTable[reqQuery.Path]

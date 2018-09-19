@@ -66,11 +66,17 @@ func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.Respons
 
 func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 	state := app.ctx.GetMutableState()
-	state.SetHeight(state.GetHeight() + 1)
+	height := state.GetHeight() + 1
+	state.SetHeight(height)
 	hash := state.Save()
+
+	withdrawTreeVersion := state.MutableWithdrawTree().Version64()
+	state.SetHeightWithdrawVersion(height, withdrawTreeVersion)
 
 	log.
 		WithField("hash", hash).
+		WithField("height", height).
+		WithField("wTreeVersion", withdrawTreeVersion).
 		Info("APP Commit")
 
 	return abci.ResponseCommit{Data: hash}
@@ -90,7 +96,7 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 
 func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.ResponseQuery {
 	log.Info("APP Query")
-	return query.Query(app.ctx.GetImmutableState(), reqQuery)
+	return query.Query(app.ctx.GetMutableState(), reqQuery)
 }
 
 func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {
