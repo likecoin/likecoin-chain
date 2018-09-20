@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
-	"github.com/likecoin/likechain/api/types"
+	"github.com/likecoin/likechain/abci/types"
 )
 
 type registerJSON struct {

@@ -4,7 +4,7 @@
 ## Development Setup
 ```sh
 # Build the docker images, run it for the first time or you have dependency updates
-docker-compose build
+./build.sh
 
 export NODE_COUNT=3
 # Initialize nodes
@@ -42,7 +42,7 @@ cd abci
 dep ensure -add github.com/ethereum/go-ethereum
 
 # Build image
-docker-compose build
+./build.sh
 ```
 
 ## Usage
