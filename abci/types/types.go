@@ -236,7 +236,7 @@ func (tx *WithdrawTransaction) GenerateSigningMessageHash() (hash []byte) {
 		"fee":      tx.Fee.ToString(),
 		"identity": tx.From.ToString(),
 		"nonce":    tx.Nonce,
-		"to_addr":  strings.ToLower(tx.ToAddr.ToEthereum().Hex()),
+		"to_addr":  strings.ToLower(tx.ToAddr.ToHex()),
 		"value":    tx.Value.ToString(),
 	})
 }

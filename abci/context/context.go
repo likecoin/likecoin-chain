@@ -14,7 +14,7 @@ type IImmutableState interface {
 	ImmutableWithdrawTree() *iavl.ImmutableTree
 	GetBlockHash() []byte
 	GetHeight() int64
-	GetHeightWithdrawVersion(height int64) int64
+	GetWithdrawVersionAtHeight(height int64) int64
 }
 
 // IMutableState is an interface for accessing immutable context

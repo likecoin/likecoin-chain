@@ -83,8 +83,8 @@ func validateRegisterSignature(state context.IImmutableState, tx *types.Register
 
 	if tx.Addr.ToEthereum() != sigAddr {
 		log.WithFields(logrus.Fields{
-			"txAddr":  tx.Addr.ToHex(),
-			"sigAddr": sigAddr.Hex(),
+			"tx_addr":  tx.Addr.ToHex(),
+			"sig_addr": sigAddr.Hex(),
 		}).Info("Recovered address is not match")
 		return false
 	}
