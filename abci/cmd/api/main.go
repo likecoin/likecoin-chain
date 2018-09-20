@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/likecoin/likechain/api/routes"
+	"github.com/likecoin/likechain/abci/cmd/api/routes"
 	rpcClient "github.com/tendermint/tendermint/rpc/client"
 )
 
