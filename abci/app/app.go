@@ -71,12 +71,12 @@ func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 	hash := state.Save()
 
 	withdrawTreeVersion := state.MutableWithdrawTree().Version64()
-	state.SetHeightWithdrawVersion(height, withdrawTreeVersion)
+	state.SetWithdrawVersionAtHeight(height, withdrawTreeVersion)
 
 	log.
 		WithField("hash", hash).
 		WithField("height", height).
-		WithField("wTreeVersion", withdrawTreeVersion).
+		WithField("withdraw_tree_version", withdrawTreeVersion).
 		Info("APP Commit")
 
 	return abci.ResponseCommit{Data: hash}

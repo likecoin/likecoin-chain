@@ -170,8 +170,8 @@ func validateTransferSignature(state context.IImmutableState, tx *types.Transfer
 			return true
 		}
 		log.WithFields(logrus.Fields{
-			"txAddr":  senderAddr.ToHex(),
-			"sigAddr": sigAddr.Hex(),
+			"tx_addr":  senderAddr.ToHex(),
+			"sig_addr": sigAddr.Hex(),
 		}).Info("Recovered address is not match")
 	} else {
 		id := tx.From.GetLikeChainID()
@@ -180,8 +180,8 @@ func validateTransferSignature(state context.IImmutableState, tx *types.Transfer
 				return true
 			}
 			log.WithFields(logrus.Fields{
-				"likeChainID": id.ToString(),
-				"sigAddr":     sigAddr.Hex(),
+				"likechain_id": id.ToString(),
+				"sig_addr":     sigAddr.Hex(),
 			}).Info("Recovered address is not bind to the LikeChain ID of the sender")
 		}
 	}
