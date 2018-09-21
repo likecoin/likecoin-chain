@@ -149,7 +149,7 @@ type accountInfoRes struct {
 func getAccountInfoRes(data []byte) *accountInfoRes {
 	accountInfo := struct {
 		Balance   string `json:"balance"`
-		NextNonce uint64 `json:"nextNonce"`
+		NextNonce uint64 `json:"next_nonce"`
 	}{}
 	err := json.Unmarshal(data, &accountInfo)
 	if err != nil {
