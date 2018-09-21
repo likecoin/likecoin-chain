@@ -11,11 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	logger "github.com/likecoin/likechain/abci/log"
-	"github.com/sirupsen/logrus"
 )
-
-var log = logger.L
 
 // NewAddressFromHex creates Address from hex string
 func NewAddressFromHex(hex string) *Address {
@@ -246,9 +242,7 @@ func bigIntToUint256Bytes(n *big.Int) []byte {
 	b := n.Bytes()
 	l := len(b)
 	if l > 32 {
-		log.WithFields(logrus.Fields{
-			"number": n.String(),
-		}).Panic("Transforming big.Int to uint256 bytes with overflowing value")
+		return nil
 	}
 	copy(result[32-l:], b)
 	return result
@@ -261,8 +255,16 @@ func (tx *WithdrawTransaction) Pack() []byte {
 	buf := new(bytes.Buffer)
 	buf.Write(tx.From.GetLikeChainID().Content)
 	buf.Write(tx.ToAddr.Content)
-	buf.Write(bigIntToUint256Bytes(tx.Value.ToBigInt()))
-	buf.Write(bigIntToUint256Bytes(tx.Fee.ToBigInt()))
+	valueBytes := bigIntToUint256Bytes(tx.Value.ToBigInt())
+	if valueBytes == nil {
+		return nil
+	}
+	buf.Write(valueBytes)
+	feeBytes := bigIntToUint256Bytes(tx.Fee.ToBigInt())
+	if feeBytes == nil {
+		return nil
+	}
+	buf.Write(feeBytes)
 	binary.Write(buf, binary.BigEndian, tx.Nonce)
 	return buf.Bytes()
 }
