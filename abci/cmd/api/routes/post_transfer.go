@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 )
 
 type transferTargetJSON struct {
@@ -28,6 +29,11 @@ func postTransfer(c *gin.Context) {
 		return
 	}
 
+	if !utils.IsValidBigIntegerString(json.Fee) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer fee"})
+		return
+	}
+
 	tx := types.TransferTransaction{
 		From:   types.NewIdentifier(json.Identity),
 		ToList: make([]*types.TransferTransaction_TransferTarget, len(json.To)),
@@ -37,6 +43,11 @@ func postTransfer(c *gin.Context) {
 	}
 
 	for i, t := range json.To {
+		if !utils.IsValidBigIntegerString(t.Value) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer value"})
+			return
+		}
+
 		tx.ToList[i] = &types.TransferTransaction_TransferTarget{
 			To:     types.NewIdentifier(t.Identity),
 			Value:  types.NewBigInteger(t.Value),

@@ -220,6 +220,15 @@ func (tx *RegisterTransaction) ToTransaction() *Transaction {
 	}
 }
 
+// ToTransaction wraps DepositTransaction into Transaction
+func (tx *DepositTransaction) ToTransaction() *Transaction {
+	return &Transaction{
+		Tx: &Transaction_DepositTx{
+			DepositTx: tx,
+		},
+	}
+}
+
 // GenerateSigningMessageHash generates a signature from a TransferTx
 func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 	to := make([]map[string]interface{}, len(tx.ToList))
