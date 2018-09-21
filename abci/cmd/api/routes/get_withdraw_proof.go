@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 	rpcClient "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -23,6 +24,11 @@ func getWithdrawProof(c *gin.Context) {
 	var query withdrawProofQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !utils.IsValidBigIntegerString(query.Value) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw value"})
 		return
 	}
 

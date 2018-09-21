@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 )
 
 type withdrawJSON struct {
@@ -21,6 +22,11 @@ func postWithdraw(c *gin.Context) {
 	var json withdrawJSON
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !utils.IsValidBigIntegerString(json.Value) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw value"})
 		return
 	}
 

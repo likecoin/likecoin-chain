@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -90,4 +91,14 @@ func DbTxHashKey(txHash []byte, suffix string) []byte {
 // HashRawTx hash a rawTx in byte
 func HashRawTx(rawTx []byte) []byte {
 	return tmhash.Sum(rawTx)
+}
+
+// IsValidBigIntegerString verifies big integer in string
+func IsValidBigIntegerString(s string) bool {
+	i, ok := new(big.Int).SetString(s, 10)
+	if i != nil {
+		j := new(big.Int).SetBytes(i.Bytes())
+		ok = i.Cmp(j) == 0
+	}
+	return ok
 }
