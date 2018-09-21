@@ -259,6 +259,15 @@ func (tx *WithdrawTransaction) GenerateSigningMessageHash() (hash []byte) {
 	})
 }
 
+// ToTransaction wraps WithdrawTransaction into Transaction
+func (tx *WithdrawTransaction) ToTransaction() *Transaction {
+	return &Transaction{
+		Tx: &Transaction_WithdrawTx{
+			WithdrawTx: tx,
+		},
+	}
+}
+
 func bigIntToUint256Bytes(n *big.Int) []byte {
 	result := make([]byte, 32)
 	b := n.Bytes()
