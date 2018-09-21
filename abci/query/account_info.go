@@ -13,33 +13,40 @@ func queryAccountInfo(
 	state context.IMutableState,
 	reqQuery abci.RequestQuery,
 ) response.R {
-	var err error
 	identity := string(reqQuery.Data)
 
-	// Get LikeChain ID
-	ethAddr := common.HexToAddress(identity)
-	id := account.AddressToLikeChainID(state, ethAddr)
-
-	if id == nil {
-		log.
-			WithField("addr", ethAddr.Hex()).
-			Debug("Identity is not an address")
-
+	var id *types.LikeChainID
+	if common.IsHexAddress(identity) {
+		// Convert address to LikeChain ID
+		ethAddr := common.HexToAddress(identity)
+		id = account.AddressToLikeChainID(state, ethAddr)
+		if id != nil {
+			identity = id.ToString()
+		}
+	} else {
+		// Decode LikeChain ID from strings
+		var err error
 		id, err = types.NewLikeChainIDFromString(identity)
-		if err != nil || !account.IsLikeChainIDRegistered(state, id) {
+		if err != nil {
 			log.
-				WithField("identity", identity).
-				Info(response.QueryInvalidIdentifier.Info)
+				WithError(err).
+				Debug("Unable to decode LikeChain ID from strings")
 			return response.QueryInvalidIdentifier
 		}
+	}
+
+	if id == nil || !account.IsLikeChainIDRegistered(state, id) {
+		log.Debug(response.QueryInvalidIdentifier.Info)
+		return response.QueryInvalidIdentifier
 	}
 
 	balance := account.FetchBalance(state, id.ToIdentifier())
 	nextNonce := account.FetchNextNonce(state, id)
 
 	return jsonMap{
-		"balance":   balance.String(),
-		"nextNonce": nextNonce,
+		"id":         identity,
+		"balance":    balance.String(),
+		"next_nonce": nextNonce,
 	}.ToResponse()
 }
 
