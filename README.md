@@ -7,7 +7,13 @@
 ./build.sh
 
 export NODE_COUNT=3
+
+# Setup init script
+cd tendermint/cli
+dep ensure --vendor-only
+
 # Initialize nodes
+cd ../..
 ./init.sh
 
 # Start development
@@ -31,15 +37,12 @@ docker-compose up
 docker-compose up --force-recreate
 ```
 
-## Update dependancies
+## Manage dependancies
 We use `dep` for package manager
 ```sh
-# Make sure you have build the likechain/abci image
-docker run --rm -v `pwd`/abci:/go/src/github.com/likecoin/likechain/ likechain/abci dep ensure -add github.com/ethereum/go-ethereum
-
-# Or if you have installed `dep` locally
+# After import package(s) in code / add constrain(s) in Gopkg.toml
 cd abci
-dep ensure -add github.com/ethereum/go-ethereum
+dep ensure
 
 # Build image
 ./build.sh
@@ -47,11 +50,8 @@ dep ensure -add github.com/ethereum/go-ethereum
 
 ## Usage
 ```sh
-# Query the state
-curl 'localhost:26657/abci_query?path="state"'
-
-# Add number to the state
-curl 'http://localhost:26657/broadcast_tx_commit?tx="100"'
+# Query the block info
+curl 'http://localhost:3000/v1/block'
 
 # Check peers connection
 curl 'http://localhost:26657/net_info'
