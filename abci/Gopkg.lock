@@ -493,7 +493,7 @@
   version = "v0.10.0"
 
 [[projects]]
-  digest = "1:aa7cb3458f8a346ee42c4c748a2f2c138e22bc96d2dc6e9b03febd73617192b8"
+  digest = "1:c41ab461dbe24e6a77bbe1dab93eaf643af4a2ad2b167fd1e6b9474f4b837fea"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -537,6 +537,7 @@
     "rpc/lib/client",
     "rpc/lib/server",
     "rpc/lib/types",
+    "rpc/test",
     "state",
     "state/txindex",
     "state/txindex/kv",
@@ -703,6 +704,7 @@
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",
     "github.com/tendermint/tendermint/rpc/client",
+    "github.com/tendermint/tendermint/rpc/test",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

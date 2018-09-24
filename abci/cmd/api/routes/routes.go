@@ -2,13 +2,13 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	rpcClient "github.com/tendermint/tendermint/rpc/client"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
-var tendermint *rpcClient.HTTP
+var tendermint rpcclient.Client
 
 // Initialize initializes routes
-func Initialize(router *gin.Engine, client *rpcClient.HTTP) {
+func Initialize(router *gin.Engine, client rpcclient.Client) {
 	tendermint = client
 
 	v1 := router.Group("/v1")

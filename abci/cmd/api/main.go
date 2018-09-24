@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
-	rpcClient "github.com/tendermint/tendermint/rpc/client"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 		port = "3000"
 	}
 
-	client := rpcClient.NewHTTP("tcp://"+host, "/websocket")
+	client := rpcclient.NewHTTP("tcp://"+host, "/websocket")
 
 	router := gin.Default()
 
