@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
-	rpcClient "github.com/tendermint/tendermint/rpc/client"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
 type withdrawProofQuery struct {
@@ -44,7 +44,7 @@ func getWithdrawProof(c *gin.Context) {
 	result, err := tendermint.ABCIQueryWithOptions(
 		"withdraw_proof",
 		tx.Pack(),
-		rpcClient.ABCIQueryOptions{Height: query.Height},
+		rpcclient.ABCIQueryOptions{Height: query.Height},
 	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
