@@ -1,11 +1,11 @@
 package withdraw
 
 import (
-	"fmt"
+	"math/big"
 	"testing"
 
-	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/response"
+	"github.com/tendermint/tendermint/libs/common"
+
 	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -19,191 +19,142 @@ func wrapWithdrawTransaction(tx *types.WithdrawTransaction) *types.Transaction {
 	}
 }
 
-func TestCheckAndDeliverWithdraw(t *testing.T) {
-	appCtx := context.NewMock()
-	state := appCtx.GetMutableState()
-
-	Convey("Given a Withdraw Transaction", t, func() {
-
-		Convey("If it is a valid transaction", func() {
-			appCtx.Reset()
-			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
-				// TODO
-			})
-
-			Convey("CheckTx should return Code 0", func() {
-				res := checkWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, 0)
-			})
-
-			Convey("DeliverTx should return Code 0", func() {
-				res := deliverWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, 0)
-
-				Convey("Should be able to query the transaction info afterwards", func() {
-					_ = res.Data // TODO: ID
-					// TODO: query
-				})
-			})
-		})
-
-		Convey("If it is an invalid address format", func() {
-			appCtx.Reset()
-
-			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
-				// TODO
-			})
-
-			code := response.WithdrawCheckTxInvalidFormat.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-
-			code = response.WithdrawDeliverTxInvalidFormat.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-		})
-
-		Convey("If it is an invalid signature version", func() {
-			appCtx.Reset()
-
-			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
-				// TODO
-			})
-
-			code := response.WithdrawCheckTxInvalidSignature.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-
-			code = response.WithdrawDeliverTxInvalidSignature.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-		})
-
-		Convey("If it is an invalid signature format", func() {
-			appCtx.Reset()
-
-			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
-				// TODO
-			})
-
-			code := response.WithdrawCheckTxInvalidSignature.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-
-			code = response.WithdrawDeliverTxInvalidSignature.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-		})
-
-		Convey("If it is a replayed transaction", func() {
-			appCtx.Reset()
-
-			rawTx := wrapWithdrawTransaction(&types.WithdrawTransaction{
-				// TODO
-			})
-
-			code := response.WithdrawCheckTxDuplicated.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
-				res := checkWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-
-			code = response.WithdrawDeliverTxDuplicated.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
-				res := deliverWithdraw(state, rawTx)
-
-				So(res.Code, ShouldEqual, code)
-			})
-		})
-	})
+func withdrawTx(from, toAddr []byte, value, fee *big.Int, nonce uint64, sig []byte) *types.WithdrawTransaction {
+	return &types.WithdrawTransaction{
+		From: &types.Identifier{
+			Id: &types.Identifier_LikeChainID{
+				LikeChainID: &types.LikeChainID{
+					Content: from,
+				},
+			},
+		},
+		ToAddr: &types.Address{
+			Content: toAddr,
+		},
+		Value: &types.BigInteger{
+			Content: value.Bytes(),
+		},
+		Fee: &types.BigInteger{
+			Content: fee.Bytes(),
+		},
+		Nonce: nonce,
+		Sig: &types.Signature{
+			Version: 1,
+			Content: sig,
+		},
+	}
 }
 
-func TestvalidateWithdrawTransactionFormat(t *testing.T) {
-	Convey("Given a Withdraw transaction in valid format", t, func() {
-		tx := &types.WithdrawTransaction{} // TODO
+func withdrawTxWithEthSender(from *types.Address, toAddr []byte, value, fee *big.Int, nonce uint64, sig []byte) *types.WithdrawTransaction {
+	return &types.WithdrawTransaction{
+		From: &types.Identifier{
+			Id: &types.Identifier_Addr{
+				Addr: from,
+			},
+		},
+		ToAddr: &types.Address{
+			Content: toAddr,
+		},
+		Value: &types.BigInteger{
+			Content: value.Bytes(),
+		},
+		Fee: &types.BigInteger{
+			Content: fee.Bytes(),
+		},
+		Nonce: nonce,
+		Sig: &types.Signature{
+			Version: 1,
+			Content: sig,
+		},
+	}
+}
 
+func TestValidateWithdrawTransactionFormat(t *testing.T) {
+	zero := big.NewInt(0)
+	one := big.NewInt(1)
+
+	Convey("Given a Withdraw transaction with valid format and LikeChainID sender", t, func() {
+		tx := withdrawTx(common.RandBytes(20), common.RandBytes(20), one, zero, 0, common.RandBytes(65))
 		Convey("The transaction should pass the validation", func() {
 			So(validateWithdrawTransactionFormat(tx), ShouldBeTrue)
 		})
 	})
 
-	Convey("Given a Withdraw transaction in invalid format", t, func() {
-		tx := &types.WithdrawTransaction{} // TODO
+	Convey("Given a Withdraw transaction with valid format and Ethereum address sender", t, func() {
+		ethAddr := &types.Address{Content: common.RandBytes(20)}
+		tx := withdrawTxWithEthSender(ethAddr, common.RandBytes(20), one, zero, 0, common.RandBytes(65))
+		Convey("The transaction should pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeTrue)
+		})
+	})
 
+	Convey("Given a Withdraw transaction with invalid LikeChainID sender", t, func() {
 		Convey("The transaction should not pass the validation", func() {
+			tx := withdrawTx(nil, common.RandBytes(20), one, zero, 0, common.RandBytes(65))
+			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+			for n := 1; n <= 40; n++ {
+				if n == 20 {
+					continue
+				}
+				tx = withdrawTx(common.RandBytes(n), common.RandBytes(20), one, zero, 0, common.RandBytes(65))
+				So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+			}
+		})
+	})
+
+	Convey("Given a Withdraw transaction with invalid Ethereum address sender", t, func() {
+		Convey("The transaction should not pass the validation", func() {
+			tx := withdrawTxWithEthSender(nil, common.RandBytes(20), one, zero, 0, common.RandBytes(65))
+			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+			for n := 1; n <= 40; n++ {
+				if n == 20 {
+					continue
+				}
+				ethAddr := &types.Address{Content: common.RandBytes(n)}
+				tx = withdrawTxWithEthSender(ethAddr, common.RandBytes(20), one, zero, 0, common.RandBytes(65))
+				So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+			}
+		})
+	})
+
+	Convey("Given a Withdraw transaction with invalid value", t, func() {
+		Convey("The transaction should not pass the validation", func() {
+			tx := withdrawTx(common.RandBytes(20), common.RandBytes(20), zero, zero, 0, common.RandBytes(65))
+			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
+
+			value := big.NewInt(2)
+			value.Exp(value, big.NewInt(256), nil)
+			tx = withdrawTx(common.RandBytes(20), common.RandBytes(20), value, zero, 0, common.RandBytes(65))
 			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
 		})
 	})
 
-	Convey("Given a Withdraw transaction with invalid nouce", t, func() {
-		tx := &types.WithdrawTransaction{} // TODO
+	Convey("Given a Withdraw transaction with maximum possible value", t, func() {
+		value := big.NewInt(2)
+		value.Exp(value, big.NewInt(256), nil)
+		value.Sub(value, one)
+		tx := withdrawTx(common.RandBytes(20), common.RandBytes(20), value, zero, 0, common.RandBytes(65))
+		Convey("The transaction should pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeTrue)
+		})
+	})
 
+	Convey("Given a Withdraw transaction with invalid fee", t, func() {
 		Convey("The transaction should not pass the validation", func() {
+			fee := big.NewInt(2)
+			fee.Exp(fee, big.NewInt(256), nil)
+			tx := withdrawTx(common.RandBytes(20), common.RandBytes(20), one, fee, 0, common.RandBytes(65))
 			So(validateWithdrawTransactionFormat(tx), ShouldBeFalse)
 		})
 	})
-}
 
-func TestWithdraw(t *testing.T) {
-	appCtx := context.NewMock()
-	state := appCtx.GetMutableState()
-
-	Convey("Given a valid Withdraw transaction", t, func() {
-		tx := &types.WithdrawTransaction{} // TODO
-
-		Convey("The transaction should be pass", func() {
-			withdraw(state, tx)
-			// TODO: checking
-		})
-
-		Convey("But the same Withdraw transaction cannot be replayed", func() {
-			withdraw(state, tx)
-			// TODO: checking
-		})
-	})
-
-	Convey("Given an invalid Withdraw transaction", t, func() {
-		appCtx.Reset()
-		tx := &types.WithdrawTransaction{} // TODO
-
-		Convey("The transaction should not be pass if sender not exist ", func() {
-			withdraw(state, tx)
-			// TODO: checking
-		})
-
-		tx = &types.WithdrawTransaction{} // TODO
-
-		Convey("The transaction should not be pass if receiver not exist", func() {
-			withdraw(state, tx)
-			// TODO: checking
-		})
-
-		tx = &types.WithdrawTransaction{} // TODO
-
-		Convey("The transaction should not be pass if there is not enough balance", func() {
-			withdraw(state, tx)
-			// TODO: checking
+	Convey("Given a Withdraw transaction with maximum possible fee", t, func() {
+		fee := big.NewInt(2)
+		fee.Exp(fee, big.NewInt(256), nil)
+		fee.Sub(fee, one)
+		tx := withdrawTx(common.RandBytes(20), common.RandBytes(20), one, fee, 0, common.RandBytes(65))
+		Convey("The transaction should pass the validation", func() {
+			So(validateWithdrawTransactionFormat(tx), ShouldBeTrue)
 		})
 	})
 }

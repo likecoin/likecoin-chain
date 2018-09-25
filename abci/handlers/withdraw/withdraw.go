@@ -57,7 +57,7 @@ func checkWithdraw(state context.IImmutableState, rawTx *types.Transaction) resp
 	amount := tx.Value.ToBigInt()
 	if senderBalance.Cmp(amount) < 0 {
 		logTx(tx).Info(response.WithdrawCheckTxNotEnoughBalance.Info)
-		return response.TransferCheckTxNotEnoughBalance
+		return response.WithdrawCheckTxNotEnoughBalance
 	}
 
 	// TODO: check fee
@@ -103,7 +103,7 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 	amount.Add(amount, tx.Fee.ToBigInt())
 	if senderBalance.Cmp(amount) < 0 {
 		logTx(tx).Info(response.WithdrawDeliverTxNotEnoughBalance.Info)
-		return response.TransferDeliverTxNotEnoughBalance
+		return response.WithdrawDeliverTxNotEnoughBalance
 	}
 
 	account.MinusBalance(state, tx.From, amount)

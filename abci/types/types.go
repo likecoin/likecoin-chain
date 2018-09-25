@@ -105,8 +105,8 @@ func (i *BigInteger) ToString() string {
 
 // IsValidFormat checks Identifier format
 func (id *Identifier) IsValidFormat() bool {
-	return (id.GetLikeChainID() != nil && len(id.GetLikeChainID().Content) > 0) ||
-		(id.GetAddr() != nil && len(id.GetAddr().Content) > 0)
+	return (id.GetLikeChainID() != nil && len(id.GetLikeChainID().Content) == 20) ||
+		(id.GetAddr() != nil && len(id.GetAddr().Content) == 20)
 }
 
 // ToString converts Identifier to hex string
@@ -212,9 +212,10 @@ func (tx *RegisterTransaction) ToTransaction() *Transaction {
 func (tx *TransferTransaction) GenerateSigningMessageHash() (hash []byte) {
 	to := make([]map[string]interface{}, len(tx.ToList))
 	for i, target := range tx.ToList {
+		remarkBase64 := base64.StdEncoding.EncodeToString(target.Remark)
 		to[i] = map[string]interface{}{
 			"identity": target.To.ToString(),
-			"remark":   string(target.Remark),
+			"remark":   remarkBase64,
 			"value":    target.Value.ToString(),
 		}
 	}

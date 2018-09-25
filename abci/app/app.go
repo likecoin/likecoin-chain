@@ -11,6 +11,7 @@ import (
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
+	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
 var log = logger.L
@@ -74,7 +75,7 @@ func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 	state.SetWithdrawVersionAtHeight(height, withdrawTreeVersion)
 
 	log.
-		WithField("hash", hash).
+		WithField("hash", cmn.HexBytes(hash)).
 		WithField("height", height).
 		WithField("withdraw_tree_version", withdrawTreeVersion).
 		Info("APP Commit")
@@ -102,7 +103,7 @@ func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.Response
 func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {
 	state := app.ctx.GetImmutableState()
 	height := state.GetHeight()
-	appHash := state.GetAppHash()
+	appHash := cmn.HexBytes(state.GetAppHash())
 
 	log.
 		WithField("height", height).

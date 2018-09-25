@@ -1,7 +1,6 @@
 package transfer
 
 import (
-	"encoding/binary"
 	"fmt"
 	"math/big"
 	"reflect"
@@ -56,9 +55,18 @@ func checkTransfer(state context.IImmutableState, rawTx *types.Transaction) resp
 		return response.TransferCheckTxDuplicated
 	}
 
-	senderBalance := account.FetchBalance(state, tx.From)
+	senderBalance := account.FetchBalance(state, senderID.ToIdentifier())
 	total := tx.Fee.ToBigInt()
 	for _, target := range tx.ToList {
+		if target.To.GetLikeChainID() != nil {
+			targetID := account.IdentifierToLikeChainID(state, target.To)
+			if targetID == nil {
+				logTx(tx).
+					WithField("to", target.To.ToString()).
+					Info(response.TransferCheckTxInvalidReceiver.Info)
+				return response.TransferCheckTxInvalidReceiver
+			}
+		}
 		amount := target.Value.ToBigInt()
 		total.Add(total, amount)
 		if senderBalance.Cmp(total) < 0 {
@@ -130,10 +138,20 @@ func deliver(
 		return response.TransferDeliverTxDuplicated
 	}
 
-	senderBalance := account.FetchBalance(state, tx.From)
+	senderIden := senderID.ToIdentifier()
+	senderBalance := account.FetchBalance(state, senderIden)
 	total := tx.Fee.ToBigInt()
 	transfers := make(map[*types.Identifier]*big.Int, len(tx.ToList))
 	for _, target := range tx.ToList {
+		if target.To.GetLikeChainID() != nil {
+			targetID := account.IdentifierToLikeChainID(state, target.To)
+			if targetID == nil {
+				logTx(tx).
+					WithField("to", target.To.ToString()).
+					Info(response.TransferDeliverTxInvalidReceiver.Info)
+				return response.TransferDeliverTxInvalidReceiver
+			}
+		}
 		amount := target.Value.ToBigInt()
 		total.Add(total, amount)
 		if senderBalance.Cmp(total) < 0 {
@@ -142,14 +160,19 @@ func deliver(
 				Info(response.TransferDeliverTxNotEnoughBalance.Info)
 			return response.TransferDeliverTxNotEnoughBalance
 		}
+		targetIden := target.To
+		targetID := account.IdentifierToLikeChainID(state, target.To)
+		if targetID != nil {
+			targetIden = targetID.ToIdentifier()
+		}
 
-		transfers[target.To] = amount
+		transfers[targetIden] = amount
 	}
 
 	for to, amount := range transfers {
 		account.AddBalance(state, to, amount)
 	}
-	account.MinusBalance(state, tx.From, total)
+	account.MinusBalance(state, senderIden, total)
 
 	account.IncrementNextNonce(state, senderID)
 
@@ -201,8 +224,8 @@ func validateTransferTransactionFormat(state context.IImmutableState, tx *types.
 				log.Debug("Invalid receiver format in transfer transaction")
 				return false
 			}
-			if size := binary.Size(target.Remark); size > maxRemarkSize {
-				log.WithField("size", size).
+			if len(target.Remark) > maxRemarkSize {
+				log.WithField("size", len(target.Remark)).
 					Debug(fmt.Sprintf("Size of the remark exceeds %dB", maxRemarkSize))
 				return false
 			}
@@ -230,6 +253,7 @@ func GetStatus(state context.IImmutableState, txHash []byte) types.TxStatus {
 	return types.BytesToTxStatus(statusBytes)
 }
 
+// SetStatus set the transaction status of the given txHash
 func SetStatus(
 	state context.IMutableState,
 	txHash []byte,
