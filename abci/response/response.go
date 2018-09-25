@@ -183,6 +183,16 @@ var TransferDeliverTxNotEnoughBalance = R{
 	Info: "Sender's balance of TransferTransaction not enough in DeliverTx",
 }
 
+var TransferCheckTxInvalidReceiver = R{
+	Code: 12050,
+	Info: "One or more receivers in TransferTransaction are invalid in CheckTx",
+}
+
+var TransferDeliverTxInvalidReceiver = R{
+	Code: 12051,
+	Info: "One or more receivers in TransferTransaction are invalid in DeliverTx",
+}
+
 var TransferCheckTxInvalidNonce = R{
 	Code: 12600,
 	Info: "Invalid TransferTransaction nonce in CheckTx",
