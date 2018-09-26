@@ -22,10 +22,8 @@ type LikeChainApplication struct {
 	ctx *context.ApplicationContext
 }
 
-func NewLikeChainApplication(dbPath string) *LikeChainApplication {
-	return &LikeChainApplication{
-		ctx: context.New(dbPath),
-	}
+func NewLikeChainApplication(ctx *context.ApplicationContext) *LikeChainApplication {
+	return &LikeChainApplication{ctx: ctx}
 }
 
 func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
