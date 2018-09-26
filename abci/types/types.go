@@ -254,7 +254,12 @@ func bigIntToUint256Bytes(n *big.Int) []byte {
 // All numbers are in big endian
 func (tx *WithdrawTransaction) Pack() []byte {
 	buf := new(bytes.Buffer)
-	buf.Write(tx.From.GetLikeChainID().Content)
+	id := tx.From.GetLikeChainID()
+	if id != nil {
+		buf.Write(id.Content)
+	} else {
+		buf.Write(tx.From.GetAddr().Content)
+	}
 	buf.Write(tx.ToAddr.Content)
 	valueBytes := bigIntToUint256Bytes(tx.Value.ToBigInt())
 	if valueBytes == nil {
