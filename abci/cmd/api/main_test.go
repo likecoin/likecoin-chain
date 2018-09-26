@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	likechain "github.com/likecoin/likechain/abci/app"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
+	"github.com/likecoin/likechain/abci/context"
 	. "github.com/smartystreets/goconvey/convey"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	rpctest "github.com/tendermint/tendermint/rpc/test"
@@ -53,14 +53,12 @@ func request(
 
 func TestMain(t *testing.T) {
 	Convey("Testing API", t, func() {
-		dbPath, _ := ioutil.TempDir("", "likechain")
-		app := likechain.NewLikeChainApplication(dbPath)
+		mockCtx := context.NewMock()
+		app := likechain.NewLikeChainApplication(mockCtx.ApplicationContext)
 		node := rpctest.StartTendermint(app)
 		defer func() {
+			mockCtx.Reset()
 			node.Reset()
-			node.Stop()
-			node.Wait()
-			os.RemoveAll(dbPath)
 		}()
 
 		client := rpcclient.NewLocal(node)
