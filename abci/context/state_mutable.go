@@ -3,10 +3,19 @@ package context
 import (
 	"bytes"
 	"encoding/binary"
+	"math/big"
 
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
 )
+
+// IMutableState is an interface for accessing immutable context
+type IMutableState interface {
+	IImmutableState
+	MutableStateTree() *iavl.MutableTree
+	MutableWithdrawTree() *iavl.MutableTree
+	GetInitialBalance() *big.Int
+}
 
 // MutableState is a struct contains mutable state
 type MutableState struct {
@@ -16,6 +25,8 @@ type MutableState struct {
 
 	stateTree    *iavl.MutableTree
 	withdrawTree *iavl.MutableTree
+
+	initialBalance *big.Int
 }
 
 // ImmutableStateTree returns immutable state tree of the current state
@@ -111,6 +122,19 @@ func (state *MutableState) GetWithdrawVersionAtHeight(height int64) int64 {
 		return -1
 	}
 	return int64(binary.BigEndian.Uint64(buf))
+}
+
+// GetInitialBalance returns the initial balance for new account
+func (state *MutableState) GetInitialBalance() *big.Int {
+	if state.initialBalance == nil {
+		state.initialBalance = big.NewInt(0)
+	}
+	return state.initialBalance
+}
+
+// SetInitialBalance set the initial balance for new account
+func (state *MutableState) SetInitialBalance(i *big.Int) {
+	state.initialBalance = i
 }
 
 // Init initializes states

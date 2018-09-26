@@ -8,22 +8,6 @@ import (
 
 var log = logger.L
 
-// IImmutableState is an interface for accessing mutable context
-type IImmutableState interface {
-	ImmutableStateTree() *iavl.ImmutableTree
-	ImmutableWithdrawTree() *iavl.ImmutableTree
-	GetBlockHash() []byte
-	GetHeight() int64
-	GetWithdrawVersionAtHeight(height int64) int64
-}
-
-// IMutableState is an interface for accessing immutable context
-type IMutableState interface {
-	IImmutableState
-	MutableStateTree() *iavl.MutableTree
-	MutableWithdrawTree() *iavl.MutableTree
-}
-
 // TODO: Configurable
 var cacheSize = 1048576
 
