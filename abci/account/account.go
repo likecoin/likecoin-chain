@@ -60,7 +60,7 @@ func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAdd
 		key := utils.DbIdentifierKey(addrIdentifier, "acc", "balance")
 		state.MutableStateTree().Remove(key)
 	} else {
-		balance = big.NewInt(0)
+		balance = state.GetInitialBalance()
 	}
 
 	// Initialize account info

@@ -7,6 +7,15 @@ import (
 	"github.com/tendermint/tendermint/libs/db"
 )
 
+// IImmutableState is an interface for accessing mutable context
+type IImmutableState interface {
+	ImmutableStateTree() *iavl.ImmutableTree
+	ImmutableWithdrawTree() *iavl.ImmutableTree
+	GetBlockHash() []byte
+	GetHeight() int64
+	GetWithdrawVersionAtHeight(height int64) int64
+}
+
 // ImmutableState is a struct contains the most recently saved state
 type ImmutableState struct {
 	appDb        db.DB

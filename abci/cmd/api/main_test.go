@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -54,11 +55,13 @@ func request(
 func TestMain(t *testing.T) {
 	Convey("Testing API", t, func() {
 		mockCtx := context.NewMock()
+		mockCtx.GetMutableState().SetInitialBalance(big.NewInt(100))
+
 		app := likechain.NewLikeChainApplication(mockCtx.ApplicationContext)
 		node := rpctest.StartTendermint(app)
 		defer func() {
-			mockCtx.Reset()
-			node.Reset()
+			node.Stop()
+			node.Wait()
 		}()
 
 		client := rpcclient.NewLocal(node)
@@ -77,6 +80,7 @@ func TestMain(t *testing.T) {
 		uri = "/v1/account_info?identity=" + url.QueryEscape(likeChainID.(string))
 		res = request(router, "GET", uri, nil)
 		So(res["id"], ShouldEqual, likeChainID)
+		So(res["balance"], ShouldEqual, "100")
 
 		status, _ := client.Status()
 		uri = fmt.Sprintf("/v1/block?height=%d", status.SyncInfo.LatestBlockHeight)
