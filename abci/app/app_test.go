@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"math/big"
-	"strconv"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -33,9 +32,7 @@ func encodeTransaction(tx *types.Transaction) []byte {
 func identifierFromID(id []byte) *types.Identifier {
 	return &types.Identifier{
 		Id: &types.Identifier_LikeChainID{
-			LikeChainID: &types.LikeChainID{
-				Content: id,
-			},
+			LikeChainID: types.NewLikeChainID(id),
 		},
 	}
 }
@@ -145,12 +142,38 @@ func withdrawTx(fromID []byte, fromEthAddr, toEthAddr *common.Address, value, fe
 }
 
 type accountInfoRes struct {
-	Balance   string `json:"balance"`
-	NextNonce uint64 `json:"nextNonce"`
+	Balance   *big.Int
+	NextNonce uint64
 }
 
-type txStateRes struct {
-	Status string `json:"status"`
+func getAccountInfoRes(data []byte) *accountInfoRes {
+	accountInfo := struct {
+		Balance   string `json:"balance"`
+		NextNonce uint64 `json:"nextNonce"`
+	}{}
+	err := json.Unmarshal(data, &accountInfo)
+	if err != nil {
+		return nil
+	}
+	balance, succ := new(big.Int).SetString(accountInfo.Balance, 10)
+	if !succ {
+		return nil
+	}
+	return &accountInfoRes{
+		Balance:   balance,
+		NextNonce: accountInfo.NextNonce,
+	}
+}
+
+func getTxStateRes(data []byte) string {
+	txState := struct {
+		Status string `json:"status"`
+	}{}
+	err := json.Unmarshal(data, &txState)
+	if err != nil {
+		return ""
+	}
+	return txState.Status
 }
 
 func TestRegistration(t *testing.T) {
@@ -187,12 +210,9 @@ func TestRegistration(t *testing.T) {
 						Data: []byte("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 0)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Query account_info using returned LikeChain ID should return the corresponding info", func() {
@@ -202,12 +222,9 @@ func TestRegistration(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 0)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("But repeated registration should fail", func() {
@@ -293,12 +310,9 @@ func TestTransfer(t *testing.T) {
 				Data: []byte(likeChainIDBase64),
 			})
 			So(queryRes.Code, ShouldEqual, response.Success.Code)
-			accountInfo := accountInfoRes{}
-			err := json.Unmarshal(queryRes.Value, &accountInfo)
-			So(err, ShouldBeNil)
-			balance, err := strconv.Atoi(accountInfo.Balance)
-			So(err, ShouldBeNil)
-			So(balance, ShouldEqual, 100)
+			accountInfo := getAccountInfoRes(queryRes.Value)
+			So(accountInfo, ShouldNotBeNil)
+			So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 			So(accountInfo.NextNonce, ShouldEqual, 1)
 		}
 
@@ -328,12 +342,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					likeChainIDBase64 = base64.StdEncoding.EncodeToString(likeChainIDs[1])
@@ -342,11 +353,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query account_info by Ethereum address should return the correct balances and nextNonce", func() {
@@ -355,12 +364,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[0].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					queryRes = app.Query(abci.RequestQuery{
@@ -368,11 +374,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[1].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query tx_state should return success", func() {
@@ -382,10 +386,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "success")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
 				})
 				Convey("But repeated transfer with the same transaction should fail", func() {
 					checkTxRes := app.CheckTx(rawTx)
@@ -423,12 +424,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					likeChainIDBase64 = base64.StdEncoding.EncodeToString(likeChainIDs[1])
@@ -437,11 +435,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query account_info by Ethereum address should return the correct balance", func() {
@@ -450,12 +446,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[0].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					queryRes = app.Query(abci.RequestQuery{
@@ -463,11 +456,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[1].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query tx_state should return success", func() {
@@ -477,10 +468,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "success")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -515,12 +503,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 98)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(98)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					likeChainIDBase64 = base64.StdEncoding.EncodeToString(likeChainIDs[1])
@@ -529,11 +514,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 
 					likeChainIDBase64 = base64.StdEncoding.EncodeToString(likeChainIDs[2])
@@ -542,11 +525,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query account_info by Ethereum address should return the correct balance", func() {
@@ -555,12 +536,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[0].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 98)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(98)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
 					queryRes = app.Query(abci.RequestQuery{
@@ -568,11 +546,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[1].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 
 					queryRes = app.Query(abci.RequestQuery{
@@ -580,11 +556,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(regInfos[2].Addr),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					err = json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err = strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 101)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(101)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
 				Convey("Then query tx_state should return success", func() {
@@ -594,10 +568,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "success")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -625,10 +596,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "fail")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "fail")
 				})
 			})
 		})
@@ -661,10 +629,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "fail")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "fail")
 				})
 			})
 		})
@@ -695,12 +660,9 @@ func TestTransfer(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 				})
 				Convey("Query account_info for receiver's address should return nothing before registration", func() {
@@ -717,10 +679,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					txState := txStateRes{}
-					err := json.Unmarshal(queryRes.Value, &txState)
-					So(err, ShouldBeNil)
-					So(txState.Status, ShouldEqual, "success")
+					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
 				})
 				Convey("Registration for the receiver's address should success", func() {
 					ethAddr := common.HexToAddress("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e")
@@ -743,12 +702,9 @@ func TestTransfer(t *testing.T) {
 							Data: []byte(likeChainIDBase64),
 						})
 						So(queryRes.Code, ShouldEqual, response.Success.Code)
-						accountInfo := accountInfoRes{}
-						err := json.Unmarshal(queryRes.Value, &accountInfo)
-						So(err, ShouldBeNil)
-						balance, err := strconv.Atoi(accountInfo.Balance)
-						So(err, ShouldBeNil)
-						So(balance, ShouldEqual, 1)
+						accountInfo := getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(1)), ShouldBeZeroValue)
 						So(accountInfo.NextNonce, ShouldEqual, 1)
 
 						queryRes = app.Query(abci.RequestQuery{
@@ -756,11 +712,9 @@ func TestTransfer(t *testing.T) {
 							Data: []byte("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e"),
 						})
 						So(queryRes.Code, ShouldEqual, response.Success.Code)
-						err = json.Unmarshal(queryRes.Value, &accountInfo)
-						So(err, ShouldBeNil)
-						balance, err = strconv.Atoi(accountInfo.Balance)
-						So(err, ShouldBeNil)
-						So(balance, ShouldEqual, 1)
+						accountInfo = getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(1)), ShouldBeZeroValue)
 						So(accountInfo.NextNonce, ShouldEqual, 1)
 					})
 				})
@@ -957,12 +911,9 @@ func TestWithdraw(t *testing.T) {
 			Data: []byte(likeChainIDBase64),
 		})
 		So(queryRes.Code, ShouldEqual, response.Success.Code)
-		accountInfo := accountInfoRes{}
-		err := json.Unmarshal(queryRes.Value, &accountInfo)
-		So(err, ShouldBeNil)
-		balance, err := strconv.Atoi(accountInfo.Balance)
-		So(err, ShouldBeNil)
-		So(balance, ShouldEqual, 100)
+		accountInfo := getAccountInfoRes(queryRes.Value)
+		So(accountInfo, ShouldNotBeNil)
+		So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 		So(accountInfo.NextNonce, ShouldEqual, 1)
 
 		Convey("Given a WithdrawTransaction from A to a certain address with value 1", func() {
@@ -986,12 +937,9 @@ func TestWithdraw(t *testing.T) {
 						Data: []byte(likeChainIDBase64),
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					accountInfo := accountInfoRes{}
-					err := json.Unmarshal(queryRes.Value, &accountInfo)
-					So(err, ShouldBeNil)
-					balance, err := strconv.Atoi(accountInfo.Balance)
-					So(err, ShouldBeNil)
-					So(balance, ShouldEqual, 99)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 				})
 				Convey("Then query withdraw_proof should return a proof", func() {
