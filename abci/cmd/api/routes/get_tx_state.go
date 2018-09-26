@@ -39,7 +39,9 @@ func getTxState(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": string(resQuery.Value),
-	})
+	c.Data(
+		http.StatusOK,
+		"application/json; charset=utf-8",
+		result.Response.Value,
+	)
 }

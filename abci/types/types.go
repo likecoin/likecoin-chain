@@ -11,6 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	proto "github.com/golang/protobuf/proto"
 )
 
 // NewAddressFromHex creates Address from hex string
@@ -179,6 +180,15 @@ func (t *TransferTransaction_TransferTarget) IsValidFormat() bool {
 	}
 	return value.ToBigInt().Cmp(big.NewInt(0)) >= 0 &&
 		to.IsValidFormat()
+}
+
+// Encode encodes transaction into bytes
+func (tx *Transaction) Encode() ([]byte, error) {
+	data, err := proto.Marshal(tx)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 var sigPrefix = []byte("\x19Ethereum Signed Message:\n")
