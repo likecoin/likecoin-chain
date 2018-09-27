@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2c00f064ba355903866cbfbf3f7f4c0fe64af6638cc7d1b8bdcf3181bc67f1d8"
+  digest = "1:c0decf632843204d2b8781de7b26e7038584e2dcccc7e2f401e88ae85b1df2b7"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "UT"
-  revision = "79e00513b1011888b1e675157ab89f527f901cae"
+  revision = "2a560b2036bee5e3679ec2133eb6520b2f195213"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -127,16 +127,15 @@
   revision = "d8387025d2b9d158cf4efb07e7ebf814bcce2057"
 
 [[projects]]
-  digest = "1:2c971a45c89ca2ccc735af50919cdee05fbdc54d4bf50625073693300e31ead8"
+  digest = "1:e9113641c839c21d8eaeb2c907c7276af1eddeed988df8322168c56b7e06e0e1"
   name = "github.com/tendermint/go-amino"
   packages = ["."]
   pruneopts = "UT"
-  revision = "faa6e731944e2b7b6a46ad202902851e8ce85bee"
-  version = "v0.12.0"
+  revision = "2106ca61d91029c931fd54968c2bb02dc96b1412"
+  version = "0.10.1"
 
 [[projects]]
-  branch = "2035-max-bytes"
-  digest = "1:cc63eb0a24f650b991bf023c2bb0a622bcce0633535f4e445c15be83f05f1d86"
+  digest = "1:74ab9ab9f42f88685e53a7d39095be7556e06d44971d6c4f880d75c29052cfbe"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/types",
@@ -156,17 +155,15 @@
     "types",
   ]
   pruneopts = "UT"
-  revision = "29a51a87a15710c27a991241df94db22dc9f072d"
+  revision = "d542d2c3945116697f60451e6a407082c41c3cc9"
+  version = "v0.22.8"
 
 [[projects]]
   branch = "master"
-  digest = "1:9e3997e60d29a1ad4c0dbaa96702e4881144638d5d0ce2d5c0fe83eeba2be476"
+  digest = "1:ff671a61451f7f8c93ef84b3456537204a45068b05f7e97ec59a48bbe6bd1452"
   name = "golang.org/x/crypto"
   packages = [
-    "chacha20poly1305",
     "curve25519",
-    "hkdf",
-    "internal/chacha20",
     "internal/subtle",
     "nacl/box",
     "nacl/secretbox",
@@ -175,7 +172,7 @@
     "salsa20/salsa",
   ]
   pruneopts = "UT"
-  revision = "614d502a4dac94afa3a6ce146bd1736da82514c6"
+  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
 
 [[projects]]
   digest = "1:68349a8c755738add0b9dcc25e5bfcbc11862520e0dfa9ebd32d8b489d7d4971"
@@ -191,14 +188,6 @@
   ]
   pruneopts = "UT"
   revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
-
-[[projects]]
-  branch = "master"
-  digest = "1:8392490b249a3602a13813be12324d3b16eca044ae185ff32cdd9e267706e208"
-  name = "golang.org/x/sys"
-  packages = ["cpu"]
-  pruneopts = "UT"
-  revision = "d99a578cf41bfccdeaf48b0845c823a4b8b0ad5e"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -225,11 +214,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:077c1c599507b3b3e9156d17d36e1e61928ee9b53a5b420f10f28ebd4a0b275c"
+  digest = "1:56b0bca90b7e5d1facf5fbdacba23e4e0ce069d25381b8e2f70ef1e7ebfb9c1a"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "c66870c02cf823ceb633bcd05be3c7cda29976f4"
+  revision = "0e822944c569bf5c9afd034adaa56208bd2906ac"
 
 [[projects]]
   digest = "1:2dab32a43451e320e49608ff4542fdfc653c95dcc35d0065ec9c6c3dd540ed74"
@@ -271,10 +260,10 @@
   input-imports = [
     "github.com/spf13/cobra",
     "github.com/tendermint/go-amino",
-    "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/crypto/ed25519",
     "github.com/tendermint/tendermint/crypto/encoding/amino",
     "github.com/tendermint/tendermint/crypto/secp256k1",
+    "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/privval",
   ]
   solver-name = "gps-cdcl"
