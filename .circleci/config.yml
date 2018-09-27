@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/likecoin/likechain
+    docker:
+      - image: circleci/golang:1.10.3
+    steps:
+      - checkout
+      - run:
+          name: Install dep
+          command: |
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+      - run:
+          name: Install dependencies
+          command: make get_vendor_deps
+      - run:
+          name: Unit testing
+          command: make test
+      - save_cache:
+          key: v1-pkg-cache
+          paths:
+            - "/go/pkg"
