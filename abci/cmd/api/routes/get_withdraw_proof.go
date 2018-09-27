@@ -12,12 +12,12 @@ import (
 )
 
 type withdrawProofQuery struct {
-	Identity string `form:"identity"`
-	ToAddr   string `form:"to_addr"`
-	Value    string `form:"value"`
-	Nonce    uint64 `form:"nonce"`
-	Fee      string `form:"fee"`
-	Height   int64  `form:"height"`
+	Identity string `form:"identity" binding:"required"`
+	ToAddr   string `form:"to_addr" binding:"required"`
+	Value    string `form:"value" binding:"required"`
+	Nonce    uint64 `form:"nonce" binding:"required"`
+	Fee      string `form:"fee" binding:"required"`
+	Height   int64  `form:"height" binding:"required"`
 }
 
 func getWithdrawProof(c *gin.Context) {
