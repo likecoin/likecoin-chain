@@ -56,7 +56,7 @@ func request(
 	return jsonRes
 }
 
-func TestMain(t *testing.T) {
+func TestAPI(t *testing.T) {
 	Convey("Testing API", t, func() {
 		mockCtx := context.NewMock()
 
@@ -79,6 +79,7 @@ func TestMain(t *testing.T) {
 			"addr": fixture.Alice.Address.Hex(),
 			"sig":  sig,
 		})
+		So(res["error"], ShouldBeNil)
 		So(res, ShouldContainKey, "id")
 		appHeight++
 		aliceID := res["id"].(string)
@@ -101,8 +102,9 @@ func TestMain(t *testing.T) {
 			"addr": fixture.Bob.Address.Hex(),
 			"sig":  sig,
 		})
+		So(res["error"], ShouldBeNil)
 		So(res, ShouldContainKey, "id")
-		appHeight++
+		appHeight += 2
 		bobID := res["id"].(string)
 
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
@@ -134,8 +136,8 @@ func TestMain(t *testing.T) {
 			},
 			"sig": sig,
 		})
-		So(res, ShouldNotContainKey, "error")
-		appHeight++
+		So(res["error"], ShouldBeNil)
+		appHeight += 2
 
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
 			t.Error(err)
@@ -166,5 +168,36 @@ func TestMain(t *testing.T) {
 		uri = "/v1/tx_state?tx_hash=" + url.QueryEscape(base64.StdEncoding.EncodeToString(txHash))
 		res = request(router, "GET", uri, nil)
 		So(res["status"], ShouldEqual, "success")
+
+		// Test POST /withdraw
+		uri = "/v1/withdraw"
+		sig = "0x9d6dca90161dcdcf5594e2070b221a6c50318e4034bbf5b25ba50402dcbe0ebb2a8fe928a28fffac5c0edb3d607b86da7df016f5ce789e7488f5fd70da37dbe61b"
+		res = request(router, "POST", uri, map[string]interface{}{
+			"identity": fixture.Alice.Address.Hex(),
+			"nonce":    2,
+			"to_addr":  types.NewZeroAddress().ToHex(),
+			"value":    "1",
+			"fee":      "0",
+			"sig":      sig,
+		})
+		So(res["error"], ShouldBeNil)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		// Test GET /withdraw_proof
+		uri = fmt.Sprintf(
+			"/v1/withdraw_proof?identity=%s&to_addr=%s&height=%d&nonce=%d&value=%s&fee=%s",
+			url.QueryEscape(aliceID),
+			types.NewZeroAddress().ToHex(),
+			appHeight,
+			2,
+			"1",
+			"0",
+		)
+		res = request(router, "GET", uri, nil)
+		So(res["proof"], ShouldNotBeNil)
 	})
 }

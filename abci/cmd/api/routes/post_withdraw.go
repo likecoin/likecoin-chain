@@ -10,12 +10,12 @@ import (
 )
 
 type withdrawJSON struct {
-	Identity string `json:"identity"`
-	ToAddr   string `json:"to_addr"`
-	Value    string `json:"value"`
-	Nonce    uint64 `json:"nonce"`
-	Fee      string `json:"fee"`
-	Sig      string `json:"sig"`
+	Identity string `json:"identity" binding:"required"`
+	ToAddr   string `json:"to_addr" binding:"required"`
+	Value    string `json:"value" binding:"required"`
+	Nonce    uint64 `json:"nonce" binding:"required"`
+	Fee      string `json:"fee" binding:"required"`
+	Sig      string `json:"sig" binding:"required"`
 }
 
 func postWithdraw(c *gin.Context) {
