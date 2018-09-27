@@ -62,6 +62,11 @@ func postTransfer(c *gin.Context) {
 	}
 
 	result, err := tendermint.BroadcastTxCommit(data)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		return
+	}
+
 	if res := result.CheckTx; res.IsErr() {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":  res.Code,
