@@ -32,20 +32,8 @@ func getWithdrawProof(c *gin.Context) {
 		return
 	}
 
-	// Get withdraw proof
-	tx := types.WithdrawTransaction{
-		From:   types.NewIdentifier(query.Identity),
-		ToAddr: types.NewAddressFromHex(query.ToAddr),
-		Value:  types.NewBigInteger(query.Value),
-		Nonce:  query.Nonce,
-		Fee:    types.NewBigInteger(query.Fee),
-	}
-
-	result, err := tendermint.ABCIQueryWithOptions(
-		"withdraw_proof",
-		tx.Pack(),
-		rpcclient.ABCIQueryOptions{Height: query.Height},
-	)
+	// Get LikeChain ID
+	result, err := tendermint.ABCIQuery("account_info", []byte(query.Identity))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -60,8 +48,27 @@ func getWithdrawProof(c *gin.Context) {
 		return
 	}
 
-	// Get LikeChain ID
-	result, err = tendermint.ABCIQuery("account_info", []byte(query.Identity))
+	var accountInfo gin.H
+	if err := json.Unmarshal(result.Response.Value, &accountInfo); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	}
+
+	idStr := accountInfo["id"].(string)
+
+	// Get withdraw proof
+	tx := types.WithdrawTransaction{
+		From:   types.NewIdentifier(idStr),
+		ToAddr: types.NewAddressFromHex(query.ToAddr),
+		Value:  types.NewBigInteger(query.Value),
+		Nonce:  query.Nonce,
+		Fee:    types.NewBigInteger(query.Fee),
+	}
+
+	result, err = tendermint.ABCIQueryWithOptions(
+		"withdraw_proof",
+		tx.Pack(),
+		rpcclient.ABCIQueryOptions{Height: query.Height},
+	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -76,13 +83,8 @@ func getWithdrawProof(c *gin.Context) {
 		return
 	}
 
-	var accountInfo gin.H
-	if err := json.Unmarshal(result.Response.Value, &accountInfo); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"id":    accountInfo["id"],
+		"id":    idStr,
 		"proof": base64.StdEncoding.EncodeToString(result.Response.Value),
 	})
 }

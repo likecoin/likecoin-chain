@@ -109,6 +109,8 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 	account.MinusBalance(state, tx.From, amount)
 	account.IncrementNextNonce(state, senderID)
 
+	// Normalize Identifier for packedTx
+	tx.From = senderID.ToIdentifier()
 	packedTx := tx.Pack()
 
 	withdrawTree := state.MutableWithdrawTree()
