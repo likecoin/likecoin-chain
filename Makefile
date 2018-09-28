@@ -1,3 +1,5 @@
+PACKAGES=$(shell go list ./...)
+
 default: build
 
 get_vendor_deps:
@@ -5,7 +7,5 @@ get_vendor_deps:
 	@cd abci;dep ensure -v -vendor-only
 	@cd tendermint/cli;dep ensure -v -vendor-only
 
-test: test-app
-
-test-app:
-	@go test -v github.com/likecoin/likechain/abci/app
+test:
+	@GOCACHE=off go test -p 1 $(PACKAGES)
