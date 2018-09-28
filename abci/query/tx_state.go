@@ -4,6 +4,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers/transfer"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -14,8 +15,16 @@ func queryTxState(
 	txHash := reqQuery.Data
 	txStatus := transfer.GetStatus(state, txHash)
 
+	data, err := (&types.TxStateResponse{
+		Status: txStatus.String(),
+	}).Marshal()
+	if err != nil {
+		log.WithError(err).Debug("Unable to parse tx state response to JSON")
+		return response.QueryParsingResponseError
+	}
+
 	return response.Success.Merge(response.R{
-		Data: []byte(txStatus.String()),
+		Data: data,
 	})
 }
 

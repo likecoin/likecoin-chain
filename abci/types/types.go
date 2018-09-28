@@ -368,3 +368,19 @@ func (status TxStatus) String() string {
 	}
 	return ""
 }
+
+// TxStateResponse is a response object of tx state
+type TxStateResponse struct {
+	Status string `json:"status"`
+}
+
+// Unmarshal creates a TxStateResponse from JSON bytes
+func (r *TxStateResponse) Unmarshal(data []byte) (*TxStateResponse, error) {
+	err := json.Unmarshal(data, r)
+	return r, err
+}
+
+// Marshal converts TxStateResponse into JSON bytes
+func (r *TxStateResponse) Marshal() ([]byte, error) {
+	return json.Marshal(r)
+}
