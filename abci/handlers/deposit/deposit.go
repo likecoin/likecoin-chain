@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/likecoin/likechain/abci/context"
-	handler "github.com/likecoin/likechain/abci/handlers"
+	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -33,7 +33,7 @@ func checkDeposit(state context.IImmutableState, rawTx *types.Transaction) respo
 	return response.Success // TODO
 }
 
-func deliverDeposit(state context.IMutableState, rawTx *types.Transaction) response.R {
+func deliverDeposit(state context.IMutableState, rawTx *types.Transaction, txHash []byte) response.R {
 	tx := rawTx.GetDepositTx()
 	if tx == nil {
 		log.Panic("Expect DepositTx but got nil")
@@ -58,7 +58,8 @@ func deposit(state context.IMutableState, tx *types.DepositTransaction) {
 }
 
 func init() {
-	t := reflect.TypeOf((*types.Transaction_DepositTx)(nil))
-	handler.RegisterCheckTxHandler(t, checkDeposit)
-	handler.RegisterDeliverTxHandler(t, deliverDeposit)
+	log.Info("Init transfer handlers")
+	_type := reflect.TypeOf((*types.Transaction_DepositTx)(nil))
+	table.RegisterCheckTxHandler(_type, checkDeposit)
+	table.RegisterDeliverTxHandler(_type, deliverDeposit)
 }
