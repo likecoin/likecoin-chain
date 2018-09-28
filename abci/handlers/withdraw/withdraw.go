@@ -3,6 +3,7 @@ package withdraw
 import (
 	"math/big"
 	"reflect"
+	"strconv"
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
@@ -118,7 +119,10 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 
 	return response.Success.Merge(response.R{
 		Tags: []common.KVPair{
-			{[]byte("tx.withdraw"), nil},
+			{
+				Key:   []byte("withdraw.height"),
+				Value: []byte(strconv.FormatInt(state.GetHeight()+1, 10)),
+			},
 		},
 		Data: packedTx,
 	})
