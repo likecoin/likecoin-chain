@@ -42,7 +42,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			},
 			Nonce: 1,
 			Fee:   types.NewBigInteger("1"),
-			Sig:   types.NewSignatureFromHex("0xf194fd5457c6a25bda697821283b9e2cc81279362215e448cc80d9c36c17cc2a3dc29ecf46f11f4263af85339cb47bc0c576ec32da184d396e8312b0fac0bb201b"),
+			Sig:   types.NewSignatureFromHex("0x9fa395fef942fcade6200772872ce4a21f1a878120b459b500e9e27b848a8ffb4409545df564dfafed96828ce2bff77d73c43679b9e0980962bee8b5d2d93ed91c"),
 		}).ToTransaction()
 
 		rawTxBytes, _ := proto.Marshal(rawTx)
@@ -105,7 +105,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		Convey("If it is a valid transaction with address as identifer", func() {
 			tx := rawTx.GetTransferTx()
 			tx.From = fixture.Alice.RawAddress.ToIdentifier()
-			tx.Sig = types.NewSignatureFromHex("0x5230c3812031d4049216dfa25a4e9663a7634843d0f87a5142a77c29072cefa12095fd4fc362cf3852df38ce85c50fe3d56d021ae9bafe05a54eafd35a2e8e4f1b")
+			tx.Sig = types.NewSignatureFromHex("0xde3bb27979df8884ea69859dd841b91673814a474d6333e732979f047db72f8104a030aaca4667d31df8eff6dfd50775a5e93f5d44796351066394b70c6d50e11c")
 
 			rawTxBytes, _ = proto.Marshal(rawTx)
 			txHash = utils.HashRawTx(rawTxBytes)
@@ -149,8 +149,9 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 
 		Convey("If the sender is not registered", func() {
-			rawTx.GetTransferTx().From = types.NewLikeChainID([]byte("mallory")).ToIdentifier()
-
+			tx := rawTx.GetTransferTx()
+			tx.From = fixture.Mallory.ID.ToIdentifier()
+			tx.Sig = types.NewSignatureFromHex("0x7e588f1532f1289cb52cddc57dc80d1ead7c9e84397faf7f3dc3f1500942470445ed0bc6c2adc05e54565da22b5820f611f9c4f2cacc5fbe885de887da68aaa21b")
 			code := response.TransferCheckTxSenderNotRegistered.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 				res := checkTransfer(state, rawTx)
@@ -187,7 +188,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		Convey("If its nonce is invalid", func() {
 			tx := rawTx.GetTransferTx()
 			tx.Nonce = 2
-			tx.Sig = types.NewSignatureFromHex("0xe3af48868498f69b792905b653ee11533af5dac613c1fb4a358a2776c277e7f800149e1f8af68ec5f4c01a1a24909bc339ce9f70cf0addc8635f54b3981a66561b0x2dddc89b34896c0ab3622a3d2c4b1192b85606b6ed72a9f7e372ce0795498f830c4823cd461d80169ff666a6a55f23153dc820fc42a322ce1cad63b48cfc42a41b")
+			tx.Sig = types.NewSignatureFromHex("0x8621d00bffc0fddd29225dd25152958d4740a9263969951227ccae62b8d135370deb1917f490770cf0a3660e453dc390536cd5c2f1411179a2e80288bafdfdfe1b")
 
 			code := response.TransferCheckTxInvalidNonce.Code
 			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
@@ -258,7 +259,7 @@ func TestValidateTransferSignature(t *testing.T) {
 		})
 
 		Convey("If its sender identifier is a LikeChain ID", func() {
-			tx.Sig = types.NewSignatureFromHex("0x61235afd564c0b96c44342edd4456ef26ed142da9528bd88a7c321aa8595c96044a7a9c7747e049f88e89df6db0419c0aaee6c4d795c5540424379efd7e7a6731c")
+			tx.Sig = types.NewSignatureFromHex("0x6b69149b6fb251d14819f126d9e7d223db902875247ec6085b8b5f21a7a31ece40fbb9c657b242fe159a4c8b80b4ad2cb4a3a4e0778133938a7ad28f841ce7581b")
 
 			Convey("If the LikeChain ID has been bound to the signing address", func() {
 				account.NewAccountFromID(state, fixture.Alice.ID, fixture.Alice.Address)
@@ -270,8 +271,7 @@ func TestValidateTransferSignature(t *testing.T) {
 			})
 
 			Convey("If the LikeChain ID has not been bound to the signing address", func() {
-				mallory := fixture.NewUser("mallory", "")
-				tx.From = mallory.ID.ToIdentifier()
+				tx.From = fixture.Mallory.ID.ToIdentifier()
 
 				Convey("It should not pass the validation", func() {
 					So(validateTransferSignature(state, tx), ShouldBeFalse)
