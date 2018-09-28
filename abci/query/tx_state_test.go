@@ -38,7 +38,13 @@ func TestQueryTxState(t *testing.T) {
 
 				Convey(fmt.Sprintf("Should return code 0 and %s", s), func() {
 					So(res.Code, ShouldEqual, 0)
-					So(string(res.Value), ShouldEqual, s)
+
+					txStateRes, err := new(types.TxStateResponse).Unmarshal(res.Value)
+					if err != nil {
+						t.Error(err)
+					}
+
+					So(txStateRes.Status, ShouldEqual, s)
 				})
 			})
 		}

@@ -165,8 +165,12 @@ func getAccountInfoRes(data []byte) *accountInfoRes {
 	}
 }
 
-func getTxStateRes(data []byte) string {
-	return string(data)
+func getTxStateResponseStatus(data []byte) string {
+	res, err := new(types.TxStateResponse).Unmarshal(data)
+	if err != nil {
+		return ""
+	}
+	return res.Status
 }
 
 func TestRegistration(t *testing.T) {
@@ -379,7 +383,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 				Convey("But repeated transfer with the same transaction should fail", func() {
 					checkTxRes := app.CheckTx(rawTx)
@@ -461,7 +465,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -561,7 +565,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -589,7 +593,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "fail")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
 				})
 			})
 		})
@@ -622,7 +626,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "fail")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
 				})
 			})
 		})
@@ -672,7 +676,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 				Convey("Registration for the receiver's address should success", func() {
 					ethAddr := common.HexToAddress("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e")
@@ -822,7 +826,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -876,7 +880,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
@@ -1009,7 +1013,7 @@ func TestTransfer(t *testing.T) {
 						Data: txHash,
 					})
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
-					So(getTxStateRes(queryRes.Value), ShouldEqual, "success")
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 			})
 		})
