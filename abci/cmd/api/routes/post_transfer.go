@@ -1,36 +1,30 @@
 package routes
 
 import (
+	"encoding/base64"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/types"
-	"github.com/likecoin/likechain/abci/utils"
 )
 
 type transferTargetJSON struct {
-	Identity string `json:"identity" binding:"required"`
-	Value    string `json:"value" binding:"required"`
-	Remark   string `json:"remark"`
+	Identity string `json:"identity" binding:"required,identity"`
+	Value    string `json:"value" binding:"required,biginteger"`
+	Remark   string `json:"remark" binding:"base64"`
 }
 type transferJSON struct {
-	Identity string               `json:"identity" binding:"required"`
+	Identity string               `json:"identity" binding:"required,identity"`
 	To       []transferTargetJSON `json:"to" binding:"required"`
-	Nonce    int64                `json:"nonce" binding:"required"`
-	Fee      string               `json:"fee" binding:"required"`
-	Sig      string               `json:"sig" binding:"required"`
+	Nonce    int64                `json:"nonce" binding:"required,min=1"`
+	Fee      string               `json:"fee" binding:"required,biginteger"`
+	Sig      string               `json:"sig" binding:"required,eth_sig"`
 }
 
 func postTransfer(c *gin.Context) {
 	var json transferJSON
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if !utils.IsValidBigIntegerString(json.Fee) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer fee"})
 		return
 	}
 
@@ -43,19 +37,15 @@ func postTransfer(c *gin.Context) {
 	}
 
 	for i, t := range json.To {
-		if !utils.IsValidBigIntegerString(t.Value) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer value"})
-			return
-		}
-
+		remark, _ := base64.StdEncoding.DecodeString(t.Remark)
 		tx.ToList[i] = &types.TransferTransaction_TransferTarget{
 			To:     types.NewIdentifier(t.Identity),
 			Value:  types.NewBigInteger(t.Value),
-			Remark: []byte(t.Remark),
+			Remark: remark,
 		}
 	}
 
-	data, err := proto.Marshal(tx.ToTransaction())
+	data, err := tx.ToTransaction().Encode()
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

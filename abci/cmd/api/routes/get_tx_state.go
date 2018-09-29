@@ -8,7 +8,7 @@ import (
 )
 
 type txStateQuery struct {
-	TxHash string `form:"tx_hash" binding:"required"`
+	TxHash string `form:"tx_hash" binding:"required,base64"`
 }
 
 func getTxState(c *gin.Context) {
@@ -18,11 +18,7 @@ func getTxState(c *gin.Context) {
 		return
 	}
 
-	txHash, err := base64.StdEncoding.DecodeString(query.TxHash)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	txHash, _ := base64.StdEncoding.DecodeString(query.TxHash)
 
 	result, err := tendermint.ABCIQuery("tx_state", txHash)
 	if err != nil {

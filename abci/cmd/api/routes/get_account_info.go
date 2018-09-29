@@ -7,7 +7,7 @@ import (
 )
 
 type accountInfoQuery struct {
-	Identity string `form:"identity" binding:"required"`
+	Identity string `form:"identity" binding:"required,identity"`
 }
 
 func getAccountInfo(c *gin.Context) {
