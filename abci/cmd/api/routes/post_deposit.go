@@ -3,16 +3,13 @@ package routes
 import (
 	"net/http"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
-	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/types"
-	"github.com/likecoin/likechain/abci/utils"
 )
 
 type depositEventJSON struct {
-	From  string `json:"from" binding:"required"`
-	Value string `json:"value" binding:"required"`
+	From  string `json:"from" binding:"required,eth_addr"`
+	Value string `json:"value" binding:"required,biginteger"`
 }
 
 type depositJSON struct {
@@ -32,23 +29,13 @@ func postDeposit(c *gin.Context) {
 		Deposits:    make([]*types.DepositTransaction_DepositEvent, len(json.Events)),
 	}
 	for i, e := range json.Events {
-		if !common.IsHexAddress(e.From) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sender address"})
-			return
-		}
-
-		if !utils.IsValidBigIntegerString(e.Value) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid deposit value"})
-			return
-		}
-
 		tx.Deposits[i] = &types.DepositTransaction_DepositEvent{
 			FromAddr: types.NewAddressFromHex(e.From),
 			Value:    types.NewBigInteger(e.Value),
 		}
 	}
 
-	data, err := proto.Marshal(tx.ToTransaction())
+	data, err := tx.ToTransaction().Encode()
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

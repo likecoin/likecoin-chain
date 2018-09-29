@@ -688,6 +688,7 @@
   input-imports = [
     "github.com/banzaicloud/logrus-runtime-formatter",
     "github.com/gin-gonic/gin",
+    "github.com/gin-gonic/gin/binding",
     "github.com/gogap/config",
     "github.com/gogap/logrus_mate",
     "github.com/gogap/logrus_mate/writers/rotatelogs",
@@ -705,6 +706,7 @@
     "github.com/tendermint/tendermint/libs/db",
     "github.com/tendermint/tendermint/rpc/client",
     "github.com/tendermint/tendermint/rpc/test",
+    "gopkg.in/go-playground/validator.v8",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/types"
 )
 
 type registerJSON struct {
-	Addr string `json:"addr" binding:"required"`
-	Sig  string `json:"sig" binding:"required"`
+	Addr string `json:"addr" binding:"required,eth_addr"`
+	Sig  string `json:"sig" binding:"required,eth_sig"`
 }
 
 func postRegister(c *gin.Context) {
@@ -24,8 +23,7 @@ func postRegister(c *gin.Context) {
 		Addr: types.NewAddressFromHex(json.Addr),
 		Sig:  types.NewSignatureFromHex(json.Sig),
 	}
-
-	data, err := proto.Marshal(tx.ToTransaction())
+	data, err := tx.ToTransaction().Encode()
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

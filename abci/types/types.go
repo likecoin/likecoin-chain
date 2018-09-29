@@ -111,7 +111,7 @@ func NewIdentifier(s string) *Identifier {
 	}
 	id, _ := NewLikeChainIDFromString(s)
 	if id == nil {
-		id = &LikeChainID{}
+		return nil
 	}
 	return id.ToIdentifier()
 }

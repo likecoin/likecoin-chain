@@ -24,6 +24,8 @@ func main() {
 
 	router := gin.Default()
 
+	bindValidators()
+
 	routes.Initialize(router, client)
 
 	router.Run(":" + port)

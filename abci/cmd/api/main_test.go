@@ -67,6 +67,9 @@ func TestAPI(t *testing.T) {
 		client := rpcclient.NewLocal(node)
 
 		router := gin.Default()
+
+		bindValidators()
+
 		routes.Initialize(router, client)
 
 		appHeight := int64(0)
@@ -121,6 +124,7 @@ func TestAPI(t *testing.T) {
 		//
 		uri = "/v1/account_info?identity=" + url.QueryEscape(aliceID)
 		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, aliceID)
 		So(res["balance"], ShouldEqual, "100")
 
