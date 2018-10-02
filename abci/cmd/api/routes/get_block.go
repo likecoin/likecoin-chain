@@ -7,7 +7,7 @@ import (
 )
 
 type blockQuery struct {
-	Height int64 `form:"height,min=0"`
+	Height int64 `form:"height,min=1"`
 }
 
 func getBlock(c *gin.Context) {

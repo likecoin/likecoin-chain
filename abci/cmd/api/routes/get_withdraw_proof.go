@@ -17,7 +17,7 @@ type withdrawProofQuery struct {
 	Value    string `form:"value" binding:"required,biginteger"`
 	Nonce    uint64 `form:"nonce" binding:"required,min=1"`
 	Fee      string `form:"fee" binding:"required,biginteger"`
-	Height   int64  `form:"height" binding:"required,min=0"`
+	Height   int64  `form:"height" binding:"required,min=1"`
 }
 
 func getWithdrawProof(c *gin.Context) {
