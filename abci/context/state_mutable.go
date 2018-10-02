@@ -132,11 +132,6 @@ func (state *MutableState) GetInitialBalance() *big.Int {
 	return state.initialBalance
 }
 
-// SetInitialBalance set the initial balance for new account
-func (state *MutableState) SetInitialBalance(i *big.Int) {
-	state.initialBalance = i
-}
-
 // Init initializes states
 func (state *MutableState) Init() {
 	log.Info("Init states")

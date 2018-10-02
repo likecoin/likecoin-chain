@@ -1,6 +1,8 @@
 package context
 
 import (
+	"math/big"
+
 	"github.com/sirupsen/logrus"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
@@ -35,4 +37,9 @@ func (appCtx *MockApplicationContext) Reset() {
 	}
 	appCtx.state.stateTree.Rollback()
 	appCtx.state.withdrawTree.Rollback()
+}
+
+// SetInitialBalance set the initial balance for new account
+func (appCtx *MockApplicationContext) SetInitialBalance(i *big.Int) {
+	appCtx.state.initialBalance = i
 }

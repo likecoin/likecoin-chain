@@ -97,7 +97,7 @@ func TestAPI(t *testing.T) {
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Register A account
-		mockCtx.GetMutableState().SetInitialBalance(big.NewInt(100))
+		mockCtx.SetInitialBalance(big.NewInt(100))
 		sig := "0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b"
 		params := map[string]interface{}{
 			"addr": fixture.Alice.Address.Hex(),
@@ -141,7 +141,7 @@ func TestAPI(t *testing.T) {
 		So(res["error"], ShouldNotBeNil)
 
 		// Register B account
-		mockCtx.GetMutableState().SetInitialBalance(big.NewInt(200))
+		mockCtx.SetInitialBalance(big.NewInt(200))
 		uri = "/v1/register"
 		sig = "0x6d8c7bb3292cab67f4814f9c2d1986430bd188b4eadf82a3fdf1e6be10f7599751985388c2a79429ee60761169e4c67e3b453daf88b637d77f87d7be68196b2c1b"
 		res, code = request(router, "POST", uri, map[string]interface{}{
