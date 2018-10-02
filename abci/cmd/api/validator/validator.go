@@ -1,4 +1,4 @@
-package main
+package validator
 
 import (
 	"encoding/base64"
@@ -20,7 +20,8 @@ var (
 	ethSignatureRegex = regexp.MustCompile(ethSignatureRegexString)
 )
 
-func validateBigInteger(
+// ValidateBigInteger validates big integer
+func ValidateBigInteger(
 	v *validator.Validate,
 	topStruct reflect.Value,
 	currentStructOrField reflect.Value,
@@ -35,8 +36,9 @@ func validateBigInteger(
 	return false
 }
 
+// IsEthereumAddress is a modified implementation of validator.v9 IsEtheremAddress
 // Ref: https://github.com/go-playground/validator/blob/v9/baked_in.go#L420
-func isEthereumAddress(
+func IsEthereumAddress(
 	v *validator.Validate,
 	topStruct reflect.Value,
 	currentStructOrField reflect.Value,
@@ -52,7 +54,8 @@ func isEthereumAddress(
 	return false
 }
 
-func isEthereumSignature(
+// IsEthereumSignature validates Ethereum signature
+func IsEthereumSignature(
 	v *validator.Validate,
 	topStruct reflect.Value,
 	currentStructOrField reflect.Value,
@@ -70,7 +73,8 @@ func isEthereumSignature(
 	return true
 }
 
-func isIdentity(
+// IsIdentity validates LikeChain identity
+func IsIdentity(
 	v *validator.Validate,
 	topStruct reflect.Value,
 	currentStructOrField reflect.Value,
@@ -86,14 +90,15 @@ func isIdentity(
 		}
 		return len(data) == 20
 	}
-	return isEthereumAddress(v, topStruct, currentStructOrField, field, fieldType, fieldKind, param)
+	return IsEthereumAddress(v, topStruct, currentStructOrField, field, fieldType, fieldKind, param)
 }
 
-func bindValidators() {
+// Bind binds all custom validators
+func Bind() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("biginteger", validateBigInteger)
-		v.RegisterValidation("eth_addr", isEthereumAddress)
-		v.RegisterValidation("eth_sig", isEthereumSignature)
-		v.RegisterValidation("identity", isIdentity)
+		v.RegisterValidation("biginteger", ValidateBigInteger)
+		v.RegisterValidation("eth_addr", IsEthereumAddress)
+		v.RegisterValidation("eth_sig", IsEthereumSignature)
+		v.RegisterValidation("identity", IsIdentity)
 	}
 }

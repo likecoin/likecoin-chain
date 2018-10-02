@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	likechain "github.com/likecoin/likechain/abci/app"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
+	customvalidator "github.com/likecoin/likechain/abci/cmd/api/validator"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
@@ -69,7 +70,7 @@ func TestAPI(t *testing.T) {
 
 		router := gin.Default()
 
-		bindValidators()
+		customvalidator.Bind()
 
 		routes.Initialize(router, client)
 

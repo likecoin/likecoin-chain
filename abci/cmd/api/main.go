@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
+	customvalidator "github.com/likecoin/likechain/abci/cmd/api/validator"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -24,7 +25,7 @@ func main() {
 
 	router := gin.Default()
 
-	bindValidators()
+	customvalidator.Bind()
 
 	routes.Initialize(router, client)
 
