@@ -1,6 +1,8 @@
 
 # LikeChain
 
+[![CircleCI](https://circleci.com/gh/likecoin/likechain.svg?style=svg)](https://circleci.com/gh/likecoin/likechain)
+
 ## Development Setup
 ```sh
 # Build the docker images, run it for the first time or you have dependency updates
