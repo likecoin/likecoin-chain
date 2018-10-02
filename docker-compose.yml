@@ -9,7 +9,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - LIKECHAIN_API_CLIENT_HOST=tendermint-1:26657
+      LIKECHAIN_API_CLIENT_HOST: tendermint-1:26657
     command: ["go", "run", "cmd/api/main.go"]
   abci-1: &abci-node
     image: likechain/abci

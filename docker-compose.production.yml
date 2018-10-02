@@ -1,0 +1,41 @@
+version: "3.6"
+services:
+  api:
+    environment:
+      LIKECHAIN_ENV: production
+      LIKECHAIN_API_CLIENT_HOST: tendermint-1:26657
+      GIN_MODE: release
+    volumes:
+      - /likechain
+    command: ["./api"]
+  abci-1:
+    environment:
+      LIKECHAIN_ENV: production
+      LIKECHAIN_LOG_CONFIG: |
+        {
+          level = "debug"
+
+          out.name = "rotatelogs"
+          out.options {
+            path            = log_%Y%m%d.log
+            # clock         =
+            # location      =
+            link-name       = log_current.log
+            # rotation-time = # default 24hour (nanosecond)
+            # max-age       = # default 24hour * 7 (nanosecond)
+          }
+
+          formatter.name = "json"
+          formatter.options {
+            force-colors      = true
+            disable-colors    = false
+            disable-timestamp = false
+            full-timestamp    = true
+            timestamp-format  = "2018-01-01 23:59:59"
+            disable-sorting   = false
+          }
+        }
+    volumes:
+      - /likechain
+  tendermint-1:
+    entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname`
