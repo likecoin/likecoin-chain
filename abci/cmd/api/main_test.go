@@ -162,6 +162,7 @@ func TestAPI(t *testing.T) {
 
 		uri = "/v1/account_info?identity=" + fixture.Bob.Address.Hex()
 		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, bobID)
 		So(res["balance"], ShouldEqual, "200")
 
@@ -170,6 +171,7 @@ func TestAPI(t *testing.T) {
 		//
 		uri = fmt.Sprintf("/v1/block?height=%d", appHeight)
 		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["result"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusOK)
 
@@ -224,8 +226,8 @@ func TestAPI(t *testing.T) {
 
 		// Duplicated transfer
 		res, code = request(router, "POST", uri, params)
-		So(code, ShouldEqual, http.StatusConflict)
 		So(res["error"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusConflict)
 
 		// Invalid logic
 		params["nonce"] = 2
@@ -237,21 +239,24 @@ func TestAPI(t *testing.T) {
 		}
 		params["sig"] = "0x1ef7d4812b55645c4aea8ac1a16354278827f39722dd3c4f38f23dda004795db121d8d4341613cdffed28f29418cf7df46e55f21380daab5711d3ffb8f8ee0771c"
 		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldNotBeNil)
 		So(res["code"], ShouldEqual, response.TransferCheckTxNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Invalid params
 		params["sig"] = types.NewZeroSignature().ToHex()
 		res, code = request(router, "POST", uri, params)
-		So(code, ShouldEqual, http.StatusBadRequest)
 		So(res["error"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusBadRequest)
 
 		uri = "/v1/account_info?identity=" + url.QueryEscape(aliceID)
 		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["balance"], ShouldEqual, "99")
 
 		uri = "/v1/account_info?identity=" + url.QueryEscape(bobID)
 		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["balance"], ShouldEqual, "201")
 
 		//
@@ -272,6 +277,7 @@ func TestAPI(t *testing.T) {
 		txHash := utils.HashRawTx(rawTx)
 		uri = "/v1/tx_state?tx_hash=" + url.QueryEscape(base64.StdEncoding.EncodeToString(txHash))
 		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["status"], ShouldEqual, "success")
 
 		// Missing params
@@ -330,6 +336,7 @@ func TestAPI(t *testing.T) {
 		params["value"] = "999"
 		params["sig"] = "0x4389b731b1d67c792cc309a52281d0ef5350973f1d7d72f38049915756fc8ca86765e505a8c4c54e5cc98473881634706ad79ae561ca959fb49da5f7193c14901b"
 		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldNotBeNil)
 		So(res["code"], ShouldEqual, response.WithdrawCheckTxNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
@@ -347,6 +354,7 @@ func TestAPI(t *testing.T) {
 			"0",
 		)
 		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["proof"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusOK)
 
@@ -361,6 +369,7 @@ func TestAPI(t *testing.T) {
 			"0",
 		)
 		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
 		So(res["proof"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusOK)
 
