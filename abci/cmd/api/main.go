@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
 	customvalidator "github.com/likecoin/likechain/abci/cmd/api/validator"
@@ -26,6 +27,9 @@ func main() {
 	router := gin.Default()
 
 	customvalidator.Bind()
+
+	// Allows all origins
+	router.Use(cors.Default())
 
 	routes.Initialize(router, client)
 
