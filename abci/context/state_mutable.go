@@ -5,8 +5,13 @@ import (
 	"encoding/binary"
 	"math/big"
 
+	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
+)
+
+var (
+	config = appConf.GetConfig()
 )
 
 // IMutableState is an interface for accessing immutable context
@@ -127,7 +132,11 @@ func (state *MutableState) GetWithdrawVersionAtHeight(height int64) int64 {
 // GetInitialBalance returns the initial balance for new account
 func (state *MutableState) GetInitialBalance() *big.Int {
 	if state.initialBalance == nil {
-		state.initialBalance = big.NewInt(0)
+		initialBalance, success := new(big.Int).SetString(config.InitialBalance, 10)
+		if !success {
+			initialBalance = big.NewInt(0)
+		}
+		state.initialBalance = initialBalance
 	}
 	return state.initialBalance
 }
