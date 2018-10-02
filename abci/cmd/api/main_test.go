@@ -17,6 +17,7 @@ import (
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/fixture"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	. "github.com/smartystreets/goconvey/convey"
@@ -226,15 +227,16 @@ func TestAPI(t *testing.T) {
 		So(res["error"], ShouldNotBeNil)
 
 		// Invalid logic
+		params["nonce"] = 2
 		params["to"] = []map[string]interface{}{
 			{
 				"identity": fixture.Bob.Address.Hex(),
 				"value":    "999",
 			},
 		}
-		params["sig"] = "0xe65fc167583c2daab404ce80054bfc731d6653d5ee794f8e389a363bcc6b51224827e016c2412c14c36ea4df5dedb06a69d3093714bf6de8519486d3cac472a91b"
+		params["sig"] = "0x1ef7d4812b55645c4aea8ac1a16354278827f39722dd3c4f38f23dda004795db121d8d4341613cdffed28f29418cf7df46e55f21380daab5711d3ffb8f8ee0771c"
 		res, code = request(router, "POST", uri, params)
-		So(res["error"], ShouldNotBeNil)
+		So(res["code"], ShouldEqual, response.TransferCheckTxNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Invalid params
@@ -322,10 +324,12 @@ func TestAPI(t *testing.T) {
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Invalid logic
+		params["fee"] = "0"
+		params["nonce"] = 3
 		params["value"] = "999"
 		params["sig"] = "0x4389b731b1d67c792cc309a52281d0ef5350973f1d7d72f38049915756fc8ca86765e505a8c4c54e5cc98473881634706ad79ae561ca959fb49da5f7193c14901b"
 		res, code = request(router, "POST", uri, params)
-		So(res["error"], ShouldNotBeNil)
+		So(res["code"], ShouldEqual, response.WithdrawCheckTxNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		//
