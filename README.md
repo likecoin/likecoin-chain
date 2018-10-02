@@ -58,3 +58,12 @@ curl 'http://localhost:3000/v1/block'
 # Check peers connection
 curl 'http://localhost:26657/net_info'
 ```
+
+## Run in Production
+```sh
+# Build in production
+./build.production.sh
+
+# Using Docker Compose
+docker-compose -f docker-compose.yml -f docker-compose.production.yml up
+```
