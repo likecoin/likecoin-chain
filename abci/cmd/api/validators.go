@@ -11,17 +11,13 @@ import (
 )
 
 const (
-	ethAddressRegexString      = `^0x[0-9a-fA-F]{40}$`
-	ethAddressUpperRegexString = `^0x[0-9A-F]{40}$`
-	ethAddressLowerRegexString = `^0x[0-9a-f]{40}$`
-	ethSignatureRegexString    = `^0x[0-9a-f]{130}$`
+	ethAddressRegexString   = `^0x[0-9a-fA-F]{40}$`
+	ethSignatureRegexString = `^0x[0-9a-f]{130}$`
 )
 
 var (
-	ethAddressRegex      = regexp.MustCompile(ethAddressRegexString)
-	ethaddressRegexUpper = regexp.MustCompile(ethAddressUpperRegexString)
-	ethAddressRegexLower = regexp.MustCompile(ethAddressLowerRegexString)
-	ethSignatureRegex    = regexp.MustCompile(ethSignatureRegexString)
+	ethAddressRegex   = regexp.MustCompile(ethAddressRegexString)
+	ethSignatureRegex = regexp.MustCompile(ethSignatureRegexString)
 )
 
 func validateBigInteger(
@@ -50,17 +46,10 @@ func isEthereumAddress(
 	param string,
 ) bool {
 	if addr, ok := field.Interface().(string); ok {
-		if !ethAddressRegex.MatchString(addr) {
-			return false
-		}
-
-		if ethaddressRegexUpper.MatchString(addr) ||
-			ethAddressRegexLower.MatchString(addr) {
-			return true
-		}
+		return ethAddressRegex.MatchString(addr)
 	}
 
-	return true
+	return false
 }
 
 func isEthereumSignature(
