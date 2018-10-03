@@ -5,8 +5,17 @@
 
 ## Development Setup
 ```sh
-# Build the docker images, run it for the first time or you have dependency updates
+# Build all
 ./build.sh
+
+# OR build the following separately
+# - Tendermint
+# - cli (for key generation)
+# - base image (for faster building speed)
+./build.base.sh
+
+# Build ABCI
+./abci/build.sh
 
 export NODE_COUNT=4
 
@@ -34,7 +43,7 @@ docker-compose up --force-recreate
 ```
 
 ## Manage dependancies
-We use `dep` for package manager
+We use `dep` for package manager, for example:
 ```sh
 # After import package(s) in code / add constrain(s) in Gopkg.toml
 cd abci
@@ -57,6 +66,12 @@ curl 'http://localhost:26657/net_info'
 ```sh
 # Build in production
 ./build.production.sh
+
+# OR if you have run the following before
+./build.base.sh
+./abci/build.sh
+# You can directly run this
+./abci/build.production.sh
 
 # Using Docker Compose
 docker-compose -f docker-compose.yml -f docker-compose.production.yml up

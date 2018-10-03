@@ -1,5 +1,11 @@
 #!/bin/bash
 
-docker build -t likechain/key-cli tendermint/cli
-docker build -t likechain/tendermint tendermint
-docker build -t likechain/abci abci
+PWD=`pwd`
+WD=`cd $(dirname "$0") && pwd -P`
+
+cd "${WD}"
+
+./build.base.sh
+./abci/build.sh
+
+cd "${PWD}"

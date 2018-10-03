@@ -1,6 +1,7 @@
 version: "3.6"
 services:
   api:
+    image: likechain/abci-production
     environment:
       LIKECHAIN_ENV: production
       LIKECHAIN_API_CLIENT_HOST: tendermint-1:26657
@@ -9,6 +10,7 @@ services:
       - /likechain
     command: ["./api"]
   abci-1:
+    image: likechain/abci-production
     environment:
       LIKECHAIN_ENV: production
       LIKECHAIN_LOG_CONFIG: |
@@ -39,3 +41,7 @@ services:
       - /likechain
   tendermint-1:
     entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname`
+    ports:
+      - 26657:26657
+      - 26656:26656
+
