@@ -8,14 +8,9 @@
 # Build the docker images, run it for the first time or you have dependency updates
 ./build.sh
 
-export NODE_COUNT=3
-
-# Setup init script
-cd tendermint/cli
-dep ensure --vendor-only
+export NODE_COUNT=4
 
 # Initialize nodes
-cd ../..
 ./init.sh
 
 # Start development
@@ -25,15 +20,14 @@ docker-compose up
 ### Scale nodes
 ```sh
 # Change number of nodes
-export NODE_COUNT=4
+export NODE_COUNT=5
 ./init.sh
-docker-compose up
+docker-compose up --force-recreate
 ```
 
 ### Reset nodes
 ```sh
 ./reset.sh
-./init.sh
 
 # Start development with fresh containers
 docker-compose up --force-recreate
