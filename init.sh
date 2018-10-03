@@ -3,6 +3,7 @@
 set -e
 
 node_count=${NODE_COUNT:=1}
+cli_image="likechain/key-cli"
 tendermint_image="likechain/tendermint"
 
 rm -rf tendermint/nodes/*
@@ -49,7 +50,7 @@ for (( i = 1; i <= $node_count; i++ )); do
     mkdir -p tendermint/nodes/${i}
     chmod 777 tendermint/nodes/${i}
 
-    go run tendermint/cli/main.go --output_dir tendermint/nodes/${i}/config --type secp256k1
+    docker run --rm -v `pwd`/tendermint/nodes/${i}/config:/cli/config $cli_image --output_dir config --type secp256k1
     docker run --rm -v `pwd`/tendermint/nodes/${i}:/tendermint $tendermint_image init
 
     chmod -R 777 tendermint/nodes/${i}
