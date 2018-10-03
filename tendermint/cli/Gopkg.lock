@@ -3,6 +3,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d6afaeed1502aa28e80a4ed0981d570ad91b2579193404256ce672ed0a609e0d"
+  name = "github.com/beorn7/perks"
+  packages = ["quantile"]
+  pruneopts = "UT"
+  revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
+
+[[projects]]
+  branch = "master"
   digest = "1:c0decf632843204d2b8781de7b26e7038584e2dcccc7e2f401e88ae85b1df2b7"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
@@ -18,12 +26,16 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:704b145137b5555c6bac6a7e52875e4df8a0a1b7ea74aaae864abcab61e672b0"
+  digest = "1:fdf5169073fb0ad6dc12a70c249145e30f4058647bea25f0abd48b6d9f228a11"
   name = "github.com/go-kit/kit"
   packages = [
     "log",
     "log/level",
     "log/term",
+    "metrics",
+    "metrics/discard",
+    "metrics/internal/lv",
+    "metrics/prometheus",
   ]
   pruneopts = "UT"
   revision = "4dc7be5d2d12881735283bcab7352178e190fc71"
@@ -91,12 +103,60 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
+  digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
+  name = "github.com/matttproud/golang_protobuf_extensions"
+  packages = ["pbutil"]
+  pruneopts = "UT"
+  revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
+  version = "v1.0.1"
+
+[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
+
+[[projects]]
+  digest = "1:22d77456cc7b8f8392be23f08da95470f0f8383a670e448c20ae49d2f04a1459"
+  name = "github.com/prometheus/client_golang"
+  packages = ["prometheus"]
+  pruneopts = "UT"
+  revision = "ae27198cdd90bf12cd134ad79d1366a6cf49f632"
+
+[[projects]]
+  branch = "master"
+  digest = "1:2d5cd61daa5565187e1d96bae64dbbc6080dacf741448e9629c64fd93203b0d4"
+  name = "github.com/prometheus/client_model"
+  packages = ["go"]
+  pruneopts = "UT"
+  revision = "5c3871d89910bfb32f5fcab2aa4b9ec68e65a99f"
+
+[[projects]]
+  branch = "master"
+  digest = "1:63b68062b8968092eb86bedc4e68894bd096ea6b24920faca8b9dcf451f54bb5"
+  name = "github.com/prometheus/common"
+  packages = [
+    "expfmt",
+    "internal/bitbucket.org/ww/goautoneg",
+    "model",
+  ]
+  pruneopts = "UT"
+  revision = "c7de2306084e37d54b8be01f3541a8464345e9a5"
+
+[[projects]]
+  branch = "master"
+  digest = "1:ef1dd9945e58ee9b635273d28c0ef3fa3742a7dedc038ebe207fd63e6ce000ef"
+  name = "github.com/prometheus/procfs"
+  packages = [
+    ".",
+    "internal/util",
+    "nfs",
+    "xfs",
+  ]
+  pruneopts = "UT"
+  revision = "418d78d0b9a7b7de3a6bbc8a23def624cc977bb2"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -135,10 +195,11 @@
   version = "0.10.1"
 
 [[projects]]
-  digest = "1:74ab9ab9f42f88685e53a7d39095be7556e06d44971d6c4f880d75c29052cfbe"
+  digest = "1:6139f92b1ce782ffde50fc4df545ebfc557fed501a19c26f7979306e49a62ad7"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/types",
+    "config",
     "crypto",
     "crypto/ed25519",
     "crypto/encoding/amino",
@@ -150,7 +211,9 @@
     "libs/log",
     "libs/pubsub",
     "libs/pubsub/query",
+    "p2p",
     "p2p/conn",
+    "p2p/upnp",
     "privval",
     "types",
   ]
@@ -264,6 +327,7 @@
     "github.com/tendermint/tendermint/crypto/encoding/amino",
     "github.com/tendermint/tendermint/crypto/secp256k1",
     "github.com/tendermint/tendermint/libs/common",
+    "github.com/tendermint/tendermint/p2p",
     "github.com/tendermint/tendermint/privval",
   ]
   solver-name = "gps-cdcl"

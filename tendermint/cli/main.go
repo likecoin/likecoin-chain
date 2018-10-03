@@ -6,10 +6,12 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
+	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	cryptoAmino "github.com/tendermint/tendermint/crypto/encoding/amino"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/common"
+	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 )
 
@@ -42,6 +44,22 @@ func main() {
 			}
 			os.Mkdir(outputDir, 0755)
 			err = common.WriteFileAtomic(outputDir+"/priv_validator.json", jsonBytes, 0600)
+			if err != nil {
+				panic(err)
+			}
+			nodeKey, err := p2p.LoadOrGenNodeKey(outputDir + "/node_key.json")
+			if err != nil {
+				panic(err)
+			}
+			publicInfo := struct {
+				NodeID p2p.ID
+				PubKey crypto.PubKey
+			}{
+				NodeID: nodeKey.ID(),
+				PubKey: pv.PubKey,
+			}
+			jsonBytes, err = cdc.MarshalJSONIndent(&publicInfo, "", "  ")
+			err = common.WriteFileAtomic(outputDir+"/public.json", jsonBytes, 0755)
 			if err != nil {
 				panic(err)
 			}
