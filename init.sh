@@ -89,7 +89,12 @@ done
 # Apply pesistent_peers option
 $SED -i "s/persistent_peers=.*/persistent_peers=$persistent_peers/g" ./docker-compose.override.yml
 
-# Sync all genesis.json of all nodes
-for (( i = 2; i <= $node_count; i++ )); do
-    cp -f $default_genesis ./tendermint/nodes/${i}/config/genesis.json
+for (( i = 1; i <= $node_count; i++ )); do
+    # Sync all genesis.json of all nodes
+    if [[ $i > 1 ]]; then
+        cp -f $default_genesis ./tendermint/nodes/${i}/config/genesis.json
+    fi
+
+    # Update config.toml
+    $SED -i "s/index_all_tags =.*/index_all_tags = true/g" ./tendermint/nodes/${i}/config/config.toml
 done
