@@ -4,6 +4,8 @@ var defaultConf = []byte(`
 
 env = "dev"
 
+initial_balance = 0
+
 log_config = """{
   level = "debug"
 
