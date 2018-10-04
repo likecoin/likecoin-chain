@@ -14,6 +14,5 @@ WORKDIR /bin/likechain/
 
 COPY --from=builder /bin/likechain/abci .
 COPY --from=builder /bin/likechain/api .
-COPY --from=builder /go/src/github.com/likecoin/likechain/abci/config.toml .
 
 CMD ["./abci"]

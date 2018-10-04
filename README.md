@@ -62,6 +62,17 @@ curl 'http://localhost:3000/v1/block'
 curl 'http://localhost:26657/net_info'
 ```
 
+## Configuration
+
+### Using Config File
+ABCI server and API server shares a common configuration. You may copy the default config file `abci/config.example.toml` and rename it to `abci/config.toml`
+
+### Using Environment Variable
+You may also override the config by setting environment variable, for example, if you wish to set `env=production`, you can set
+```sh
+LIKECHAIN_ENV=production
+```
+
 ## Run in Production
 ```sh
 # Build in production
