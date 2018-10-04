@@ -41,7 +41,8 @@ default_genesis="./tendermint/nodes/1/config/genesis.json"
 persistent_peers=""
 
 # Reset configs
-cat docker-compose.yml > docker-compose.override.yml
+cat docker-compose.sample.yml > docker-compose.yml
+cat docker-compose.production.sample.yml > docker-compose.production.yml
 
 # Setup config for each node
 for (( i = 1; i <= $node_count; i++ )); do
@@ -61,12 +62,18 @@ for (( i = 1; i <= $node_count; i++ )); do
         persistent_peers="$persistent_peers,"
     fi
 
-    if [[ $i != 1 ]]; then
+    if [[ $i == 1 ]]; then
+        comment=$(echo "
+  # Auto-generated configs")
+        echo "${comment}" >> docker-compose.yml
+        echo "${comment}" >> docker-compose.production.yml
+    else
         echo $(cat $default_genesis | jq ".validators |= .+ $(cat tendermint/nodes/${i}/config/genesis.json | jq '.validators')") > $default_genesis
 
-        port=$((26660 + $i))
+        port1=$((26658 + $i * 2))
+        port2=$((26658 + $i * 2 + 1))
 
-        echo "
+        compose_config=$(echo "
   abci-${i}:
     <<: *abci-node
     container_name: likechain_abci-${i}
@@ -75,20 +82,26 @@ for (( i = 1; i <= $node_count; i++ )); do
     container_name: likechain_tendermint-${i}
     hostname: tendermint-${i}
     depends_on:
-        - abci-${i}
+      - abci-${i}
     volumes:
-        - ./tendermint/nodes/${i}:/tendermint
+      - ./tendermint/nodes/${i}:/tendermint
     ports:
-        - ${port}:26657
+      - ${port1}:26656
+      - ${port2}:26657
     command:
-        - --proxy_app=tcp://abci-${i}:26658" >> ./docker-compose.override.yml
+      - --proxy_app=tcp://abci-${i}:26658"
+        )
+
+        echo "${compose_config}" >> ./docker-compose.yml
+        echo "${compose_config}" >> ./docker-compose.production.yml
     fi
 
     echo $(cat $default_genesis | jq ".validators[$i-1].name = \"tendermint-$i\" ") > $default_genesis
 done
 
 # Apply pesistent_peers option
-$SED -i "s/persistent_peers=.*/persistent_peers=$persistent_peers/g" ./docker-compose.override.yml
+$SED -i "s/persistent_peers=.*/persistent_peers=$persistent_peers/g" ./docker-compose.yml
+$SED -i "s/persistent_peers=.*/persistent_peers=$persistent_peers/g" ./docker-compose.production.yml
 
 for (( i = 1; i <= $node_count; i++ )); do
     # Sync all genesis.json of all nodes
