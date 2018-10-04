@@ -9,7 +9,8 @@ tendermint/nodes/*/data/**
 !tendermint/nodes
 tendermint/nodes/**
 
-docker-compose.override.yml
+docker-compose.yml
+docker-compose.production.yml
 .vscode
 
 *.log

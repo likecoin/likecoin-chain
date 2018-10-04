@@ -9,10 +9,11 @@ services:
     volumes:
       - /likechain
     command: ["./api"]
-  abci-1:
+  abci-1: &abci-node
     image: likechain/abci-production
     environment:
       LIKECHAIN_ENV: production
+      LIKECHAIN_INITIAL_BALANCE: 0
       LIKECHAIN_LOG_CONFIG: |
         {
           level = "debug"
@@ -39,9 +40,5 @@ services:
         }
     volumes:
       - /likechain
-  tendermint-1:
-    entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname`
-    ports:
-      - 26657:26657
-      - 26656:26656
-
+  tendermint-1: &tendermint-node
+    entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname` --p2p.persistent_peers=""
