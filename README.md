@@ -1,7 +1,7 @@
 
 # LikeChain
 
-[![CircleCI](https://circleci.com/gh/likecoin/likechain.svg?style=svg)](https://circleci.com/gh/likecoin/likechain)
+[![CircleCI](https://circleci.com/gh/likecoin/likechain.svg?style=svg)](https://circleci.com/gh/likecoin/likechain) [![codecov](https://codecov.io/gh/likecoin/likechain/branch/master/graph/badge.svg)](https://codecov.io/gh/likecoin/likechain)
 
 ## Development Setup
 ```sh
