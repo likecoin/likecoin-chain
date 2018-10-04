@@ -6,17 +6,28 @@ jobs:
       - image: circleci/golang:1.10.3
     steps:
       - checkout
+      - restore_cache:
+          key: likechain-deps-{{ .Branch }}-{{ checksum "abci/Gopkg.lock" }}-{{ checksum "tendermint/cli/Gopkg.lock" }}
+          paths:
+            - /go/src/github.com/ethereum/go-ethereum
+            - /go/src/github.com/likecoin/likechain/abci/vendor
+            - /go/src/github.com/likecoin/likechain/tendermint/cli/vendor
       - run:
           name: Install dep
           command: |
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
       - run:
           name: Install dependencies
-          command: make get_vendor_deps
+          command: |
+            if [ ! -d /go/src/github.com/ethereum/go-ethereum ] || [ ! -d /go/src/github.com/likecoin/likechain/abci/vendor ] || [ ! -d /go/src/github.com/likecoin/likechain/tendermint/cli/vendor ]; then
+              make get_vendor_deps
+            fi
+      - save_cache:
+          key: likechain-deps-{{ .Branch }}-{{ checksum "abci/Gopkg.lock" }}-{{ checksum "tendermint/cli/Gopkg.lock" }}
+          paths:
+            - /go/src/github.com/ethereum/go-ethereum
+            - /go/src/github.com/likecoin/likechain/abci/vendor
+            - /go/src/github.com/likecoin/likechain/tendermint/cli/vendor
       - run:
           name: Unit testing
           command: make test
-      - save_cache:
-          key: v1-pkg-cache
-          paths:
-            - "/go/pkg"
