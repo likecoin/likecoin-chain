@@ -1,5 +1,3 @@
-PACKAGES=$(shell go list ./...)
-
 default: build
 
 get_vendor_deps:
@@ -8,4 +6,4 @@ get_vendor_deps:
 	@cd tendermint/cli;dep ensure -v -vendor-only
 
 test:
-	@GOCACHE=off go test -p 1 $(PACKAGES)
+	@./test.sh
