@@ -362,6 +362,7 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["proof"], ShouldNotBeNil)
+		proof := res["proof"]
 		So(code, ShouldEqual, http.StatusOK)
 
 		// Using address
@@ -377,6 +378,7 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["proof"], ShouldNotBeNil)
+		So(res["proof"], ShouldEqual, proof)
 		So(code, ShouldEqual, http.StatusOK)
 
 		// Missing params
