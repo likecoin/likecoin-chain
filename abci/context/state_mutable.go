@@ -5,13 +5,8 @@ import (
 	"encoding/binary"
 	"math/big"
 
-	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
-)
-
-var (
-	config = appConf.GetConfig()
 )
 
 // IMutableState is an interface for accessing immutable context

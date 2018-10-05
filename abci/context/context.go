@@ -1,12 +1,16 @@
 package context
 
 import (
+	appConf "github.com/likecoin/likechain/abci/config"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
 )
 
-var log = logger.L
+var (
+	log    = logger.L
+	config = appConf.GetConfig()
+)
 
 // TODO: Configurable
 var cacheSize = 1048576
