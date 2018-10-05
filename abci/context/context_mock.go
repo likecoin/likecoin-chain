@@ -3,7 +3,6 @@ package context
 import (
 	"math/big"
 
-	"github.com/sirupsen/logrus"
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
 )
@@ -15,9 +14,6 @@ type MockApplicationContext struct {
 
 // NewMock creates an MockApplicationContext using MemDB
 func NewMock() *MockApplicationContext {
-	// Hide all logs below error level for cleaner testing display
-	log.SetLevel(logrus.ErrorLevel)
-
 	return &MockApplicationContext{
 		ApplicationContext: &ApplicationContext{
 			state: &MutableState{
