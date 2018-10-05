@@ -310,6 +310,12 @@ func TestAPI(t *testing.T) {
 		So(code, ShouldEqual, http.StatusOK)
 		appHeight += 2
 
+		status, err := client.Status()
+		if err != nil {
+			t.Error(err)
+		}
+		withdrawHeight := status.SyncInfo.LatestBlockHeight
+
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
 			t.Error(err)
 		}
@@ -348,7 +354,7 @@ func TestAPI(t *testing.T) {
 			formattedQuery,
 			url.QueryEscape(aliceID),
 			types.NewZeroAddress().ToHex(),
-			appHeight,
+			withdrawHeight,
 			2,
 			"1",
 			"0",
@@ -363,7 +369,7 @@ func TestAPI(t *testing.T) {
 			formattedQuery,
 			fixture.Alice.Address.Hex(),
 			types.NewZeroAddress().ToHex(),
-			appHeight,
+			withdrawHeight,
 			2,
 			"1",
 			"0",

@@ -117,11 +117,16 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 	withdrawTree := state.MutableWithdrawTree()
 	withdrawTree.Set(crypto.Sha256(packedTx), []byte{1})
 
+	height := state.GetHeight() + 1
+	log.
+		WithField("height", height).
+		Debug("Saved Withdraw proof")
+
 	return response.Success.Merge(response.R{
 		Tags: []common.KVPair{
 			{
 				Key:   []byte("withdraw.height"),
-				Value: []byte(strconv.FormatInt(state.GetHeight()+1, 10)),
+				Value: []byte(strconv.FormatInt(height, 10)),
 			},
 		},
 		Data: packedTx,
