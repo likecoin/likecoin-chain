@@ -98,6 +98,7 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 	}
 
 	// TODO: check fee
+	account.IncrementNextNonce(state, senderID)
 
 	senderBalance := account.FetchBalance(state, tx.From)
 	amount := tx.Value.ToBigInt()
@@ -108,7 +109,6 @@ func deliverWithdraw(state context.IMutableState, rawTx *types.Transaction, txHa
 	}
 
 	account.MinusBalance(state, tx.From, amount)
-	account.IncrementNextNonce(state, senderID)
 
 	// Normalize Identifier for packedTx
 	tx.From = senderID.ToIdentifier()
