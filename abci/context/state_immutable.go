@@ -2,6 +2,7 @@ package context
 
 import (
 	"encoding/binary"
+	"encoding/json"
 
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
@@ -13,7 +14,7 @@ type IImmutableState interface {
 	ImmutableWithdrawTree() *iavl.ImmutableTree
 	GetBlockHash() []byte
 	GetHeight() int64
-	GetWithdrawVersionAtHeight(height int64) int64
+	GetMetadataAtHeight(height int64) *TreeMetadata
 }
 
 // ImmutableState is a struct contains the most recently saved state
@@ -48,22 +49,19 @@ func (state *ImmutableState) GetHeight() int64 {
 	return int64(binary.BigEndian.Uint64(value))
 }
 
-// SetWithdrawVersionAtHeight is used to store the withdraw tree version mapping corresponding to the block height
-func (state *ImmutableState) SetWithdrawVersionAtHeight(height int64, version int64) {
-	key := heightWithdrawVersionKey(height)
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, uint64(height))
-	state.appDb.Set(key, buf)
-}
-
-// GetWithdrawVersionAtHeight gets the withdraw tree version corresponding to the block height
-func (state *ImmutableState) GetWithdrawVersionAtHeight(height int64) int64 {
-	key := heightWithdrawVersionKey(height)
-	buf := state.appDb.Get(key)
-	if buf == nil {
-		return -1
+// GetMetadataAtHeight gets the metadata of the trees corresponding to given block height
+func (state *ImmutableState) GetMetadataAtHeight(height int64) *TreeMetadata {
+	key := heightMetadataKey(height)
+	bs := state.appDb.Get(key)
+	if bs == nil {
+		return nil
 	}
-	return int64(binary.BigEndian.Uint64(buf))
+	metadata := TreeMetadata{}
+	err := json.Unmarshal(bs, &metadata)
+	if err != nil {
+		log.WithError(err).Panic("Cannot unmarshal tree metadata")
+	}
+	return &metadata
 }
 
 const appHashLength = 40

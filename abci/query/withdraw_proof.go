@@ -21,20 +21,20 @@ func queryWithdrawProof(
 		return response.QueryWithdrawProofInvalidHeight
 	}
 
-	version := state.GetWithdrawVersionAtHeight(height)
-	if version < 0 {
+	metadata := state.GetMetadataAtHeight(height)
+	if metadata == nil || metadata.WithdrawTreeVersion <= 0 {
 		log.
 			WithField("height", height).
 			Debug("Version not found for height in withdraw proof query")
 		return response.QueryWithdrawProofInvalidHeight
 	}
 
-	tree, err := state.MutableWithdrawTree().GetImmutable(version)
+	tree, err := state.MutableWithdrawTree().GetImmutable(metadata.WithdrawTreeVersion)
 	if tree == nil || err != nil {
 		log.
 			WithError(err).
 			WithField("height", height).
-			WithField("version", version).
+			WithField("version", metadata.WithdrawTreeVersion).
 			Debug("Cannot get version in withdraw tree in withdraw proof query")
 		return response.QueryWithdrawProofInvalidHeight
 	}
