@@ -137,6 +137,8 @@ func deliver(
 		return response.TransferDeliverTxDuplicated
 	}
 
+	account.IncrementNextNonce(state, senderID)
+
 	senderIden := senderID.ToIdentifier()
 	senderBalance := account.FetchBalance(state, senderIden)
 	total := tx.Fee.ToBigInt()
@@ -173,8 +175,6 @@ func deliver(
 		account.AddBalance(state, to, amount)
 	}
 	account.MinusBalance(state, senderIden, total)
-
-	account.IncrementNextNonce(state, senderID)
 
 	return response.Success
 }
