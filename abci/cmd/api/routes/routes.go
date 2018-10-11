@@ -19,6 +19,7 @@ func Initialize(router *gin.Engine, client rpcclient.Client) {
 	v1.POST("/withdraw", postWithdraw)
 
 	v1.GET("/account_info", getAccountInfo)
+	v1.GET("/address_info", getAddressInfo)
 	v1.GET("/tx_state", getTxState)
 	v1.GET("/withdraw_proof", getWithdrawProof)
 	v1.GET("/block", getBlock)
