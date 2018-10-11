@@ -16,22 +16,26 @@ import (
 
 var log = logger.L
 
+// LikeChainApplication implements Tendermint ABCI interface
 type LikeChainApplication struct {
 	abci.BaseApplication
 
 	ctx *context.ApplicationContext
 }
 
+// NewLikeChainApplication creates a new LikeChainApplication
 func NewLikeChainApplication(ctx *context.ApplicationContext) *LikeChainApplication {
 	return &LikeChainApplication{ctx: ctx}
 }
 
+// BeginBlock implements ABCI BeginBlock
 func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	log.Info("APP BeginBlock")
 	app.ctx.GetMutableState().SetBlockHash(req.Hash)
 	return abci.ResponseBeginBlock{}
 }
 
+// CheckTx implements ABCI CheckTx
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	log.Info("APP CheckTx")
 	tx := &types.Transaction{}
@@ -45,6 +49,7 @@ func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	return handlers.CheckTx(app.ctx.GetImmutableState(), tx)
 }
 
+// DeliverTx implements ABCI DeliverTx
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
 	hash := utils.HashRawTx(rawTx)
 	log.
@@ -62,29 +67,38 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 	return handlers.DeliverTx(app.ctx.GetMutableState(), tx, hash)
 }
 
+// EndBlock implements ABCI EndBlock
 func (app *LikeChainApplication) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	log.WithField("height", req.Height).Info("APP EndBlock")
 	return abci.ResponseEndBlock{} // TODO
 }
 
+// Commit implements ABCI Commit
 func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 	state := app.ctx.GetMutableState()
 	height := state.GetHeight() + 1
 	state.SetHeight(height)
 	hash := state.Save()
 
+	stateTreeVersion := state.MutableStateTree().Version64()
 	withdrawTreeVersion := state.MutableWithdrawTree().Version64()
-	state.SetWithdrawVersionAtHeight(height, withdrawTreeVersion)
+	state.SetMetadataAtHeight(height, context.TreeMetadata{
+		StateTreeVersion:    stateTreeVersion,
+		WithdrawTreeVersion: withdrawTreeVersion,
+	})
+	state.GC(height)
 
 	log.
 		WithField("hash", cmn.HexBytes(hash)).
 		WithField("height", height).
+		WithField("state_tree_version", stateTreeVersion).
 		WithField("withdraw_tree_version", withdrawTreeVersion).
 		Info("APP Commit")
 
 	return abci.ResponseCommit{Data: hash}
 }
 
+// InitChain implements ABCI InitChain
 func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.ResponseInitChain {
 	app.ctx.GetMutableState().Init()
 
@@ -97,11 +111,13 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 	}
 }
 
+// Query implements ABCI Query
 func (app *LikeChainApplication) Query(reqQuery abci.RequestQuery) abci.ResponseQuery {
 	log.WithField("path", reqQuery.Path).Info("APP Query")
 	return query.Query(app.ctx.GetMutableState(), reqQuery)
 }
 
+// Info implements ABCI Info
 func (app *LikeChainApplication) Info(req abci.RequestInfo) abci.ResponseInfo {
 	state := app.ctx.GetImmutableState()
 	height := state.GetHeight()

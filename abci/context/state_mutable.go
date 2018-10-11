@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"math/big"
+	"strconv"
 
 	"github.com/tendermint/iavl"
+	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/db"
 )
 
@@ -15,6 +17,7 @@ type IMutableState interface {
 	MutableStateTree() *iavl.MutableTree
 	MutableWithdrawTree() *iavl.MutableTree
 	GetInitialBalance() *big.Int
+	GetKeepBlocks() uint64
 }
 
 // MutableState is a struct contains mutable state
@@ -27,6 +30,7 @@ type MutableState struct {
 	withdrawTree *iavl.MutableTree
 
 	initialBalance *big.Int
+	keepBlocks     uint64
 }
 
 // ImmutableStateTree returns immutable state tree of the current state
@@ -99,29 +103,92 @@ func (state *MutableState) Save() []byte {
 	return generateAppHash(stateHash, withdrawHash)
 }
 
-func heightWithdrawVersionKey(height int64) []byte {
+func heightMetadataKey(height int64) []byte {
 	buf := new(bytes.Buffer)
-	buf.Write(appWithdrawVersionAtHeight)
+	buf.Write(appMetadataAtHeight)
 	binary.Write(buf, binary.BigEndian, uint64(height))
 	return buf.Bytes()
 }
 
-// SetWithdrawVersionAtHeight is used to store the withdraw tree version mapping corresponding to the block height
-func (state *MutableState) SetWithdrawVersionAtHeight(height int64, version int64) {
-	key := heightWithdrawVersionKey(height)
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, uint64(height))
-	state.appDb.Set(key, buf)
+// TreeMetadata is the metadata of the trees, used for querying withdraw proof by height, and also removing outdated
+// tree versions
+type TreeMetadata struct {
+	StateTreeVersion    int64
+	WithdrawTreeVersion int64
 }
 
-// GetWithdrawVersionAtHeight gets the withdraw tree version corresponding to the block height
-func (state *MutableState) GetWithdrawVersionAtHeight(height int64) int64 {
-	key := heightWithdrawVersionKey(height)
-	buf := state.appDb.Get(key)
-	if buf == nil {
-		return -1
+// Bytes encodes the TreeMetadata into byte array so that it could be saved into DB
+func (metadata TreeMetadata) Bytes() []byte {
+	result := make([]byte, 17)
+	// First byte: schema version
+	result[0] = 0
+	binary.BigEndian.PutUint64(result[1:], uint64(metadata.StateTreeVersion))
+	binary.BigEndian.PutUint64(result[9:], uint64(metadata.WithdrawTreeVersion))
+	return result
+}
+
+// DecodeTreeMetadata decode a byte array into TreeMetadata
+func DecodeTreeMetadata(bs []byte) *TreeMetadata {
+	if bs[0] != 0 || len(bs) < 17 {
+		return nil
 	}
-	return int64(binary.BigEndian.Uint64(buf))
+	stateTreeVersion := int64(binary.BigEndian.Uint64(bs[1:]))
+	withdrawTreeVersion := int64(binary.BigEndian.Uint64(bs[9:]))
+	return &TreeMetadata{
+		StateTreeVersion:    stateTreeVersion,
+		WithdrawTreeVersion: withdrawTreeVersion,
+	}
+}
+
+// SetMetadataAtHeight stores the metadata of the trees by height.
+func (state *MutableState) SetMetadataAtHeight(height int64, metadata TreeMetadata) {
+	key := heightMetadataKey(height)
+	bs := metadata.Bytes()
+	state.appDb.Set(key, bs)
+}
+
+// GetMetadataAtHeight gets the metadata of the trees corresponding to given block height
+func (state *MutableState) GetMetadataAtHeight(height int64) *TreeMetadata {
+	key := heightMetadataKey(height)
+	bs := state.appDb.Get(key)
+	if bs == nil {
+		return nil
+	}
+	metadata := DecodeTreeMetadata(bs)
+	if metadata == nil {
+		log.WithField("data", cmn.HexBytes(bs)).Panic("Cannot unmarshal tree metadata")
+	}
+	return metadata
+}
+
+// GC removes outdated versions of the trees
+func (state *MutableState) GC(currentHeight int64) {
+	removeBeforeHeight := currentHeight - int64(state.GetKeepBlocks())
+	if removeBeforeHeight <= 0 {
+		return
+	}
+	keyStart := heightMetadataKey(0)
+	keyEnd := heightMetadataKey(removeBeforeHeight + 1)
+	it := state.appDb.Iterator(keyStart, keyEnd)
+	defer it.Close()
+	if !it.Valid() {
+		return
+	}
+	keysToRemove := make([][]byte, 0, 1)
+	for ; it.Valid(); it.Next() {
+		key := it.Key()
+		keysToRemove = append(keysToRemove, key)
+		bs := state.appDb.Get(key)
+		metadata := DecodeTreeMetadata(bs)
+		if metadata == nil {
+			log.WithField("data", cmn.HexBytes(bs)).Panic("Cannot unmarshal tree metadata")
+		}
+		state.MutableStateTree().DeleteVersion(metadata.StateTreeVersion)
+		state.MutableWithdrawTree().DeleteVersion(metadata.WithdrawTreeVersion)
+	}
+	for _, key := range keysToRemove {
+		state.appDb.Delete(key)
+	}
 }
 
 // GetInitialBalance returns the initial balance for new account
@@ -134,6 +201,18 @@ func (state *MutableState) GetInitialBalance() *big.Int {
 		state.initialBalance = initialBalance
 	}
 	return state.initialBalance
+}
+
+// GetKeepBlocks returns the number of blocks kept in trees
+func (state *MutableState) GetKeepBlocks() uint64 {
+	if state.keepBlocks == 0 {
+		keepBlocks, err := strconv.ParseUint(config.KeepBlocks, 10, 64)
+		if err != nil || keepBlocks == 0 {
+			keepBlocks = 10000
+		}
+		state.keepBlocks = keepBlocks
+	}
+	return state.keepBlocks
 }
 
 // Init initializes states

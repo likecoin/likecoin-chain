@@ -5,6 +5,7 @@ var defaultConf = []byte(`
 env = "dev"
 
 initial_balance = 0
+keep_blocks = 10000
 
 log_config = """{
   level = "debug"
