@@ -2,7 +2,7 @@ package query
 
 import (
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/handlers/transfer"
+	"github.com/likecoin/likechain/abci/handlers"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -13,7 +13,7 @@ func queryTxState(
 	reqQuery abci.RequestQuery,
 ) response.R {
 	txHash := reqQuery.Data
-	txStatus := transfer.GetStatus(state, txHash)
+	txStatus := handlers.GetStatus(state, txHash)
 
 	data, err := (&types.TxStateResponse{
 		Status: txStatus.String(),

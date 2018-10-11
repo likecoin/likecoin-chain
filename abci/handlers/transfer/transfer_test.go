@@ -8,6 +8,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/fixture"
+	"github.com/likecoin/likechain/abci/handlers"
 	"github.com/likecoin/likechain/abci/utils"
 
 	"github.com/likecoin/likechain/abci/context"
@@ -62,7 +63,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				})
 
 				Convey("Tx Status should be success", func() {
-					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusSuccess)
+					So(handlers.GetStatus(state, txHash), ShouldEqual, types.TxStatusSuccess)
 				})
 
 				Convey("Balance of those accounts in the state should be updated correctly ", func() {
@@ -143,7 +144,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				So(res.Code, ShouldEqual, code)
 
 				Convey("Tx Status should be failed", func() {
-					So(GetStatus(state, txHash), ShouldEqual, types.TxStatusFail)
+					So(handlers.GetStatus(state, txHash), ShouldEqual, types.TxStatusFail)
 				})
 			})
 		})

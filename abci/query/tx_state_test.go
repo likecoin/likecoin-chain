@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/handlers/transfer"
+	"github.com/likecoin/likechain/abci/handlers"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	. "github.com/smartystreets/goconvey/convey"
@@ -33,7 +33,7 @@ func TestQueryTxState(t *testing.T) {
 		for _, status := range txStatusList {
 			s := status.String()
 			Convey(fmt.Sprintf("If it is a valid query with %s Tx", s), func() {
-				transfer.SetStatus(state, txHash, status)
+				handlers.SetStatus(state, txHash, status)
 				res := Query(state, reqQuery)
 
 				Convey(fmt.Sprintf("Should return code 0 and %s", s), func() {
