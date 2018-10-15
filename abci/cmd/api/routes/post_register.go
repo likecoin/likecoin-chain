@@ -46,14 +46,16 @@ func postRegister(c *gin.Context) {
 	res := result.DeliverTx
 	if res.IsErr() {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  res.Code,
-			"error": res.Info,
+			"tx_hash": result.Hash,
+			"code":    res.Code,
+			"error":   res.Info,
 		})
 		return
 	}
 
 	id := types.NewLikeChainID(res.Data)
 	c.JSON(http.StatusOK, gin.H{
-		"id": id.ToString(),
+		"tx_hash": result.Hash,
+		"id":      id.ToString(),
 	})
 }
