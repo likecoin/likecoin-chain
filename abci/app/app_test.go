@@ -142,14 +142,16 @@ func withdrawTx(fromID []byte, fromEthAddr, toEthAddr *common.Address, value, fe
 }
 
 type accountInfoRes struct {
+	ID        []byte
 	Balance   *big.Int
 	NextNonce uint64
 }
 
 func getAccountInfoRes(data []byte) *accountInfoRes {
 	accountInfo := struct {
-		Balance   string `json:"balance"`
+		ID        string `json:"id"`
 		NextNonce uint64 `json:"next_nonce"`
+		Balance   string `json:"balance"`
 	}{}
 	err := json.Unmarshal(data, &accountInfo)
 	if err != nil {
@@ -159,10 +161,15 @@ func getAccountInfoRes(data []byte) *accountInfoRes {
 	if !succ {
 		return nil
 	}
-	return &accountInfoRes{
+	result := accountInfoRes{
 		Balance:   balance,
 		NextNonce: accountInfo.NextNonce,
 	}
+	idBytes, err := base64.StdEncoding.DecodeString(accountInfo.ID)
+	if err == nil {
+		result.ID = idBytes
+	}
+	return &result
 }
 
 func getTxStateResponseStatus(data []byte) string {
@@ -201,6 +208,15 @@ func TestRegistration(t *testing.T) {
 				})
 				app.Commit()
 				likeChainID := deliverTxRes.Data
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+				})
 				Convey("Query account_info using address should return the corresponding info", func() {
 					queryRes := app.Query(abci.RequestQuery{
 						Path: "account_info",
@@ -209,6 +225,7 @@ func TestRegistration(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainID), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -221,6 +238,19 @@ func TestRegistration(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainID), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+				})
+				Convey("Query address_info should return the corresponding info", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainID), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -229,6 +259,15 @@ func TestRegistration(t *testing.T) {
 					So(checkTxRes.Code, ShouldEqual, response.RegisterCheckTxDuplicated.Code)
 					deliverTxRes = app.DeliverTx(rawTx)
 					So(deliverTxRes.Code, ShouldEqual, response.RegisterDeliverTxDuplicated.Code)
+					Convey("Query tx_state should still return success", func() {
+						txHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: txHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+					})
 				})
 			})
 		})
@@ -243,6 +282,19 @@ func TestRegistration(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.RegisterCheckTxInvalidSignature.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.RegisterDeliverTxInvalidSignature.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 1,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
 			})
 		})
 
@@ -256,6 +308,19 @@ func TestRegistration(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.RegisterCheckTxInvalidSignature.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.RegisterDeliverTxInvalidSignature.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 1,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
 			})
 		})
 	})
@@ -341,6 +406,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -352,6 +418,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -363,6 +430,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -373,6 +441,30 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+				})
+				Convey("Then query address_info by should return the correct balances and nextNonce", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[0].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+
+					queryRes = app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(regInfos[1].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -390,7 +482,7 @@ func TestTransfer(t *testing.T) {
 					So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxDuplicated.Code)
 					deliverTxRes := app.DeliverTx(rawTx)
 					So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxDuplicated.Code)
-					Convey("Then query tx_state should return success", func() {
+					Convey("Then query tx_state should still return success", func() {
 						txHash := tmhash.Sum(rawTx)
 						queryRes := app.Query(abci.RequestQuery{
 							Path: "tx_state",
@@ -398,6 +490,31 @@ func TestTransfer(t *testing.T) {
 						})
 						So(queryRes.Code, ShouldEqual, response.Success.Code)
 						So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+					})
+					Convey("Then query account_info by LikeChain ID should return the correct balances and nextNonce", func() {
+						likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "account_info",
+							Data: []byte(likeChainIDBase64),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo := getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+						So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 2)
+
+						likeChainIDBase64 = base64.StdEncoding.EncodeToString(likeChainIDs[1])
+						queryRes = app.Query(abci.RequestQuery{
+							Path: "account_info",
+							Data: []byte(likeChainIDBase64),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo = getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
+						So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 1)
 					})
 				})
 			})
@@ -432,6 +549,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -443,6 +561,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -454,6 +573,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -464,6 +584,30 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+				})
+				Convey("Then query address_info by Ethereum address should return the correct balance", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[0].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+
+					queryRes = app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[1].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -511,6 +655,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(97)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -522,6 +667,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 
@@ -533,6 +679,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[2]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(302)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -544,6 +691,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(97)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -554,6 +702,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 
@@ -564,6 +713,41 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[2]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(302)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+				})
+				Convey("Then query address_info should return the correct balance", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[0].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(97)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+
+					queryRes = app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[1].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+
+					queryRes = app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte(regInfos[2].Addr),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo = getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[2]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(302)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -637,6 +821,19 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
 				})
+				Convey("Query account_info should return unchanged balance and increased nonce", func() {
+					likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
 			})
 		})
 
@@ -668,6 +865,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 				})
@@ -677,6 +875,18 @@ func TestTransfer(t *testing.T) {
 						Data: []byte("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e"),
 					})
 					So(queryRes.Code, ShouldEqual, response.QueryInvalidIdentifier.Code)
+				})
+				Convey("Query address_info for receiver's address should return the correct balance", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "address_info",
+						Data: []byte("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e"),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.ID, ShouldBeEmpty)
+					So(accountInfo.Balance.Cmp(big.NewInt(1)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 0)
 				})
 				Convey("Then query tx_state should return success", func() {
 					txHash := tmhash.Sum(rawTx)
@@ -700,8 +910,8 @@ func TestTransfer(t *testing.T) {
 						Height: 3,
 					})
 					app.Commit()
+					likeChainID := deliverTxRes.Data
 					Convey("The receiving Ethereum address should have balance after registration", func() {
-						likeChainID := deliverTxRes.Data
 						likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainID)
 						queryRes := app.Query(abci.RequestQuery{
 							Path: "account_info",
@@ -722,6 +932,18 @@ func TestTransfer(t *testing.T) {
 						So(accountInfo, ShouldNotBeNil)
 						So(accountInfo.Balance.Cmp(big.NewInt(1)), ShouldBeZeroValue)
 						So(accountInfo.NextNonce, ShouldEqual, 1)
+						Convey("Query address_info for receiver's address should return the registered LikeCoin ID", func() {
+							queryRes := app.Query(abci.RequestQuery{
+								Path: "address_info",
+								Data: []byte("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e"),
+							})
+							So(queryRes.Code, ShouldEqual, response.Success.Code)
+							accountInfo := getAccountInfoRes(queryRes.Value)
+							So(accountInfo, ShouldNotBeNil)
+							So(accountInfo.Balance.Cmp(big.NewInt(1)), ShouldBeZeroValue)
+							So(bytes.Compare(accountInfo.ID, likeChainID), ShouldBeZeroValue)
+							So(accountInfo.NextNonce, ShouldEqual, 1)
+						})
 					})
 				})
 			})
@@ -743,6 +965,32 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.Success.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+				})
+				Convey("Query account_info should return the correct balance and increased nonce", func() {
+					likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
 			})
 		})
 
@@ -763,6 +1011,32 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.Success.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+				})
+				Convey("Query account_info should return the correct balance and increased nonce", func() {
+					likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
 			})
 		})
 
@@ -783,6 +1057,32 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxInvalidFormat.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxInvalidFormat.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
+				Convey("Query account_info should return unchanged balance and unchaged nonce", func() {
+					likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 1)
+				})
 			})
 		})
 
@@ -814,6 +1114,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -825,6 +1126,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[1]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(200)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -868,6 +1170,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 
@@ -879,6 +1182,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo = getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[2]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(400)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
@@ -913,6 +1217,32 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxNotEnoughBalance.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxNotEnoughBalance.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
+				Convey("Query account_info should return unchanged balance and increased nonce", func() {
+					likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
 			})
 		})
 
@@ -944,6 +1274,41 @@ func TestTransfer(t *testing.T) {
 				Convey("The second TransferTransactions should fail", func() {
 					deliverTxRes := app.DeliverTx(rawTx2)
 					So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxNotEnoughBalance.Code)
+					app.EndBlock(abci.RequestEndBlock{
+						Height: 2,
+					})
+					app.Commit()
+					Convey("Then query tx_state for the first tx should return success", func() {
+						txHash := tmhash.Sum(rawTx1)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: txHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+						Convey("Then query tx_state for the second tx should return fail", func() {
+							txHash := tmhash.Sum(rawTx2)
+							queryRes := app.Query(abci.RequestQuery{
+								Path: "tx_state",
+								Data: txHash,
+							})
+							So(queryRes.Code, ShouldEqual, response.Success.Code)
+							So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+							Convey("Query account_info should return correct balance and increased nonce", func() {
+								likeChainIDBase64 := base64.StdEncoding.EncodeToString(likeChainIDs[0])
+								queryRes := app.Query(abci.RequestQuery{
+									Path: "account_info",
+									Data: []byte(likeChainIDBase64),
+								})
+								So(queryRes.Code, ShouldEqual, response.Success.Code)
+								accountInfo := getAccountInfoRes(queryRes.Value)
+								So(accountInfo, ShouldNotBeNil)
+								So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
+								So(accountInfo.Balance.Cmp(big.NewInt(50)), ShouldBeZeroValue)
+								So(accountInfo.NextNonce, ShouldEqual, 3)
+							})
+						})
+					})
 				})
 			})
 		})
@@ -963,6 +1328,19 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxInvalidNonce.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxInvalidNonce.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
 			})
 		})
 
@@ -981,6 +1359,19 @@ func TestTransfer(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxInvalidSignature.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxInvalidSignature.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
 			})
 		})
 
@@ -1012,6 +1403,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					accountInfo := getAccountInfoRes(queryRes.Value)
 					So(accountInfo, ShouldNotBeNil)
+					So(bytes.Compare(accountInfo.ID, likeChainIDs[0]), ShouldBeZeroValue)
 					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
 				})
@@ -1088,7 +1480,7 @@ func TestWithdraw(t *testing.T) {
 					Height: 2,
 				})
 				app.Commit()
-				Convey("Then query account_info should return the correct balance", func() {
+				Convey("Then query account_info should return the correct balance and nonce", func() {
 					queryRes := app.Query(abci.RequestQuery{
 						Path: "account_info",
 						Data: []byte(likeChainIDBase64),
@@ -1098,6 +1490,15 @@ func TestWithdraw(t *testing.T) {
 					So(accountInfo, ShouldNotBeNil)
 					So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
 				Convey("Then query withdraw_proof should return a proof", func() {
 					queryRes := app.Query(abci.RequestQuery{
@@ -1128,6 +1529,30 @@ func TestWithdraw(t *testing.T) {
 					So(checkTxRes.Code, ShouldEqual, response.WithdrawCheckTxDuplicated.Code)
 					deliverTxRes := app.DeliverTx(rawTx)
 					So(deliverTxRes.Code, ShouldEqual, response.WithdrawDeliverTxDuplicated.Code)
+					app.EndBlock(abci.RequestEndBlock{
+						Height: 3,
+					})
+					app.Commit()
+					Convey("Then query tx_state should return success", func() {
+						txHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: txHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+					})
+					Convey("Then query account_info should return the correct balance and nonce", func() {
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "account_info",
+							Data: []byte(likeChainIDBase64),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo := getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 2)
+					})
 				})
 			})
 		})
@@ -1148,6 +1573,15 @@ func TestWithdraw(t *testing.T) {
 					Height: 2,
 				})
 				app.Commit()
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+				})
 				Convey("Then query account_info should return the correct balance", func() {
 					queryRes := app.Query(abci.RequestQuery{
 						Path: "account_info",
@@ -1192,6 +1626,15 @@ func TestWithdraw(t *testing.T) {
 					Height: 2,
 				})
 				app.Commit()
+				Convey("Then query tx_state should return success", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+				})
 				Convey("Then query account_info should return the correct balance", func() {
 					queryRes := app.Query(abci.RequestQuery{
 						Path: "account_info",
@@ -1231,6 +1674,30 @@ func TestWithdraw(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.WithdrawCheckTxNotEnoughBalance.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.WithdrawDeliverTxNotEnoughBalance.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+				})
+				Convey("Then query account_info should return unchanged balance and increased nonce", func() {
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "account_info",
+						Data: []byte(likeChainIDBase64),
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					accountInfo := getAccountInfoRes(queryRes.Value)
+					So(accountInfo, ShouldNotBeNil)
+					So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+					So(accountInfo.NextNonce, ShouldEqual, 2)
+				})
 			})
 		})
 
@@ -1244,6 +1711,30 @@ func TestWithdraw(t *testing.T) {
 				So(checkTxRes.Code, ShouldEqual, response.WithdrawCheckTxInvalidSignature.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
 				So(deliverTxRes.Code, ShouldEqual, response.WithdrawDeliverTxInvalidSignature.Code)
+				app.EndBlock(abci.RequestEndBlock{
+					Height: 2,
+				})
+				app.Commit()
+				Convey("Then query tx_state should return fail", func() {
+					txHash := tmhash.Sum(rawTx)
+					queryRes := app.Query(abci.RequestQuery{
+						Path: "tx_state",
+						Data: txHash,
+					})
+					So(queryRes.Code, ShouldEqual, response.Success.Code)
+					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "fail")
+					Convey("Then query account_info should return unchanged balance and nonce", func() {
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "account_info",
+							Data: []byte(likeChainIDBase64),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo := getAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 1)
+					})
+				})
 			})
 		})
 	})
