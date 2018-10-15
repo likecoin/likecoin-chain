@@ -390,6 +390,15 @@ func TestTransfer(t *testing.T) {
 					So(checkTxRes.Code, ShouldEqual, response.TransferCheckTxDuplicated.Code)
 					deliverTxRes := app.DeliverTx(rawTx)
 					So(deliverTxRes.Code, ShouldEqual, response.TransferDeliverTxDuplicated.Code)
+					Convey("Then query tx_state should return success", func() {
+						txHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: txHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
+					})
 				})
 			})
 		})
