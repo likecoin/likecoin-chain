@@ -1,7 +1,6 @@
 package register
 
 import (
-	"encoding/binary"
 	"fmt"
 	"testing"
 
@@ -40,17 +39,20 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 		txHash := utils.HashRawTx(rawTxBytes)
 
 		Convey("If it is a valid transaction", func() {
-			Convey("CheckTx should return Code 0", func() {
+			Convey("CheckTx should success with Code 0", func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
+				So(res.Status, ShouldEqual, types.TxStatusSuccess)
 			})
 
 			Convey("For DeliverTx", func() {
 				res := deliverRegister(state, rawTx, txHash)
 
-				Convey("It should return Code 0 and non-empty Data", func() {
-					So(res.Code == 0 && binary.Size(res.Data) > 0, ShouldBeTrue)
+				Convey("It should success with Code 0 and non-empty Data", func() {
+					So(res.Code, ShouldEqual, 0)
+					So(res.Status, ShouldEqual, types.TxStatusSuccess)
+					So(len(res.Data), ShouldBeGreaterThan, 0)
 				})
 
 				state.Save()
@@ -62,6 +64,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 						code := response.RegisterCheckTxDuplicated.Code
 						Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
 							So(res.Code, ShouldEqual, code)
+							So(res.Status, ShouldEqual, types.TxStatusFail)
 						})
 					})
 
@@ -69,8 +72,9 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 						res := deliverRegister(state, rawTx, txHash)
 
 						code := response.RegisterDeliverTxDuplicated.Code
-						Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+						Convey(fmt.Sprintf("DeliverTx should fail with Code %d", code), func() {
 							So(res.Code, ShouldEqual, code)
+							So(res.Status, ShouldEqual, types.TxStatusFail)
 						})
 					})
 				})
@@ -81,17 +85,19 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			rawTx.GetRegisterTx().Addr = &types.Address{Content: []byte{}}
 
 			code := response.RegisterCheckTxInvalidFormat.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("CheckTx should fail with Code %d", code), func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 
 			code = response.RegisterDeliverTxInvalidFormat.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("DeliverTx should fail with Code %d", code), func() {
 				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 		})
 
@@ -99,17 +105,19 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			rawTx.GetRegisterTx().Sig.Version = 2
 
 			code := response.RegisterCheckTxInvalidFormat.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("CheckTx should fail with Code %d", code), func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 
 			code = response.RegisterDeliverTxInvalidFormat.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("DeliverTx should fail with Code %d", code), func() {
 				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 		})
 
@@ -117,17 +125,19 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			rawTx.GetRegisterTx().Sig = types.NewZeroSignature()
 
 			code := response.RegisterCheckTxInvalidSignature.Code
-			Convey(fmt.Sprintf("CheckTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("CheckTx should fail with Code %d", code), func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 
 			code = response.RegisterDeliverTxInvalidSignature.Code
-			Convey(fmt.Sprintf("DeliverTx should return Code %d", code), func() {
+			Convey(fmt.Sprintf("DeliverTx should fail with Code %d", code), func() {
 				res := deliverRegister(state, rawTx, txHash)
 
 				So(res.Code, ShouldEqual, code)
+				So(res.Status, ShouldEqual, types.TxStatusFail)
 			})
 		})
 	})
