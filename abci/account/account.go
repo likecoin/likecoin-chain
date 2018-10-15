@@ -72,19 +72,17 @@ func NewAccountFromID(state context.IMutableState, id *types.LikeChainID, ethAdd
 
 func iterateLikeChainIDAddrPair(state context.IImmutableState, id *types.LikeChainID, fn func(id, addr []byte) bool) (isExist bool) {
 	startingKey := getIDAddrPairPrefixKey(id)
+	endingKey := append([]byte(nil), startingKey...)
+	endingKey[len(endingKey)-1]++
 
 	// Iterate the tree to check all addresses the given LikeChain ID has been bound
-	state.ImmutableStateTree().IterateRange(startingKey, nil, true, func(key, _ []byte) bool {
-		splitKey := bytes.Split(key, []byte("acc_"))
-		splitKey = bytes.Split(splitKey[1], []byte("_addr_"))
-		if len(splitKey) == 2 {
-			isExist = fn(splitKey[0], splitKey[1])
+	return state.ImmutableStateTree().IterateRange(startingKey, endingKey, true, func(key, _ []byte) bool {
+		if len(key) != len(startingKey)+20 {
+			return false
 		}
-		// If isExist becomes true, iteration will be stopped
-		return isExist
+		// If fn returns true, iteration will be stopped
+		return fn(key[4:24], key[30:50])
 	})
-
-	return isExist
 }
 
 // IsLikeChainIDRegistered checks whether the given LikeChain ID has registered or not

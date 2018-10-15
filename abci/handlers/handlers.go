@@ -6,8 +6,8 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
+	"github.com/likecoin/likechain/abci/transaction"
 	"github.com/likecoin/likechain/abci/types"
-	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	// Init handlers
@@ -31,25 +31,6 @@ func CheckTx(state context.IImmutableState, tx *types.Transaction) abci.Response
 	return handler(state, tx).ToResponseCheckTx()
 }
 
-func getStatusKey(txHash []byte) []byte {
-	return utils.DbTxHashKey(txHash, "status")
-}
-
-// GetStatus returns transaction status by txHash
-func GetStatus(state context.IImmutableState, txHash []byte) types.TxStatus {
-	_, statusBytes := state.ImmutableStateTree().Get(getStatusKey(txHash))
-	return types.BytesToTxStatus(statusBytes)
-}
-
-// SetStatus set the transaction status of the given txHash
-func SetStatus(
-	state context.IMutableState,
-	txHash []byte,
-	status types.TxStatus,
-) {
-	state.MutableStateTree().Set(getStatusKey(txHash), status.Bytes())
-}
-
 // DeliverTx handles DeliverTx
 func DeliverTx(state context.IMutableState, tx *types.Transaction, txHash []byte) abci.ResponseDeliverTx {
 	_type, handler, exist := table.GetDeliverTxHandlerFromTx(tx)
@@ -61,6 +42,9 @@ func DeliverTx(state context.IMutableState, tx *types.Transaction, txHash []byte
 		}
 	}
 	r := handler(state, tx, txHash)
-	SetStatus(state, txHash, r.Status)
+	oldStatus := transaction.GetStatus(state, txHash)
+	if oldStatus == types.TxStatusNotSet || oldStatus == types.TxStatusPending {
+		transaction.SetStatus(state, txHash, r.Status)
+	}
 	return r.ToResponseDeliverTx()
 }
