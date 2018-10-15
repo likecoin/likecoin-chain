@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/handlers/table"
 	logger "github.com/likecoin/likechain/abci/log"
@@ -21,7 +23,10 @@ func CheckTx(state context.IImmutableState, tx *types.Transaction) abci.Response
 	_type, handler, exist := table.GetCheckTxHandlerFromTx(tx)
 	if !exist {
 		log.WithField("type", _type).Debug("CheckTx handler not exist")
-		return abci.ResponseCheckTx{} // TODO
+		return abci.ResponseCheckTx{
+			Code: 10,
+			Log:  fmt.Sprintf("No CheckTx handler for type %v", _type),
+		}
 	}
 	return handler(state, tx).ToResponseCheckTx()
 }
@@ -50,7 +55,10 @@ func DeliverTx(state context.IMutableState, tx *types.Transaction, txHash []byte
 	_type, handler, exist := table.GetDeliverTxHandlerFromTx(tx)
 	if !exist {
 		log.WithField("type", _type).Debug("Deliver handler not exist")
-		return abci.ResponseDeliverTx{} // TODO
+		return abci.ResponseDeliverTx{
+			Code: 11,
+			Log:  fmt.Sprintf("No DeliverTx handler for type %v", _type),
+		}
 	}
 	r := handler(state, tx, txHash)
 	SetStatus(state, txHash, r.Status)
