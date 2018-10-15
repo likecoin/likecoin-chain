@@ -67,11 +67,14 @@ func postTransfer(c *gin.Context) {
 
 	if res := result.DeliverTx; res.IsErr() {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  res.Code,
-			"error": res.Info,
+			"tx_hash": result.Hash,
+			"code":    res.Code,
+			"error":   res.Info,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"tx_hash": result.Hash,
+	})
 }
