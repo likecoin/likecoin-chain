@@ -15,6 +15,10 @@ func queryTxState(
 	txHash := reqQuery.Data
 	txStatus := transaction.GetStatus(state, txHash)
 
+	if txStatus == types.TxStatusNotSet {
+		return response.QueryTxNotExist
+	}
+
 	data, err := (&types.TxStateResponse{
 		Status: txStatus.String(),
 	}).Marshal()

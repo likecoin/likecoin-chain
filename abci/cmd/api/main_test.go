@@ -2,7 +2,6 @@ package main_test
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -20,7 +19,6 @@ import (
 	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
-	"github.com/likecoin/likechain/abci/utils"
 	. "github.com/smartystreets/goconvey/convey"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	rpctest "github.com/tendermint/tendermint/rpc/test"
@@ -109,8 +107,10 @@ func TestAPI(t *testing.T) {
 		So(res["error"], ShouldBeNil)
 		So(code, ShouldEqual, http.StatusOK)
 		So(res, ShouldContainKey, "id")
+		So(res, ShouldContainKey, "tx_hash")
 		appHeight++
 		aliceID := res["id"].(string)
+		txHashHex := res["tx_hash"].(string)
 
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
 			t.Error(err)
@@ -120,6 +120,36 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusConflict)
+
+		//
+		// Test GET /tx_state
+		//
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/tx_state?tx_hash=0x" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		// Missing params
+		uri = "/v1/tx_state"
+		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusBadRequest)
+
+		// Invalid params
+		uri = "/v1/tx_state?tx_hash=123ABC"
+		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusBadRequest)
+
+		uri = "/v1/tx_state?tx_hash=0xABC"
+		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusBadRequest)
 
 		//
 		// Test GET /account_info
@@ -138,6 +168,27 @@ func TestAPI(t *testing.T) {
 
 		// Invalid params
 		uri = "/v1/account_info?identity=" + types.NewZeroAddress().ToHex()
+		res, code = request(router, "GET", uri, nil)
+		So(code, ShouldEqual, http.StatusBadRequest)
+		So(res["error"], ShouldNotBeNil)
+
+		//
+		// Test GET /address_info
+		//
+		uri = "/v1/address_info?addr=" + fixture.Alice.Address.Hex()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["id"], ShouldEqual, aliceID)
+		So(res["balance"], ShouldEqual, "100")
+
+		// Missing params
+		uri = "/v1/address_info"
+		res, code = request(router, "GET", uri, nil)
+		So(code, ShouldEqual, http.StatusBadRequest)
+		So(res["error"], ShouldNotBeNil)
+
+		// Invalid params
+		uri = "/v1/account_info?addr=0x012345678901234567890123456789012345678" // missing one hex digit
 		res, code = request(router, "GET", uri, nil)
 		So(code, ShouldEqual, http.StatusBadRequest)
 		So(res["error"], ShouldNotBeNil)
@@ -218,6 +269,8 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldBeNil)
 		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
 		appHeight += 2
 
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
@@ -262,20 +315,7 @@ func TestAPI(t *testing.T) {
 		//
 		// Test GET /tx_state
 		//
-		rawTx, _ := (&types.TransferTransaction{
-			Fee:   types.NewBigInteger("0"),
-			From:  fixture.Alice.RawAddress.ToIdentifier(),
-			Nonce: 1,
-			Sig:   types.NewSignatureFromHex(sig),
-			ToList: []*types.TransferTransaction_TransferTarget{
-				&types.TransferTransaction_TransferTarget{
-					To:    fixture.Bob.RawAddress.ToIdentifier(),
-					Value: types.NewBigInteger("1"),
-				},
-			},
-		}).ToTransaction().Encode()
-		txHash := utils.HashRawTx(rawTx)
-		uri = "/v1/tx_state?tx_hash=" + url.QueryEscape(base64.StdEncoding.EncodeToString(txHash))
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["status"], ShouldEqual, "success")
@@ -308,6 +348,8 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldBeNil)
 		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
 		appHeight += 2
 
 		status, err := client.Status()
@@ -320,8 +362,19 @@ func TestAPI(t *testing.T) {
 			t.Error(err)
 		}
 
+		//
+		// Test GET /tx_state
+		//
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
 		// Duplicated transfer
+		uri = "/v1/withdraw"
 		res, code = request(router, "POST", uri, params)
+		fmt.Println(code)
+		fmt.Println(res)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusConflict)
 

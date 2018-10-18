@@ -1,14 +1,14 @@
 package routes
 
 import (
-	"encoding/base64"
+	"encoding/hex"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type txStateQuery struct {
-	TxHash string `form:"tx_hash" binding:"required,base64"`
+	TxHash string `form:"tx_hash" binding:"required,hex"`
 }
 
 func getTxState(c *gin.Context) {
@@ -18,7 +18,11 @@ func getTxState(c *gin.Context) {
 		return
 	}
 
-	txHash, _ := base64.StdEncoding.DecodeString(query.TxHash)
+	txHashHex := query.TxHash
+	if txHashHex[0:2] == "0x" {
+		txHashHex = txHashHex[2:]
+	}
+	txHash, _ := hex.DecodeString(txHashHex)
 
 	result, err := tendermint.ABCIQuery("tx_state", txHash)
 	if err != nil {
