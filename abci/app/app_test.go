@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/likecoin/likechain/abci/account"
+	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
@@ -1733,6 +1734,50 @@ func TestWithdraw(t *testing.T) {
 						So(accountInfo, ShouldNotBeNil)
 						So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 						So(accountInfo.NextNonce, ShouldEqual, 1)
+					})
+				})
+			})
+		})
+	})
+}
+
+func TestGC(t *testing.T) {
+	Convey("Given an application state set with keep_blocks = 10", t, func() {
+		appConf.GetConfig().KeepBlocks = "10"
+
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		app.InitChain(abci.RequestInitChain{})
+		app.Commit()
+		initialStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version64()
+		initialWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version64()
+
+		app.Commit()
+		secondStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version64()
+		secondWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version64()
+
+		Convey("After committing 9 blocks", func() {
+			for i := 0; i < 8; i++ {
+				app.Commit()
+			}
+			Convey("Should still be able to get the initial versions", func() {
+				stateTree := mockCtx.ApplicationContext.GetMutableState().MutableStateTree()
+				So(stateTree.VersionExists(initialStateTreeVersion), ShouldBeTrue)
+				withdrawTree := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree()
+				So(withdrawTree.VersionExists(initialWithdrawTreeVersion), ShouldBeTrue)
+				Convey("After committing 10 blocks", func() {
+					app.Commit()
+					Convey("The initial versions should be GCed", func() {
+						stateTree := mockCtx.ApplicationContext.GetMutableState().MutableStateTree()
+						So(stateTree.VersionExists(initialStateTreeVersion), ShouldBeFalse)
+						withdrawTree := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree()
+						So(withdrawTree.VersionExists(initialWithdrawTreeVersion), ShouldBeFalse)
+						Convey("The second versions should still be there", func() {
+							So(stateTree.VersionExists(secondStateTreeVersion), ShouldBeTrue)
+							So(withdrawTree.VersionExists(secondWithdrawTreeVersion), ShouldBeTrue)
+						})
 					})
 				})
 			})
