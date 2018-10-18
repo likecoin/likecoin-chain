@@ -13,11 +13,13 @@ import (
 const (
 	ethAddressRegexString   = `^0x[0-9a-fA-F]{40}$`
 	ethSignatureRegexString = `^0x[0-9a-f]{130}$`
+	hexRegexString          = `^(0x)?([0-9a-fA-F][0-9a-fA-F])+$`
 )
 
 var (
 	ethAddressRegex   = regexp.MustCompile(ethAddressRegexString)
 	ethSignatureRegex = regexp.MustCompile(ethSignatureRegexString)
+	hexRegex          = regexp.MustCompile(hexRegexString)
 )
 
 // ValidateBigInteger validates big integer
@@ -65,12 +67,10 @@ func IsEthereumSignature(
 	param string,
 ) bool {
 	if sig, ok := field.Interface().(string); ok {
-		if !ethSignatureRegex.MatchString(sig) {
-			return false
-		}
+		return ethSignatureRegex.MatchString(sig)
 	}
 
-	return true
+	return false
 }
 
 // IsIdentity validates LikeChain identity
@@ -93,6 +93,23 @@ func IsIdentity(
 	return IsEthereumAddress(v, topStruct, currentStructOrField, field, fieldType, fieldKind, param)
 }
 
+// IsHex validates hex string
+func IsHex(
+	v *validator.Validate,
+	topStruct reflect.Value,
+	currentStructOrField reflect.Value,
+	field reflect.Value,
+	fieldType reflect.Type,
+	fieldKind reflect.Kind,
+	param string,
+) bool {
+	if hex, ok := field.Interface().(string); ok {
+		return hexRegex.MatchString(hex)
+	}
+
+	return false
+}
+
 // Bind binds all custom validators
 func Bind() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -100,5 +117,6 @@ func Bind() {
 		v.RegisterValidation("eth_addr", IsEthereumAddress)
 		v.RegisterValidation("eth_sig", IsEthereumSignature)
 		v.RegisterValidation("identity", IsIdentity)
+		v.RegisterValidation("hex", IsHex)
 	}
 }

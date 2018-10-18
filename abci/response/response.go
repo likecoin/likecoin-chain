@@ -334,3 +334,8 @@ var QueryWithdrawProofNotExist = R{
 	Code: 61010,
 	Info: "Withdraw record does not exist",
 }
+
+var QueryTxNotExist = R{
+	Code: 62000,
+	Info: "Transaction status record does not exist",
+}

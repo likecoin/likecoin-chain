@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/transaction"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
@@ -25,6 +26,15 @@ func TestQueryTxState(t *testing.T) {
 			Path: "tx_state",
 		}
 
+		Convey("If it is a query to a non-existing Tx", func() {
+			res := Query(state, reqQuery)
+			code := response.QueryTxNotExist.Code
+
+			Convey(fmt.Sprintf("Should return code %d", code), func() {
+				So(res.Code, ShouldEqual, code)
+			})
+		})
+
 		txStatusList := []types.TxStatus{
 			types.TxStatusSuccess,
 			types.TxStatusFail,
@@ -43,7 +53,6 @@ func TestQueryTxState(t *testing.T) {
 					if err != nil {
 						t.Error(err)
 					}
-
 					So(txStateRes.Status, ShouldEqual, s)
 				})
 			})

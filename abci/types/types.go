@@ -359,6 +359,8 @@ func (status TxStatus) Bytes() []byte {
 
 func (status TxStatus) String() string {
 	switch status {
+	case TxStatusNotSet:
+		return "not found"
 	case TxStatusFail:
 		return "fail"
 	case TxStatusSuccess:
