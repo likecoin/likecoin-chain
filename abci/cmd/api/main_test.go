@@ -373,8 +373,6 @@ func TestAPI(t *testing.T) {
 		// Duplicated transfer
 		uri = "/v1/withdraw"
 		res, code = request(router, "POST", uri, params)
-		fmt.Println(code)
-		fmt.Println(res)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusConflict)
 

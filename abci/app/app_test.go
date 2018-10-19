@@ -193,7 +193,7 @@ func TestRegistration(t *testing.T) {
 			sig := common.Hex2Bytes("65e6d31224fbcec8e41251d7b014e569d4a94c866227637c6b1fcf75a4505f241b2009557e79d5879a8bfbbb5dec86205c3481ed3042ad87f0643778022f54141b")
 			tx := registerTx(&ethAddr, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The registration should success", func() {
+			Convey("The registration should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -389,7 +389,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("8bdffbad4cc86028e0212477930444f5f3e329ac8f9f23f866bfc70fa5c157ea70d50e073b29662fb11216b1a8d82157b2e1c48185c910c5ac07fb2b238de4651c")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -446,7 +446,7 @@ func TestTransfer(t *testing.T) {
 					So(accountInfo.Balance.Cmp(big.NewInt(201)), ShouldBeZeroValue)
 					So(accountInfo.NextNonce, ShouldEqual, 1)
 				})
-				Convey("Then query address_info by should return the correct balances and nextNonce", func() {
+				Convey("Then query address_info should return the correct balances and nextNonce", func() {
 					queryRes := app.Query(abci.RequestQuery{
 						Path: "address_info",
 						Data: []byte(regInfos[0].Addr),
@@ -532,7 +532,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("3d7e17b7b95f1462b5ac0b238aed583934619b9da20dcaf71485a66ab3ff086646c8eaca3bf39c1d51d78cffaeb4d2f6f678147aa202bf9c398c42a2d46256f11c")
 			tx := transferTx(nil, &from, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -638,7 +638,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("695d4935a112f3d3715c873f4205e84b3eb56ad84f155fb21e834a8eb3e9a8d822941d0a8660d4abab6d39653894fa9494095728741fb9b6d9a72594b028853d1b")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -848,7 +848,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("869409224bb3e0ca7aac8e2246716895e16b2bef4be5fcd8673ae399a61624d331ae0e3a2b407c0fca3f4627f6bca2a64322408f94eb811607964a8bfc2f37991c")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -898,7 +898,7 @@ func TestTransfer(t *testing.T) {
 					So(queryRes.Code, ShouldEqual, response.Success.Code)
 					So(getTxStateResponseStatus(queryRes.Value), ShouldEqual, "success")
 				})
-				Convey("Registration for the receiver's address should success", func() {
+				Convey("Registration for the receiver's address should succeed", func() {
 					ethAddr := common.HexToAddress("0xf6c45b1c4b73ccaeb1d9a37024a6b9fa711d7e7e")
 					sig := common.Hex2Bytes("5221a47f0c1042f67951e28c513634190a7c4d77703a642d495ac5ef6397c4ec4d6ab2f7d1cda7c05f8e61d781aa2a4fa6e98c4382f741c4a7ab8e4de1d3fee31c")
 					tx := registerTx(&ethAddr, sig)
@@ -961,7 +961,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("70f5547ecfd68a66cdd5326da7887146ec83af894f4942361ff30c9d15f742247ed947235e05e637ecb0a08dcd606e1fb0918843a1de7ce6039478416f1b3e361b")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1007,7 +1007,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("d591986da187995d1a709327cb7accc36ec6f1b9ab7fe0aa7238ffcbcfdc8c6d10478b24d3e9d809c55fc74b3a026ecee785e12538acdab3ca21fbc89dc166601c")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1097,7 +1097,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("3b345b0fe343d757ee2d0f554ccefbf1d359105522ead2b89e681c43dee79f4518b46c82607f44eb3a2c47ad7e38ff318afd585bb3556094583cd2d7c9cdb6e11b")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1153,7 +1153,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("80ee2c9c9a0dcc0d9c131e621961841e3552df477b9242120af28dd039a218910c3d0e17d7f4622f1ecded69005964ff5476016295b44615fdf35ce3031aa8621c")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1267,7 +1267,7 @@ func TestTransfer(t *testing.T) {
 			sig = common.Hex2Bytes("dc53aef2b373c946ea246f94d1c58704b57a0d2f58215eaa5b1ed339407d4e504ab54d3e220882af5a953abee1f3578daa44e4a004e6c0a5e3d3b4935d9f9d0b1b")
 			tx = transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 2, sig)
 			rawTx2 := encodeTransaction(tx)
-			Convey("The first TransferTransactions should success", func() {
+			Convey("The first TransferTransactions should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx1)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx1)
@@ -1386,7 +1386,7 @@ func TestTransfer(t *testing.T) {
 			sig := common.Hex2Bytes("f5282e361d732ba6e175e0fd73cc1c72059df1b9d2b0a6d0259cce37a555063d53b12f5eaa9f5cac7ce6e22bf7f6c76e9aee0b4042b4fe144807741eb986f0271c")
 			tx := transferTx(likeChainIDs[0], nil, toList, big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The transfer should success", func() {
+			Convey("The transfer should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1471,7 +1471,7 @@ func TestWithdraw(t *testing.T) {
 			sig := common.Hex2Bytes("d2354ea2e358bfd8e40d7afeaf6dbc79f6241d5517c398b5901f5162b7d9a09e58d2bdaaaf577ed28d1b871fea7a20572f2bf3865d6bad7e82687967c5cb63dd1c")
 			tx := withdrawTx(likeChainID, nil, &toEthAddr, big.NewInt(1), big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The withdraw should success", func() {
+			Convey("The withdraw should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1564,7 +1564,7 @@ func TestWithdraw(t *testing.T) {
 			sig := common.Hex2Bytes("cfd63e8ff3991492c7eb56723ec12fdcc2e145b20c0de2a578ce63c268ad770f4f3361e27a8ae34fdf7b897f13a09b2e544eca7a8d533db28af42d54ff4df08d1c")
 			tx := withdrawTx(nil, &fromEthAddr, &toEthAddr, big.NewInt(1), big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The withdraw should success", func() {
+			Convey("The withdraw should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1617,7 +1617,7 @@ func TestWithdraw(t *testing.T) {
 			sig := common.Hex2Bytes("3b0ea1e2e032d01b559f6d27a92c6be0372fb4d5d54ee6707835b6f217d1fa7226e9d2e1180331dfd12a880639e98bc8aa10349fba1da467cb2784eddfa903d41b")
 			tx := withdrawTx(likeChainID, nil, &toEthAddr, big.NewInt(100), big.NewInt(0), 1, sig)
 			rawTx := encodeTransaction(tx)
-			Convey("The withdraw should success", func() {
+			Convey("The withdraw should succeed", func() {
 				checkTxRes := app.CheckTx(rawTx)
 				So(checkTxRes.Code, ShouldEqual, response.Success.Code)
 				deliverTxRes := app.DeliverTx(rawTx)
@@ -1743,7 +1743,7 @@ func TestWithdraw(t *testing.T) {
 
 func TestGC(t *testing.T) {
 	Convey("Given an application state set with keep_blocks = 10", t, func() {
-		appConf.GetConfig().KeepBlocks = "10"
+		appConf.GetConfig().KeepBlocks = 10
 
 		mockCtx := context.NewMock()
 		app := &LikeChainApplication{
