@@ -13,7 +13,7 @@ import (
 const (
 	ethAddressRegexString   = `^0x[0-9a-fA-F]{40}$`
 	ethSignatureRegexString = `^0x[0-9a-f]{130}$`
-	hexRegexString          = `^(0x)?([0-9a-fA-F][0-9a-fA-F])+$`
+	hexRegexString          = `^(0x)?([0-9a-fA-F]{2})+$`
 )
 
 var (

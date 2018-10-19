@@ -5,7 +5,7 @@ type Config struct {
 	Environment    string `mapstructure:"env"`
 	LogConfig      string `mapstructure:"log_config"`
 	InitialBalance string `mapstructure:"initial_balance"`
-	KeepBlocks     string `mapstructure:"keep_blocks"`
+	KeepBlocks     int64  `mapstructure:"keep_blocks"`
 }
 
 // IsProduction returns true in environment set to production

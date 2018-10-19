@@ -39,7 +39,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 		txHash := utils.HashRawTx(rawTxBytes)
 
 		Convey("If it is a valid transaction", func() {
-			Convey("CheckTx should success with Code 0", func() {
+			Convey("CheckTx should succeed with Code 0", func() {
 				res := checkRegister(state, rawTx)
 
 				So(res.Code, ShouldEqual, 0)
@@ -49,7 +49,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 			Convey("For DeliverTx", func() {
 				res := deliverRegister(state, rawTx, txHash)
 
-				Convey("It should success with Code 0 and non-empty Data", func() {
+				Convey("It should succeed with Code 0 and non-empty Data", func() {
 					So(res.Code, ShouldEqual, 0)
 					So(res.Status, ShouldEqual, types.TxStatusSuccess)
 					So(len(res.Data), ShouldBeGreaterThan, 0)

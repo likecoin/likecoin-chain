@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"math/big"
-	"strconv"
 
 	"github.com/tendermint/iavl"
 	cmn "github.com/tendermint/tendermint/libs/common"
@@ -17,7 +16,7 @@ type IMutableState interface {
 	MutableStateTree() *iavl.MutableTree
 	MutableWithdrawTree() *iavl.MutableTree
 	GetInitialBalance() *big.Int
-	GetKeepBlocks() uint64
+	GetKeepBlocks() int64
 }
 
 // MutableState is a struct contains mutable state
@@ -30,7 +29,7 @@ type MutableState struct {
 	withdrawTree *iavl.MutableTree
 
 	initialBalance *big.Int
-	keepBlocks     uint64
+	keepBlocks     int64
 }
 
 // ImmutableStateTree returns immutable state tree of the current state
@@ -127,8 +126,8 @@ func (metadata TreeMetadata) Bytes() []byte {
 	return result
 }
 
-// DecodeTreeMetadata decode a byte array into TreeMetadata
-func DecodeTreeMetadata(bs []byte) *TreeMetadata {
+// decodeTreeMetadata decode a byte array into TreeMetadata
+func decodeTreeMetadata(bs []byte) *TreeMetadata {
 	if bs[0] != 0 || len(bs) < 17 {
 		return nil
 	}
@@ -154,7 +153,7 @@ func (state *MutableState) GetMetadataAtHeight(height int64) *TreeMetadata {
 	if bs == nil {
 		return nil
 	}
-	metadata := DecodeTreeMetadata(bs)
+	metadata := decodeTreeMetadata(bs)
 	if metadata == nil {
 		log.WithField("data", cmn.HexBytes(bs)).Panic("Cannot unmarshal tree metadata")
 	}
@@ -179,7 +178,7 @@ func (state *MutableState) GC(currentHeight int64) {
 		key := it.Key()
 		keysToRemove = append(keysToRemove, key)
 		bs := state.appDb.Get(key)
-		metadata := DecodeTreeMetadata(bs)
+		metadata := decodeTreeMetadata(bs)
 		if metadata == nil {
 			log.WithField("data", cmn.HexBytes(bs)).Panic("Cannot unmarshal tree metadata")
 		}
@@ -204,10 +203,10 @@ func (state *MutableState) GetInitialBalance() *big.Int {
 }
 
 // GetKeepBlocks returns the number of blocks kept in trees
-func (state *MutableState) GetKeepBlocks() uint64 {
+func (state *MutableState) GetKeepBlocks() int64 {
 	if state.keepBlocks == 0 {
-		keepBlocks, err := strconv.ParseUint(config.KeepBlocks, 10, 64)
-		if err != nil || keepBlocks == 0 {
+		keepBlocks := config.KeepBlocks
+		if keepBlocks <= 0 {
 			keepBlocks = 10000
 		}
 		state.keepBlocks = keepBlocks
