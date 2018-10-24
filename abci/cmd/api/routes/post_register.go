@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 )
 
@@ -19,15 +20,11 @@ func postRegister(c *gin.Context) {
 		return
 	}
 
-	tx := types.RegisterTransaction{
-		Addr: types.NewAddressFromHex(json.Addr),
-		Sig:  types.NewSignatureFromHex(json.Sig),
+	tx := txs.RegisterTransaction{
+		Addr: *types.Addr(json.Addr),
+		Sig:  &txs.RegisterJSONSignature{JSONSignature: txs.Sig(json.Sig)},
 	}
-	data, err := tx.ToTransaction().Encode()
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-		return
-	}
+	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)
 	if err != nil {
@@ -56,6 +53,6 @@ func postRegister(c *gin.Context) {
 	id := types.NewLikeChainID(res.Data)
 	c.JSON(http.StatusOK, gin.H{
 		"tx_hash": result.Hash,
-		"id":      id.ToString(),
+		"id":      id.String(),
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 )
 
@@ -23,20 +24,28 @@ func postWithdraw(c *gin.Context) {
 		return
 	}
 
-	tx := types.WithdrawTransaction{
-		From:   types.NewIdentifier(json.Identity),
-		ToAddr: types.NewAddressFromHex(json.ToAddr),
-		Value:  types.NewBigInteger(json.Value),
-		Nonce:  json.Nonce,
-		Fee:    types.NewBigInteger(json.Fee),
-		Sig:    types.NewSignatureFromHex(json.Sig),
-	}
-
-	data, err := tx.ToTransaction().Encode()
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	value, ok := types.NewBigIntFromString(json.Value)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw value"})
 		return
 	}
+
+	fee, ok := types.NewBigIntFromString(json.Fee)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw fee"})
+		return
+	}
+
+	tx := txs.WithdrawTransaction{
+		From:   types.NewIdentifier(json.Identity),
+		ToAddr: *types.Addr(json.ToAddr),
+		Value:  value,
+		Nonce:  json.Nonce,
+		Fee:    fee,
+		Sig:    &txs.WithdrawJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+
+	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)
 	if err != nil {

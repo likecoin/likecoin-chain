@@ -1,10 +1,11 @@
 package query
 
 import (
+	"encoding/json"
+
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
-	"github.com/likecoin/likechain/abci/transaction"
-	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/txstatus"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -13,25 +14,32 @@ func queryTxState(
 	reqQuery abci.RequestQuery,
 ) response.R {
 	txHash := reqQuery.Data
-	txStatus := transaction.GetStatus(state, txHash)
+	txStatus := txstatus.GetStatus(state, txHash)
 
-	if txStatus == types.TxStatusNotSet {
+	if txStatus == txstatus.TxStatusNotSet {
 		return response.QueryTxNotExist
 	}
 
-	data, err := (&types.TxStateResponse{
-		Status: txStatus.String(),
-	}).Marshal()
-	if err != nil {
-		log.WithError(err).Debug("Unable to parse tx state response to JSON")
-		return response.QueryParsingResponseError
-	}
-
-	return response.Success.Merge(response.R{
-		Data: data,
-	})
+	return jsonMap{
+		"status": txStatus.String(),
+	}.ToResponse()
 }
 
 func init() {
 	registerQueryHandler("tx_state", queryTxState)
+}
+
+// TxStateRes represents response data of tx_state query
+type TxStateRes struct {
+	Status string `json:"status"`
+}
+
+// GetTxStateRes transforms the raw byte response from tx_state query back to GetTxStateRes structure
+func GetTxStateRes(data []byte) *TxStateRes {
+	result := TxStateRes{}
+	err := json.Unmarshal(data, &result)
+	if err != nil {
+		return nil
+	}
+	return &result
 }

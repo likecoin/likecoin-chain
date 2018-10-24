@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 )
 
@@ -14,7 +15,7 @@ type depositEventJSON struct {
 
 type depositJSON struct {
 	BlockNumber uint64              `json:"block" binding:"required"`
-	Events      []*depositEventJSON `json:"events" binding:"required"`
+	Inputs      []*depositEventJSON `json:"inputs" binding:"required"`
 }
 
 func postDeposit(c *gin.Context) {
@@ -24,22 +25,23 @@ func postDeposit(c *gin.Context) {
 		return
 	}
 
-	tx := types.DepositTransaction{
+	tx := txs.DepositTransaction{
 		BlockNumber: json.BlockNumber,
-		Deposits:    make([]*types.DepositTransaction_DepositEvent, len(json.Events)),
+		Inputs:      make([]txs.DepositInput, len(json.Inputs)),
 	}
-	for i, e := range json.Events {
-		tx.Deposits[i] = &types.DepositTransaction_DepositEvent{
-			FromAddr: types.NewAddressFromHex(e.From),
-			Value:    types.NewBigInteger(e.Value),
+	for i, e := range json.Inputs {
+		value, ok := types.NewBigIntFromString(e.Value)
+		if !ok {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input value"})
+			return
+		}
+		tx.Inputs[i] = txs.DepositInput{
+			FromAddr: *types.Addr(e.From),
+			Value:    value,
 		}
 	}
 
-	data, err := tx.ToTransaction().Encode()
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-		return
-	}
+	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)
 	if err != nil {

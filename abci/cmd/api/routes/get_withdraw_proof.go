@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
-	"github.com/likecoin/likechain/abci/utils"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -27,8 +27,15 @@ func getWithdrawProof(c *gin.Context) {
 		return
 	}
 
-	if !utils.IsValidBigIntegerString(query.Value) {
+	value, ok := types.NewBigIntFromString(query.Value)
+	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw value"})
+		return
+	}
+
+	fee, ok := types.NewBigIntFromString(query.Fee)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid withdraw fee"})
 		return
 	}
 
@@ -51,17 +58,18 @@ func getWithdrawProof(c *gin.Context) {
 	var accountInfo gin.H
 	if err := json.Unmarshal(result.Response.Value, &accountInfo); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
 	}
 
 	idStr := accountInfo["id"].(string)
 
 	// Get withdraw proof
-	tx := types.WithdrawTransaction{
-		From:   types.NewIdentifier(idStr),
-		ToAddr: types.NewAddressFromHex(query.ToAddr),
-		Value:  types.NewBigInteger(query.Value),
+	tx := txs.WithdrawTransaction{
+		From:   types.IDStr(idStr),
+		ToAddr: *types.Addr(query.ToAddr),
+		Value:  value,
 		Nonce:  query.Nonce,
-		Fee:    types.NewBigInteger(query.Fee),
+		Fee:    fee,
 	}
 
 	result, err = tendermint.ABCIQueryWithOptions(

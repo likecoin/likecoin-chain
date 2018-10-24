@@ -18,7 +18,6 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
-	"github.com/likecoin/likechain/abci/types"
 	. "github.com/smartystreets/goconvey/convey"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	rpctest "github.com/tendermint/tendermint/rpc/test"
@@ -100,7 +99,7 @@ func TestAPI(t *testing.T) {
 		mockCtx.SetInitialBalance(big.NewInt(100))
 		sig := "0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b"
 		params := map[string]interface{}{
-			"addr": fixture.Alice.Address.Hex(),
+			"addr": fixture.Alice.Address.String(),
 			"sig":  sig,
 		}
 		res, code = request(router, "POST", uri, params)
@@ -167,7 +166,7 @@ func TestAPI(t *testing.T) {
 		So(res["error"], ShouldNotBeNil)
 
 		// Invalid params
-		uri = "/v1/account_info?identity=" + types.NewZeroAddress().ToHex()
+		uri = "/v1/account_info?identity=0x0000000000000000000000000000000000000000"
 		res, code = request(router, "GET", uri, nil)
 		So(code, ShouldEqual, http.StatusBadRequest)
 		So(res["error"], ShouldNotBeNil)
@@ -175,7 +174,7 @@ func TestAPI(t *testing.T) {
 		//
 		// Test GET /address_info
 		//
-		uri = "/v1/address_info?addr=" + fixture.Alice.Address.Hex()
+		uri = "/v1/address_info?addr=" + fixture.Alice.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, aliceID)
@@ -198,7 +197,7 @@ func TestAPI(t *testing.T) {
 		uri = "/v1/register"
 		sig = "0x6d8c7bb3292cab67f4814f9c2d1986430bd188b4eadf82a3fdf1e6be10f7599751985388c2a79429ee60761169e4c67e3b453daf88b637d77f87d7be68196b2c1b"
 		res, code = request(router, "POST", uri, map[string]interface{}{
-			"addr": fixture.Bob.Address.Hex(),
+			"addr": fixture.Bob.Address.String(),
 			"sig":  sig,
 		})
 		So(res["error"], ShouldBeNil)
@@ -211,7 +210,7 @@ func TestAPI(t *testing.T) {
 			t.Error(err)
 		}
 
-		uri = "/v1/account_info?identity=" + fixture.Bob.Address.Hex()
+		uri = "/v1/account_info?identity=" + fixture.Bob.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, bobID)
@@ -253,14 +252,14 @@ func TestAPI(t *testing.T) {
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
-		sig = "0x343db6effdf722054ff57bcdad4d21b7025407557c631e7e4b1cd77411fa4c155e91c2a8fff992792d885c34411dca84d8d2eaa863ff7eecda1f3322be024d071b"
+		sig = "0x3cd8332511becc97ddcca750adf591a434a309331f9db77f69072dc440fa20b62496a816e6850bd1c1e5c1d17756c4f86b2e6b44d82cad813e95b6a4004798371b"
 		params = map[string]interface{}{
 			"fee":      "0",
-			"identity": fixture.Alice.Address.Hex(),
+			"identity": fixture.Alice.Address.String(),
 			"nonce":    1,
-			"to": []map[string]interface{}{
+			"outputs": []map[string]interface{}{
 				{
-					"identity": fixture.Bob.Address.Hex(),
+					"identity": fixture.Bob.Address.String(),
 					"value":    "1",
 				},
 			},
@@ -284,20 +283,20 @@ func TestAPI(t *testing.T) {
 
 		// Invalid logic
 		params["nonce"] = 2
-		params["to"] = []map[string]interface{}{
+		params["outputs"] = []map[string]interface{}{
 			{
-				"identity": fixture.Bob.Address.Hex(),
+				"identity": fixture.Bob.Address.String(),
 				"value":    "999",
 			},
 		}
-		params["sig"] = "0x1ef7d4812b55645c4aea8ac1a16354278827f39722dd3c4f38f23dda004795db121d8d4341613cdffed28f29418cf7df46e55f21380daab5711d3ffb8f8ee0771c"
+		params["sig"] = "0xbf61280a9930be07f0782ac4df7660a1f67d4fa3c681f9a43db36215c787cb3e12cfe342dfba1ec8a67eca7874b6839176f51c65bf238f24fc181a192fa906511c"
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
-		So(res["code"], ShouldEqual, response.TransferCheckTxNotEnoughBalance.Code)
+		So(res["code"], ShouldEqual, response.TransferNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Invalid params
-		params["sig"] = types.NewZeroSignature().ToHex()
+		params["sig"] = "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusBadRequest)
@@ -338,9 +337,9 @@ func TestAPI(t *testing.T) {
 		uri = "/v1/withdraw"
 		sig = "0x9d6dca90161dcdcf5594e2070b221a6c50318e4034bbf5b25ba50402dcbe0ebb2a8fe928a28fffac5c0edb3d607b86da7df016f5ce789e7488f5fd70da37dbe61b"
 		params = map[string]interface{}{
-			"identity": fixture.Alice.Address.Hex(),
+			"identity": fixture.Alice.Address.String(),
 			"nonce":    2,
-			"to_addr":  types.NewZeroAddress().ToHex(),
+			"to_addr":  "0x0000000000000000000000000000000000000000",
 			"value":    "1",
 			"fee":      "0",
 			"sig":      sig,
@@ -394,7 +393,7 @@ func TestAPI(t *testing.T) {
 		params["sig"] = "0x4389b731b1d67c792cc309a52281d0ef5350973f1d7d72f38049915756fc8ca86765e505a8c4c54e5cc98473881634706ad79ae561ca959fb49da5f7193c14901b"
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
-		So(res["code"], ShouldEqual, response.WithdrawCheckTxNotEnoughBalance.Code)
+		So(res["code"], ShouldEqual, response.WithdrawNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		//
@@ -404,7 +403,7 @@ func TestAPI(t *testing.T) {
 		uri = fmt.Sprintf(
 			formattedQuery,
 			url.QueryEscape(aliceID),
-			types.NewZeroAddress().ToHex(),
+			"0x0000000000000000000000000000000000000000",
 			withdrawHeight,
 			2,
 			"1",
@@ -419,8 +418,8 @@ func TestAPI(t *testing.T) {
 		// Using address
 		uri = fmt.Sprintf(
 			formattedQuery,
-			fixture.Alice.Address.Hex(),
-			types.NewZeroAddress().ToHex(),
+			fixture.Alice.Address.String(),
+			"0x0000000000000000000000000000000000000000",
 			withdrawHeight,
 			2,
 			"1",
@@ -442,7 +441,7 @@ func TestAPI(t *testing.T) {
 		uri = fmt.Sprintf(
 			formattedQuery,
 			url.QueryEscape(aliceID),
-			types.NewZeroAddress().ToHex(),
+			"0x0000000000000000000000000000000000000000",
 			-1,
 			2,
 			"1",

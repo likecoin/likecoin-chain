@@ -1,7 +1,7 @@
 package response
 
 import (
-	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/txstatus"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/common"
 )
@@ -13,7 +13,7 @@ type R struct {
 	Log    string
 	Info   string
 	Tags   []common.KVPair
-	Status types.TxStatus
+	Status txstatus.TxStatus
 }
 
 // ToResponseCheckTx converts R to abci ResponseCheckTx
@@ -29,6 +29,9 @@ func (r R) ToResponseCheckTx() abci.ResponseCheckTx {
 
 // ToResponseDeliverTx converts R to abci ResponseDeliverTx
 func (r R) ToResponseDeliverTx() abci.ResponseDeliverTx {
+	if r.Code != 0 {
+		r.Code++
+	}
 	return abci.ResponseDeliverTx{
 		Code: r.Code,
 		Data: r.Data,
@@ -49,26 +52,26 @@ func (r R) ToResponseQuery() abci.ResponseQuery {
 }
 
 // Merge merges R2 into R1
-func (r1 R) Merge(r2 R) R {
+func (r R) Merge(r2 R) R {
 	if r2.Code > 0 {
-		r1.Code = r2.Code
+		r.Code = r2.Code
 	}
 	if len(r2.Data) > 0 {
-		r1.Data = r2.Data
+		r.Data = r2.Data
 	}
 	if r2.Log != "" {
-		r1.Log = r2.Log
+		r.Log = r2.Log
 	}
 	if r2.Info != "" {
-		r1.Info = r2.Info
+		r.Info = r2.Info
 	}
 	if len(r2.Tags) > 0 {
-		r1.Tags = append(r1.Tags, r2.Tags...)
+		r.Tags = append(r.Tags, r2.Tags...)
 	}
 	if r2.Status != 0 {
-		r1.Status = r2.Status
+		r.Status = r2.Status
 	}
-	return r1
+	return r
 }
 
 // Error Code Definition (5 digits)
@@ -86,223 +89,115 @@ func (r1 R) Merge(r2 R) R {
 var Success = R{
 	Code:   0,
 	Info:   "OK",
-	Status: types.TxStatusSuccess,
+	Status: txstatus.TxStatusSuccess,
 }
 
-var RegisterCheckTxInvalidFormat = R{
+var RegisterInvalidFormat = R{
 	Code:   10000,
-	Info:   "Invalid RegisterTransaction format in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid RegisterTransaction format",
+	Status: txstatus.TxStatusFail,
 }
 
-var RegisterDeliverTxInvalidFormat = R{
-	Code:   10001,
-	Info:   "Invalid RegisterTransaction format in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var RegisterCheckTxInvalidSignature = R{
+var RegisterInvalidSignature = R{
 	Code:   10010,
-	Info:   "Invalid RegisterTransaction signature in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid RegisterTransaction signature",
+	Status: txstatus.TxStatusFail,
 }
 
-var RegisterDeliverTxInvalidSignature = R{
-	Code:   10011,
-	Info:   "Invalid RegisterTransaction signature in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var RegisterCheckTxDuplicated = R{
+var RegisterDuplicated = R{
 	Code:   10020,
-	Info:   "Duplicated RegisterTransaction in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Duplicated RegisterTransaction",
+	Status: txstatus.TxStatusFail,
 }
 
-var RegisterDeliverTxDuplicated = R{
-	Code:   10021,
-	Info:   "Duplicated RegisterTransaction in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var DepositCheckTxInvalidFormat = R{
+var DepositInvalidFormat = R{
 	Code:   11000,
-	Info:   "Invalid DepositTransaction format in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid DepositTransaction format",
+	Status: txstatus.TxStatusFail,
 }
 
-var DepositDeliverTxInvalidFormat = R{
-	Code:   11001,
-	Info:   "Invalid DepositTransaction format in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var DepositCheckTxDuplicated = R{
+var DepositDuplicated = R{
 	Code:   11020,
-	Info:   "Duplicated DepositTransaction in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Duplicated DepositTransaction",
+	Status: txstatus.TxStatusFail,
 }
 
-var DepositDeliverTxDuplicated = R{
-	Code:   11021,
-	Info:   "Duplicated DepositTransaction in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxInvalidFormat = R{
+var TransferInvalidFormat = R{
 	Code:   12000,
-	Info:   "Invalid TransferTransaction format in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid TransferTransaction format",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxInvalidFormat = R{
-	Code:   12001,
-	Info:   "Invalid TransferTransaction format in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxInvalidSignature = R{
+var TransferInvalidSignature = R{
 	Code:   12010,
-	Info:   "Invalid TransferTransaction signature in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid TransferTransaction signature",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxInvalidSignature = R{
-	Code:   12011,
-	Info:   "Invalid TransferTransaction signature in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxDuplicated = R{
+var TransferDuplicated = R{
 	Code:   12020,
-	Info:   "Duplicated TransferTransaction in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Duplicated TransferTransaction",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxDuplicated = R{
-	Code:   12021,
-	Info:   "Duplicated TransferTransaction in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxSenderNotRegistered = R{
+var TransferSenderNotRegistered = R{
 	Code:   12030,
-	Info:   "Sender of TransferTransaction not register in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Sender of TransferTransaction not register",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxSenderNotRegistered = R{
-	Code:   12031,
-	Info:   "Sender of TransferTransaction not register in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxNotEnoughBalance = R{
+var TransferNotEnoughBalance = R{
 	Code:   12040,
-	Info:   "Sender's balance of TransferTransaction not enough in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Sender's balance of TransferTransaction not enough",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxNotEnoughBalance = R{
-	Code:   12041,
-	Info:   "Sender's balance of TransferTransaction not enough in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxInvalidReceiver = R{
+var TransferInvalidReceiver = R{
 	Code:   12050,
-	Info:   "One or more receivers in TransferTransaction are invalid in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "One or more receivers in TransferTransaction are invalid",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxInvalidReceiver = R{
-	Code:   12051,
-	Info:   "One or more receivers in TransferTransaction are invalid in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var TransferCheckTxInvalidNonce = R{
+var TransferInvalidNonce = R{
 	Code:   12600,
-	Info:   "Invalid TransferTransaction nonce in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid TransferTransaction nonce",
+	Status: txstatus.TxStatusFail,
 }
 
-var TransferDeliverTxInvalidNonce = R{
-	Code:   12601,
-	Info:   "Invalid TransferTransaction nonce in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxInvalidFormat = R{
+var WithdrawInvalidFormat = R{
 	Code:   13000,
-	Info:   "Invalid WithdrawTransaction format in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid WithdrawTransaction format",
+	Status: txstatus.TxStatusFail,
 }
 
-var WithdrawDeliverTxInvalidFormat = R{
-	Code:   13001,
-	Info:   "Invalid WithdrawTransaction format in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxInvalidSignature = R{
+var WithdrawInvalidSignature = R{
 	Code:   13010,
-	Info:   "Invalid WithdrawTransaction signature in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid WithdrawTransaction signature",
+	Status: txstatus.TxStatusFail,
 }
 
-var WithdrawDeliverTxInvalidSignature = R{
-	Code:   13011,
-	Info:   "Invalid WithdrawTransaction signature in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxDuplicated = R{
+var WithdrawDuplicated = R{
 	Code:   13020,
-	Info:   "Duplicated WithdrawTransaction in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Duplicated WithdrawTransaction",
+	Status: txstatus.TxStatusFail,
 }
 
-var WithdrawDeliverTxDuplicated = R{
-	Code:   13021,
-	Info:   "Duplicated WithdrawTransaction in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxSenderNotRegistered = R{
+var WithdrawSenderNotRegistered = R{
 	Code:   13030,
-	Info:   "Sender of WithdrawTransaction not register in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Sender of WithdrawTransaction not register",
+	Status: txstatus.TxStatusFail,
 }
 
-var WithdrawDeliverTxSenderNotRegistered = R{
-	Code:   13031,
-	Info:   "Sender of WithdrawTransaction not register in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxNotEnoughBalance = R{
+var WithdrawNotEnoughBalance = R{
 	Code:   13040,
-	Info:   "Sender's balance of WithdrawTransaction not enough in CheckTx",
-	Status: types.TxStatusFail,
+	Info:   "Sender's balance of WithdrawTransaction not enough",
+	Status: txstatus.TxStatusFail,
 }
 
-var WithdrawDeliverTxNotEnoughBalance = R{
-	Code:   13041,
-	Info:   "Sender's balance of WithdrawTransaction not enough in DeliverTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawCheckTxInvalidNonce = R{
+var WithdrawInvalidNonce = R{
 	Code:   13600,
-	Info:   "Invalid WithdrawTransaction nonce in CheckTx",
-	Status: types.TxStatusFail,
-}
-
-var WithdrawDeliverTxInvalidNonce = R{
-	Code:   13601,
-	Info:   "Invalid WithdrawTransaction nonce in DeliverTx",
-	Status: types.TxStatusFail,
+	Info:   "Invalid WithdrawTransaction nonce",
+	Status: txstatus.TxStatusFail,
 }
 
 var QueryPathNotExist = R{

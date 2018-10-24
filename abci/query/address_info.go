@@ -16,26 +16,28 @@ func queryAddressInfo(
 	addrHex := string(reqQuery.Data)
 
 	if !common.IsHexAddress(addrHex) {
-		log.Debug("Invalid address strings")
+	}
+
+	addr, err := types.NewAddressFromHex(addrHex)
+	if err != nil {
+		log.
+			WithError(err).
+			Debug("Invalid query address")
 		return response.QueryInvalidIdentifier
 	}
 
-	ethAddr := common.HexToAddress(addrHex)
-	id := account.AddressToLikeChainID(state, ethAddr)
-
+	id := account.AddressToLikeChainID(state, addr)
 	if id == nil {
-		identifier := types.NewAddressFromHex(addrHex).ToIdentifier()
-		balance := account.FetchRawBalance(state, identifier)
+		balance := account.FetchRawBalance(state, addr)
 		return jsonMap{
 			"balance": balance.String(),
 		}.ToResponse()
 	}
 
-	identifier := id.ToIdentifier()
-	balance := account.FetchBalance(state, identifier)
+	balance := account.FetchBalance(state, id)
 	nextNonce := account.FetchNextNonce(state, id)
 	return jsonMap{
-		"id":         identifier.ToString(),
+		"id":         id.String(),
 		"balance":    balance.String(),
 		"next_nonce": nextNonce,
 	}.ToResponse()
