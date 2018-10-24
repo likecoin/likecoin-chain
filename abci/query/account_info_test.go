@@ -19,7 +19,7 @@ func TestQueryAccountInfo(t *testing.T) {
 
 	Convey("Given an account info query", t, func() {
 		reqQuery := abci.RequestQuery{
-			Data: []byte(fixture.Alice.ID.ToString()),
+			Data: []byte(fixture.Alice.ID.String()),
 			Path: "account_info",
 		}
 
@@ -32,7 +32,7 @@ func TestQueryAccountInfo(t *testing.T) {
 		})
 
 		Convey("If it is a valid query using address as identity", func() {
-			reqQuery.Data = []byte(fixture.Alice.Address.Hex())
+			reqQuery.Data = []byte(fixture.Alice.Address.String())
 			res := Query(state, reqQuery)
 
 			Convey("Should return code 0", func() {
@@ -41,7 +41,7 @@ func TestQueryAccountInfo(t *testing.T) {
 		})
 
 		Convey("If its identity is not registered", func() {
-			reqQuery.Data = []byte(fixture.Bob.ID.ToString())
+			reqQuery.Data = []byte(fixture.Bob.ID.String())
 			res := Query(state, reqQuery)
 
 			code := response.QueryInvalidIdentifier.Code

@@ -7,6 +7,7 @@ import (
 	"github.com/likecoin/likechain/abci/response"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
+	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
 func queryWithdrawProof(
@@ -50,7 +51,7 @@ func queryWithdrawProof(
 	if value == nil || err != nil {
 		log.
 			WithError(err).
-			WithField("tx", packedTx).
+			WithField("packed_tx", cmn.HexBytes(packedTx)).
 			Debug("Cannot get proof in withdraw proof query")
 		return response.QueryWithdrawProofNotExist
 	}

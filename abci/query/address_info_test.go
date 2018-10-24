@@ -9,7 +9,6 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
-	"github.com/likecoin/likechain/abci/types"
 
 	. "github.com/smartystreets/goconvey/convey"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -20,12 +19,11 @@ func TestQueryAddressInfo(t *testing.T) {
 	state := appCtx.GetMutableState()
 	account.NewAccountFromID(state, fixture.Alice.ID, fixture.Alice.Address)
 
-	bobAddr := types.Address{Content: fixture.Bob.Address[:]}
-	account.SaveBalance(state, bobAddr.ToIdentifier(), big.NewInt(1))
+	account.SaveBalance(state, fixture.Bob.Address, big.NewInt(1))
 
 	Convey("Given an address info query", t, func() {
 		reqQuery := abci.RequestQuery{
-			Data: []byte(fixture.Alice.Address.Hex()),
+			Data: []byte(fixture.Alice.Address.String()),
 			Path: "address_info",
 		}
 
@@ -38,7 +36,7 @@ func TestQueryAddressInfo(t *testing.T) {
 		})
 
 		Convey("If it is a valid query for an Ethereum address without LikeChain ID but with some balance", func() {
-			reqQuery.Data = []byte(fixture.Bob.Address.Hex())
+			reqQuery.Data = []byte(fixture.Bob.Address.String())
 			res := Query(state, reqQuery)
 
 			Convey("Should return code 0", func() {
@@ -47,7 +45,7 @@ func TestQueryAddressInfo(t *testing.T) {
 		})
 
 		Convey("If it is a valid query for an Ethereum address without LikeChain ID and no balance", func() {
-			reqQuery.Data = []byte(fixture.Carol.Address.Hex())
+			reqQuery.Data = []byte(fixture.Carol.Address.String())
 			res := Query(state, reqQuery)
 
 			Convey("Should return code 0", func() {

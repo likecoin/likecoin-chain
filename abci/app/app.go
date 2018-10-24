@@ -3,11 +3,11 @@ package app
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/handlers"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
+	"github.com/likecoin/likechain/abci/txs"
+	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -38,33 +38,41 @@ func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.Res
 // CheckTx implements ABCI CheckTx
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	log.Info("APP CheckTx")
-	tx := &types.Transaction{}
-	if err := proto.Unmarshal(rawTx, tx); err != nil {
+	var tx txs.Transaction
+	err := types.AminoCodec().UnmarshalBinary(rawTx, &tx)
+	if err != nil {
 		log.WithError(err).Debug("APP CheckTx cannot parse transaction")
 		return abci.ResponseCheckTx{
 			Code: 1,
 			Info: "Cannot parse transaction",
 		}
 	}
-	return handlers.CheckTx(app.ctx.GetImmutableState(), tx)
+	return tx.CheckTx(app.ctx.GetImmutableState()).ToResponseCheckTx()
 }
 
 // DeliverTx implements ABCI DeliverTx
 func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx {
-	hash := utils.HashRawTx(rawTx)
+	txHash := utils.HashRawTx(rawTx)
 	log.
-		WithField("hash", cmn.HexBytes(hash)).
+		WithField("hash", cmn.HexBytes(txHash)).
 		Info("APP DeliverTx")
 
-	tx := &types.Transaction{}
-	if err := proto.Unmarshal(rawTx, tx); err != nil {
-		log.WithError(err).Debug("APP DeliverTx Cannot parse transaction")
+	var tx txs.Transaction
+	err := types.AminoCodec().UnmarshalBinary(rawTx, &tx)
+	if err != nil {
+		log.WithError(err).Debug("APP DeliverTx cannot parse transaction")
 		return abci.ResponseDeliverTx{
 			Code: 1,
 			Info: "Cannot parse transaction",
 		}
 	}
-	return handlers.DeliverTx(app.ctx.GetMutableState(), tx, hash)
+	state := app.ctx.GetMutableState()
+	r := tx.DeliverTx(state, txHash)
+	oldStatus := txstatus.GetStatus(state, txHash)
+	if oldStatus != txstatus.TxStatusSuccess {
+		txstatus.SetStatus(app.ctx.GetMutableState(), txHash, r.Status)
+	}
+	return r.ToResponseDeliverTx()
 }
 
 // EndBlock implements ABCI EndBlock

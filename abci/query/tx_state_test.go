@@ -1,13 +1,13 @@
 package query
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
-	"github.com/likecoin/likechain/abci/transaction"
-	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/utils"
 	. "github.com/smartystreets/goconvey/convey"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -35,25 +35,24 @@ func TestQueryTxState(t *testing.T) {
 			})
 		})
 
-		txStatusList := []types.TxStatus{
-			types.TxStatusSuccess,
-			types.TxStatusFail,
-			types.TxStatusPending,
+		txStatusList := []txstatus.TxStatus{
+			txstatus.TxStatusSuccess,
+			txstatus.TxStatusFail,
+			txstatus.TxStatusPending,
 		}
 		for _, status := range txStatusList {
 			s := status.String()
 			Convey(fmt.Sprintf("If it is a valid query with %s Tx", s), func() {
-				transaction.SetStatus(state, txHash, status)
+				txstatus.SetStatus(state, txHash, status)
 				res := Query(state, reqQuery)
 
 				Convey(fmt.Sprintf("Should return code 0 and %s", s), func() {
 					So(res.Code, ShouldEqual, 0)
-
-					txStateRes, err := new(types.TxStateResponse).Unmarshal(res.Value)
-					if err != nil {
-						t.Error(err)
-					}
-					So(txStateRes.Status, ShouldEqual, s)
+					jsonRes := make(map[string]interface{})
+					err := json.Unmarshal(res.Value, &jsonRes)
+					So(err, ShouldBeNil)
+					So(jsonRes, ShouldContainKey, "status")
+					So(jsonRes["status"], ShouldEqual, s)
 				})
 			})
 		}

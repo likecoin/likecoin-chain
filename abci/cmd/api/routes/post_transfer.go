@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 )
 
@@ -15,7 +16,7 @@ type transferTargetJSON struct {
 }
 type transferJSON struct {
 	Identity string               `json:"identity" binding:"required,identity"`
-	To       []transferTargetJSON `json:"to" binding:"required"`
+	Outputs  []transferTargetJSON `json:"outputs" binding:"required"`
 	Nonce    int64                `json:"nonce" binding:"required,min=1"`
 	Fee      string               `json:"fee" binding:"required,biginteger"`
 	Sig      string               `json:"sig" binding:"required,eth_sig"`
@@ -28,28 +29,35 @@ func postTransfer(c *gin.Context) {
 		return
 	}
 
-	tx := types.TransferTransaction{
-		From:   types.NewIdentifier(json.Identity),
-		ToList: make([]*types.TransferTransaction_TransferTarget, len(json.To)),
-		Nonce:  uint64(json.Nonce),
-		Fee:    types.NewBigInteger(json.Fee),
-		Sig:    types.NewSignatureFromHex(json.Sig),
+	fee, ok := types.NewBigIntFromString(json.Fee)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer fee"})
+		return
 	}
 
-	for i, t := range json.To {
+	tx := txs.TransferTransaction{
+		From:    types.NewIdentifier(json.Identity),
+		Outputs: make([]txs.TransferOutput, len(json.Outputs)),
+		Nonce:   uint64(json.Nonce),
+		Fee:     fee,
+		Sig:     &txs.TransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+
+	for i, t := range json.Outputs {
+		value, ok := types.NewBigIntFromString(t.Value)
+		if !ok {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid transfer value"})
+			return
+		}
 		remark, _ := base64.StdEncoding.DecodeString(t.Remark)
-		tx.ToList[i] = &types.TransferTransaction_TransferTarget{
+		tx.Outputs[i] = txs.TransferOutput{
 			To:     types.NewIdentifier(t.Identity),
-			Value:  types.NewBigInteger(t.Value),
+			Value:  value,
 			Remark: remark,
 		}
 	}
 
-	data, err := tx.ToTransaction().Encode()
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-		return
-	}
+	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)
 	if err != nil {
