@@ -1,8 +1,10 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
@@ -108,11 +110,51 @@ func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 
 // InitChain implements ABCI InitChain
 func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.ResponseInitChain {
-	app.ctx.GetMutableState().Init()
-
 	log.
 		Info("APP InitChain")
-
+	app.ctx.GetMutableState().Init()
+	if len(params.AppStateBytes) > 0 {
+		log.
+			WithField("app_state_bytes", string(params.AppStateBytes)).
+			Info("Initializing app state")
+		appInitState := types.AppInitState{}
+		err := json.Unmarshal(params.AppStateBytes, &appInitState)
+		if err != nil {
+			log.
+				WithError(err).
+				Panic("Cannot load app initial state")
+		}
+		state := app.ctx.GetMutableState()
+		usedIDs := make(map[types.LikeChainID]bool)
+		usedAddrs := make(map[types.Address]bool)
+		for i, accInfo := range appInitState.Accounts {
+			id := accInfo.ID
+			if usedIDs[id] {
+				log.
+					WithField("entry_number", i).
+					WithField("id", id).
+					Panic("Duplicated LikeChainID")
+			}
+			usedIDs[id] = true
+			addr := accInfo.Addr
+			if usedAddrs[addr] {
+				log.
+					WithField("entry_number", i).
+					WithField("addr", addr).
+					Panic("Duplicated address")
+			}
+			usedAddrs[addr] = true
+			balance := accInfo.Balance
+			if !balance.IsWithinRange() {
+				log.
+					WithField("entry_number", i).
+					WithField("balance", balance).
+					Panic("Invalid initial balance")
+			}
+			account.NewAccountFromID(state, &id, &accInfo.Addr)
+			account.SaveBalance(state, &id, balance.Int)
+		}
+	}
 	return abci.ResponseInitChain{
 		ConsensusParams: params.ConsensusParams,
 		Validators:      params.Validators,

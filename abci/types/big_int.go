@@ -5,6 +5,9 @@ import (
 	"math/big"
 )
 
+var zero = big.NewInt(0)
+var limit = new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
+
 // BigInt is an adaptor of big.Int, implementing AminoMarshaler and AminoUnmarshaler
 type BigInt struct {
 	*big.Int
@@ -42,6 +45,11 @@ func (n *BigInt) UnmarshalJSON(bs []byte) error {
 	}
 	n.Int = v
 	return nil
+}
+
+// IsWithinRange returns whether the number is between 0 (inclusive) and 2^256 (exclusive)
+func (n BigInt) IsWithinRange() bool {
+	return n.Int.Cmp(zero) >= 0 && n.Int.Cmp(limit) < 0
 }
 
 // NewBigIntFromString returns a BigInt from the input string with base 10, and a boolean indicates success.

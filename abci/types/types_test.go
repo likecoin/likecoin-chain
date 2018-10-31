@@ -462,5 +462,34 @@ func TestBigInt(t *testing.T) {
 				})
 			})
 		})
+		Convey("For range", func() {
+			Convey("Given a BigInt with value -1", func() {
+				n := BigInt{big.NewInt(-1)}
+				Convey("n.IsWithinRange() should return false", func() {
+					So(n.IsWithinRange(), ShouldBeFalse)
+				})
+			})
+			Convey("Given a BigInt with value 0", func() {
+				n := BigInt{big.NewInt(0)}
+				Convey("n.IsWithinRange() should return true", func() {
+					So(n.IsWithinRange(), ShouldBeTrue)
+				})
+			})
+			Convey("Given a BigInt with value 2^256-1", func() {
+				v := new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
+				v.Sub(v, big.NewInt(1))
+				n := BigInt{v}
+				Convey("n.IsWithinRange() should return true", func() {
+					So(n.IsWithinRange(), ShouldBeTrue)
+				})
+			})
+			Convey("Given a BigInt with value 2^256", func() {
+				v := new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
+				n := BigInt{v}
+				Convey("n.IsWithinRange() should return false", func() {
+					So(n.IsWithinRange(), ShouldBeFalse)
+				})
+			})
+		})
 	})
 }

@@ -46,18 +46,17 @@ func (tx *TransferTransaction) ValidateFormat() bool {
 	if len(tx.Outputs) == 0 {
 		return false
 	}
-	zero := big.NewInt(0)
-	if tx.Fee.Cmp(zero) < 0 {
+	if !tx.Fee.IsWithinRange() {
 		return false
 	}
 	for _, output := range tx.Outputs {
 		if output.To == nil || output.Value.Int == nil {
 			return false
 		}
-		if !output.Remark.Validate() {
+		if !output.Value.IsWithinRange() {
 			return false
 		}
-		if output.Value.Cmp(zero) < 0 {
+		if !output.Remark.Validate() {
 			return false
 		}
 	}

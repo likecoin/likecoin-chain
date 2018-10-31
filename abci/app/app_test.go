@@ -42,6 +42,190 @@ func TestGeneral(t *testing.T) {
 	})
 }
 
+func TestInitChain(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		state := app.ctx.GetMutableState()
+		id1 := types.IDStr("ERERERERERERERERERERERERERE=")
+		addr1 := types.Addr("0x1111111111111111111111111111111111111111")
+		id2 := types.IDStr("IiIiIiIiIiIiIiIiIiIiIiIiIiI=")
+		addr2 := types.Addr("0x2222222222222222222222222222222222222222")
+		Convey("For empty AppStateBytes in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte{},
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with empty object in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte("{}"),
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with empty accounts array in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte(`{"accounts":[]}`),
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with some accounts in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte(s),
+			})
+			Convey("The initial state should contain the corresponding accounts with balances", func() {
+				So(account.IsLikeChainIDRegistered(state, id1), ShouldBeTrue)
+				So(account.IsLikeChainIDHasAddress(state, id1, addr1), ShouldBeTrue)
+				So(account.FetchBalance(state, id1).Cmp(big.NewInt(100)), ShouldBeZeroValue)
+				So(account.IsLikeChainIDRegistered(state, id2), ShouldBeTrue)
+				So(account.IsLikeChainIDHasAddress(state, id2, addr2), ShouldBeTrue)
+				v, _ := new(big.Int).SetString("20000000000000000000000000000000000000000", 10)
+				So(account.FetchBalance(state, id2).Cmp(v), ShouldBeZeroValue)
+			})
+		})
+		Convey("For AppStateBytes with invalid account IDs in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":0
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with negative balance in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":-1
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with balance >= 2^256 in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":"115792089237316195423570985008687907853269984665640564039457584007913129639936"
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with duplicated LikeChain ID in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100
+						},
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with duplicated address in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100
+						},
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+	})
+}
+
 func TestRegistration(t *testing.T) {
 	Convey("At initial state", t, func() {
 		mockCtx := context.NewMock()
