@@ -60,6 +60,25 @@ func (addr *Address) String() string {
 	return strings.ToLower(common.Address(*addr).Hex())
 }
 
+// MarshalJSON implements json.Marshaler
+func (addr *Address) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + addr.String() + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler
+func (addr *Address) UnmarshalJSON(bs []byte) error {
+	if len(bs) < 2 || bs[0] != '"' || bs[len(bs)-1] != '"' {
+		return errors.New("Invalid input for Address JSON serialization data")
+	}
+	bs = bs[1 : len(bs)-1]
+	tmpAddr, err := NewAddressFromHex(string(bs))
+	if err != nil {
+		return err
+	}
+	*addr = *tmpAddr
+	return nil
+}
+
 // Addr transforms a hex string into address, panic if the string is not a valid address
 func Addr(s string) *Address {
 	addr, err := NewAddressFromHex(s)

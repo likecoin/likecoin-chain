@@ -1,7 +1,11 @@
 package types
 
+import "encoding/json"
+
 // Identifier is either a LikeChain ID or an Ethereum address
 type Identifier interface {
+	json.Marshaler
+	json.Unmarshaler
 	Equals(iden Identifier) bool
 	Bytes() []byte
 	String() string

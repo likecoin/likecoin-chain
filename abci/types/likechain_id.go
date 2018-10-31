@@ -58,6 +58,25 @@ func (id *LikeChainID) String() string {
 	return base64.StdEncoding.EncodeToString(id[:])
 }
 
+// MarshalJSON implements json.Marshaler
+func (id *LikeChainID) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + id.String() + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler
+func (id *LikeChainID) UnmarshalJSON(bs []byte) error {
+	if len(bs) < 2 || bs[0] != '"' || bs[len(bs)-1] != '"' {
+		return errors.New("Invalid input for LikeChainID JSON serialization data")
+	}
+	bs = bs[1 : len(bs)-1]
+	tmpID, err := NewLikeChainIDFromString(string(bs))
+	if err != nil {
+		return err
+	}
+	*id = *tmpID
+	return nil
+}
+
 // ID is the shortcut of types.NewLikeChainID
 func ID(bs []byte) *LikeChainID {
 	return NewLikeChainID(bs)

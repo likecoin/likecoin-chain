@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"math/big"
 	"testing"
 
@@ -109,14 +110,43 @@ func TestLikeChainID(t *testing.T) {
 			})
 		})
 		Convey("Given a valid LikeChainID", func() {
-			id := IDStr("AAAAAAAAAAAAAAAAAAAAAAAAAAA=")
+			id := IDStr("MzMzMzMzMzMzMzMzMzMzMzMzMzM=")
 			Convey("It should have correct DB key", func() {
 				dbKey := id.DBKey("prefix", "suffix")
-				expectedKey := []byte(nil)
-				expectedKey = append(expectedKey, []byte("prefix:id:_")...)
-				expectedKey = append(expectedKey, id[:]...)
-				expectedKey = append(expectedKey, []byte("_suffix")...)
+				expectedKey := []byte("prefix:id:_\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33_suffix")
 				So(dbKey, ShouldResemble, expectedKey)
+			})
+		})
+		Convey("For JSON marshaling and unmarshaling", func() {
+			Convey("Given a valid LikeChainID", func() {
+				id := IDStr("MzMzMzMzMzMzMzMzMzMzMzMzMzM=")
+				Convey("It should be marshaled to JSON correctly", func() {
+					bs, err := json.Marshal(&id)
+					So(err, ShouldBeNil)
+					So(bs, ShouldResemble, []byte(`"MzMzMzMzMzMzMzMzMzMzMzMzMzM="`))
+					Convey("JSON unmarshaling should recover the same LikeChainID", func() {
+						recoveredID := LikeChainID{}
+						err = json.Unmarshal(bs, &recoveredID)
+						So(err, ShouldBeNil)
+						So(&recoveredID, ShouldResemble, id)
+					})
+				})
+			})
+			Convey("Given a valid string with invalid LikeChainID", func() {
+				s := `"MzMzMzMzMzMzMzMzMzMzMzMzMzM"`
+				Convey("JSON unmarshaling should return error", func() {
+					recoveredID := LikeChainID{}
+					err := json.Unmarshal([]byte(s), &recoveredID)
+					So(err, ShouldNotBeNil)
+				})
+			})
+			Convey("Given a non string", func() {
+				s := `333333333333333333333333333`
+				Convey("JSON unmarshaling should return error", func() {
+					recoveredID := LikeChainID{}
+					err := json.Unmarshal([]byte(s), &recoveredID)
+					So(err, ShouldNotBeNil)
+				})
 			})
 		})
 	})
@@ -233,14 +263,54 @@ func TestAddress(t *testing.T) {
 			})
 		})
 		Convey("Given a valid Address", func() {
-			addr := Addr("0x0000000000000000000000000000000000000000")
+			addr := Addr("0x3333333333333333333333333333333333333333")
 			Convey("It should have correct DB key", func() {
 				dbKey := addr.DBKey("prefix", "suffix")
-				expectedKey := []byte(nil)
-				expectedKey = append(expectedKey, []byte("prefix:addr:_")...)
-				expectedKey = append(expectedKey, addr[:]...)
-				expectedKey = append(expectedKey, []byte("_suffix")...)
+				expectedKey := []byte("prefix:addr:_\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33_suffix")
 				So(dbKey, ShouldResemble, expectedKey)
+			})
+			Convey("It should be marshaled to JSON correctly", func() {
+				bs, err := json.Marshal(&addr)
+				So(err, ShouldBeNil)
+				So(bs, ShouldResemble, []byte(`"0x3333333333333333333333333333333333333333"`))
+				Convey("JSON unmarshaling should recover the same Address", func() {
+					recoveredAddr := Address{}
+					err = json.Unmarshal(bs, &recoveredAddr)
+					So(err, ShouldBeNil)
+					So(&recoveredAddr, ShouldResemble, addr)
+				})
+			})
+		})
+		Convey("For JSON marshaling and unmarshaling", func() {
+			Convey("Given a valid Address", func() {
+				addr := Addr("0x3333333333333333333333333333333333333333")
+				Convey("It should be marshaled to JSON correctly", func() {
+					bs, err := json.Marshal(&addr)
+					So(err, ShouldBeNil)
+					So(bs, ShouldResemble, []byte(`"0x3333333333333333333333333333333333333333"`))
+					Convey("JSON unmarshaling should recover the same Address", func() {
+						recoveredAddr := Address{}
+						err = json.Unmarshal(bs, &recoveredAddr)
+						So(err, ShouldBeNil)
+						So(&recoveredAddr, ShouldResemble, addr)
+					})
+				})
+			})
+			Convey("Given a valid string with invalid address", func() {
+				s := `"0x333333333333333333333333333333333333333g"`
+				Convey("JSON unmarshaling should return error", func() {
+					recoveredAddr := Address{}
+					err := json.Unmarshal([]byte(s), &recoveredAddr)
+					So(err, ShouldNotBeNil)
+				})
+			})
+			Convey("Given a non string", func() {
+				s := `3333333333333333333333333333333333333333`
+				Convey("JSON unmarshaling should return error", func() {
+					recoveredAddr := Address{}
+					err := json.Unmarshal([]byte(s), &recoveredAddr)
+					So(err, ShouldNotBeNil)
+				})
 			})
 		})
 	})
@@ -356,6 +426,40 @@ func TestBigInt(t *testing.T) {
 			Convey("NewBigIntFromString should fail", func() {
 				_, ok := NewBigIntFromString(s)
 				So(ok, ShouldBeFalse)
+			})
+		})
+		Convey("For JSON marshaling and unmarshaling", func() {
+			Convey("Given a BigInt", func() {
+				n, _ := NewBigIntFromString("999999999999999999999999999999999999999999999999999999999999")
+				Convey("It should be marshaled to JSON correctly", func() {
+					bs, err := json.Marshal(&n)
+					So(err, ShouldBeNil)
+					So(bs, ShouldResemble, []byte(`"999999999999999999999999999999999999999999999999999999999999"`))
+					Convey("JSON unmarshaling should recover the same BigInt", func() {
+						recoveredN := BigInt{}
+						err = json.Unmarshal(bs, &recoveredN)
+						So(err, ShouldBeNil)
+						So(recoveredN, ShouldResemble, n)
+					})
+				})
+			})
+			Convey("Given a valid string of numbers without quotation", func() {
+				s := `333333333333333333333333333333333333333`
+				Convey("JSON unmarshaling should succeed", func() {
+					n := BigInt{}
+					err := json.Unmarshal([]byte(s), &n)
+					So(err, ShouldBeNil)
+					v, _ := new(big.Int).SetString("333333333333333333333333333333333333333", 10)
+					So(n, ShouldResemble, BigInt{v})
+				})
+			})
+			Convey("Given an invalid string of number", func() {
+				s := `"333333333333333333333333333333333333333x"`
+				Convey("JSON unmarshaling should return error", func() {
+					n := BigInt{}
+					err := json.Unmarshal([]byte(s), &n)
+					So(err, ShouldNotBeNil)
+				})
 			})
 		})
 	})
