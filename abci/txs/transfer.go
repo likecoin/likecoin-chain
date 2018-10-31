@@ -150,7 +150,7 @@ func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []b
 	return response.Success
 }
 
-// TransferTx returns raw bytes of a TransferTransaction
+// TransferTx returns a TransferTransaction
 func TransferTx(from types.Identifier, outputs []TransferOutput, fee types.BigInt, nonce uint64, sigHex string) *TransferTransaction {
 	sig := &TransferJSONSignature{
 		JSONSignature: Sig(sigHex),

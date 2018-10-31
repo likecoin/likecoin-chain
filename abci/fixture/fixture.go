@@ -45,6 +45,6 @@ var Carol = user(
 
 // Mallory is a malicious participant, private key: 4EDA7E263968014D527BA7EE639A9056CF509173C26D2B15F4720A0A2C02993F
 var Mallory = user(
-	"Y2Fyb2xfX19fX19fX19fX19fX18=",
+	"bWFsbG9yeV9fX19fX19fX19fX18=",
 	"0x65f86d54c5e768efe89dd5d07143fd783a3303df",
 )

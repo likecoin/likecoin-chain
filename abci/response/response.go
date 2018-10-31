@@ -92,6 +92,8 @@ var Success = R{
 	Status: txstatus.TxStatusSuccess,
 }
 
+// Transactions
+
 var RegisterInvalidFormat = R{
 	Code:   10000,
 	Info:   "Invalid RegisterTransaction format",
@@ -116,9 +118,45 @@ var DepositInvalidFormat = R{
 	Status: txstatus.TxStatusFail,
 }
 
+var DepositInvalidSignature = R{
+	Code:   11010,
+	Info:   "Invalid DepositTransaction signature",
+	Status: txstatus.TxStatusFail,
+}
+
 var DepositDuplicated = R{
 	Code:   11020,
 	Info:   "Duplicated DepositTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositSenderNotRegistered = R{
+	Code:   11030,
+	Info:   "Sender of DepositTransaction not register",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositInvalidNonce = R{
+	Code:   11040,
+	Info:   "Invalid DepositTransaction nonce",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositNotApprover = R{
+	Code:   11050,
+	Info:   "User is not a DepositApprover",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositDoubleApproval = R{
+	Code:   11060,
+	Info:   "User already approved another DepositTransaction for the same block numner",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositAlreadyExecuted = R{
+	Code:   11070,
+	Info:   "The deposit proposal has already executed for the given block number",
 	Status: txstatus.TxStatusFail,
 }
 
@@ -159,7 +197,7 @@ var TransferInvalidReceiver = R{
 }
 
 var TransferInvalidNonce = R{
-	Code:   12600,
+	Code:   12060,
 	Info:   "Invalid TransferTransaction nonce",
 	Status: txstatus.TxStatusFail,
 }
@@ -195,10 +233,66 @@ var WithdrawNotEnoughBalance = R{
 }
 
 var WithdrawInvalidNonce = R{
-	Code:   13600,
+	Code:   13050,
 	Info:   "Invalid WithdrawTransaction nonce",
 	Status: txstatus.TxStatusFail,
 }
+
+var DepositApprovalInvalidFormat = R{
+	Code:   14000,
+	Info:   "Invalid DepositApprovalTransaction format",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalInvalidSignature = R{
+	Code:   14010,
+	Info:   "Invalid DepositApprovalTransaction signature",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalDuplicated = R{
+	Code:   14020,
+	Info:   "Duplicated DepositApprovalTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalSenderNotRegistered = R{
+	Code:   14030,
+	Info:   "Sender of DepositApprovalTransaction not register",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalInvalidNonce = R{
+	Code:   14040,
+	Info:   "Invalid DepositApprovalTransaction nonce",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalNotApprover = R{
+	Code:   14050,
+	Info:   "User is not a DepositApprovalApprover",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalDoubleApproval = R{
+	Code:   14060,
+	Info:   "User already approved another DepositApprovalTransaction for the same block numner",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalAlreadyExecuted = R{
+	Code:   14070,
+	Info:   "The deposit proposal has already executed for the given block number",
+	Status: txstatus.TxStatusFail,
+}
+
+var DepositApprovalProposalNotExist = R{
+	Code:   14080,
+	Info:   "The deposit proposal does not exist",
+	Status: txstatus.TxStatusFail,
+}
+
+// Queries
 
 var QueryPathNotExist = R{
 	Code: 60010,

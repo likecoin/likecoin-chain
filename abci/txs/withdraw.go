@@ -159,7 +159,7 @@ func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []b
 	})
 }
 
-// WithdrawTx returns raw bytes of a WithdrawTransaction
+// WithdrawTx returns a WithdrawTransaction
 func WithdrawTx(from types.Identifier, toAddrHex string, value, fee types.BigInt, nonce uint64, sigHex string) *WithdrawTransaction {
 	toAddr := *types.Addr(toAddrHex)
 	sig := &WithdrawJSONSignature{

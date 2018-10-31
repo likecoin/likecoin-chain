@@ -11,6 +11,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 
@@ -92,13 +93,14 @@ func TestInitChain(t *testing.T) {
 						{
 							"id": "ERERERERERERERERERERERERERE=",
 							"addr": "0x1111111111111111111111111111111111111111",
-							"balance":100
+							"balance":100,
+							"depositApproverWeight": 10
 						},
 						{
 							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
 							"addr": "0x2222222222222222222222222222222222222222",
 							"balance":"20000000000000000000000000000000000000000",
-							"isDepositApprover": true
+							"depositApproverWeight": 0
 						}
 					]
 				}`
@@ -113,6 +115,13 @@ func TestInitChain(t *testing.T) {
 				So(account.IsLikeChainIDHasAddress(state, id2, addr2), ShouldBeTrue)
 				v, _ := new(big.Int).SetString("20000000000000000000000000000000000000000", 10)
 				So(account.FetchBalance(state, id2).Cmp(v), ShouldBeZeroValue)
+				Convey("Deposit approvers should be set correctly", func() {
+					approvers := deposit.GetDepositApprovers(state)
+					expectedApprovers := []deposit.Approver{
+						{ID: id1, Weight: 10},
+					}
+					So(approvers, ShouldResemble, expectedApprovers)
+				})
 			})
 		})
 		Convey("For AppStateBytes with invalid account IDs in InitChainRequest", func() {
@@ -128,6 +137,29 @@ func TestInitChain(t *testing.T) {
 							"addr": "0x2222222222222222222222222222222222222222",
 							"balance":"20000000000000000000000000000000000000000",
 							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with invalid address in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":0
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x222222222222222222222222222222222222222g",
+							"balance":"20000000000000000000000000000000000000000"
 						}
 					]
 				}`
@@ -175,6 +207,24 @@ func TestInitChain(t *testing.T) {
 				}, ShouldPanic)
 			})
 		})
+		Convey("For AppStateBytes with invalid deposit approver weight InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"depositApproverWeight": -1
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
 		Convey("For AppStateBytes with duplicated LikeChain ID in accounts array in InitChainRequest", func() {
 			s := `{
 					"accounts": [
@@ -208,10 +258,9 @@ func TestInitChain(t *testing.T) {
 							"balance":100
 						},
 						{
-							"id": "ERERERERERERERERERERERERERE=",
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
 							"addr": "0x1111111111111111111111111111111111111111",
-							"balance":"20000000000000000000000000000000000000000",
-							"isDepositApprover": true
+							"balance":"20000000000000000000000000000000000000000"
 						}
 					]
 				}`

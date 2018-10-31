@@ -15,18 +15,20 @@ import (
 var log = logger.L
 
 func getIDAddrPairPrefixKey(id *types.LikeChainID) []byte {
-	var buf bytes.Buffer
-	buf.WriteString("acc_")
-	buf.Write(id.Bytes())
-	buf.WriteString("_addr_")
-	return buf.Bytes()
+	return utils.PrefixKey([][]byte{
+		[]byte("acc"),
+		id.Bytes(),
+		[]byte("addr"),
+	})
 }
 
 func getIDAddrPairKey(id *types.LikeChainID, addr *types.Address) []byte {
-	var buf bytes.Buffer
-	buf.Write(getIDAddrPairPrefixKey(id))
-	buf.Write(addr.Bytes())
-	return buf.Bytes()
+	return utils.JoinKeys([][]byte{
+		[]byte("acc"),
+		id.Bytes(),
+		[]byte("addr"),
+		addr.Bytes(),
+	})
 }
 
 func getAddrIDPairKey(addr *types.Address) []byte {

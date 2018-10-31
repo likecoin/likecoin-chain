@@ -8,6 +8,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
+	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
@@ -125,6 +126,7 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 				Panic("Cannot load app initial state")
 		}
 		state := app.ctx.GetMutableState()
+		depositApprovers := make([]deposit.Approver, 0, len(appInitState.Accounts))
 		usedIDs := make(map[types.LikeChainID]bool)
 		usedAddrs := make(map[types.Address]bool)
 		for i, accInfo := range appInitState.Accounts {
@@ -153,7 +155,14 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 			}
 			account.NewAccountFromID(state, &id, &accInfo.Addr)
 			account.SaveBalance(state, &id, balance.Int)
+			if accInfo.DepositApproverWeight > 0 {
+				depositApprovers = append(depositApprovers, deposit.Approver{
+					ID:     &id,
+					Weight: accInfo.DepositApproverWeight,
+				})
+			}
 		}
+		deposit.SetDepositApprovers(state, depositApprovers)
 	}
 	return abci.ResponseInitChain{
 		ConsensusParams: params.ConsensusParams,

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/hex"
 	"math/big"
 
@@ -53,4 +54,37 @@ func Hex2Bytes(s string) ([]byte, error) {
 		s = s[2:]
 	}
 	return hex.DecodeString(s)
+}
+
+// EncodeUint64 encodes uint64 into big-endian 8 bytes array
+func EncodeUint64(n uint64) []byte {
+	bs := make([]byte, 8)
+	binary.BigEndian.PutUint64(bs, n)
+	return bs
+}
+
+// DecodeUint64 decodes uint64 from big-endian 8 bytes array
+func DecodeUint64(bs []byte) uint64 {
+	return binary.BigEndian.Uint64(bs)
+}
+
+// JoinKeys joins the keys and returns a new key, usually used for tree keys with multiple components
+func JoinKeys(keys [][]byte) []byte {
+	buf := new(bytes.Buffer)
+	for i := 0; i < len(keys)-1; i++ {
+		buf.Write(keys[i])
+		buf.WriteByte('_')
+	}
+	buf.Write(keys[len(keys)-1])
+	return buf.Bytes()
+}
+
+// PrefixKey returns the prefix of a JoinKeys result, logically equivalent to JoinKeys(...) + "_"
+func PrefixKey(keys [][]byte) []byte {
+	buf := new(bytes.Buffer)
+	for i := 0; i < len(keys); i++ {
+		buf.Write(keys[i])
+		buf.WriteByte('_')
+	}
+	return buf.Bytes()
 }
