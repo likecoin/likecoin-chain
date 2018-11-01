@@ -7,6 +7,7 @@ import (
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 
@@ -144,12 +145,17 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
+					So(account.FetchBalance(state, id1).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, id2).Cmp(big.NewInt(200)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade")).Cmp(big.NewInt(250)), ShouldBeZeroValue)
 					Convey("CheckTx again should return Duplicated", func() {
 						r := transferTx.CheckTx(state)
 						So(r.Code, ShouldEqual, response.TransferDuplicated.Code)
 						Convey("DeliverTx should return Duplicated", func() {
 							r := transferTx.DeliverTx(state, txHash)
 							So(r.Code, ShouldEqual, response.TransferDuplicated.Code)
+							So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 						})
 					})
 				})
@@ -175,6 +181,10 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
+					So(account.FetchBalance(state, id1).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, id2).Cmp(big.NewInt(200)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade")).Cmp(big.NewInt(250)), ShouldBeZeroValue)
 				})
 			})
 		})
@@ -187,6 +197,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferInvalidFormat.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -199,6 +210,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferSenderNotRegistered.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -211,6 +223,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -223,6 +236,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -236,6 +250,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferInvalidNonce.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -249,6 +264,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferInvalidReceiver.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -262,6 +278,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferNotEnoughBalance.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -275,6 +292,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(transferTx))
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.TransferNotEnoughBalance.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})

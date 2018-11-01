@@ -71,7 +71,7 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 	state := app.ctx.GetMutableState()
 	r := tx.DeliverTx(state, txHash)
 	oldStatus := txstatus.GetStatus(state, txHash)
-	if oldStatus != txstatus.TxStatusSuccess {
+	if oldStatus == txstatus.TxStatusFail || oldStatus == txstatus.TxStatusNotSet {
 		txstatus.SetStatus(app.ctx.GetMutableState(), txHash, r.Status)
 	}
 	return r.ToResponseDeliverTx()

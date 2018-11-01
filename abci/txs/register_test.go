@@ -5,6 +5,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 
@@ -59,12 +60,14 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(regTx))
 					r := regTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					Convey("CheckTx again should return Duplicated", func() {
 						r := regTx.CheckTx(state)
 						So(r.Code, ShouldEqual, response.RegisterDuplicated.Code)
 						Convey("DeliverTx should return Duplicated", func() {
 							r := regTx.DeliverTx(state, txHash)
 							So(r.Code, ShouldEqual, response.RegisterDuplicated.Code)
+							So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 						})
 					})
 				})
@@ -92,6 +95,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(regTx))
 					r := regTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.RegisterInvalidFormat.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -104,6 +108,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(regTx))
 					r := regTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.RegisterInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -116,6 +121,7 @@ func TestCheckAndDeliverRegister(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(regTx))
 					r := regTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.RegisterInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
