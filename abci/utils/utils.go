@@ -70,6 +70,9 @@ func DecodeUint64(bs []byte) uint64 {
 
 // JoinKeys joins the keys and returns a new key, usually used for tree keys with multiple components
 func JoinKeys(keys [][]byte) []byte {
+	if len(keys) == 0 {
+		return nil
+	}
 	buf := new(bytes.Buffer)
 	for i := 0; i < len(keys)-1; i++ {
 		buf.Write(keys[i])
