@@ -4,18 +4,22 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 )
 
-type depositEventJSON struct {
-	From  string `json:"from" binding:"required,eth_addr"`
-	Value string `json:"value" binding:"required,biginteger"`
+type depositInputJSON struct {
+	FromAddr string `json:"from_addr" binding:"required,eth_addr"`
+	Value    string `json:"value" binding:"required,biginteger"`
 }
 
 type depositJSON struct {
-	BlockNumber uint64              `json:"block" binding:"required"`
-	Inputs      []*depositEventJSON `json:"inputs" binding:"required"`
+	Identity    string             `json:"identity" binding:"required,identity"`
+	BlockNumber uint64             `json:"block_number" binding:"required"`
+	Inputs      []depositInputJSON `json:"inputs" binding:"required"`
+	Nonce       int64              `json:"nonce" binding:"required,min=1"`
+	Sig         string             `json:"sig" binding:"required,eth_sig"`
 }
 
 func postDeposit(c *gin.Context) {
@@ -26,19 +30,24 @@ func postDeposit(c *gin.Context) {
 	}
 
 	tx := txs.DepositTransaction{
-		BlockNumber: json.BlockNumber,
-		Inputs:      make([]txs.DepositInput, len(json.Inputs)),
+		Proposer: types.NewIdentifier(json.Identity),
+		Proposal: deposit.Proposal{
+			BlockNumber: json.BlockNumber,
+			Inputs:      make([]deposit.Input, 0, len(json.Inputs)),
+		},
+		Nonce: uint64(json.Nonce),
+		Sig:   &txs.DepositJSONSignature{JSONSignature: txs.Sig(json.Sig)},
 	}
-	for i, e := range json.Inputs {
-		value, ok := types.NewBigIntFromString(e.Value)
+	for _, input := range json.Inputs {
+		value, ok := types.NewBigIntFromString(input.Value)
 		if !ok {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input value"})
 			return
 		}
-		tx.Inputs[i] = txs.DepositInput{
-			FromAddr: *types.Addr(e.From),
+		tx.Proposal.Inputs = append(tx.Proposal.Inputs, deposit.Input{
+			FromAddr: *types.Addr(input.FromAddr),
 			Value:    value,
-		}
+		})
 	}
 
 	data := txs.EncodeTx(&tx)
