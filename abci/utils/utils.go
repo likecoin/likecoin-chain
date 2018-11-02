@@ -50,7 +50,7 @@ func IsValidBigIntegerString(s string) bool {
 
 // Hex2Bytes strips the prefix "0x" (if any), then decode the hex string into bytes
 func Hex2Bytes(s string) ([]byte, error) {
-	if s[0:2] == "0x" {
+	if len(s) >= 2 && s[0:2] == "0x" {
 		s = s[2:]
 	}
 	return hex.DecodeString(s)
