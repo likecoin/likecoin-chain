@@ -36,7 +36,7 @@ func (n *BigInt) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler
 func (n *BigInt) UnmarshalJSON(bs []byte) error {
-	if len(bs) > 2 && bs[0] == '"' || bs[len(bs)-1] == '"' {
+	if len(bs) > 2 && bs[0] == '"' && bs[len(bs)-1] == '"' {
 		bs = bs[1 : len(bs)-1]
 	}
 	v, ok := new(big.Int).SetString(string(bs), 10)

@@ -147,7 +147,9 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 			}
 			usedAddrs[addr] = true
 			balance := accInfo.Balance
-			if !balance.IsWithinRange() {
+			if balance.Int == nil {
+				balance = types.NewBigInt(0)
+			} else if !balance.IsWithinRange() {
 				log.
 					WithField("entry_number", i).
 					WithField("balance", balance).
