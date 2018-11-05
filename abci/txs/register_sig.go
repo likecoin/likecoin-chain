@@ -12,9 +12,14 @@ type RegisterJSONSignature struct {
 	JSONSignature
 }
 
+// GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
+func (tx *RegisterTransaction) GenerateJSONMap() map[string]interface{} {
+	return map[string]interface{}{
+		"addr": tx.Addr.String(),
+	}
+}
+
 // RecoverAddress recovers the signing address
 func (sig *RegisterJSONSignature) RecoverAddress(tx *RegisterTransaction) (*types.Address, error) {
-	return sig.JSONSignature.RecoverAddress(map[string]interface{}{
-		"addr": tx.Addr.String(),
-	})
+	return sig.JSONSignature.RecoverAddress(tx.GenerateJSONMap())
 }

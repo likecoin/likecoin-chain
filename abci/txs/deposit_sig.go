@@ -12,8 +12,8 @@ type DepositJSONSignature struct {
 	JSONSignature
 }
 
-// RecoverAddress recovers the signing address
-func (sig *DepositJSONSignature) RecoverAddress(tx *DepositTransaction) (*types.Address, error) {
+// GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
+func (tx *DepositTransaction) GenerateJSONMap() map[string]interface{} {
 	inputs := make([]map[string]interface{}, len(tx.Proposal.Inputs))
 	for i, input := range tx.Proposal.Inputs {
 		inputs[i] = map[string]interface{}{
@@ -21,10 +21,15 @@ func (sig *DepositJSONSignature) RecoverAddress(tx *DepositTransaction) (*types.
 			"from_addr": input.FromAddr.String(),
 		}
 	}
-	return sig.JSONSignature.RecoverAddress(map[string]interface{}{
+	return map[string]interface{}{
 		"block_number": tx.Proposal.BlockNumber,
 		"identity":     tx.Proposer.String(),
 		"nonce":        tx.Nonce,
 		"inputs":       inputs,
-	})
+	}
+}
+
+// RecoverAddress recovers the signing address
+func (sig *DepositJSONSignature) RecoverAddress(tx *DepositTransaction) (*types.Address, error) {
+	return sig.JSONSignature.RecoverAddress(tx.GenerateJSONMap())
 }
