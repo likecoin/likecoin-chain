@@ -26,15 +26,7 @@ func (tx *DepositTransaction) ValidateFormat() bool {
 	if tx.Proposer == nil || tx.Sig == nil {
 		return false
 	}
-	if len(tx.Proposal.Inputs) == 0 {
-		return false
-	}
-	for _, input := range tx.Proposal.Inputs {
-		if input.Value.Int == nil || !input.Value.IsWithinRange() {
-			return false
-		}
-	}
-	return true
+	return tx.Proposal.Validate()
 }
 
 func (tx *DepositTransaction) checkTx(state context.IImmutableState) (

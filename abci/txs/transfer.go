@@ -17,6 +17,11 @@ type TransferOutput struct {
 	Remark TransferRemark
 }
 
+// Validate checks if a transfer output is valid
+func (output TransferOutput) Validate() bool {
+	return output.To != nil && output.Value.Int != nil && output.Value.IsWithinRange() && output.Remark.Validate()
+}
+
 // TransferRemark is the remark of a transfer output
 type TransferRemark []byte
 
@@ -50,13 +55,7 @@ func (tx *TransferTransaction) ValidateFormat() bool {
 		return false
 	}
 	for _, output := range tx.Outputs {
-		if output.To == nil || output.Value.Int == nil {
-			return false
-		}
-		if !output.Value.IsWithinRange() {
-			return false
-		}
-		if !output.Remark.Validate() {
+		if !output.Validate() {
 			return false
 		}
 	}
