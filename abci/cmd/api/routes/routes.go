@@ -18,6 +18,8 @@ func Initialize(router *gin.Engine, client rpcclient.Client) {
 	v1.POST("/deposit_approval", postDepositApproval)
 	v1.POST("/transfer", postTransfer)
 	v1.POST("/withdraw", postWithdraw)
+	v1.POST("/hashed_transfer", postHashedTransfer)
+	v1.POST("/claim_hashed_transfer", postClaimHashedTransfer)
 
 	v1.GET("/account_info", getAccountInfo)
 	v1.GET("/address_info", getAddressInfo)

@@ -292,6 +292,114 @@ var DepositApprovalProposalNotExist = R{
 	Status: txstatus.TxStatusFail,
 }
 
+var HashedTransferInvalidFormat = R{
+	Code:   15000,
+	Info:   "Invalid HashedTransferTransaction format",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferInvalidSignature = R{
+	Code:   15010,
+	Info:   "Invalid HashedTransferTransaction signature",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferDuplicated = R{
+	Code:   15020,
+	Info:   "Duplicated HashedTransferTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferSenderNotRegistered = R{
+	Code:   15030,
+	Info:   "Sender of HashedTransferTransaction not register",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferNotEnoughBalance = R{
+	Code:   15040,
+	Info:   "Sender's balance of HashedTransferTransaction not enough",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferInvalidReceiver = R{
+	Code:   15050,
+	Info:   "The receiver in HashedTransferTransaction is invalid",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferInvalidNonce = R{
+	Code:   15060,
+	Info:   "Invalid HashedTransferTransaction nonce",
+	Status: txstatus.TxStatusFail,
+}
+
+var HashedTransferInvalidExpiry = R{
+	Code:   15070,
+	Info:   "Invalid HashedTransferTransaction expiry time",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferInvalidFormat = R{
+	Code:   16000,
+	Info:   "Invalid ClaimHashedTransferTransaction format",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferInvalidSignature = R{
+	Code:   16010,
+	Info:   "Invalid ClaimHashedTransferTransaction signature",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferDuplicated = R{
+	Code:   16020,
+	Info:   "Duplicated ClaimHashedTransferTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferSenderNotRegistered = R{
+	Code:   16030,
+	Info:   "Sender of ClaimHashedTransferTransaction not register",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferTxNotExist = R{
+	Code:   16040,
+	Info:   "The HashedTransferTransaction does not exist",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferExpired = R{
+	Code:   16050,
+	Info:   "The HashedTransferTransaction has already expired",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferInvalidNonce = R{
+	Code:   16060,
+	Info:   "Invalid ClaimHashedTransferTransaction nonce",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferInvalidSecret = R{
+	Code:   16070,
+	Info:   "The secret does not match the committed hash of the HashedTransferTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferNotYetExpired = R{
+	Code:   16080,
+	Info:   "The HashedTransferTransaction is not yet expired",
+	Status: txstatus.TxStatusFail,
+}
+
+var ClaimHashedTransferInvalidSender = R{
+	Code:   16090,
+	Info:   "The sender is neither the sender or receiver of the HashedTransferTransaction",
+	Status: txstatus.TxStatusFail,
+}
+
 // Queries
 
 var QueryPathNotExist = R{

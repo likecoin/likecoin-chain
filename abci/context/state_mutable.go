@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"math/big"
 
+	"github.com/likecoin/likechain/abci/utils"
+
 	"github.com/tendermint/iavl"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/db"
@@ -58,9 +60,24 @@ func (state *MutableState) GetBlockHash() []byte {
 	return value
 }
 
+// GetBlockTime returns the block time of the executing block
+func (state *MutableState) GetBlockTime() int64 {
+	bs := state.appDb.Get(appBlockTimeKey)
+	if len(bs) == 0 {
+		return 0
+	}
+	return int64(utils.DecodeUint64(bs))
+}
+
 // SetBlockHash saves the block hash to the current state
 func (state *MutableState) SetBlockHash(blockHash []byte) {
 	state.appDb.Set(appBlockHashKey, blockHash)
+}
+
+// SetBlockTime sets the block time for GetBlockTime
+func (state *MutableState) SetBlockTime(t int64) {
+	bs := utils.EncodeUint64(uint64(t))
+	state.appDb.Set(appBlockTimeKey, bs)
 }
 
 // GetHeight returns the block height of the current state

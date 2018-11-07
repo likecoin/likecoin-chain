@@ -14,12 +14,14 @@ const (
 	ethAddressRegexString   = `^0x[0-9a-fA-F]{40}$`
 	ethSignatureRegexString = `^0x[0-9a-f]{130}$`
 	txHashRegexString       = `^(0x)?[0-9a-fA-F]{40}$`
+	bytes32RegexString      = `^(0x)?[0-9a-fA-F]{64}$`
 )
 
 var (
 	ethAddressRegex   = regexp.MustCompile(ethAddressRegexString)
 	ethSignatureRegex = regexp.MustCompile(ethSignatureRegexString)
 	txHashRegex       = regexp.MustCompile(txHashRegexString)
+	bytes32Regex      = regexp.MustCompile(bytes32RegexString)
 )
 
 // ValidateBigInteger validates big integer
@@ -110,6 +112,23 @@ func IsTxHash(
 	return false
 }
 
+// IsBytes32 validates bytes32 hash string
+func IsBytes32(
+	v *validator.Validate,
+	topStruct reflect.Value,
+	currentStructOrField reflect.Value,
+	field reflect.Value,
+	fieldType reflect.Type,
+	fieldKind reflect.Kind,
+	param string,
+) bool {
+	if hex, ok := field.Interface().(string); ok {
+		return bytes32Regex.MatchString(hex)
+	}
+
+	return false
+}
+
 // Bind binds all custom validators
 func Bind() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -118,5 +137,6 @@ func Bind() {
 		v.RegisterValidation("eth_sig", IsEthereumSignature)
 		v.RegisterValidation("identity", IsIdentity)
 		v.RegisterValidation("txHash", IsTxHash)
+		v.RegisterValidation("bytes32", IsTxHash)
 	}
 }

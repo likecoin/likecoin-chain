@@ -4,6 +4,8 @@ import (
 	"encoding/binary"
 	"encoding/json"
 
+	"github.com/likecoin/likechain/abci/utils"
+
 	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/libs/db"
 )
@@ -13,6 +15,7 @@ type IImmutableState interface {
 	ImmutableStateTree() *iavl.ImmutableTree
 	ImmutableWithdrawTree() *iavl.ImmutableTree
 	GetBlockHash() []byte
+	GetBlockTime() int64
 	GetHeight() int64
 	GetMetadataAtHeight(height int64) *TreeMetadata
 }
@@ -38,6 +41,15 @@ func (state *ImmutableState) ImmutableWithdrawTree() *iavl.ImmutableTree {
 func (state *ImmutableState) GetBlockHash() []byte {
 	value := state.appDb.Get(appBlockHashKey)
 	return value
+}
+
+// GetBlockTime returns the block time of the executing block
+func (state *ImmutableState) GetBlockTime() int64 {
+	bs := state.appDb.Get(appBlockTimeKey)
+	if len(bs) == 0 {
+		return 0
+	}
+	return int64(utils.DecodeUint64(bs))
 }
 
 // GetHeight returns the most recently block height
