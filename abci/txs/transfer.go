@@ -128,10 +128,7 @@ func (tx *TransferTransaction) CheckTx(state context.IImmutableState) response.R
 func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID, toIdens := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		switch checkTxRes.Code {
-		case response.TransferInvalidReceiver.Code:
-			fallthrough
-		case response.TransferNotEnoughBalance.Code:
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes

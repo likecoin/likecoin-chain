@@ -88,12 +88,7 @@ func (tx *HashedTransferTransaction) CheckTx(state context.IImmutableState) resp
 func (tx *HashedTransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		switch checkTxRes.Code {
-		case response.HashedTransferInvalidReceiver.Code:
-			fallthrough
-		case response.HashedTransferNotEnoughBalance.Code:
-			fallthrough
-		case response.HashedTransferInvalidExpiry.Code:
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes

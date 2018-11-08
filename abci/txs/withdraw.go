@@ -126,7 +126,7 @@ func (tx *WithdrawTransaction) CheckTx(state context.IImmutableState) response.R
 func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		if checkTxRes.Code == response.WithdrawNotEnoughBalance.Code {
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes

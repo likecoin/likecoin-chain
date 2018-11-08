@@ -74,12 +74,7 @@ func (tx *DepositTransaction) CheckTx(state context.IImmutableState) response.R 
 func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		switch checkTxRes.Code {
-		case response.DepositAlreadyExecuted.Code:
-			fallthrough
-		case response.DepositDoubleApproval.Code:
-			fallthrough
-		case response.DepositNotApprover.Code:
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes

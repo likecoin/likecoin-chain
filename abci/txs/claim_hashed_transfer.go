@@ -90,16 +90,7 @@ func (tx *ClaimHashedTransferTransaction) CheckTx(state context.IImmutableState)
 func (tx *ClaimHashedTransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID, ht := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		switch checkTxRes.Code {
-		case response.ClaimHashedTransferTxNotExist.Code:
-			fallthrough
-		case response.ClaimHashedTransferExpired.Code:
-			fallthrough
-		case response.ClaimHashedTransferInvalidSecret.Code:
-			fallthrough
-		case response.ClaimHashedTransferNotYetExpired.Code:
-			fallthrough
-		case response.ClaimHashedTransferInvalidSender.Code:
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes
