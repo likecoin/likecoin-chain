@@ -2128,7 +2128,7 @@ func TestHashedTransferAndRevoke(t *testing.T) {
 												txStateRes := query.GetTxStateRes(queryRes.Value)
 												So(txStateRes, ShouldNotBeNil)
 												So(txStateRes.Status, ShouldEqual, "success")
-												Convey("Then query account_info for the deposit receivers should return the corresponding balance", func() {
+												Convey("Then query account_info for the sender and receiver should return the corresponding balance", func() {
 													queryRes := app.Query(abci.RequestQuery{
 														Path: "account_info",
 														Data: []byte(fixture.Alice.ID.String()),
@@ -2154,6 +2154,77 @@ func TestHashedTransferAndRevoke(t *testing.T) {
 									})
 								})
 							})
+						})
+					})
+				})
+			})
+		})
+	})
+}
+
+func TestSimpleTransfer(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		initStateJSON := fmt.Sprintf(`{
+			"accounts": [
+				{
+					"id": "%s",
+					"addr": "%s",
+					"balance": 200
+				},
+				{
+					"id": "%s",
+					"addr": "%s"
+				}
+			]
+		}`,
+			fixture.Alice.ID, fixture.Alice.Address,
+			fixture.Bob.ID, fixture.Bob.Address,
+		)
+		app.InitChain(abci.RequestInitChain{
+			AppStateBytes: []byte(initStateJSON),
+		})
+		Convey("If SimpleTransfer transaction is valid", func() {
+			rawTx := txs.RawSimpleTransferTx(fixture.Alice.Address, fixture.Bob.ID, types.NewBigInt(50), "this is spartaaaaaaaa", types.NewBigInt(1), 1, "2af037daf098a5019f28a83196e28818faa74d5ec788953f8332036688b431d720a523246dc32c40a9f0c2da882a9cc68b44d090c26477827213ded82240e0101b")
+			Convey("CheckTx should return success", func() {
+				r := app.CheckTx(rawTx)
+				So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
+				Convey("DeliverTx should return success", func() {
+					r := app.DeliverTx(rawTx)
+					So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+					Convey("Then query tx_state should return success", func() {
+						htlcTxHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: htlcTxHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						txStateRes := query.GetTxStateRes(queryRes.Value)
+						So(txStateRes, ShouldNotBeNil)
+						So(txStateRes.Status, ShouldEqual, "success")
+						Convey("Then query account_info for the sender and receiver should return the corresponding balance", func() {
+							queryRes := app.Query(abci.RequestQuery{
+								Path: "account_info",
+								Data: []byte(fixture.Alice.ID.String()),
+							})
+							So(queryRes.Code, ShouldEqual, response.Success.Code)
+							accountInfo := query.GetAccountInfoRes(queryRes.Value)
+							So(accountInfo, ShouldNotBeNil)
+							So(accountInfo.Balance.Cmp(big.NewInt(149)), ShouldBeZeroValue)
+							So(accountInfo.NextNonce, ShouldEqual, 2)
+
+							queryRes = app.Query(abci.RequestQuery{
+								Path: "account_info",
+								Data: []byte(fixture.Bob.ID.String()),
+							})
+							So(queryRes.Code, ShouldEqual, response.Success.Code)
+							accountInfo = query.GetAccountInfoRes(queryRes.Value)
+							So(accountInfo, ShouldNotBeNil)
+							So(accountInfo.Balance.Cmp(big.NewInt(50)), ShouldBeZeroValue)
+							So(accountInfo.NextNonce, ShouldEqual, 1)
 						})
 					})
 				})

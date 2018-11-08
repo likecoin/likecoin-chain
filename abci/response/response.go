@@ -453,6 +453,55 @@ var ClaimHashedTransferInvalidSender = R{
 	ShouldIncrementNonce: true,
 }
 
+var SimpleTransferInvalidFormat = R{
+	Code:                 17000,
+	Info:                 "Invalid SimpleTransferTransaction format",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var SimpleTransferInvalidSignature = R{
+	Code:                 17010,
+	Info:                 "Invalid SimpleTransferTransaction signature",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var SimpleTransferDuplicated = R{
+	Code:                 17020,
+	Info:                 "Duplicated SimpleTransferTransaction",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var SimpleTransferSenderNotRegistered = R{
+	Code:                 17030,
+	Info:                 "Sender of SimpleTransferTransaction not register",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var SimpleTransferNotEnoughBalance = R{
+	Code:                 17040,
+	Info:                 "Sender's balance of SimpleTransferTransaction not enough",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: true,
+}
+
+var SimpleTransferInvalidReceiver = R{
+	Code:                 17050,
+	Info:                 "One or more receivers in SimpleTransferTransaction are invalid",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: true,
+}
+
+var SimpleTransferInvalidNonce = R{
+	Code:                 17060,
+	Info:                 "Invalid SimpleTransferTransaction nonce",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
 // Queries
 
 var QueryPathNotExist = R{
