@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/likecoin/likechain/abci/account"
 	appConf "github.com/likecoin/likechain/abci/config"
@@ -1594,7 +1595,7 @@ func TestWithdraw(t *testing.T) {
 					err := json.Unmarshal(queryRes.Value, &proof)
 					So(err, ShouldBeNil)
 					Convey("The proof should be corresponding to the withdraw tree hash", func() {
-						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:20])
+						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:tmhash.Size])
 						So(err, ShouldBeNil)
 					})
 				})
@@ -1687,7 +1688,7 @@ func TestWithdraw(t *testing.T) {
 					err := json.Unmarshal(queryRes.Value, &proof)
 					So(err, ShouldBeNil)
 					Convey("The proof should be corresponding to the withdraw tree hash", func() {
-						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:20])
+						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:tmhash.Size])
 						So(err, ShouldBeNil)
 					})
 				})
@@ -1739,7 +1740,7 @@ func TestWithdraw(t *testing.T) {
 					err := json.Unmarshal(queryRes.Value, &proof)
 					So(err, ShouldBeNil)
 					Convey("The proof should be corresponding to the withdraw tree hash", func() {
-						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:20])
+						err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:tmhash.Size])
 						So(err, ShouldBeNil)
 					})
 				})
@@ -1869,7 +1870,7 @@ func TestDepositAndDepositApproval(t *testing.T) {
 						So(txStateRes, ShouldNotBeNil)
 						So(txStateRes.Status, ShouldEqual, "pending")
 						Convey("Then for a deposit approval transaction on this deposit proposal", func() {
-							rawTx := txs.RawDepositApprovalTx(fixture.Bob.Address, depositTxHash, 1, "d49b0bf7ee1386c15d9988defad1ff22cc84b270e0b4d6d407c508af44eadbe923f4f36e355d31b818f52addf7afc00f9bf6212b0a8f418cc5a0103a479ee8241c")
+							rawTx := txs.RawDepositApprovalTx(fixture.Bob.Address, depositTxHash, 1, "566473057ad9b532f568609e78101de754b8201c9b1577d5fde1b2e4e08cbffc5d5cb9bccbf33105c26494fc9134c41bc0d9a52de87c9b154a2d468c5530a8381b")
 							Convey("CheckTx should return success", func() {
 								r := app.CheckTx(rawTx)
 								So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
@@ -1955,7 +1956,7 @@ func TestHashedTransferAndClaim(t *testing.T) {
 		})
 		app.BeginBlock(abci.RequestBeginBlock{
 			Header: abci.Header{
-				Time: 1,
+				Time: time.Unix(1, 0),
 			},
 		})
 		Convey("If HashedTransfer transaction is valid", func() {
@@ -1979,7 +1980,7 @@ func TestHashedTransferAndClaim(t *testing.T) {
 						So(txStateRes, ShouldNotBeNil)
 						So(txStateRes.Status, ShouldEqual, "pending")
 						Convey("Then for a claim transaction on this HashedTransfer", func() {
-							rawTx := txs.RawClaimHashedTransferTx(fixture.Bob.Address, htlcTxHash, secret, 1, "631b6a96c706efcf86dcf4dae0cbc31d0ff0c663c6a805e4848ccad84b9155d84a0c76064804a21c642d47a5fdf10850751734ba6f60e71f2203a99c79eb42cb1b")
+							rawTx := txs.RawClaimHashedTransferTx(fixture.Bob.Address, htlcTxHash, secret, 1, "3d24816f574711e5a5ebcc50be5cc75a6a84b6b1363197e43a2bfd419961dc816f6a3c5fca6c203e554e1102ba76712b767f32998970d17eee4e194e45e49b981c")
 
 							Convey("CheckTx should return success", func() {
 								r := app.CheckTx(rawTx)
@@ -2067,7 +2068,7 @@ func TestHashedTransferAndRevoke(t *testing.T) {
 		})
 		app.BeginBlock(abci.RequestBeginBlock{
 			Header: abci.Header{
-				Time: 1,
+				Time: time.Unix(1, 0),
 			},
 		})
 		Convey("If HashedTransfer transaction is valid", func() {
@@ -2097,11 +2098,11 @@ func TestHashedTransferAndRevoke(t *testing.T) {
 							app.Commit()
 							app.BeginBlock(abci.RequestBeginBlock{
 								Header: abci.Header{
-									Time: 11,
+									Time: time.Unix(11, 0),
 								},
 							})
 							Convey("Then for a revoke transaction on this HashedTransfer", func() {
-								rawTx := txs.RawClaimHashedTransferTx(fixture.Alice.Address, htlcTxHash, nil, 2, "265ef8ce2b992cba58a03546fd7d22520de77a4c73bebe8a556c5ab14c594e5920d7d28969c45a8ebab8766f9dc9ea5db33b65a1a435c022745a3c9b82ddf0b81c")
+								rawTx := txs.RawClaimHashedTransferTx(fixture.Alice.Address, htlcTxHash, nil, 2, "a06d1e079ff87508a0a9186489a0f6ecba5af57ee1186b171e56b1f22766df864b52d0e5d08cddaef3aa322a86169e0772e16e486a8991912f3d7a351e4798fe1c")
 								Convey("CheckTx should return success", func() {
 									r := app.CheckTx(rawTx)
 									So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
@@ -2243,12 +2244,12 @@ func TestGC(t *testing.T) {
 		}
 		app.InitChain(abci.RequestInitChain{})
 		app.Commit()
-		initialStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version64()
-		initialWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version64()
+		initialStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version()
+		initialWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version()
 
 		app.Commit()
-		secondStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version64()
-		secondWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version64()
+		secondStateTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableStateTree().Version()
+		secondWithdrawTreeVersion := mockCtx.ApplicationContext.GetMutableState().MutableWithdrawTree().Version()
 
 		Convey("After committing 9 blocks", func() {
 			for i := 0; i < 8; i++ {
@@ -2390,7 +2391,7 @@ func TestIntegrated(t *testing.T) {
 								So(txStateRes, ShouldNotBeNil)
 								So(txStateRes.Status, ShouldEqual, "pending")
 								Convey("Dave as predefined deposit approver should be able to approve deposit", func() {
-									rawTx := txs.RawDepositApprovalTx(fixture.Dave.Address, depositTxHash, 1, "0c3de6873eae2b400ed0bf3c672051b585f8034890e1bb8e6c36fceb9b44138e564eabb7f0518f172803097469daff2cc67aba05e9724b8ac4cb2c3d5df8ef271b")
+									rawTx := txs.RawDepositApprovalTx(fixture.Dave.Address, depositTxHash, 1, "ce008a845294b1d08794387b61422c0e155cfbf9e14ead869242e2b71d84c7bb7e6e49701014b884ded8005d5e592757b9e7649b6ef232a0656b5334a3abaf591b")
 									r := app.DeliverTx(rawTx)
 									So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
 									Convey("tx_state on the deposit transaction hash should return success", func() {
@@ -2509,7 +2510,7 @@ func TestIntegrated(t *testing.T) {
 																	err := json.Unmarshal(queryRes.Value, &proof)
 																	So(err, ShouldBeNil)
 																	Convey("The proof should be corresponding to the withdraw tree hash", func() {
-																		err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:20])
+																		err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:tmhash.Size])
 																		So(err, ShouldBeNil)
 																	})
 																})

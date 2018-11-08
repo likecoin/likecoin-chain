@@ -1,12 +1,14 @@
 package context
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/json"
 
 	"github.com/likecoin/likechain/abci/utils"
 
 	"github.com/tendermint/iavl"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/db"
 )
 
@@ -76,19 +78,23 @@ func (state *ImmutableState) GetMetadataAtHeight(height int64) *TreeMetadata {
 	return &metadata
 }
 
-const appHashLength = 40
+var zeros = make([]byte, tmhash.Size)
 
 func generateAppHash(stateHash, withdrawHash []byte) (hash []byte) {
-	hash = make([]byte, appHashLength)
-	// Indended to put withdraw tree hash first,
+	hashBuf := new(bytes.Buffer)
+	// Indended to put withdraw tree hashBuf first,
 	// easier for Relay contract to parse
-	if binary.Size(withdrawHash) > 0 {
-		copy(hash, withdrawHash[:appHashLength/2])
+	if len(withdrawHash) > 0 {
+		hashBuf.Write(withdrawHash)
+	} else {
+		hashBuf.Write(zeros)
 	}
-	if binary.Size(stateHash) > 0 {
-		copy(hash[appHashLength/2:], stateHash[:appHashLength/2])
+	if len(stateHash) > 0 {
+		hashBuf.Write(stateHash)
+	} else {
+		hashBuf.Write(zeros)
 	}
-	return hash
+	return hashBuf.Bytes()
 }
 
 // GetAppHash returns the app hash of the most recently saved state

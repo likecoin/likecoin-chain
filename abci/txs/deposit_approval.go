@@ -10,6 +10,7 @@ import (
 	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
@@ -26,7 +27,7 @@ func (tx *DepositApprovalTransaction) ValidateFormat() bool {
 	if tx.Approver == nil || tx.Sig == nil {
 		return false
 	}
-	if len(tx.DepositTxHash) != 20 {
+	if len(tx.DepositTxHash) != tmhash.Size {
 		return false
 	}
 	return true

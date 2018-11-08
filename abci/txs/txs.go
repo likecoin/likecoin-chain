@@ -53,7 +53,7 @@ func init() {
 
 // EncodeTx encodes a transaction into raw bytes
 func EncodeTx(tx Transaction) []byte {
-	bs, err := types.AminoCodec().MarshalBinary(tx)
+	bs, err := types.AminoCodec().MarshalBinaryLengthPrefixed(tx)
 	if err != nil {
 		log.
 			WithField("tx", tx).

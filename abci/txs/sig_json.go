@@ -40,6 +40,7 @@ func JSONMapToHash(jsonMap map[string]interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("JSONMap: \"%s\"\n", string(msg))
 	sigPrefix := "\x19Ethereum Signed Message:\n"
 	hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
 	return crypto.Keccak256(hashingMsg), nil

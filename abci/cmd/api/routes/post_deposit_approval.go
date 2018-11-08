@@ -11,7 +11,7 @@ import (
 
 type depositApprovalJSON struct {
 	Identity      string `json:"identity" binding:"required,identity"`
-	DepositTxHash string `json:"deposit_tx_hash" binding:"required,txHash"`
+	DepositTxHash string `json:"deposit_tx_hash" binding:"required,bytes32"`
 	Nonce         int64  `json:"nonce" binding:"required,min=1"`
 	Sig           string `json:"sig" binding:"required,eth_sig"`
 }

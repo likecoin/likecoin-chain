@@ -156,7 +156,7 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				So(rawTx, ShouldResemble, EncodeTx(depositTx1))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *DepositTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
 					So(decodedTx, ShouldResemble, depositTx1)
 				})

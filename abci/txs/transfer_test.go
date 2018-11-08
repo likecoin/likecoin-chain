@@ -6,6 +6,7 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
+	. "github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
@@ -18,16 +19,16 @@ func TestTransferValidateFormat(t *testing.T) {
 	Convey("For a transfer transaction", t, func() {
 		outputs := []TransferOutput{
 			{
-				To:    types.Addr("0x0000000000000000000000000000000000000000"),
+				To:    Bob.ID,
 				Value: types.NewBigInt(0),
 			},
 			{
-				To:     types.Addr("0x0000000000000000000000000000000000000000"),
+				To:     Carol.Address,
 				Value:  types.NewBigInt(0),
 				Remark: make([]byte, 4096),
 			},
 		}
-		transferTx := TransferTx(types.Addr("0x0000000000000000000000000000000000000000"), outputs, types.NewBigInt(0), 1, "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+		transferTx := TransferTx(Alice.Address, outputs, types.NewBigInt(0), 1, "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 		Convey("If the transaction has valid format", func() {
 			Convey("The validation should succeed", func() {
 				So(transferTx.ValidateFormat(), ShouldBeTrue)
@@ -94,16 +95,16 @@ func TestTransferSignature(t *testing.T) {
 	Convey("If a transfer transaction is valid", t, func() {
 		outputs := []TransferOutput{
 			{
-				To:    types.Addr("0x833a907efe57af3040039c90f4a59946a0bb3d47"),
+				To:    Bob.ID,
 				Value: types.NewBigInt(1),
 			},
 			{
-				To:     types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade"),
+				To:     Carol.Address,
 				Value:  types.NewBigInt(2),
 				Remark: make([]byte, 1),
 			},
 		}
-		transferTx := TransferTx(types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"), outputs, types.NewBigInt(0), 1, "187a9e180c7e950f3029a27e95f2cc0eabb6b73a28c706bafab75f0bd36c45ab2636092534cd5e8bc53d1d48b546f4aeb74c3e93e129855c3bb39020cfba2c7c1c")
+		transferTx := TransferTx(Alice.Address, outputs, types.NewBigInt(0), 1, "52ade067038b6fa07aca930c4261ae683439f105ff7722015e10620c05bfe7c13253ba01573fef145f5f2a605f8db4cb68003116a07546bd3b52431c30aacffa1b")
 		Convey("Address recovery should succeed", func() {
 			recoveredAddr, err := transferTx.Sig.RecoverAddress(transferTx)
 			So(err, ShouldBeNil)
@@ -119,24 +120,24 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
 
-		id1 := account.NewAccount(state, types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"))
-		account.AddBalance(state, id1, big.NewInt(100))
-		id2 := account.NewAccount(state, types.Addr("0x833a907efe57af3040039c90f4a59946a0bb3d47"))
-		account.AddBalance(state, id2, big.NewInt(150))
-		account.SaveBalance(state, types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade"), big.NewInt(200))
+		account.NewAccountFromID(state, Alice.ID, Alice.Address)
+		account.NewAccountFromID(state, Bob.ID, Bob.Address)
+		account.AddBalance(state, Alice.ID, big.NewInt(100))
+		account.AddBalance(state, Bob.ID, big.NewInt(150))
+		account.SaveBalance(state, Carol.Address, big.NewInt(200))
 
 		outputs := []TransferOutput{
 			{
-				To:    types.Addr("0x833a907efe57af3040039c90f4a59946a0bb3d47"),
+				To:    Bob.Address,
 				Value: types.NewBigInt(50),
 			},
 			{
-				To:     types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade"),
+				To:     Carol.Address,
 				Value:  types.NewBigInt(50),
 				Remark: make([]byte, 1),
 			},
 		}
-		transferTx := TransferTx(types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"), outputs, types.NewBigInt(0), 1, "86d924df60353825b12ae18a659a4de9df30555da9a1576d54fdfd9008d482397ce81cf6c83b9c1dcb8a733aa998f84f1c825bbd304f5c2774119d109e889cff1b")
+		transferTx := TransferTx(Alice.Address, outputs, types.NewBigInt(0), 1, "6c2e543b2bc323563aef9ae0ae8143dbfc1c2485a9d70fbf68ffc08ebac5ca840aa29974a1673806abb5a6d2a6d22ea5cc7e24b42bd391b6923b6126efb1652b1c")
 		Convey("If a transfer transaction from address is valid", func() {
 			Convey("CheckTx should succeed", func() {
 				r := transferTx.CheckTx(state)
@@ -146,9 +147,9 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
-					So(account.FetchBalance(state, id1).Cmp(big.NewInt(0)), ShouldBeZeroValue)
-					So(account.FetchBalance(state, id2).Cmp(big.NewInt(200)), ShouldBeZeroValue)
-					So(account.FetchBalance(state, types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade")).Cmp(big.NewInt(250)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(200)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Carol.Address).Cmp(big.NewInt(250)), ShouldBeZeroValue)
 					Convey("CheckTx again should return Duplicated", func() {
 						r := transferTx.CheckTx(state)
 						So(r.Code, ShouldEqual, response.TransferDuplicated.Code)
@@ -161,19 +162,23 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 				})
 			})
 			Convey("RawTransferTx should return the same encoded raw tx", func() {
-				rawTx := RawTransferTx(types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"), outputs, types.NewBigInt(0), 1, "86d924df60353825b12ae18a659a4de9df30555da9a1576d54fdfd9008d482397ce81cf6c83b9c1dcb8a733aa998f84f1c825bbd304f5c2774119d109e889cff1b")
+				rawTx := RawTransferTx(Alice.Address, outputs, types.NewBigInt(0), 1, "6c2e543b2bc323563aef9ae0ae8143dbfc1c2485a9d70fbf68ffc08ebac5ca840aa29974a1673806abb5a6d2a6d22ea5cc7e24b42bd391b6923b6126efb1652b1c")
 				So(rawTx, ShouldResemble, EncodeTx(transferTx))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *TransferTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
-					So(decodedTx, ShouldResemble, transferTx)
+					So(decodedTx.From, ShouldResemble, transferTx.From)
+					So(decodedTx.Fee.Cmp(transferTx.Fee.Int), ShouldBeZeroValue)
+					So(decodedTx.Outputs, ShouldResemble, transferTx.Outputs)
+					So(decodedTx.Nonce, ShouldResemble, transferTx.Nonce)
+					So(decodedTx.Sig, ShouldResemble, transferTx.Sig)
 				})
 			})
 		})
 		Convey("If a transfer transaction from LikeChainID is valid", func() {
-			outputs[0].To = id2
-			transferTx := TransferTx(id1, outputs, types.NewBigInt(0), 1, "25ed8de68b496cbf6e0e012da6e3543c38f9ef941ed4a1ccb831874126fb422e0698d10c536c81d6adeccb5f77f3c3bfa1180650011ecdeae65a08dc1d87e81e1c")
+			outputs[0].To = Bob.ID
+			transferTx := TransferTx(Alice.ID, outputs, types.NewBigInt(0), 1, "1cb0cb8ad4c21c93682d089819aacf1ccaf04b297912013f1578452dbdb9f4e47f769b99ae758d0cb68bac271a55575da33c672940a7b6e375ffa97f37aa25491c")
 			Convey("CheckTx should succeed", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.Success.Code)
@@ -182,9 +187,9 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 					r := transferTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
-					So(account.FetchBalance(state, id1).Cmp(big.NewInt(0)), ShouldBeZeroValue)
-					So(account.FetchBalance(state, id2).Cmp(big.NewInt(200)), ShouldBeZeroValue)
-					So(account.FetchBalance(state, types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade")).Cmp(big.NewInt(250)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(200)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Carol.Address).Cmp(big.NewInt(250)), ShouldBeZeroValue)
 				})
 			})
 		})
@@ -202,7 +207,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 		Convey("If a transfer transaction has unregistered sender", func() {
-			transferTx.From = types.Addr("0xaa2f5b6ae13ba7a3d466ffce8cd390519337aade")
+			transferTx.From = Carol.Address
 			Convey("CheckTx should return SenderNotRegistered", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferSenderNotRegistered.Code)
@@ -228,7 +233,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 		Convey("If a transfer transaction has signature not from the sender", func() {
-			transferTx.Sig = &TransferJSONSignature{Sig("a176b40b9ffd6f4868ce5d608f3c6a560e8507abd57624449c0c595a3ea28a351e522c41e24beaccabc70e50999e9f653cecd7ce272eaf6ad051df1b758886fc1b")}
+			transferTx.Sig = &TransferJSONSignature{Sig("74bbe427f9bba311d773f041a84c1e556c0e68e66694bf9bb86e46414536d1055632a0d0a1522a1ae3e81eed7082d214c2d9b1dcd44b955c4ee8d4dc1e01ba2c1c")}
 			Convey("CheckTx should return InvalidSignature", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferInvalidSignature.Code)
@@ -242,7 +247,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 		Convey("If a transfer transaction has nonce exceeding next nonce", func() {
 			transferTx.Nonce = 2
-			transferTx.Sig = &TransferJSONSignature{Sig("45007b7c7c4ebb4ddb9580c1d11b1d8fd905c31bf4f709cdcdfe3bd12a3ebd860340c417662ec43b14cfe42391ea99c064eedf83ec396ab2244777c21dcb01691b")}
+			transferTx.Sig = &TransferJSONSignature{Sig("f05955c06ace300cde0fcb999ac488e427e8853a72d1998c828edd1c1718ca2b6168bed18c69ed3b8ad91f9f025464879d4cf92b96a0e6838bec096a17927ee81b")}
 			Convey("CheckTx should return InvalidNonce", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferInvalidNonce.Code)
@@ -255,8 +260,8 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 			})
 		})
 		Convey("If a transfer transaction has unregistered LikeChainID as output receiver", func() {
-			outputs[1].To = types.IDStr("1MaeSeg6YEf0bkKy0FOh8MbnDqQ=")
-			transferTx.Sig = &TransferJSONSignature{Sig("0f260b4879eaba6f3e4d467f18b18d1b3bfef45eb8eb7534706343b599867ba55312fb453eb794e227ffa2def17af2b456ed43f9d499e48de8bf42e60d60fd321c")}
+			outputs[1].To = Carol.ID
+			transferTx.Sig = &TransferJSONSignature{Sig("08ac90f92a3987009501ba58c16289fbeb58f7c264ce3615107d0933e62c415c53bc5183819b9e88e4cf3034b5de9ec782bd4d6727f958efc3fb57ff391d0e951c")}
 			Convey("CheckTx should return InvalidReceiver", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferInvalidReceiver.Code)
@@ -270,7 +275,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 		Convey("If a transfer transaction is transferring more balance than the sender has", func() {
 			outputs[0].Value.Int = big.NewInt(51)
-			transferTx.Sig = &TransferJSONSignature{Sig("dee2c6eae68ca025c28169e1effea0b876ab692ce506069516e7d05dfd4ce3c9559a6dfa9bb02988fa953f8fcbcf9887d6d3038b970e6bd15444a6ef570061cf1b")}
+			transferTx.Sig = &TransferJSONSignature{Sig("3b37f8f60d79e428bc3f16715c54a6b249b79c29349f1bf2661c8e0ba2acbc9302356ddfe12c2842eed2cac961cd075053d5c6e33a5d19505a70fb8b8af2ce791b")}
 			Convey("CheckTx should return NotEnoughBalance", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferNotEnoughBalance.Code)
@@ -284,7 +289,7 @@ func TestCheckAndDeliverTransfer(t *testing.T) {
 		})
 		Convey("If a transfer transaction has not enough balance for fee", func() {
 			transferTx.Fee.Int = big.NewInt(1)
-			transferTx.Sig = &TransferJSONSignature{Sig("e7d3df2ee3c55fece54517a5f650c40eda930f7b442f7ea8a18905b0d3e024527ee6357f2d84ebaba55c39b91b34d62df16a3620de5c8ce417d129c70739937d1b")}
+			transferTx.Sig = &TransferJSONSignature{Sig("c5663a3e9d9a32feb656980d066557e67133a79a66c3c246cf6ae546adbc58df77d837b7003c14680c1b8c66f523873c8c5468a96aa879ff8945dabe600b4e471b")}
 			Convey("CheckTx should return NotEnoughBalance", func() {
 				r := transferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.TransferNotEnoughBalance.Code)

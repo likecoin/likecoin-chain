@@ -71,7 +71,7 @@ func TestClaimHashedTransferSignature(t *testing.T) {
 	Convey("For a ClaimHashedTransfer transaction", t, func() {
 		htlcTxHash := make([]byte, tmhash.Size)
 		secret := make([]byte, 32)
-		claimHashedTransferTx := ClaimHashedTransferTx(Alice.Address, htlcTxHash, secret, 1, "936578d55fca7cc1028efa5498cb78d206729bb7199b8bbb8a64f56edcc8d1d32514f04505eea1201c93e1c77877f2ba1f5f972868ea24171b619cec93cf011a1c")
+		claimHashedTransferTx := ClaimHashedTransferTx(Alice.Address, htlcTxHash, secret, 1, "33cbe33180cd8bd7056c13f4f955d804702138680a977e6d979449057fb9e0a507597a542dc1fbe43410c0bc18915b8a1aab66366ac124b1a17cd223e260095f1b")
 		Convey("If a ClaimHashedTransfer transaction is valid with secret length 32", func() {
 			Convey("Address recovery should succeed", func() {
 				recoveredAddr, err := claimHashedTransferTx.Sig.RecoverAddress(claimHashedTransferTx)
@@ -83,7 +83,7 @@ func TestClaimHashedTransferSignature(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction is valid with secret length 0", func() {
 			claimHashedTransferTx.Secret = nil
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("18acf4c455ab70f45e2b136d31f2449b183f1469d1db1cba8747d29f287cb7da23519efcd4b454eb55969cb16c969a8c58072847fd27ed9259e299ac0a89a2f21b")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("c011b32ed5b9df48b22a476dbc4f243a47520facb2bd3ca0ca7b2fa644257240073e895e87418194ea39a3b236c35b7623c42d04f3bf38553188f1fc1deedb301c")}
 			Convey("Address recovery should succeed", func() {
 				recoveredAddr, err := claimHashedTransferTx.Sig.RecoverAddress(claimHashedTransferTx)
 				So(err, ShouldBeNil)
@@ -111,7 +111,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		r := hashedTransferTx.DeliverTx(state, htlcTxHash)
 		So(r.Code, ShouldEqual, response.Success.Code)
 
-		claimHashedTransferTx := ClaimHashedTransferTx(Bob.Address, htlcTxHash, secret, 1, "631b6a96c706efcf86dcf4dae0cbc31d0ff0c663c6a805e4848ccad84b9155d84a0c76064804a21c642d47a5fdf10850751734ba6f60e71f2203a99c79eb42cb1b")
+		claimHashedTransferTx := ClaimHashedTransferTx(Bob.Address, htlcTxHash, secret, 1, "3d24816f574711e5a5ebcc50be5cc75a6a84b6b1363197e43a2bfd419961dc816f6a3c5fca6c203e554e1102ba76712b767f32998970d17eee4e194e45e49b981c")
 		Convey("If a ClaimHashedTransfer transaction from address is valid", func() {
 			Convey("CheckTx should succeed", func() {
 				r := claimHashedTransferTx.CheckTx(state)
@@ -139,11 +139,11 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 				})
 			})
 			Convey("RawTransferTx should return the same encoded raw tx", func() {
-				rawTx := RawClaimHashedTransferTx(Bob.Address, htlcTxHash, secret, 1, "631b6a96c706efcf86dcf4dae0cbc31d0ff0c663c6a805e4848ccad84b9155d84a0c76064804a21c642d47a5fdf10850751734ba6f60e71f2203a99c79eb42cb1b")
+				rawTx := RawClaimHashedTransferTx(Bob.Address, htlcTxHash, secret, 1, "3d24816f574711e5a5ebcc50be5cc75a6a84b6b1363197e43a2bfd419961dc816f6a3c5fca6c203e554e1102ba76712b767f32998970d17eee4e194e45e49b981c")
 				So(rawTx, ShouldResemble, EncodeTx(claimHashedTransferTx))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *ClaimHashedTransferTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
 					So(decodedTx, ShouldResemble, claimHashedTransferTx)
 				})
@@ -151,7 +151,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction from LikeChainID is valid", func() {
 			claimHashedTransferTx.From = Bob.ID
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("ae2017223110189a3d95c32d42061ee7c27a119df73eb676ab2a1d5a8d35bee42d6ca8e39e29235d7b27d9cfda769eb1c1a3722c96581142aa520122e6ecb1901b")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("5669a83fd580fdb832219883a19bf1ddb5b5974bbdee0f06510b431232a832855600cf000ed8589cfde82357ecd28888de422bd4aba79ed4c8395924a4d32a8b1c")}
 			Convey("CheckTx should succeed", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.Success.Code)
@@ -184,7 +184,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction has unregistered sender", func() {
 			claimHashedTransferTx.From = Mallory.Address
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("4d966e88ec4c22c7d5ef9d6e1b1df45910b95b6a2010cb9658ec358d98fb8b6d08aa061244dcfa4f70466e73e86466045a210bd984dc954921186be543259a7c1b")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("8962956bce009d54d6b8f21560b4e4411f63e2f654463d9e99ae73a63a07b9a030172c69a228145647cf5f3a87ada932f1ca5d5f77b3c0ab1d07d0adefad7b6f1c")}
 			Convey("CheckTx should return SenderNotRegistered", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferSenderNotRegistered.Code)
@@ -197,7 +197,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 			})
 		})
 		Convey("If a ClaimHashedTransfer transaction is not signed by the sender", func() {
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("d2bd3fd72c4a1c3ff228f9b8d8b1d237be969401cc3c8f2eb43b880c6157d39300c6703e524c89219dfd8a1cfc82b92d784d308ce047fa7514560a5f0e2b5f2c1b")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("090db602613657e02878d2f3b8cd6d70bf1ae1cf7f1f42db1a97533b20cb4c9927f3d9be7f29fce3a2c6750f524b95fa405b5be8630848cbb635299aa3a3fa281b")}
 			Convey("CheckTx should return InvalidSignature", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferInvalidSignature.Code)
@@ -212,7 +212,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction has invalid nonce", func() {
 			claimHashedTransferTx.Nonce = 2
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("f67b05108838dfe30379510122c99d3e9d3ca9f027595568e2749d1bf90d10ff65e857f62c5ff0054dfdd14952c64abe006bd88210b0918d0db754be3c79245e1c")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("ce0cb306833263e182d89edfb937ebdde43c5a87d81ed9461a6dd224fa4c8da74a5897da9b407c9fd31987021c8f6047bd763c11efd9eadef9ca8f409d10f79d1c")}
 			Convey("CheckTx should return InvalidNonce", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferInvalidNonce.Code)
@@ -227,7 +227,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction has invalid HTLC TxHash", func() {
 			claimHashedTransferTx.HTLCTxHash = make([]byte, tmhash.Size)
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("6e55f5c035bc7f4e7e39399278efcdb495501052cb39c2069e62195d6aeeffee2a848ab16342945365c05d98d62543e96c6af0297208ab5a12bde19a4b219a411b")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("9cb82f2ca5dff26beda3e0a97a9ab753610bb6cf03b665ce57734f7ed35ad803629220e41178689a4807c7263178ad0619230e7b8ac0e5d39098bd084fef14671c")}
 			Convey("CheckTx should return TxNotExist", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferTxNotExist.Code)
@@ -242,7 +242,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction is neither from the sender or receiver of the HashedTransfer transaction", func() {
 			claimHashedTransferTx.From = Carol.ID
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("9ec382f15b3deeff3ae4415b64984662698f0f495ec4968fb31b00a6f124650b4a210190cc9ee2450b28c573648576cb686d61a057a6d040db79c5ecc9a8df9f1c")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("a19c9672abcc4b08b464065230ca08114359e418ed30aa9ee949ff6b83dca05f41799cc71917dd336daab8c5fd0b611d7def4ef61cf18eba87137a02383a35351c")}
 			Convey("CheckTx should return InvalidSender", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferInvalidSender.Code)
@@ -257,7 +257,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction has invalid secret", func() {
 			claimHashedTransferTx.Secret[0]++
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("0f2f46443a6212f824fd76bf5cfcfd73e7154a5b6fabd71ed14ae920885f01d82bb3c6f209930c0a8bb102926272a8e345f3b9d0c09d347e83f189755ad2d12a1c")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("5c8663bd2d2a0040cb3fed3c2c3fcfd1437845d1e51df15056a80d4cee35242634dd927d3af87d0f2719e62390d6cd112260e1f2dece439ca0304713a553fe201c")}
 			Convey("CheckTx should return InvalidSecret", func() {
 				r := claimHashedTransferTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.ClaimHashedTransferInvalidSecret.Code)
@@ -317,7 +317,7 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 		r := hashedTransferTx.DeliverTx(state, htlcTxHash)
 		So(r.Code, ShouldEqual, response.Success.Code)
 
-		claimHashedTransferTx := ClaimHashedTransferTx(Alice.Address, htlcTxHash, nil, 2, "265ef8ce2b992cba58a03546fd7d22520de77a4c73bebe8a556c5ab14c594e5920d7d28969c45a8ebab8766f9dc9ea5db33b65a1a435c022745a3c9b82ddf0b81c")
+		claimHashedTransferTx := ClaimHashedTransferTx(Alice.Address, htlcTxHash, nil, 2, "a06d1e079ff87508a0a9186489a0f6ecba5af57ee1186b171e56b1f22766df864b52d0e5d08cddaef3aa322a86169e0772e16e486a8991912f3d7a351e4798fe1c")
 		Convey("If a ClaimHashedTransfer transaction (revoke) from address is valid", func() {
 			state.SetBlockTime(11)
 			Convey("CheckTx should succeed", func() {
@@ -346,11 +346,11 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 				})
 			})
 			Convey("RawTransferTx should return the same encoded raw tx", func() {
-				rawTx := RawClaimHashedTransferTx(Alice.Address, htlcTxHash, nil, 2, "265ef8ce2b992cba58a03546fd7d22520de77a4c73bebe8a556c5ab14c594e5920d7d28969c45a8ebab8766f9dc9ea5db33b65a1a435c022745a3c9b82ddf0b81c")
+				rawTx := RawClaimHashedTransferTx(Alice.Address, htlcTxHash, nil, 2, "a06d1e079ff87508a0a9186489a0f6ecba5af57ee1186b171e56b1f22766df864b52d0e5d08cddaef3aa322a86169e0772e16e486a8991912f3d7a351e4798fe1c")
 				So(rawTx, ShouldResemble, EncodeTx(claimHashedTransferTx))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *ClaimHashedTransferTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
 					So(decodedTx, ShouldResemble, claimHashedTransferTx)
 				})
@@ -358,7 +358,7 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 		})
 		Convey("If a ClaimHashedTransfer transaction from LikeChainID is valid", func() {
 			claimHashedTransferTx.From = Alice.ID
-			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("2a7d06dff5db5aba25bd08d1ba447220fcfaf12e989fe8c42534345e7d26011937f4c0b3d848a07a7866bcc098af55258f00cb438e560edaa1154ee40129b5191c")}
+			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("47ab91ffbca34d0d247bdcb6c5cb5c4670ad540d8951d9e66d5e6cabb213768c50bae76e5778639ae6aad1848280093d0382451b5ad90818a00a5dac98b1cc901b")}
 			state.SetBlockTime(11)
 			Convey("CheckTx should succeed", func() {
 				r := claimHashedTransferTx.CheckTx(state)

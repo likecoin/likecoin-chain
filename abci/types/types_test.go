@@ -349,11 +349,11 @@ func TestAmino(t *testing.T) {
 		Convey("Given a LikeChainID", func() {
 			id := IDStr("AAAAAAAAAAAAAAAAAAAAAAAAAAA=")
 			Convey("Marshaling the LikeChainID should succeed", func() {
-				bs, err := AminoCodec().MarshalBinary(id)
+				bs, err := AminoCodec().MarshalBinaryLengthPrefixed(id)
 				So(err, ShouldBeNil)
 				Convey("Unmarshaling the bytes should gives out the same LikeChainID", func() {
 					var iden Identifier
-					err := AminoCodec().UnmarshalBinary(bs, &iden)
+					err := AminoCodec().UnmarshalBinaryLengthPrefixed(bs, &iden)
 					So(err, ShouldBeNil)
 					So(iden, ShouldResemble, id)
 				})
@@ -362,11 +362,11 @@ func TestAmino(t *testing.T) {
 		Convey("Given an Address", func() {
 			addr := Addr("0x0000000000000000000000000000000000000000")
 			Convey("Marshaling the Address should succeed", func() {
-				bs, err := AminoCodec().MarshalBinary(addr)
+				bs, err := AminoCodec().MarshalBinaryLengthPrefixed(addr)
 				So(err, ShouldBeNil)
 				Convey("Unmarshaling the bytes should gives out the same Address", func() {
 					var iden Identifier
-					err := AminoCodec().UnmarshalBinary(bs, &iden)
+					err := AminoCodec().UnmarshalBinaryLengthPrefixed(bs, &iden)
 					So(err, ShouldBeNil)
 					So(iden, ShouldResemble, addr)
 				})
@@ -376,11 +376,11 @@ func TestAmino(t *testing.T) {
 			v, _ := new(big.Int).SetString("9999999999999999999999999999999999999999999999999999999999999999999", 10)
 			n := BigInt{v}
 			Convey("Marshaling the BigInt should succeed", func() {
-				bs, err := AminoCodec().MarshalBinary(n)
+				bs, err := AminoCodec().MarshalBinaryLengthPrefixed(n)
 				So(err, ShouldBeNil)
 				Convey("Unmarshaling the bytes should gives out the same BigInt", func() {
 					var n2 BigInt
-					err := AminoCodec().UnmarshalBinary(bs, &n2)
+					err := AminoCodec().UnmarshalBinaryLengthPrefixed(bs, &n2)
 					So(err, ShouldBeNil)
 					So(n, ShouldResemble, n2)
 				})

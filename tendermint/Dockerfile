@@ -1,4 +1,4 @@
-FROM golang:1.10.3-alpine3.8
+FROM golang:1.11.2-alpine3.8
 
 ENV DATA_ROOT /tendermint
 ENV TMHOME $DATA_ROOT
@@ -12,14 +12,14 @@ RUN mkdir -p $DATA_ROOT && \
     chown -R tmuser:tmuser $DATA_ROOT
 
 # Install Git
-RUN apk update && apk upgrade && apk add --no-cache build-base git
+RUN apk update && apk upgrade && apk add --no-cache build-base git bash
 
 # Download latest source code of Tendermint on master branch
 RUN mkdir -p $GOPATH/src/github.com/tendermint && \
     cd $GOPATH/src/github.com/tendermint && \
     git clone https://github.com/tendermint/tendermint.git && \
     cd tendermint && \
-    git checkout v0.22.8
+    git checkout v0.26.1
 
 WORKDIR $GOPATH/src/github.com/tendermint/tendermint
 

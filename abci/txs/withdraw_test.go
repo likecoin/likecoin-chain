@@ -175,9 +175,12 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 				So(rawTx, ShouldResemble, EncodeTx(withdrawTx))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *WithdrawTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
-					So(decodedTx, ShouldResemble, withdrawTx)
+					So(decodedTx.From, ShouldResemble, withdrawTx.From)
+					So(decodedTx.ToAddr, ShouldResemble, withdrawTx.ToAddr)
+					So(decodedTx.Value, ShouldResemble, withdrawTx.Value)
+					So(decodedTx.Fee.Cmp(withdrawTx.Fee.Int), ShouldBeZeroValue)
 				})
 			})
 		})

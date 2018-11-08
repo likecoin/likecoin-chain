@@ -36,7 +36,7 @@ func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.Res
 	log.Info("APP BeginBlock")
 	state := app.ctx.GetMutableState()
 	state.SetBlockHash(req.Hash)
-	state.SetBlockTime(req.Header.Time)
+	state.SetBlockTime(req.Header.Time.Unix())
 	return abci.ResponseBeginBlock{}
 }
 
@@ -44,7 +44,7 @@ func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.Res
 func (app *LikeChainApplication) CheckTx(rawTx []byte) abci.ResponseCheckTx {
 	log.Info("APP CheckTx")
 	var tx txs.Transaction
-	err := types.AminoCodec().UnmarshalBinary(rawTx, &tx)
+	err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &tx)
 	if err != nil {
 		log.WithError(err).Debug("APP CheckTx cannot parse transaction")
 		return abci.ResponseCheckTx{
@@ -63,7 +63,7 @@ func (app *LikeChainApplication) DeliverTx(rawTx []byte) abci.ResponseDeliverTx 
 		Info("APP DeliverTx")
 
 	var tx txs.Transaction
-	err := types.AminoCodec().UnmarshalBinary(rawTx, &tx)
+	err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &tx)
 	if err != nil {
 		log.WithError(err).Debug("APP DeliverTx cannot parse transaction")
 		return abci.ResponseDeliverTx{
@@ -93,8 +93,8 @@ func (app *LikeChainApplication) Commit() abci.ResponseCommit {
 	state.SetHeight(height)
 	hash := state.Save()
 
-	stateTreeVersion := state.MutableStateTree().Version64()
-	withdrawTreeVersion := state.MutableWithdrawTree().Version64()
+	stateTreeVersion := state.MutableStateTree().Version()
+	withdrawTreeVersion := state.MutableWithdrawTree().Version()
 	state.SetMetadataAtHeight(height, context.TreeMetadata{
 		StateTreeVersion:    stateTreeVersion,
 		WithdrawTreeVersion: withdrawTreeVersion,

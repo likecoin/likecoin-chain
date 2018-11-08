@@ -119,7 +119,7 @@ func TestCheckAndDeliverHashedTransfer(t *testing.T) {
 				So(rawTx, ShouldResemble, EncodeTx(hashedTransferTx))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *HashedTransferTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
 					So(decodedTx, ShouldResemble, hashedTransferTx)
 				})
