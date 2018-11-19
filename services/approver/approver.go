@@ -110,7 +110,7 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr
 		for i := 0; i < searchResult.TotalCount; i++ {
 			txHash := searchResult.Txs[i].Hash
 			var tx txs.DepositTransaction
-			err := types.AminoCodec().UnmarshalBinary(searchResult.Txs[i].Tx, &tx)
+			err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(searchResult.Txs[i].Tx, &tx)
 			if err != nil {
 				fmt.Printf("Cannot unmarshal deposit tx %v\n", txHash)
 				continue

@@ -14,7 +14,7 @@ import (
 )
 
 // RelayABI is the input ABI used to generate the binding from.
-const RelayABI = "[{\"constant\":false,\"inputs\":[{\"name\":\"_payload\",\"type\":\"bytes\"}],\"name\":\"commitWithdrawHash\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newValidators\",\"type\":\"address[]\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"updateValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"latestWithdrawHash\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validatorInfo\",\"outputs\":[{\"name\":\"index\",\"type\":\"uint8\"},{\"name\":\"power\",\"type\":\"uint32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_withdrawInfo\",\"type\":\"bytes\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"withdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"tokenContract\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"lastValidatorUpdateTime\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalVotingPower\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_withdrawInfo\",\"type\":\"bytes\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"withdrawRootHash\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes20\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reserved\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"logicContract\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"consumedIds\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"latestBlockHeight\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_validators\",\"type\":\"address[]\"},{\"name\":\"_votingPowers\",\"type\":\"uint32[]\"},{\"name\":\"_tokenContract\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]"
+const RelayABI = "[{\"constant\":false,\"inputs\":[{\"name\":\"height\",\"type\":\"uint64\"},{\"name\":\"round\",\"type\":\"uint64\"},{\"name\":\"_payload\",\"type\":\"bytes\"}],\"name\":\"commitWithdrawHash\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"testing\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newValidators\",\"type\":\"address[]\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"updateValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_withdrawInfo\",\"type\":\"bytes\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"withdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_validators\",\"type\":\"address[]\"},{\"name\":\"_votingPowers\",\"type\":\"uint32[]\"},{\"name\":\"_tokenContract\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"consumedIds\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"lastValidatorUpdateTime\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"latestBlockHeight\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"latestWithdrawHash\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"logicContract\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reserved\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"tokenContract\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalVotingPower\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validatorInfo\",\"outputs\":[{\"name\":\"index\",\"type\":\"uint8\"},{\"name\":\"power\",\"type\":\"uint32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_withdrawInfo\",\"type\":\"bytes\"},{\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"withdrawRootHash\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // Relay is an auto generated Go binding around an Ethereum contract.
 type Relay struct {
@@ -430,10 +430,10 @@ func (_Relay *RelayCallerSession) Validators(arg0 *big.Int) (common.Address, err
 
 // WithdrawRootHash is a free data retrieval call binding the contract method 0x6b12b635.
 //
-// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes20)
-func (_Relay *RelayCaller) WithdrawRootHash(opts *bind.CallOpts, _withdrawInfo []byte, _proof []byte) ([20]byte, error) {
+// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes32)
+func (_Relay *RelayCaller) WithdrawRootHash(opts *bind.CallOpts, _withdrawInfo []byte, _proof []byte) ([32]byte, error) {
 	var (
-		ret0 = new([20]byte)
+		ret0 = new([32]byte)
 	)
 	out := ret0
 	err := _Relay.contract.Call(opts, out, "withdrawRootHash", _withdrawInfo, _proof)
@@ -442,37 +442,58 @@ func (_Relay *RelayCaller) WithdrawRootHash(opts *bind.CallOpts, _withdrawInfo [
 
 // WithdrawRootHash is a free data retrieval call binding the contract method 0x6b12b635.
 //
-// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes20)
-func (_Relay *RelaySession) WithdrawRootHash(_withdrawInfo []byte, _proof []byte) ([20]byte, error) {
+// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes32)
+func (_Relay *RelaySession) WithdrawRootHash(_withdrawInfo []byte, _proof []byte) ([32]byte, error) {
 	return _Relay.Contract.WithdrawRootHash(&_Relay.CallOpts, _withdrawInfo, _proof)
 }
 
 // WithdrawRootHash is a free data retrieval call binding the contract method 0x6b12b635.
 //
-// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes20)
-func (_Relay *RelayCallerSession) WithdrawRootHash(_withdrawInfo []byte, _proof []byte) ([20]byte, error) {
+// Solidity: function withdrawRootHash(_withdrawInfo bytes, _proof bytes) constant returns(bytes32)
+func (_Relay *RelayCallerSession) WithdrawRootHash(_withdrawInfo []byte, _proof []byte) ([32]byte, error) {
 	return _Relay.Contract.WithdrawRootHash(&_Relay.CallOpts, _withdrawInfo, _proof)
 }
 
-// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x11f7ee0d.
+// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x945ac863.
 //
-// Solidity: function commitWithdrawHash(_payload bytes) returns()
-func (_Relay *RelayTransactor) CommitWithdrawHash(opts *bind.TransactOpts, _payload []byte) (*types.Transaction, error) {
-	return _Relay.contract.Transact(opts, "commitWithdrawHash", _payload)
+// Solidity: function commitWithdrawHash(height uint64, round uint64, _payload bytes) returns()
+func (_Relay *RelayTransactor) CommitWithdrawHash(opts *bind.TransactOpts, height uint64, round uint64, _payload []byte) (*types.Transaction, error) {
+	return _Relay.contract.Transact(opts, "commitWithdrawHash", height, round, _payload)
 }
 
-// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x11f7ee0d.
+// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x945ac863.
 //
-// Solidity: function commitWithdrawHash(_payload bytes) returns()
-func (_Relay *RelaySession) CommitWithdrawHash(_payload []byte) (*types.Transaction, error) {
-	return _Relay.Contract.CommitWithdrawHash(&_Relay.TransactOpts, _payload)
+// Solidity: function commitWithdrawHash(height uint64, round uint64, _payload bytes) returns()
+func (_Relay *RelaySession) CommitWithdrawHash(height uint64, round uint64, _payload []byte) (*types.Transaction, error) {
+	return _Relay.Contract.CommitWithdrawHash(&_Relay.TransactOpts, height, round, _payload)
 }
 
-// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x11f7ee0d.
+// CommitWithdrawHash is a paid mutator transaction binding the contract method 0x945ac863.
 //
-// Solidity: function commitWithdrawHash(_payload bytes) returns()
-func (_Relay *RelayTransactorSession) CommitWithdrawHash(_payload []byte) (*types.Transaction, error) {
-	return _Relay.Contract.CommitWithdrawHash(&_Relay.TransactOpts, _payload)
+// Solidity: function commitWithdrawHash(height uint64, round uint64, _payload bytes) returns()
+func (_Relay *RelayTransactorSession) CommitWithdrawHash(height uint64, round uint64, _payload []byte) (*types.Transaction, error) {
+	return _Relay.Contract.CommitWithdrawHash(&_Relay.TransactOpts, height, round, _payload)
+}
+
+// Testing is a paid mutator transaction binding the contract method 0x8d03b102.
+//
+// Solidity: function testing() returns()
+func (_Relay *RelayTransactor) Testing(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Relay.contract.Transact(opts, "testing")
+}
+
+// Testing is a paid mutator transaction binding the contract method 0x8d03b102.
+//
+// Solidity: function testing() returns()
+func (_Relay *RelaySession) Testing() (*types.Transaction, error) {
+	return _Relay.Contract.Testing(&_Relay.TransactOpts)
+}
+
+// Testing is a paid mutator transaction binding the contract method 0x8d03b102.
+//
+// Solidity: function testing() returns()
+func (_Relay *RelayTransactorSession) Testing() (*types.Transaction, error) {
+	return _Relay.Contract.Testing(&_Relay.TransactOpts)
 }
 
 // UpdateValidator is a paid mutator transaction binding the contract method 0x2277e53a.
