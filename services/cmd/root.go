@@ -21,7 +21,6 @@ func init() {
 	rootCmd.AddCommand(withdrawCmd)
 	rootCmd.AddCommand(validatorsCmd)
 	rootCmd.AddCommand(proposerCmd)
-	rootCmd.AddCommand(approverCmd)
 }
 
 func initConfig() {

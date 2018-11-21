@@ -21,6 +21,7 @@ import (
 )
 
 func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
+	tx.Proposal.Sort()
 	jsonMap := tx.GenerateJSONMap()
 	hash, err := txs.JSONMapToHash(jsonMap)
 	if err != nil {
@@ -52,7 +53,6 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, blockNumber uint
 		panic("Cannot parse account_info result")
 	}
 	fmt.Printf("Nonce: %d\n", accInfo.NextNonce)
-	// TODO: sort inputs
 	inputs := make([]deposit.Input, 0, len(events))
 	for _, e := range events {
 		inputs = append(inputs, deposit.Input{

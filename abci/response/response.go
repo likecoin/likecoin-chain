@@ -264,69 +264,6 @@ var WithdrawInvalidNonce = R{
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalInvalidFormat = R{
-	Code:                 14000,
-	Info:                 "Invalid DepositApprovalTransaction format",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: false,
-}
-
-var DepositApprovalInvalidSignature = R{
-	Code:                 14010,
-	Info:                 "Invalid DepositApprovalTransaction signature",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: false,
-}
-
-var DepositApprovalDuplicated = R{
-	Code:                 14020,
-	Info:                 "Duplicated DepositApprovalTransaction",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: false,
-}
-
-var DepositApprovalSenderNotRegistered = R{
-	Code:                 14030,
-	Info:                 "Sender of DepositApprovalTransaction not register",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: false,
-}
-
-var DepositApprovalInvalidNonce = R{
-	Code:                 14040,
-	Info:                 "Invalid DepositApprovalTransaction nonce",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: false,
-}
-
-var DepositApprovalNotApprover = R{
-	Code:                 14050,
-	Info:                 "User is not a DepositApprovalApprover",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: true,
-}
-
-var DepositApprovalDoubleApproval = R{
-	Code:                 14060,
-	Info:                 "User already approved another DepositApprovalTransaction for the same block numner",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: true,
-}
-
-var DepositApprovalAlreadyExecuted = R{
-	Code:                 14070,
-	Info:                 "The deposit proposal has already executed for the given block number",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: true,
-}
-
-var DepositApprovalProposalNotExist = R{
-	Code:                 14080,
-	Info:                 "The deposit proposal does not exist",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: true,
-}
-
 var HashedTransferInvalidFormat = R{
 	Code:                 15000,
 	Info:                 "Invalid HashedTransferTransaction format",

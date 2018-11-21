@@ -74,34 +74,6 @@ func TestWithdrawSignature(t *testing.T) {
 	})
 }
 
-func TestBigIntToUint256Bytes(t *testing.T) {
-	Convey("In the beginning", t, func() {
-		n := new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
-		Convey("If a big integer has 256 bits", func() {
-			n.Sub(n, big.NewInt(1))
-			Convey("bigIntToUint256Bytes should return the bytes", func() {
-				bs := bigIntToUint256Bytes(types.BigInt{Int: n})
-				So(bs, ShouldResemble, n.Bytes())
-			})
-		})
-		Convey("If a big integer has 248 bits", func() {
-			Convey("bigIntToUint256Bytes should return the bytes padded by zero at the beginning", func() {
-				n.Sub(n, big.NewInt(1))
-				n.Rsh(n, 8)
-				bs := bigIntToUint256Bytes(types.BigInt{Int: n})
-				So(bs[0:1], ShouldResemble, []byte{0})
-				So(bs[1:], ShouldResemble, n.Bytes())
-			})
-		})
-		Convey("If a big integer has more than 256 bits", func() {
-			Convey("bigIntToUint256Bytes should return nil", func() {
-				bs := bigIntToUint256Bytes(types.BigInt{Int: n})
-				So(bs, ShouldBeNil)
-			})
-		})
-	})
-}
-
 func TestPackWithdraw(t *testing.T) {
 	Convey("In the beginning", t, func() {
 		withdrawTx := &WithdrawTransaction{

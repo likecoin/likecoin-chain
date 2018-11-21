@@ -31,5 +31,6 @@ func (tx *DepositTransaction) GenerateJSONMap() map[string]interface{} {
 
 // RecoverAddress recovers the signing address
 func (sig *DepositJSONSignature) RecoverAddress(tx *DepositTransaction) (*types.Address, error) {
+	tx.Proposal.Sort()
 	return sig.JSONSignature.RecoverAddress(tx.GenerateJSONMap())
 }

@@ -5,11 +5,10 @@ import (
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/fixture"
+	. "github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
-	"github.com/ethereum/go-ethereum/common"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -17,24 +16,22 @@ func TestGetDepositApproverInfo(t *testing.T) {
 	Convey("Given an empty state", t, func() {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
 		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
+			{Alice.ID, 10},
+			{Bob.ID, 20},
 		}
 		Convey("GetDepositApproverInfo should be nil", func() {
-			approverInfo := GetDepositApproverInfo(state, id0)
+			approverInfo := GetDepositApproverInfo(state, Alice.ID)
 			So(approverInfo, ShouldBeNil)
 			Convey("After setting deposit approvers", func() {
 				SetDepositApprovers(state, approvers)
 				Convey("GetDepositApproverInfo should return the approver's info", func() {
-					approverInfo := GetDepositApproverInfo(state, id0)
+					approverInfo := GetDepositApproverInfo(state, Alice.ID)
 					So(approverInfo, ShouldResemble, &approvers[0])
-					approverInfo = GetDepositApproverInfo(state, id1)
+					approverInfo = GetDepositApproverInfo(state, Bob.ID)
 					So(approverInfo, ShouldResemble, &approvers[1])
 					Convey("GetDepositApproverInfo for non-existing approver should return nil", func() {
-						approverInfo := GetDepositApproverInfo(state, fixture.Carol.ID)
+						approverInfo := GetDepositApproverInfo(state, Carol.ID)
 						So(approverInfo, ShouldBeNil)
 					})
 				})
@@ -43,262 +40,134 @@ func TestGetDepositApproverInfo(t *testing.T) {
 	})
 }
 
-func TestCheckDepositProposal(t *testing.T) {
+func TestCheckDeposit(t *testing.T) {
 	Convey("Given an empty state", t, func() {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
 		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
-			{id2, 30},
+			{Alice.ID, 10},
+			{Bob.ID, 20},
+			{Carol.ID, 30},
 		}
 		SetDepositApprovers(state, approvers)
 		proposal1 := Proposal{
 			BlockNumber: 1337,
 			Inputs: []Input{
-				{*fixture.Alice.Address, types.NewBigInt(100)},
-				{*fixture.Bob.Address, types.NewBigInt(200)},
+				{*Alice.Address, types.NewBigInt(100)},
+				{*Bob.Address, types.NewBigInt(200)},
 			},
 		}
-		txHash1 := common.Hex2Bytes("0000000000000000000000000000000000000001")
 		proposal2 := Proposal{
 			BlockNumber: 1337,
 			Inputs: []Input{
-				{*fixture.Carol.Address, types.NewBigInt(100)},
-				{*fixture.Mallory.Address, types.NewBigInt(200)},
+				{*Carol.Address, types.NewBigInt(100)},
+				{*Mallory.Address, types.NewBigInt(200)},
 			},
 		}
 		Convey("For a valid DepositProposal", func() {
-			Convey("CheckDepositProposal should return Success", func() {
-				r := CheckDepositProposal(state, proposal1, id0)
+			Convey("CheckDeposit should return Success", func() {
+				r := CheckDeposit(state, proposal1, Alice.ID)
 				So(r, ShouldResemble, response.Success)
 			})
 		})
 		Convey("For a DepositProposal with proposer who is not a DepositApprover", func() {
-			Convey("CheckDepositProposal should return DepositNotApprover", func() {
-				r := CheckDepositProposal(state, proposal1, fixture.Mallory.ID)
+			Convey("CheckDeposit should return DepositNotApprover", func() {
+				r := CheckDeposit(state, proposal1, Mallory.ID)
 				So(r, ShouldResemble, response.DepositNotApprover)
 			})
 		})
 		Convey("For a DepositProposal with proposer who had already proposed another proposal on the same block number", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			Convey("CheckDepositProposal should return DepositDoubleApproval", func() {
-				r := CheckDepositProposal(state, proposal2, id0)
-				So(r, ShouldResemble, response.DepositDoubleApproval)
-			})
-		})
-		Convey("For a DepositProposal with proposer who had already approved another proposal", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			CreateDepositApproval(state, txHash1, id1)
-			Convey("CheckDepositProposal should return DepositDoubleApproval", func() {
-				r := CheckDepositProposal(state, proposal2, id1)
+			ProcessDeposit(state, proposal1, Alice.ID)
+			Convey("CheckDeposit should return DepositDoubleApproval", func() {
+				r := CheckDeposit(state, proposal2, Alice.ID)
 				So(r, ShouldResemble, response.DepositDoubleApproval)
 			})
 		})
 		Convey("For a DepositProposal which the block number has another ongoing proposal", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			Convey("CheckDepositProposal should return Success", func() {
-				r := CheckDepositProposal(state, proposal2, id1)
+			ProcessDeposit(state, proposal1, Alice.ID)
+			Convey("CheckDeposit should return Success", func() {
+				r := CheckDeposit(state, proposal2, Bob.ID)
 				So(r, ShouldResemble, response.Success)
 			})
 		})
 		Convey("For a DepositProposal which the block number has another executed proposal", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			ExecuteDepositProposal(state, txHash1)
-			Convey("CheckDepositProposal should return DepositAlreadyExecuted", func() {
-				r := CheckDepositProposal(state, proposal2, id1)
+			ProcessDeposit(state, proposal1, Bob.ID)
+			ProcessDeposit(state, proposal1, Carol.ID)
+			Convey("CheckDeposit should return DepositAlreadyExecuted", func() {
+				r := CheckDeposit(state, proposal2, Alice.ID)
 				So(r, ShouldResemble, response.DepositAlreadyExecuted)
 			})
 		})
 	})
 }
 
-func TestCreateDepositProposal(t *testing.T) {
+func TestProcessDeposit(t *testing.T) {
 	Convey("Given a valid DepositProposal", t, func() {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
-		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
-			{id2, 30},
-		}
-		SetDepositApprovers(state, approvers)
-		proposal1 := Proposal{
+		proposal := Proposal{
 			BlockNumber: 1337,
 			Inputs: []Input{
-				{*fixture.Alice.Address, types.NewBigInt(100)},
-				{*fixture.Bob.Address, types.NewBigInt(200)},
+				{*Alice.Address, types.NewBigInt(100)},
+				{*Bob.Address, types.NewBigInt(200)},
+				{*Carol.Address, types.NewBigInt(300)},
 			},
 		}
-		txHash1 := common.Hex2Bytes("0000000000000000000000000000000000000001")
-		Convey("CreateDepositProposal should return proposer's weight", func() {
-			weight := CreateDepositProposal(state, txHash1, proposal1, id0)
-			So(weight, ShouldEqual, approvers[0].Weight)
-			Convey("Should be able to get proposal by GetDepositProposal", func() {
-				queriedProposal := GetDepositProposal(state, txHash1)
-				So(queriedProposal, ShouldResemble, &proposal1)
-				Convey("GetDepositProposalWeight should return proposer's weight", func() {
-					queriedWeight := GetDepositProposalWeight(state, txHash1)
-					So(queriedWeight, ShouldEqual, approvers[0].Weight)
-					Convey("Should be able to get proposer's approval on the proposal's block number", func() {
-						approvalTxHash := GetDepositApproval(state, id0, proposal1.BlockNumber)
-						So(approvalTxHash, ShouldResemble, txHash1)
-					})
-				})
-			})
-		})
-	})
-}
-
-func TestCheckDepositApproval(t *testing.T) {
-	Convey("Given an empty state", t, func() {
-		appCtx := context.NewMock()
-		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
-		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
-			{id2, 30},
-		}
-		SetDepositApprovers(state, approvers)
-		proposal1 := Proposal{
-			BlockNumber: 1337,
-			Inputs: []Input{
-				{*fixture.Alice.Address, types.NewBigInt(100)},
-				{*fixture.Bob.Address, types.NewBigInt(200)},
-			},
-		}
-		txHash1 := common.Hex2Bytes("0000000000000000000000000000000000000000")
-		proposal2 := Proposal{
-			BlockNumber: 1337,
-			Inputs: []Input{
-				{*fixture.Carol.Address, types.NewBigInt(100)},
-				{*fixture.Mallory.Address, types.NewBigInt(200)},
-			},
-		}
-		txHash2 := common.Hex2Bytes("0000000000000000000000000000000000000002")
-		Convey("For a valid DepositApproval", func() {
-			Convey("CheckDepositApproval should return DepositApprovalProposalNotExist", func() {
-				r := CheckDepositApproval(state, txHash1, id1)
-				So(r, ShouldResemble, response.DepositApprovalProposalNotExist)
-				Convey("After proposing the corresponding DepositProposal", func() {
-					CreateDepositProposal(state, txHash1, proposal1, id0)
-					Convey("CheckDepositApproval should return Success", func() {
-						r := CheckDepositApproval(state, txHash1, id1)
-						So(r, ShouldResemble, response.Success)
-						Convey("If the approver then try to approve another proposal with the same block number", func() {
-							CreateDepositApproval(state, txHash1, id1)
-							CreateDepositProposal(state, txHash2, proposal2, id2)
-							Convey("CheckDepositApproval should return DepositApprovalDoubleApproval", func() {
-								r := CheckDepositApproval(state, txHash2, id1)
-								So(r, ShouldResemble, response.DepositApprovalDoubleApproval)
+		Convey("GetDepositProposalWeight should return 0 before proposing the proposal", func() {
+			proposalHash := proposal.Hash()
+			queriedWeight := GetDepositProposalWeight(state, proposalHash)
+			So(queriedWeight, ShouldEqual, 0)
+			Convey("ProcessDeposit should return false when proposer's weight is not enough to execute the proposal", func() {
+				approvers := []Approver{
+					{Alice.ID, 33},
+					{Bob.ID, 34},
+					{Carol.ID, 33},
+				}
+				SetDepositApprovers(state, approvers)
+				account.NewAccountFromID(state, Carol.ID, Carol.Address)
+				executed := ProcessDeposit(state, proposal, Alice.ID)
+				So(executed, ShouldBeFalse)
+				Convey("Should be able to get proposal hash by GetDepositApproval", func() {
+					queriedProposalHash := GetDepositApproval(state, Alice.ID, proposal.BlockNumber)
+					So(queriedProposalHash, ShouldResemble, proposalHash)
+					Convey("GetDepositProposalWeight should return proposer's weight", func() {
+						queriedWeight := GetDepositProposalWeight(state, proposalHash)
+						So(queriedWeight, ShouldEqual, approvers[0].Weight)
+						Convey("When someone further propose the same proposal, making the total weight >2/3", func() {
+							Convey("ProcessDeposit should return true", func() {
+								executed := ProcessDeposit(state, proposal, Bob.ID)
+								So(executed, ShouldBeTrue)
+								Convey("Account balance should change accordingly", func() {
+									balance := account.FetchBalance(state, Alice.Address)
+									So(balance.String(), ShouldResemble, "100")
+									balance = account.FetchBalance(state, Bob.Address)
+									So(balance.String(), ShouldResemble, "200")
+									balance = account.FetchBalance(state, Carol.ID)
+									So(balance.String(), ShouldResemble, "300")
+								})
 							})
 						})
 					})
 				})
 			})
 		})
-		Convey("For a DepositApproval with approver who is not a DepositApprover", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			Convey("CheckDepositApproval should return DepositApprovalNotApprover", func() {
-				r := CheckDepositApproval(state, txHash1, fixture.Mallory.ID)
-				So(r, ShouldResemble, response.DepositApprovalNotApprover)
-			})
-		})
-		Convey("For a DepositApproval which the block number has another ongoing proposal", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			CreateDepositProposal(state, txHash2, proposal2, id1)
-			Convey("CheckDepositApproval should return Success", func() {
-				r := CheckDepositApproval(state, txHash2, id2)
-				So(r, ShouldResemble, response.Success)
-			})
-		})
-		Convey("For a DepositApproval which the block number has another executed proposal", func() {
-			CreateDepositProposal(state, txHash1, proposal1, id0)
-			CreateDepositProposal(state, txHash2, proposal2, id1)
-			ExecuteDepositProposal(state, txHash1)
-			Convey("CheckDepositApproval should return DepositAlreadyExecuted", func() {
-				r := CheckDepositApproval(state, txHash2, id2)
-				So(r, ShouldResemble, response.DepositApprovalAlreadyExecuted)
-			})
-		})
-	})
-}
-
-func TestCreateDepositApproval(t *testing.T) {
-	Convey("Given a valid DepositApproval", t, func() {
-		appCtx := context.NewMock()
-		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
-		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
-			{id2, 30},
-		}
-		SetDepositApprovers(state, approvers)
-		proposal1 := Proposal{
-			BlockNumber: 1337,
-			Inputs: []Input{
-				{*fixture.Alice.Address, types.NewBigInt(100)},
-				{*fixture.Bob.Address, types.NewBigInt(200)},
-			},
-		}
-		txHash1 := common.Hex2Bytes("0000000000000000000000000000000000000000")
-		CreateDepositProposal(state, txHash1, proposal1, id0)
-		Convey("CreateDepositApproval should return the proposal's new weight", func() {
-			weight := CreateDepositApproval(state, txHash1, id2)
-			So(weight, ShouldEqual, 40)
-			Convey("Should be able to get proposer's approval on the proposal's block number", func() {
-				queriedTxHash := GetDepositApproval(state, id2, proposal1.BlockNumber)
-				So(queriedTxHash, ShouldResemble, txHash1)
-			})
-		})
-	})
-}
-
-func TestExecuteDepositProposal(t *testing.T) {
-	Convey("Given a state with ongoing DepositProposal", t, func() {
-		appCtx := context.NewMock()
-		state := appCtx.GetMutableState()
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
-		account.NewAccountFromID(state, id0, fixture.Alice.Address)
-		approvers := []Approver{
-			{id0, 10},
-			{id1, 20},
-			{id2, 30},
-		}
-		SetDepositApprovers(state, approvers)
-		proposal1 := Proposal{
-			BlockNumber: 1337,
-			Inputs: []Input{
-				{*fixture.Alice.Address, types.NewBigInt(100)},
-				{*fixture.Bob.Address, types.NewBigInt(200)},
-			},
-		}
-		txHash1 := common.Hex2Bytes("0000000000000000000000000000000000000000")
-		CreateDepositProposal(state, txHash1, proposal1, id0)
-		Convey("After ExecuteDepositProposal", func() {
-			ExecuteDepositProposal(state, txHash1)
-			Convey("Account balance should increase according the proposal", func() {
-				balance := account.FetchBalance(state, id0)
-				So(balance.Cmp(proposal1.Inputs[0].Value.Int), ShouldBeZeroValue)
-				balance = account.FetchBalance(state, fixture.Bob.Address)
-				So(balance.Cmp(proposal1.Inputs[1].Value.Int), ShouldBeZeroValue)
-				Convey("GetDepositExecution for the block number should return the txHash", func() {
-					queriedTxHash := GetDepositExecution(state, proposal1.BlockNumber)
-					So(queriedTxHash, ShouldResemble, txHash1)
+		Convey("ProcessDeposit should return true when proposer's weight is enough to execute the proposal", func() {
+			approvers := []Approver{
+				{Alice.ID, 67},
+				{Bob.ID, 33},
+			}
+			SetDepositApprovers(state, approvers)
+			account.NewAccountFromID(state, Carol.ID, Carol.Address)
+			Convey("ProcessDeposit should return true", func() {
+				executed := ProcessDeposit(state, proposal, Alice.ID)
+				So(executed, ShouldBeTrue)
+				Convey("Account balance should change accordingly", func() {
+					balance := account.FetchBalance(state, Alice.Address)
+					So(balance.String(), ShouldResemble, "100")
+					balance = account.FetchBalance(state, Bob.Address)
+					So(balance.String(), ShouldResemble, "200")
+					balance = account.FetchBalance(state, Carol.ID)
+					So(balance.String(), ShouldResemble, "300")
 				})
 			})
 		})

@@ -25,17 +25,6 @@ type WithdrawTransaction struct {
 	Sig    WithdrawSignature
 }
 
-func bigIntToUint256Bytes(n types.BigInt) []byte {
-	result := make([]byte, 32)
-	b := n.Bytes()
-	l := len(b)
-	if l > 32 {
-		return nil
-	}
-	copy(result[32-l:], b)
-	return result
-}
-
 // Pack returns the packed form of the withdraw transaction, which is used for withdraw in Ethereum contract
 // Packing format: 20-byte From, 20-byte ToAddr, 32-byte Value, 32-Byte Fee, 8-byte Nonce
 // All numbers are in big endian
@@ -43,12 +32,12 @@ func (tx *WithdrawTransaction) Pack() []byte {
 	buf := new(bytes.Buffer)
 	buf.Write(tx.From.Bytes())
 	buf.Write(tx.ToAddr.Bytes())
-	valueBytes := bigIntToUint256Bytes(tx.Value)
+	valueBytes := tx.Value.ToUint256Bytes()
 	if valueBytes == nil {
 		return nil
 	}
 	buf.Write(valueBytes)
-	feeBytes := bigIntToUint256Bytes(tx.Fee)
+	feeBytes := tx.Fee.ToUint256Bytes()
 	if feeBytes == nil {
 		return nil
 	}
