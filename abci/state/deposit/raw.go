@@ -107,12 +107,12 @@ func (proposal *Proposal) Hash() []byte {
 	return tmhash.Sum(bs)
 }
 
-func approvalKey(id *types.LikeChainID, blockNumber uint64) []byte {
+func approvalKey(id *types.LikeChainID, proposalHash []byte) []byte {
 	return utils.JoinKeys([][]byte{
 		depositApprovalKey,
 		id.Bytes(),
-		[]byte("block"),
-		utils.EncodeUint64(blockNumber),
+		[]byte("approval"),
+		proposalHash,
 	})
 }
 
@@ -183,16 +183,16 @@ func SetDepositApprovers(state context.IMutableState, approvers []Approver) {
 }
 
 // setDepositApproval records a deposit approval into state tree
-func setDepositApproval(state context.IMutableState, approver *types.LikeChainID, blockNumber uint64, proposalHash []byte) {
-	key := approvalKey(approver, blockNumber)
-	state.MutableStateTree().Set(key, proposalHash)
+func setDepositApproval(state context.IMutableState, approver *types.LikeChainID, proposalHash []byte) {
+	key := approvalKey(approver, proposalHash)
+	state.MutableStateTree().Set(key, []byte{1})
 }
 
-// GetDepositApproval returns a DepositApprover's approved proposalHash for a block number
-func GetDepositApproval(state context.IImmutableState, approver *types.LikeChainID, blockNumber uint64) []byte {
-	key := approvalKey(approver, blockNumber)
-	_, proposalHash := state.ImmutableStateTree().Get(key)
-	return proposalHash
+// HasApprovedDeposit returns a DepositApprover's approved proposalHash for a block number
+func HasApprovedDeposit(state context.IImmutableState, approver *types.LikeChainID, proposalHash []byte) bool {
+	key := approvalKey(approver, proposalHash)
+	_, v := state.ImmutableStateTree().Get(key)
+	return v != nil
 }
 
 // IncreaseDepositProposalWeight initializes or increments a deposit proposal's approve weight, returns the new weight

@@ -27,7 +27,7 @@ func CheckDeposit(state context.IImmutableState, proposal Proposal, proposer *ty
 	if GetDepositApproverInfo(state, proposer) == nil {
 		return response.DepositNotApprover
 	}
-	if GetDepositApproval(state, proposer, blockNumber) != nil {
+	if HasApprovedDeposit(state, proposer, proposal.Hash()) {
 		return response.DepositDoubleApproval
 	}
 	return response.Success
@@ -37,7 +37,7 @@ func CheckDeposit(state context.IImmutableState, proposal Proposal, proposer *ty
 func ProcessDeposit(state context.IMutableState, proposal Proposal, proposer *types.LikeChainID) bool {
 	blockNumber := proposal.BlockNumber
 	proposalHash := proposal.Hash()
-	setDepositApproval(state, proposer, blockNumber, proposalHash)
+	setDepositApproval(state, proposer, proposalHash)
 	approverInfo := GetDepositApproverInfo(state, proposer)
 	newWeight := IncreaseDepositProposalWeight(state, proposalHash, approverInfo.Weight)
 	weightSum := GetDepositApproversWeightSum(state)

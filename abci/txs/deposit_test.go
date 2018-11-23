@@ -145,7 +145,7 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(depositTx1))
 					r := depositTx1.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
-					So(deposit.GetDepositApproval(state, id0, depositTx1.Proposal.BlockNumber), ShouldResemble, proposalHash1)
+					So(deposit.HasApprovedDeposit(state, id0, proposalHash1), ShouldBeTrue)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					Convey("CheckTx again should return Duplicated", func() {
 						r := depositTx1.CheckTx(state)
@@ -177,7 +177,7 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(depositTx2))
 					r := depositTx2.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
-					So(deposit.GetDepositApproval(state, id1, depositTx2.Proposal.BlockNumber), ShouldResemble, proposalHash2)
+					So(deposit.HasApprovedDeposit(state, id1, proposalHash2), ShouldBeTrue)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 				})
 			})
@@ -254,7 +254,7 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 				r := depositTx2.DeliverTx(state, txHash)
 				So(r.Code, ShouldEqual, response.Success.Code)
 				So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
-				So(deposit.GetDepositApproval(state, id1, depositTx2.Proposal.BlockNumber), ShouldResemble, proposalHash2)
+				So(deposit.HasApprovedDeposit(state, id1, proposalHash2), ShouldBeTrue)
 				So(deposit.GetDepositExecution(state, depositTx2.Proposal.BlockNumber), ShouldResemble, proposalHash2)
 				So(account.FetchBalance(state, Mallory.Address).String(), ShouldResemble, "20")
 				So(account.FetchBalance(state, Carol.ID).String(), ShouldResemble, "10")
@@ -280,10 +280,28 @@ func TestCheckAndDeliverDeposit(t *testing.T) {
 			depositTx2.Proposer = Alice.ID
 			depositTx2.Nonce = 2
 			depositTx2.Sig = &DepositJSONSignature{Sig("881b3490b0d6bd00bdb9ca2359b6164a624a4b3dca061a4dfc5f5b4e0c36aeda5eaefb24e17b8037c6baf52ed4376720df1a58c1e239bedb19051895d0cb0e371b")}
-			Convey("CheckTx should return DoubleApproval", func() {
+			Convey("CheckTx should succeed", func() {
+				r := depositTx2.CheckTx(state)
+				So(r.Code, ShouldEqual, response.Success.Code)
+				Convey("DeliverTx should succeed", func() {
+					txHash := utils.HashRawTx(EncodeTx(depositTx2))
+					r := depositTx2.DeliverTx(state, txHash)
+					So(r.Code, ShouldEqual, response.Success.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
+				})
+			})
+		})
+		Convey("If a deposit transaction has proposer who has already proposed the same proposal", func() {
+			txHash := utils.HashRawTx(EncodeTx(depositTx1))
+			depositTx1.DeliverTx(state, txHash)
+			depositTx2.Proposer = Alice.ID
+			depositTx2.Proposal = depositTx1.Proposal
+			depositTx2.Nonce = 2
+			depositTx2.Sig = &DepositJSONSignature{Sig("567a0dee225bac78f443b572293de78f1d4b66d317c080a2eedb005143ad57ef0da475e869bb1222c337901d53914c38f5cdd24d7d82adc4d325f5a9ef0fba6d1b")}
+			Convey("CheckTx should return DepositDoubleApproval", func() {
 				r := depositTx2.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositDoubleApproval.Code)
-				Convey("DeliverTx should return DoubleApproval", func() {
+				Convey("DeliverTx should return DepositDoubleApproval", func() {
 					txHash := utils.HashRawTx(EncodeTx(depositTx2))
 					r := depositTx2.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.DepositDoubleApproval.Code)

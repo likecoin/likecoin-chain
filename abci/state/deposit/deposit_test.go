@@ -78,8 +78,15 @@ func TestCheckDeposit(t *testing.T) {
 		})
 		Convey("For a DepositProposal with proposer who had already proposed another proposal on the same block number", func() {
 			ProcessDeposit(state, proposal1, Alice.ID)
-			Convey("CheckDeposit should return DepositDoubleApproval", func() {
+			Convey("CheckDeposit should succeed", func() {
 				r := CheckDeposit(state, proposal2, Alice.ID)
+				So(r, ShouldResemble, response.Success)
+			})
+		})
+		Convey("For a DepositProposal which is already proposed by the same proposer", func() {
+			ProcessDeposit(state, proposal1, Alice.ID)
+			Convey("CheckDeposit should return DepositDoubleApproval", func() {
+				r := CheckDeposit(state, proposal1, Alice.ID)
 				So(r, ShouldResemble, response.DepositDoubleApproval)
 			})
 		})
@@ -127,9 +134,8 @@ func TestProcessDeposit(t *testing.T) {
 				account.NewAccountFromID(state, Carol.ID, Carol.Address)
 				executed := ProcessDeposit(state, proposal, Alice.ID)
 				So(executed, ShouldBeFalse)
-				Convey("Should be able to get proposal hash by GetDepositApproval", func() {
-					queriedProposalHash := GetDepositApproval(state, Alice.ID, proposal.BlockNumber)
-					So(queriedProposalHash, ShouldResemble, proposalHash)
+				Convey("HasApprovedDeposit should return true", func() {
+					So(HasApprovedDeposit(state, Alice.ID, proposalHash), ShouldBeTrue)
 					Convey("GetDepositProposalWeight should return proposer's weight", func() {
 						queriedWeight := GetDepositProposalWeight(state, proposalHash)
 						So(queriedWeight, ShouldEqual, approvers[0].Weight)

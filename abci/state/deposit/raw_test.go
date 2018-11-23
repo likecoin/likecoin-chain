@@ -341,16 +341,14 @@ func TestDepositApproval(t *testing.T) {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
 		id := Alice.ID
-		blockNumber := uint64(1337)
-		txHash := common.Hex2Bytes("0000000000000000000000000000000000000000")
-		Convey("GetDepositApproval should return nil", func() {
-			approvalTxHash := GetDepositApproval(state, id, blockNumber)
-			So(approvalTxHash, ShouldBeNil)
+		proposalHash := common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")
+		Convey("HasApprovedDeposit should return false", func() {
+			HasApprovedDeposit(state, id, proposalHash)
+			So(HasApprovedDeposit(state, id, proposalHash), ShouldBeFalse)
 			Convey("After setting DepositApproval", func() {
-				setDepositApproval(state, id, blockNumber, txHash)
-				Convey("GetDepositApproval should return the set TxHash", func() {
-					approvalTxHash := GetDepositApproval(state, id, blockNumber)
-					So(approvalTxHash, ShouldResemble, txHash)
+				setDepositApproval(state, id, proposalHash)
+				Convey("HasApprovedDeposit should return true", func() {
+					So(HasApprovedDeposit(state, id, proposalHash), ShouldBeTrue)
 				})
 			})
 		})
@@ -362,15 +360,15 @@ func TestDepositExecution(t *testing.T) {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
 		blockNumber := uint64(1337)
-		txHash := common.Hex2Bytes("0000000000000000000000000000000000000000")
+		proposalHash := common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")
 		Convey("GetDepositExecution should return nil", func() {
 			executedTxHash := GetDepositExecution(state, blockNumber)
 			So(executedTxHash, ShouldBeNil)
 			Convey("After setting DepositExecution", func() {
-				setDepositExecution(state, blockNumber, txHash)
+				setDepositExecution(state, blockNumber, proposalHash)
 				Convey("GetDepositExecution should return the set TxHash", func() {
 					executedTxHash := GetDepositExecution(state, blockNumber)
-					So(executedTxHash, ShouldResemble, txHash)
+					So(executedTxHash, ShouldResemble, proposalHash)
 				})
 			})
 		})
