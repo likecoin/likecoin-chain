@@ -8,7 +8,7 @@ import (
 )
 
 type txStateQuery struct {
-	TxHash string `form:"tx_hash" binding:"required,hex"`
+	TxHash string `form:"tx_hash" binding:"required,txHash"`
 }
 
 func getTxState(c *gin.Context) {

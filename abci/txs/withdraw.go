@@ -62,11 +62,10 @@ func (tx *WithdrawTransaction) ValidateFormat() bool {
 	if tx.From == nil || tx.Value.Int == nil || tx.Fee.Int == nil || tx.Sig == nil {
 		return false
 	}
-	zero := big.NewInt(0)
-	if tx.Value.Cmp(zero) < 0 {
+	if !tx.Value.IsWithinRange() {
 		return false
 	}
-	if tx.Fee.Cmp(zero) < 0 {
+	if !tx.Fee.IsWithinRange() {
 		return false
 	}
 	return true
@@ -160,7 +159,7 @@ func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []b
 	})
 }
 
-// WithdrawTx returns raw bytes of a WithdrawTransaction
+// WithdrawTx returns a WithdrawTransaction
 func WithdrawTx(from types.Identifier, toAddrHex string, value, fee types.BigInt, nonce uint64, sigHex string) *WithdrawTransaction {
 	toAddr := *types.Addr(toAddrHex)
 	sig := &WithdrawJSONSignature{

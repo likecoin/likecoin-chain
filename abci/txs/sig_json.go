@@ -34,15 +34,23 @@ func recoverEthSignature(hash []byte, sig [65]byte) (*types.Address, error) {
 	return &addr, nil
 }
 
-// RecoverAddress recover the signature to address by the deterministic JSON representation of the message
-func (sig *JSONSignature) RecoverAddress(jsonMap map[string]interface{}) (*types.Address, error) {
+// JSONMapToHash takes a map[string]interface{} representing a JSON object, returns the hash for signing the message
+func JSONMapToHash(jsonMap map[string]interface{}) ([]byte, error) {
 	msg, err := json.Marshal(jsonMap)
 	if err != nil {
 		return nil, err
 	}
 	sigPrefix := "\x19Ethereum Signed Message:\n"
 	hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
-	hash := crypto.Keccak256(hashingMsg)
+	return crypto.Keccak256(hashingMsg), nil
+}
+
+// RecoverAddress recover the signature to address by the deterministic JSON representation of the message
+func (sig *JSONSignature) RecoverAddress(jsonMap map[string]interface{}) (*types.Address, error) {
+	hash, err := JSONMapToHash(jsonMap)
+	if err != nil {
+		return nil, err
+	}
 	addr, err := recoverEthSignature(hash, *sig)
 	return addr, err
 }

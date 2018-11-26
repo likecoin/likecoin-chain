@@ -1,12 +1,11 @@
-
-FROM likechain/abci as builder
+FROM likechain/golang-godep as builder
 
 # Copy files to WORKDIR
-COPY . ./
+COPY . ./abci
 
 # Build executables
-RUN go build -a -o /bin/likechain/abci cmd/abci/main.go
-RUN go build -a -o /bin/likechain/api cmd/api/main.go
+RUN go build -a -o /bin/likechain/abci abci/cmd/abci/main.go
+RUN go build -a -o /bin/likechain/api abci/cmd/api/main.go
 
 FROM alpine:latest
 

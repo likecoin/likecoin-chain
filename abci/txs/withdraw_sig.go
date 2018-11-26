@@ -12,14 +12,18 @@ type WithdrawJSONSignature struct {
 	JSONSignature
 }
 
-// RecoverAddress recovers the signing address
-func (sig *WithdrawJSONSignature) RecoverAddress(tx *WithdrawTransaction) (*types.Address, error) {
-	jsonMap := map[string]interface{}{
+// GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
+func (tx *WithdrawTransaction) GenerateJSONMap() map[string]interface{} {
+	return map[string]interface{}{
 		"fee":      tx.Fee.String(),
 		"identity": tx.From.String(),
 		"nonce":    tx.Nonce,
 		"to_addr":  tx.ToAddr.String(),
 		"value":    tx.Value.String(),
 	}
-	return sig.JSONSignature.RecoverAddress(jsonMap)
+}
+
+// RecoverAddress recovers the signing address
+func (sig *WithdrawJSONSignature) RecoverAddress(tx *WithdrawTransaction) (*types.Address, error) {
+	return sig.JSONSignature.RecoverAddress(tx.GenerateJSONMap())
 }

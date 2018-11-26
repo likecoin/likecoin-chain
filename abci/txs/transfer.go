@@ -46,18 +46,17 @@ func (tx *TransferTransaction) ValidateFormat() bool {
 	if len(tx.Outputs) == 0 {
 		return false
 	}
-	zero := big.NewInt(0)
-	if tx.Fee.Cmp(zero) < 0 {
+	if !tx.Fee.IsWithinRange() {
 		return false
 	}
 	for _, output := range tx.Outputs {
 		if output.To == nil || output.Value.Int == nil {
 			return false
 		}
-		if !output.Remark.Validate() {
+		if !output.Value.IsWithinRange() {
 			return false
 		}
-		if output.Value.Cmp(zero) < 0 {
+		if !output.Remark.Validate() {
 			return false
 		}
 	}
@@ -151,7 +150,7 @@ func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []b
 	return response.Success
 }
 
-// TransferTx returns raw bytes of a TransferTransaction
+// TransferTx returns a TransferTransaction
 func TransferTx(from types.Identifier, outputs []TransferOutput, fee types.BigInt, nonce uint64, sigHex string) *TransferTransaction {
 	sig := &TransferJSONSignature{
 		JSONSignature: Sig(sigHex),

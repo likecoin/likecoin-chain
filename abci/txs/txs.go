@@ -29,19 +29,27 @@ func init() {
 	cdc.RegisterConcrete(&TransferTransaction{}, "github.com/likecoin/likechain/TransferTransaction", nil)
 	cdc.RegisterConcrete(&WithdrawTransaction{}, "github.com/likecoin/likechain/WithdrawTransaction", nil)
 	cdc.RegisterConcrete(&DepositTransaction{}, "github.com/likecoin/likechain/DepositTransaction", nil)
+	cdc.RegisterConcrete(&DepositApprovalTransaction{}, "github.com/likecoin/likechain/DepositApprovalTransaction", nil)
 	cdc.RegisterInterface((*TransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&RegisterJSONSignature{}, "github.com/likecoin/likechain/RegisterJSONSignature", nil)
 	cdc.RegisterInterface((*RegisterSignature)(nil), nil)
 	cdc.RegisterConcrete(&TransferJSONSignature{}, "github.com/likecoin/likechain/TransferJSONSignature", nil)
 	cdc.RegisterInterface((*WithdrawSignature)(nil), nil)
 	cdc.RegisterConcrete(&WithdrawJSONSignature{}, "github.com/likecoin/likechain/WithdrawJSONSignature", nil)
+	cdc.RegisterInterface((*DepositSignature)(nil), nil)
+	cdc.RegisterConcrete(&DepositJSONSignature{}, "github.com/likecoin/likechain/DepositJSONSignature", nil)
+	cdc.RegisterInterface((*DepositApprovalSignature)(nil), nil)
+	cdc.RegisterConcrete(&DepositApprovalJSONSignature{}, "github.com/likecoin/likechain/DepositApprovalJSONSignature", nil)
 }
 
 // EncodeTx encodes a transaction into raw bytes
 func EncodeTx(tx Transaction) []byte {
 	bs, err := types.AminoCodec().MarshalBinary(tx)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("tx", tx).
+			WithError(err).
+			Panic("Cannot encode transaction")
 	}
 	return bs
 }

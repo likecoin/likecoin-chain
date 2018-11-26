@@ -7,6 +7,7 @@ import (
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 
@@ -153,6 +154,8 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
+					So(account.FetchBalance(state, id).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					Convey("CheckTx again should return Duplicated", func() {
 						// The logic of withdrawTx.DeliverTx will change the transaction object, so need to reconstruct
 						// it for testing
@@ -162,6 +165,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 						Convey("DeliverTx should return Duplicated", func() {
 							r := withdrawTx.DeliverTx(state, txHash)
 							So(r.Code, ShouldEqual, response.WithdrawDuplicated.Code)
+							So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 						})
 					})
 				})
@@ -188,14 +192,8 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
-					Convey("CheckTx again should return Duplicated", func() {
-						r := withdrawTx.CheckTx(state)
-						So(r.Code, ShouldEqual, response.WithdrawDuplicated.Code)
-						Convey("DeliverTx should return Duplicated", func() {
-							r := withdrawTx.DeliverTx(state, txHash)
-							So(r.Code, ShouldEqual, response.WithdrawDuplicated.Code)
-						})
-					})
+					So(account.FetchBalance(state, id).Cmp(big.NewInt(0)), ShouldBeZeroValue)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 				})
 			})
 		})
@@ -208,6 +206,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawInvalidFormat.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -220,6 +219,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawSenderNotRegistered.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -232,6 +232,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -244,6 +245,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawInvalidSignature.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -257,6 +259,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawInvalidNonce.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -270,6 +273,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawNotEnoughBalance.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})
@@ -283,6 +287,7 @@ func TestCheckAndDeliverWithdraw(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(withdrawTx))
 					r := withdrawTx.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.WithdrawNotEnoughBalance.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusFail)
 				})
 			})
 		})

@@ -16,3 +16,8 @@ docker-compose.production.yml
 *.log
 
 coverage.txt
+
+vendor
+
+docker/golang-godep/Gopkg.lock
+docker/golang-godep/Gopkg.toml

@@ -13,13 +13,13 @@ import (
 const (
 	ethAddressRegexString   = `^0x[0-9a-fA-F]{40}$`
 	ethSignatureRegexString = `^0x[0-9a-f]{130}$`
-	hexRegexString          = `^(0x)?([0-9a-fA-F]{2})+$`
+	txHashRegexString       = `^(0x)?[0-9a-fA-F]{40}$`
 )
 
 var (
 	ethAddressRegex   = regexp.MustCompile(ethAddressRegexString)
 	ethSignatureRegex = regexp.MustCompile(ethSignatureRegexString)
-	hexRegex          = regexp.MustCompile(hexRegexString)
+	txHashRegex       = regexp.MustCompile(txHashRegexString)
 )
 
 // ValidateBigInteger validates big integer
@@ -93,8 +93,8 @@ func IsIdentity(
 	return IsEthereumAddress(v, topStruct, currentStructOrField, field, fieldType, fieldKind, param)
 }
 
-// IsHex validates hex string
-func IsHex(
+// IsTxHash validates txHash string
+func IsTxHash(
 	v *validator.Validate,
 	topStruct reflect.Value,
 	currentStructOrField reflect.Value,
@@ -104,7 +104,7 @@ func IsHex(
 	param string,
 ) bool {
 	if hex, ok := field.Interface().(string); ok {
-		return hexRegex.MatchString(hex)
+		return txHashRegex.MatchString(hex)
 	}
 
 	return false
@@ -117,6 +117,6 @@ func Bind() {
 		v.RegisterValidation("eth_addr", IsEthereumAddress)
 		v.RegisterValidation("eth_sig", IsEthereumSignature)
 		v.RegisterValidation("identity", IsIdentity)
-		v.RegisterValidation("hex", IsHex)
+		v.RegisterValidation("txHash", IsTxHash)
 	}
 }

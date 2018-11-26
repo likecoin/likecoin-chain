@@ -3,14 +3,17 @@ package app
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/account"
 	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/likecoin/likechain/abci/context"
+	"github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 
@@ -37,6 +40,238 @@ func TestGeneral(t *testing.T) {
 					r := app.DeliverTx(rawTx)
 					So(r.Code, ShouldEqual, 1)
 				})
+			})
+		})
+	})
+}
+
+func TestInitChain(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		state := app.ctx.GetMutableState()
+		id1 := types.IDStr("ERERERERERERERERERERERERERE=")
+		addr1 := types.Addr("0x1111111111111111111111111111111111111111")
+		id2 := types.IDStr("IiIiIiIiIiIiIiIiIiIiIiIiIiI=")
+		addr2 := types.Addr("0x2222222222222222222222222222222222222222")
+		Convey("For empty AppStateBytes in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte{},
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with empty object in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte("{}"),
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with empty accounts array in InitChainRequest", func() {
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte(`{"accounts":[]}`),
+			})
+			Convey("The initial state should contain no accounts", func() {
+				found := state.MutableStateTree().IterateRange([]byte("acc_"), []byte("acc\xff"), true, func(_, _ []byte) bool {
+					return true
+				})
+				So(found, ShouldBeFalse)
+			})
+		})
+		Convey("For AppStateBytes with some accounts in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100,
+							"depositApproverWeight": 10
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"depositApproverWeight": 0
+						}
+					]
+				}`
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte(s),
+			})
+			Convey("The initial state should contain the corresponding accounts with balances", func() {
+				So(account.IsLikeChainIDRegistered(state, id1), ShouldBeTrue)
+				So(account.IsLikeChainIDHasAddress(state, id1, addr1), ShouldBeTrue)
+				So(account.FetchBalance(state, id1).Cmp(big.NewInt(100)), ShouldBeZeroValue)
+				So(account.IsLikeChainIDRegistered(state, id2), ShouldBeTrue)
+				So(account.IsLikeChainIDHasAddress(state, id2, addr2), ShouldBeTrue)
+				v, _ := new(big.Int).SetString("20000000000000000000000000000000000000000", 10)
+				So(account.FetchBalance(state, id2).Cmp(v), ShouldBeZeroValue)
+				Convey("Deposit approvers should be set correctly", func() {
+					approvers := deposit.GetDepositApprovers(state)
+					expectedApprovers := []deposit.Approver{
+						{ID: id1, Weight: 10},
+					}
+					So(approvers, ShouldResemble, expectedApprovers)
+				})
+			})
+		})
+		Convey("For AppStateBytes with invalid account IDs in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":0
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with invalid address in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":0
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x222222222222222222222222222222222222222g",
+							"balance":"20000000000000000000000000000000000000000"
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with negative balance in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":-1
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with balance >= 2^256 in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":"115792089237316195423570985008687907853269984665640564039457584007913129639936"
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with invalid deposit approver weight InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"depositApproverWeight": -1
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with duplicated LikeChain ID in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100
+						},
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x2222222222222222222222222222222222222222",
+							"balance":"20000000000000000000000000000000000000000",
+							"isDepositApprover": true
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with duplicated address in accounts array in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":100
+						},
+						{
+							"id": "IiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":"20000000000000000000000000000000000000000"
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
 			})
 		})
 	})
@@ -1584,6 +1819,115 @@ func TestWithdraw(t *testing.T) {
 	})
 }
 
+func TestDepositAndDepositApproval(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		initStateJSON := fmt.Sprintf(`{
+			"accounts": [
+				{
+					"id": "%s",
+					"addr": "%s",
+					"depositApproverWeight": 10
+				},
+				{
+					"id": "%s",
+					"addr": "%s",
+					"depositApproverWeight": 20
+				}
+			]
+		}`,
+			fixture.Alice.ID, fixture.Alice.Address,
+			fixture.Bob.ID, fixture.Bob.Address,
+		)
+		app.InitChain(abci.RequestInitChain{
+			AppStateBytes: []byte(initStateJSON),
+		})
+		Convey("If deposit transaction is valid", func() {
+			inputs := []deposit.Input{
+				{FromAddr: *fixture.Alice.Address, Value: types.NewBigInt(10)},
+				{FromAddr: *fixture.Bob.Address, Value: types.NewBigInt(20)},
+			}
+			rawTx := txs.RawDepositTx(fixture.Alice.ID, 1337, inputs, 1, "ecf7faecbb356c96c2fb19076a3bc790686ad23e343816de204ee496aa84c9813198a23947ff1728a07b869b0a5132d2aab20aee5826cd57bb5024a8748832a61c")
+			Convey("CheckTx should return success", func() {
+				r := app.CheckTx(rawTx)
+				So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
+				Convey("DeliverTx should return success", func() {
+					r := app.DeliverTx(rawTx)
+					So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+					Convey("Then query tx_state should return pending", func() {
+						depositTxHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: depositTxHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						txStateRes := query.GetTxStateRes(queryRes.Value)
+						So(txStateRes, ShouldNotBeNil)
+						So(txStateRes.Status, ShouldEqual, "pending")
+						Convey("Then for a deposit approval transaction on this deposit proposal", func() {
+							rawTx := txs.RawDepositApprovalTx(fixture.Bob.Address, depositTxHash, 1, "d49b0bf7ee1386c15d9988defad1ff22cc84b270e0b4d6d407c508af44eadbe923f4f36e355d31b818f52addf7afc00f9bf6212b0a8f418cc5a0103a479ee8241c")
+							Convey("CheckTx should return success", func() {
+								r := app.CheckTx(rawTx)
+								So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
+								Convey("DeliverTx should return success", func() {
+									r := app.DeliverTx(rawTx)
+									So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+									Convey("Then query tx_state for the deposit approval transaction should return success", func() {
+										depositApprovalTxHash := tmhash.Sum(rawTx)
+										queryRes := app.Query(abci.RequestQuery{
+											Path: "tx_state",
+											Data: depositApprovalTxHash,
+										})
+										So(queryRes.Code, ShouldEqual, response.Success.Code)
+										txStateRes := query.GetTxStateRes(queryRes.Value)
+										So(txStateRes, ShouldNotBeNil)
+										So(txStateRes.Status, ShouldEqual, "success")
+										Convey("Then query tx_state for the deposit transaction should return success", func() {
+											depositTxHash := tmhash.Sum(rawTx)
+											queryRes := app.Query(abci.RequestQuery{
+												Path: "tx_state",
+												Data: depositTxHash,
+											})
+											So(queryRes.Code, ShouldEqual, response.Success.Code)
+											txStateRes := query.GetTxStateRes(queryRes.Value)
+											So(txStateRes, ShouldNotBeNil)
+											So(txStateRes.Status, ShouldEqual, "success")
+											Convey("Then query account_info for the deposit receivers should return the corresponding balance", func() {
+												queryRes := app.Query(abci.RequestQuery{
+													Path: "account_info",
+													Data: []byte(fixture.Alice.ID.String()),
+												})
+												So(queryRes.Code, ShouldEqual, response.Success.Code)
+												accountInfo := query.GetAccountInfoRes(queryRes.Value)
+												So(accountInfo, ShouldNotBeNil)
+												So(accountInfo.Balance.Cmp(big.NewInt(10)), ShouldBeZeroValue)
+												So(accountInfo.NextNonce, ShouldEqual, 2)
+
+												queryRes = app.Query(abci.RequestQuery{
+													Path: "account_info",
+													Data: []byte(fixture.Bob.ID.String()),
+												})
+												So(queryRes.Code, ShouldEqual, response.Success.Code)
+												accountInfo = query.GetAccountInfoRes(queryRes.Value)
+												So(accountInfo, ShouldNotBeNil)
+												So(accountInfo.Balance.Cmp(big.NewInt(20)), ShouldBeZeroValue)
+												So(accountInfo.NextNonce, ShouldEqual, 2)
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			})
+		})
+	})
+}
+
 func TestGC(t *testing.T) {
 	Convey("Given an application state set with keep_blocks = 10", t, func() {
 		appConf.GetConfig().KeepBlocks = 10
@@ -1620,6 +1964,259 @@ func TestGC(t *testing.T) {
 						Convey("The second versions should still be there", func() {
 							So(stateTree.VersionExists(secondStateTreeVersion), ShouldBeTrue)
 							So(withdrawTree.VersionExists(secondWithdrawTreeVersion), ShouldBeTrue)
+						})
+					})
+				})
+			})
+		})
+	})
+}
+
+func TestIntegrated(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		Convey("After init chain with initial state setting Carol and Dave as predefined accounts", func() {
+			initStateJSON := fmt.Sprintf(`{
+				"accounts": [
+					{
+						"id": "%s",
+						"addr": "%s",
+						"balance": 100,
+						"depositApproverWeight": 10
+					},
+					{
+						"id": "%s",
+						"addr": "%s",
+						"balance": "200",
+						"depositApproverWeight": 20
+					}
+				]
+			}`,
+				fixture.Carol.ID, fixture.Carol.Address,
+				fixture.Dave.ID, fixture.Dave.Address,
+			)
+			app.InitChain(abci.RequestInitChain{
+				AppStateBytes: []byte(initStateJSON),
+			})
+			Convey("account_info and address_info should return Carol and Dave's info", func() {
+				queryRes := app.Query(abci.RequestQuery{
+					Path: "account_info",
+					Data: []byte(fixture.Carol.ID.String()),
+				})
+				So(queryRes.Code, ShouldEqual, response.Success.Code)
+				accountInfo := query.GetAccountInfoRes(queryRes.Value)
+				So(accountInfo, ShouldNotBeNil)
+				So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+				So(accountInfo.NextNonce, ShouldEqual, 1)
+
+				queryRes = app.Query(abci.RequestQuery{
+					Path: "account_info",
+					Data: []byte(fixture.Dave.ID.String()),
+				})
+				So(queryRes.Code, ShouldEqual, response.Success.Code)
+				accountInfo = query.GetAccountInfoRes(queryRes.Value)
+				So(accountInfo, ShouldNotBeNil)
+				So(accountInfo.Balance.Cmp(big.NewInt(200)), ShouldBeZeroValue)
+				So(accountInfo.NextNonce, ShouldEqual, 1)
+
+				queryRes = app.Query(abci.RequestQuery{
+					Path: "address_info",
+					Data: []byte(fixture.Carol.Address.String()),
+				})
+				So(queryRes.Code, ShouldEqual, response.Success.Code)
+				accountInfo = query.GetAccountInfoRes(queryRes.Value)
+				So(accountInfo, ShouldNotBeNil)
+				So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
+				So(accountInfo.NextNonce, ShouldEqual, 1)
+
+				queryRes = app.Query(abci.RequestQuery{
+					Path: "address_info",
+					Data: []byte(fixture.Dave.Address.String()),
+				})
+				So(queryRes.Code, ShouldEqual, response.Success.Code)
+				accountInfo = query.GetAccountInfoRes(queryRes.Value)
+				So(accountInfo, ShouldNotBeNil)
+				So(accountInfo.Balance.Cmp(big.NewInt(200)), ShouldBeZeroValue)
+				So(accountInfo.NextNonce, ShouldEqual, 1)
+				Convey("Alice should be able to register", func() {
+					rawTx := txs.RawRegisterTx(fixture.Alice.Address.String(), "b19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b")
+					r := app.DeliverTx(rawTx)
+					So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+					aliceID := r.Data
+					Convey("account_info and address_info should return the correct info of Alice's account", func() {
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "account_info",
+							Data: []byte(types.ID(aliceID).String()),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo := query.GetAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 1)
+
+						queryRes = app.Query(abci.RequestQuery{
+							Path: "address_info",
+							Data: []byte(fixture.Alice.Address.String()),
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						accountInfo = query.GetAccountInfoRes(queryRes.Value)
+						So(accountInfo, ShouldNotBeNil)
+						So(accountInfo.Balance.Cmp(big.NewInt(0)), ShouldBeZeroValue)
+						So(accountInfo.NextNonce, ShouldEqual, 1)
+						Convey("Carol as predefined deposit approver should be able to propose deposit", func() {
+							inputs := []deposit.Input{
+								{FromAddr: *fixture.Alice.Address, Value: types.NewBigInt(150)},
+								{FromAddr: *fixture.Bob.Address, Value: types.NewBigInt(250)},
+							}
+							rawTx := txs.RawDepositTx(fixture.Carol.ID, 1, inputs, 1, "48d7263316a8c1f30ee1c5f3efb2780ceeb77a0051d192abc790f3b26668969a451b76693e0641fdb2bc2c964d0a8bb8b5b9a8534219052f80082744604197421c")
+							r := app.DeliverTx(rawTx)
+							So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+							Convey("tx_state on the deposit transaction hash should return pending", func() {
+								depositTxHash := tmhash.Sum(rawTx)
+								queryRes = app.Query(abci.RequestQuery{
+									Path: "tx_state",
+									Data: depositTxHash,
+								})
+								So(queryRes.Code, ShouldEqual, response.Success.Code)
+								txStateRes := query.GetTxStateRes(queryRes.Value)
+								So(txStateRes, ShouldNotBeNil)
+								So(txStateRes.Status, ShouldEqual, "pending")
+								Convey("Dave as predefined deposit approver should be able to approve deposit", func() {
+									rawTx := txs.RawDepositApprovalTx(fixture.Dave.Address, depositTxHash, 1, "0c3de6873eae2b400ed0bf3c672051b585f8034890e1bb8e6c36fceb9b44138e564eabb7f0518f172803097469daff2cc67aba05e9724b8ac4cb2c3d5df8ef271b")
+									r := app.DeliverTx(rawTx)
+									So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+									Convey("tx_state on the deposit transaction hash should return success", func() {
+										queryRes = app.Query(abci.RequestQuery{
+											Path: "tx_state",
+											Data: depositTxHash,
+										})
+										So(queryRes.Code, ShouldEqual, response.Success.Code)
+										txStateRes := query.GetTxStateRes(queryRes.Value)
+										So(txStateRes, ShouldNotBeNil)
+										So(txStateRes.Status, ShouldEqual, "success")
+										Convey("account_info and address_info should return the new balance", func() {
+											queryRes := app.Query(abci.RequestQuery{
+												Path: "account_info",
+												Data: []byte(types.ID(aliceID).String()),
+											})
+											So(queryRes.Code, ShouldEqual, response.Success.Code)
+											accountInfo := query.GetAccountInfoRes(queryRes.Value)
+											So(accountInfo, ShouldNotBeNil)
+											So(accountInfo.Balance.Cmp(big.NewInt(150)), ShouldBeZeroValue)
+											So(accountInfo.NextNonce, ShouldEqual, 1)
+
+											queryRes = app.Query(abci.RequestQuery{
+												Path: "address_info",
+												Data: []byte(fixture.Bob.Address.String()),
+											})
+											So(queryRes.Code, ShouldEqual, response.Success.Code)
+											accountInfo = query.GetAccountInfoRes(queryRes.Value)
+											So(accountInfo, ShouldNotBeNil)
+											So(accountInfo.Balance.Cmp(big.NewInt(250)), ShouldBeZeroValue)
+											So(accountInfo.NextNonce, ShouldEqual, 0)
+											Convey("Alice should be able to transfer Likes to Bob's unregistered address and Carol's LikeChainID and Dave's address", func() {
+												outputs := []txs.TransferOutput{
+													{
+														To:    fixture.Bob.Address,
+														Value: types.NewBigInt(30),
+													},
+													{
+														To:    fixture.Carol.ID,
+														Value: types.NewBigInt(40),
+													},
+													{
+														To:     fixture.Dave.Address,
+														Value:  types.NewBigInt(50),
+														Remark: []byte("Lamborghini"),
+													},
+												}
+												rawTx := txs.RawTransferTx(fixture.Alice.Address, outputs, types.NewBigInt(10), 1, "38ee35f9e528adb9cfe66900997f1d55e7494c85680e24aa9b3ab40210f178172d093e62686c8c2c75071abe3b9882481c588ac69823cbb48069fb27da5f45591c")
+												r := app.DeliverTx(rawTx)
+												So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+												Convey("account_info and address_info should return the new balance", func() {
+													queryRes := app.Query(abci.RequestQuery{
+														Path: "account_info",
+														Data: []byte(types.ID(aliceID).String()),
+													})
+													So(queryRes.Code, ShouldEqual, response.Success.Code)
+													accountInfo := query.GetAccountInfoRes(queryRes.Value)
+													So(accountInfo, ShouldNotBeNil)
+													So(accountInfo.Balance.Cmp(big.NewInt(20)), ShouldBeZeroValue)
+													So(accountInfo.NextNonce, ShouldEqual, 2)
+
+													queryRes = app.Query(abci.RequestQuery{
+														Path: "address_info",
+														Data: []byte(fixture.Bob.Address.String()),
+													})
+													So(queryRes.Code, ShouldEqual, response.Success.Code)
+													accountInfo = query.GetAccountInfoRes(queryRes.Value)
+													So(accountInfo, ShouldNotBeNil)
+													So(accountInfo.Balance.Cmp(big.NewInt(280)), ShouldBeZeroValue)
+													So(accountInfo.NextNonce, ShouldEqual, 0)
+
+													queryRes = app.Query(abci.RequestQuery{
+														Path: "account_info",
+														Data: []byte(fixture.Carol.ID.String()),
+													})
+													So(queryRes.Code, ShouldEqual, response.Success.Code)
+													accountInfo = query.GetAccountInfoRes(queryRes.Value)
+													So(accountInfo, ShouldNotBeNil)
+													So(accountInfo.Balance.Cmp(big.NewInt(140)), ShouldBeZeroValue)
+													So(accountInfo.NextNonce, ShouldEqual, 2)
+
+													queryRes = app.Query(abci.RequestQuery{
+														Path: "account_info",
+														Data: []byte(fixture.Dave.ID.String()),
+													})
+													So(queryRes.Code, ShouldEqual, response.Success.Code)
+													accountInfo = query.GetAccountInfoRes(queryRes.Value)
+													So(accountInfo, ShouldNotBeNil)
+													So(accountInfo.Balance.Cmp(big.NewInt(250)), ShouldBeZeroValue)
+													So(accountInfo.NextNonce, ShouldEqual, 2)
+													Convey("Carol should be able to withdraw", func() {
+														rawTx := txs.RawWithdrawTx(fixture.Carol.ID, fixture.Carol.Address.String(), types.NewBigInt(100), types.NewBigInt(10), 2, "abca7dc8dc16d6d77b8774653a54c7037664ea902c98eb12daf84fcd64d4ac39028afb94f37e551f999715a69b3252587d596c1e090123f8f383de58f556d2991c")
+														r := app.DeliverTx(rawTx)
+														So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+														packedTx := r.Data
+														Convey("account_info should return the new balance", func() {
+															queryRes := app.Query(abci.RequestQuery{
+																Path: "account_info",
+																Data: []byte(fixture.Carol.ID.String()),
+															})
+															So(queryRes.Code, ShouldEqual, response.Success.Code)
+															accountInfo := query.GetAccountInfoRes(queryRes.Value)
+															So(accountInfo, ShouldNotBeNil)
+															So(accountInfo.Balance.Cmp(big.NewInt(30)), ShouldBeZeroValue)
+															So(accountInfo.NextNonce, ShouldEqual, 3)
+															Convey("After commit", func() {
+																app.Commit()
+																Convey("withdraw_proof should return a withdraw proof", func() {
+																	queryRes := app.Query(abci.RequestQuery{
+																		Path:   "withdraw_proof",
+																		Data:   packedTx,
+																		Height: 1,
+																	})
+																	So(queryRes.Code, ShouldEqual, response.Success.Code)
+																	proof := iavl.RangeProof{}
+																	err := json.Unmarshal(queryRes.Value, &proof)
+																	So(err, ShouldBeNil)
+																	Convey("The proof should be corresponding to the withdraw tree hash", func() {
+																		err := proof.Verify(mockCtx.GetMutableState().GetAppHash()[:20])
+																		So(err, ShouldBeNil)
+																	})
+																})
+															})
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
 						})
 					})
 				})

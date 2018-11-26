@@ -1,22 +1,21 @@
 version: "3.6"
 services:
   api:
-    image: likechain/abci
+    image: likechain/golang-godep
     container_name: likechain_api
     volumes:
       - ./abci:/go/src/github.com/likecoin/likechain/abci
-      - /go/src/github.com/likecoin/likechain/api/vendor
     ports:
       - 3000:3000
     environment:
       LIKECHAIN_API_CLIENT_HOST: tendermint-1:26657
     command: ["go", "run", "cmd/api/main.go"]
   abci-1: &abci-node
-    image: likechain/abci
+    image: likechain/golang-godep
     container_name: likechain_abci-1
     volumes:
       - ./abci:/go/src/github.com/likecoin/likechain/abci
-      - /go/src/github.com/likecoin/likechain/abci/vendor
+    command: ["go", "run", "cmd/abci/main.go"]
   tendermint-1: &tendermint-node
     image: likechain/tendermint
     container_name: likechain_tendermint-1

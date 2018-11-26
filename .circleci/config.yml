@@ -9,28 +9,25 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: likechain-deps-{{ .Branch }}-{{ checksum "abci/Gopkg.lock" }}-{{ checksum "tendermint/cli/Gopkg.lock" }}
+          key: likechain-deps-{{ .Branch }}-{{ checksum "Gopkg.lock" }}-{{ checksum "Makefile" }}
           paths:
             - /go/src/github.com/ethereum/go-ethereum
-            - /go/src/github.com/likecoin/likechain/abci/vendor
-            - /go/src/github.com/likecoin/likechain/tendermint/cli/vendor
+            - /go/src/github.com/likecoin/likechain/vendor
       - run:
           name: Install dependencies
           command: |
             if [ ! -d /go/src/github.com/ethereum/go-ethereum ] || \
-               [ ! -d /go/src/github.com/likecoin/likechain/abci/vendor ] || \
-               [ ! -d /go/src/github.com/likecoin/likechain/tendermint/cli/vendor ]
+               [ ! -d /go/src/github.com/likecoin/likechain/vendor ]
             then
               curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
               chmod +x /go/bin/dep
               make get_vendor_deps
             fi
       - save_cache:
-          key: likechain-deps-{{ .Branch }}-{{ checksum "abci/Gopkg.lock" }}-{{ checksum "tendermint/cli/Gopkg.lock" }}
+          key: likechain-deps-{{ .Branch }}-{{ checksum "Gopkg.lock" }}-{{ checksum "Makefile" }}
           paths:
             - /go/src/github.com/ethereum/go-ethereum
-            - /go/src/github.com/likecoin/likechain/abci/vendor
-            - /go/src/github.com/likecoin/likechain/tendermint/cli/vendor
+            - /go/src/github.com/likecoin/likechain/vendor
       - run:
           name: Unit testing
           command: make test

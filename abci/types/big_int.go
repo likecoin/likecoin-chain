@@ -1,6 +1,12 @@
 package types
 
-import "math/big"
+import (
+	"errors"
+	"math/big"
+)
+
+var zero = big.NewInt(0)
+var limit = new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
 
 // BigInt is an adaptor of big.Int, implementing AminoMarshaler and AminoUnmarshaler
 type BigInt struct {
@@ -21,6 +27,29 @@ func (n BigInt) MarshalAmino() ([]byte, error) {
 func (n *BigInt) UnmarshalAmino(bs []byte) error {
 	n.Int = new(big.Int).SetBytes(bs)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler
+func (n *BigInt) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + n.Int.String() + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler
+func (n *BigInt) UnmarshalJSON(bs []byte) error {
+	if len(bs) > 2 && bs[0] == '"' && bs[len(bs)-1] == '"' {
+		bs = bs[1 : len(bs)-1]
+	}
+	v, ok := new(big.Int).SetString(string(bs), 10)
+	if !ok {
+		return errors.New("Cannot parse BigInt string")
+	}
+	n.Int = v
+	return nil
+}
+
+// IsWithinRange returns whether the number is between 0 (inclusive) and 2^256 (exclusive)
+func (n BigInt) IsWithinRange() bool {
+	return n.Int.Cmp(zero) >= 0 && n.Int.Cmp(limit) < 0
 }
 
 // NewBigIntFromString returns a BigInt from the input string with base 10, and a boolean indicates success.
