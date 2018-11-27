@@ -47,6 +47,8 @@ We use Go 1.11 modules for dependencies, so after installing Go 1.11, the genera
 
 Since module support is an experimental feature in Go 1.11, if you are placing the project in `GOPATH`, you need to `export GO111MODULE=on`.
 
+If you are having network problem on packages with golang.org, you may use the alternative `go.mod.replace` to replace the original `go.mod`.
+
 ## Usage
 ```sh
 # Query the block info
