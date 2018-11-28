@@ -121,6 +121,11 @@ func SetContractUpdaters(state context.IMutableState, updaters []Updater) {
 
 // setUpdateApproval records a update approval into state tree
 func setUpdateApproval(state context.IMutableState, updater *types.LikeChainID, proposalBytes []byte) {
+	if HasApprovedUpdate(state, updater, proposalBytes) {
+		log.
+			WithField("proposal_bytes", cmn.HexBytes(proposalBytes)).
+			Panic("Double approving contract update on the same proposal")
+	}
 	key := approvalKey(updater, proposalBytes)
 	state.MutableStateTree().Set(key, []byte{1})
 }
@@ -159,6 +164,12 @@ func GetUpdateProposalWeight(state context.IImmutableState, proposalBytes []byte
 
 // setUpdateExecution records a update execution with contract index into withdraw tree
 func setUpdateExecution(state context.IMutableState, proposal *Proposal) {
+	if GetUpdateExecution(state, proposal.ContractIndex) != nil {
+		log.
+			WithField("contract_index", proposal.ContractIndex).
+			WithField("contract_addr", proposal.ContractAddress.String()).
+			Panic("Double setting contract update execution on the same contract index")
+	}
 	key := executedKey(proposal.ContractIndex)
 	state.MutableWithdrawTree().Set(key, proposal.ContractAddress[:])
 }

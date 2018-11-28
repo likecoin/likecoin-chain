@@ -184,6 +184,12 @@ func SetDepositApprovers(state context.IMutableState, approvers []Approver) {
 
 // setDepositApproval records a deposit approval into state tree
 func setDepositApproval(state context.IMutableState, approver *types.LikeChainID, proposalHash []byte) {
+	if HasApprovedDeposit(state, approver, proposalHash) {
+		log.
+			WithField("approver", approver.String()).
+			WithField("proposal_hash", cmn.HexBytes(proposalHash)).
+			Panic("Double approving the same proposal hash")
+	}
 	key := approvalKey(approver, proposalHash)
 	state.MutableStateTree().Set(key, []byte{1})
 }
@@ -222,6 +228,12 @@ func GetDepositProposalWeight(state context.IImmutableState, proposalHash []byte
 
 // setDepositExecution records a deposit execution with block number into state tree
 func setDepositExecution(state context.IMutableState, blockNumber uint64, proposalHash []byte) {
+	if GetDepositExecution(state, blockNumber) != nil {
+		log.
+			WithField("block_number", blockNumber).
+			WithField("proposal_hash", cmn.HexBytes(proposalHash)).
+			Panic("Double setting deposit execution on the same block number")
+	}
 	key := executedKey(blockNumber)
 	state.MutableStateTree().Set(key, proposalHash)
 }
