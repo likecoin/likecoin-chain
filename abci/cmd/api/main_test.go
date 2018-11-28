@@ -90,17 +90,22 @@ func TestAPI(t *testing.T) {
 		// Invalid params
 		res, code = request(router, "POST", uri, map[string]interface{}{
 			"addr": "",
-			"sig":  "",
+			"sig": map[string]interface{}{
+				"value": "",
+			},
 		})
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Register A account
 		mockCtx.SetInitialBalance(big.NewInt(100))
-		sig := "0xb19ced763ac63a33476511ecce1df4ebd91bb9ae8b2c0d24b0a326d96c5717122ae0c9b5beacaf4560f3a2535a7673a3e567ff77f153e452907169d431c951091b"
+		sig := "0xcf3a79ff76b94dd6bee6bfbbd2da201a9972b28e1ef47f4d7c66034d1aa74bf016d22572fdad933ebd867eec110234f88490f105ec5ad0af39ebc5db787b08011b"
 		params := map[string]interface{}{
 			"addr": fixture.Alice.Address.String(),
-			"sig":  sig,
+			"sig": map[string]interface{}{
+				"type":  "eip712",
+				"value": sig,
+			},
 		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldBeNil)
@@ -198,7 +203,9 @@ func TestAPI(t *testing.T) {
 		sig = "0x6d8c7bb3292cab67f4814f9c2d1986430bd188b4eadf82a3fdf1e6be10f7599751985388c2a79429ee60761169e4c67e3b453daf88b637d77f87d7be68196b2c1b"
 		res, code = request(router, "POST", uri, map[string]interface{}{
 			"addr": fixture.Bob.Address.String(),
-			"sig":  sig,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
 		})
 		So(res["error"], ShouldBeNil)
 		So(code, ShouldEqual, http.StatusOK)
@@ -263,7 +270,9 @@ func TestAPI(t *testing.T) {
 					"value":    "1",
 				},
 			},
-			"sig": sig,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
 		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldBeNil)
@@ -289,14 +298,18 @@ func TestAPI(t *testing.T) {
 				"value":    "999",
 			},
 		}
-		params["sig"] = "0xbf61280a9930be07f0782ac4df7660a1f67d4fa3c681f9a43db36215c787cb3e12cfe342dfba1ec8a67eca7874b6839176f51c65bf238f24fc181a192fa906511c"
+		params["sig"] = map[string]interface{}{
+			"value": "0xbf61280a9930be07f0782ac4df7660a1f67d4fa3c681f9a43db36215c787cb3e12cfe342dfba1ec8a67eca7874b6839176f51c65bf238f24fc181a192fa906511c",
+		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
 		So(res["code"], ShouldEqual, response.TransferNotEnoughBalance.Code)
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Invalid params
-		params["sig"] = "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+		params["sig"] = map[string]interface{}{
+			"value": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusBadRequest)
@@ -335,14 +348,17 @@ func TestAPI(t *testing.T) {
 		// Test POST /withdraw
 		//
 		uri = "/v1/withdraw"
-		sig = "0x9d6dca90161dcdcf5594e2070b221a6c50318e4034bbf5b25ba50402dcbe0ebb2a8fe928a28fffac5c0edb3d607b86da7df016f5ce789e7488f5fd70da37dbe61b"
+		sig = "0x221546d3afaa5875f153a726979a90e76d8c1155abd4ed50fc888f7072c509515ada487f12f5f59a640c19735e95135b2165b1a12566171371f7b7045f7c84071c"
 		params = map[string]interface{}{
 			"identity": fixture.Alice.Address.String(),
 			"nonce":    2,
 			"to_addr":  "0x0000000000000000000000000000000000000000",
 			"value":    "1",
 			"fee":      "0",
-			"sig":      sig,
+			"sig": map[string]interface{}{
+				"type":  "eip712",
+				"value": sig,
+			},
 		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldBeNil)
@@ -390,7 +406,9 @@ func TestAPI(t *testing.T) {
 		params["fee"] = "0"
 		params["nonce"] = 3
 		params["value"] = "999"
-		params["sig"] = "0x4389b731b1d67c792cc309a52281d0ef5350973f1d7d72f38049915756fc8ca86765e505a8c4c54e5cc98473881634706ad79ae561ca959fb49da5f7193c14901b"
+		params["sig"] = map[string]interface{}{
+			"value": "0x4389b731b1d67c792cc309a52281d0ef5350973f1d7d72f38049915756fc8ca86765e505a8c4c54e5cc98473881634706ad79ae561ca959fb49da5f7193c14901b",
+		}
 		res, code = request(router, "POST", uri, params)
 		So(res["error"], ShouldNotBeNil)
 		So(res["code"], ShouldEqual, response.WithdrawNotEnoughBalance.Code)

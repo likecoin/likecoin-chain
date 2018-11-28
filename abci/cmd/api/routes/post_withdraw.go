@@ -9,12 +9,12 @@ import (
 )
 
 type withdrawJSON struct {
-	Identity string `json:"identity" binding:"required,identity"`
-	ToAddr   string `json:"to_addr" binding:"required,eth_addr"`
-	Value    string `json:"value" binding:"required,biginteger"`
-	Nonce    uint64 `json:"nonce" binding:"required,min=1"`
-	Fee      string `json:"fee" binding:"required,biginteger"`
-	Sig      string `json:"sig" binding:"required,eth_sig"`
+	Identity string    `json:"identity" binding:"required,identity"`
+	ToAddr   string    `json:"to_addr" binding:"required,eth_addr"`
+	Value    string    `json:"value" binding:"required,biginteger"`
+	Nonce    uint64    `json:"nonce" binding:"required,min=1"`
+	Fee      string    `json:"fee" binding:"required,biginteger"`
+	Sig      Signature `json:"sig" binding:"required"`
 }
 
 func postWithdraw(c *gin.Context) {
@@ -42,7 +42,12 @@ func postWithdraw(c *gin.Context) {
 		Value:  value,
 		Nonce:  json.Nonce,
 		Fee:    fee,
-		Sig:    &txs.WithdrawJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.WithdrawEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.WithdrawJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 
 	data := txs.EncodeTx(&tx)

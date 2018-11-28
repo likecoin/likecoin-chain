@@ -11,14 +11,14 @@ import (
 )
 
 type hashedTransferJSON struct {
-	Identity   string `json:"identity" binding:"required,identity"`
-	To         string `json:"to" binding:"required,identity"`
-	Value      string `json:"value" binding:"required,biginteger"`
-	Fee        string `json:"fee" binding:"required,biginteger"`
-	HashCommit string `json:"hash_commit" binding:"required,bytes32"`
-	Expiry     int64  `json:"expiry" binding:"required"`
-	Nonce      int64  `json:"nonce" binding:"required,min=1"`
-	Sig        string `json:"sig" binding:"required,eth_sig"`
+	Identity   string    `json:"identity" binding:"required,identity"`
+	To         string    `json:"to" binding:"required,identity"`
+	Value      string    `json:"value" binding:"required,biginteger"`
+	Fee        string    `json:"fee" binding:"required,biginteger"`
+	HashCommit string    `json:"hash_commit" binding:"required,bytes32"`
+	Expiry     int64     `json:"expiry" binding:"required"`
+	Nonce      int64     `json:"nonce" binding:"required,min=1"`
+	Sig        Signature `json:"sig" binding:"required"`
 }
 
 func postHashedTransfer(c *gin.Context) {
@@ -57,9 +57,13 @@ func postHashedTransfer(c *gin.Context) {
 		},
 		Fee:   fee,
 		Nonce: uint64(json.Nonce),
-		Sig:   &txs.HashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
 	}
-
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.HashedTransferEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.HashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
+	}
 	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)

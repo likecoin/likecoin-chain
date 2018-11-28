@@ -58,6 +58,11 @@ func (id *LikeChainID) String() string {
 	return base64.StdEncoding.EncodeToString(id[:])
 }
 
+// EIP712String returns the representation used when signing with EIP-712
+func (id *LikeChainID) EIP712String() string {
+	return "LikeChainID-" + id.String()
+}
+
 // MarshalJSON implements json.Marshaler
 func (id *LikeChainID) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + id.String() + `"`), nil

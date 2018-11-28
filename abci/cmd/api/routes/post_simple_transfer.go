@@ -9,13 +9,13 @@ import (
 )
 
 type simpleTransferJSON struct {
-	Identity string `json:"identity" binding:"required,identity"`
-	To       string `json:"to" binding:"required,identity"`
-	Value    string `json:"value" binding:"required,biginteger"`
-	Remark   string `json:"remark" binding:"required"`
-	Nonce    int64  `json:"nonce" binding:"required,min=1"`
-	Fee      string `json:"fee" binding:"required,biginteger"`
-	Sig      string `json:"sig" binding:"required,eth_sig"`
+	Identity string    `json:"identity" binding:"required,identity"`
+	To       string    `json:"to" binding:"required,identity"`
+	Value    string    `json:"value" binding:"required,biginteger"`
+	Remark   string    `json:"remark" binding:"required"`
+	Nonce    int64     `json:"nonce" binding:"required,min=1"`
+	Fee      string    `json:"fee" binding:"required,biginteger"`
+	Sig      Signature `json:"sig" binding:"required"`
 }
 
 func postSimpleTransfer(c *gin.Context) {
@@ -44,9 +44,13 @@ func postSimpleTransfer(c *gin.Context) {
 		Remark: json.Remark,
 		Nonce:  uint64(json.Nonce),
 		Fee:    fee,
-		Sig:    &txs.SimpleTransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
 	}
-
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.SimpleTransferEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.SimpleTransferJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
+	}
 	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)

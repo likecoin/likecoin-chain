@@ -5,16 +5,26 @@ import (
 
 	"github.com/likecoin/likechain/abci/types"
 
+	"github.com/ethereum/go-ethereum/common"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestJSONSignature(t *testing.T) {
 	Convey("In the beginning", t, func() {
+		Convey("Given a JSON Map", func() {
+			jsonMap := JSONMap{"addr": "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"}
+			Convey("The hash should be computed correctly", func() {
+				hash, err := jsonMap.Hash()
+				So(err, ShouldBeNil)
+				So(common.Bytes2Hex(hash), ShouldResemble, "b0704413cdfb6ef813eb45bd45de5b44fffcb9ed0436e453c9006baf304c8c3e")
+			})
+		})
 		Convey("If a JSON signature is valid", func() {
 			sigHex := "65e6d31224fbcec8e41251d7b014e569d4a94c866227637c6b1fcf75a4505f241b2009557e79d5879a8bfbbb5dec86205c3481ed3042ad87f0643778022f54141b"
 			sig := JSONSignature(Sig(sigHex))
 			Convey("Address recovery should succeed", func() {
-				recoveredAddr, err := sig.RecoverAddress(map[string]interface{}{"addr": "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"})
+				recoveredAddr, err := sig.RecoverAddress(JSONMap{"addr": "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"})
 				So(err, ShouldBeNil)
 				Convey("The recovered address should match the signing address", func() {
 					So(recoveredAddr, ShouldResemble, types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"))
@@ -29,7 +39,7 @@ func TestJSONSignature(t *testing.T) {
 			sigHex := "65e6d31224fbcec8e41251d7b014e569d4a94c866227637c6b1fcf75a4505f241b2009557e79d5879a8bfbbb5dec86205c3481ed3042ad87f0643778022f54141b"
 			sig := JSONSignature(Sig(sigHex))
 			Convey("Address recovery should fail", func() {
-				_, err := sig.RecoverAddress(map[string]interface{}{"c": 1i})
+				_, err := sig.RecoverAddress(JSONMap{"c": 1i})
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, "unsupported type")
 			})
@@ -38,7 +48,7 @@ func TestJSONSignature(t *testing.T) {
 			sigHex := "65e6d31224fbcec8e41251d7b014e569d4a94c866227637c6b1fcf75a4505f241b2009557e79d5879a8bfbbb5dec86205c3481ed3042ad87f0643778022f541400"
 			sig := JSONSignature(Sig(sigHex))
 			Convey("Address recovery should fail", func() {
-				_, err := sig.RecoverAddress(map[string]interface{}{"addr": "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"})
+				_, err := sig.RecoverAddress(JSONMap{"addr": "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"})
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldContainSubstring, "invalid signature recovery id")
 			})

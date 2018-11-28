@@ -6,6 +6,8 @@ import (
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/types"
 
+	"github.com/ethereum/go-ethereum/crypto"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,20 +35,25 @@ func init() {
 	cdc.RegisterConcrete(&ClaimHashedTransferTransaction{}, "github.com/likecoin/likechain/ClaimHashedTransferTransaction", nil)
 	cdc.RegisterConcrete(&SimpleTransferTransaction{}, "github.com/likecoin/likechain/SimpleTransferTransaction", nil)
 	cdc.RegisterConcrete(&ContractUpdateTransaction{}, "github.com/likecoin/likechain/ContractUpdateTransaction", nil)
-	cdc.RegisterInterface((*TransferSignature)(nil), nil)
-	cdc.RegisterConcrete(&RegisterJSONSignature{}, "github.com/likecoin/likechain/RegisterJSONSignature", nil)
 	cdc.RegisterInterface((*RegisterSignature)(nil), nil)
+	cdc.RegisterConcrete(&RegisterJSONSignature{}, "github.com/likecoin/likechain/RegisterJSONSignature", nil)
+	cdc.RegisterConcrete(&RegisterEIP712Signature{}, "github.com/likecoin/likechain/RegisterEIP712Signature", nil)
+	cdc.RegisterInterface((*TransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&TransferJSONSignature{}, "github.com/likecoin/likechain/TransferJSONSignature", nil)
 	cdc.RegisterInterface((*WithdrawSignature)(nil), nil)
 	cdc.RegisterConcrete(&WithdrawJSONSignature{}, "github.com/likecoin/likechain/WithdrawJSONSignature", nil)
+	cdc.RegisterConcrete(&WithdrawEIP712Signature{}, "github.com/likecoin/likechain/WithdrawEIP712Signature", nil)
 	cdc.RegisterInterface((*DepositSignature)(nil), nil)
 	cdc.RegisterConcrete(&DepositJSONSignature{}, "github.com/likecoin/likechain/DepositJSONSignature", nil)
 	cdc.RegisterInterface((*HashedTransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&HashedTransferJSONSignature{}, "github.com/likecoin/likechain/HashedTransferJSONSignature", nil)
+	cdc.RegisterConcrete(&HashedTransferEIP712Signature{}, "github.com/likecoin/likechain/HashedTransferEIP712Signature", nil)
 	cdc.RegisterInterface((*ClaimHashedTransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&ClaimHashedTransferJSONSignature{}, "github.com/likecoin/likechain/ClaimHashedTransferJSONSignature", nil)
+	cdc.RegisterConcrete(&ClaimHashedTransferEIP712Signature{}, "github.com/likecoin/likechain/ClaimHashedTransferEIP712Signature", nil)
 	cdc.RegisterInterface((*SimpleTransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&SimpleTransferJSONSignature{}, "github.com/likecoin/likechain/SimpleTransferJSONSignature", nil)
+	cdc.RegisterConcrete(&SimpleTransferEIP712Signature{}, "github.com/likecoin/likechain/SimpleTransferEIP712Signature", nil)
 	cdc.RegisterInterface((*ContractUpdateSignature)(nil), nil)
 	cdc.RegisterConcrete(&ContractUpdateJSONSignature{}, "github.com/likecoin/likechain/ContractUpdateJSONSignature", nil)
 }
@@ -61,4 +68,20 @@ func EncodeTx(tx Transaction) []byte {
 			Panic("Cannot encode transaction")
 	}
 	return bs
+}
+
+func recoverEthSignature(hash []byte, sig [65]byte) (*types.Address, error) {
+	// Transform yellow paper V from 27/28 to 0/1
+	sig[64] -= 27
+	pubKeyBytes, err := crypto.Ecrecover(hash, sig[:])
+	if err != nil {
+		return nil, err
+	}
+	pubKey, err := crypto.UnmarshalPubkey(pubKeyBytes)
+	if err != nil {
+		return nil, err
+	}
+	ethAddr := crypto.PubkeyToAddress(*pubKey)
+	addr := types.Address(ethAddr)
+	return &addr, nil
 }

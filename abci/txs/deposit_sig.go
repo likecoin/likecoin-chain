@@ -13,15 +13,15 @@ type DepositJSONSignature struct {
 }
 
 // GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
-func (tx *DepositTransaction) GenerateJSONMap() map[string]interface{} {
-	inputs := make([]map[string]interface{}, len(tx.Proposal.Inputs))
+func (tx *DepositTransaction) GenerateJSONMap() JSONMap {
+	inputs := make([]JSONMap, len(tx.Proposal.Inputs))
 	for i, input := range tx.Proposal.Inputs {
-		inputs[i] = map[string]interface{}{
+		inputs[i] = JSONMap{
 			"value":     input.Value.String(),
 			"from_addr": input.FromAddr.String(),
 		}
 	}
-	return map[string]interface{}{
+	return JSONMap{
 		"block_number": tx.Proposal.BlockNumber,
 		"identity":     tx.Proposer.String(),
 		"nonce":        tx.Nonce,

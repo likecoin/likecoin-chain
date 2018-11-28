@@ -18,37 +18,23 @@ func (sig *JSONSignature) String() string {
 	return common.ToHex(sig[:])
 }
 
-func recoverEthSignature(hash []byte, sig [65]byte) (*types.Address, error) {
-	// Transform yellow paper V from 27/28 to 0/1
-	sig[64] -= 27
-	pubKeyBytes, err := crypto.Ecrecover(hash, sig[:])
-	if err != nil {
-		return nil, err
-	}
-	pubKey, err := crypto.UnmarshalPubkey(pubKeyBytes)
-	if err != nil {
-		return nil, err
-	}
-	ethAddr := crypto.PubkeyToAddress(*pubKey)
-	addr := types.Address(ethAddr)
-	return &addr, nil
-}
+// JSONMap represents a JSON object for signing message
+type JSONMap map[string]interface{}
 
-// JSONMapToHash takes a map[string]interface{} representing a JSON object, returns the hash for signing the message
-func JSONMapToHash(jsonMap map[string]interface{}) ([]byte, error) {
+// Hash takes a JSONMap representing a JSON object, returns the hash for signing the message
+func (jsonMap JSONMap) Hash() ([]byte, error) {
 	msg, err := json.Marshal(jsonMap)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("JSONMap: \"%s\"\n", string(msg))
 	sigPrefix := "\x19Ethereum Signed Message:\n"
 	hashingMsg := []byte(fmt.Sprintf("%s%d%s", sigPrefix, len(msg), msg))
 	return crypto.Keccak256(hashingMsg), nil
 }
 
 // RecoverAddress recover the signature to address by the deterministic JSON representation of the message
-func (sig *JSONSignature) RecoverAddress(jsonMap map[string]interface{}) (*types.Address, error) {
-	hash, err := JSONMapToHash(jsonMap)
+func (sig *JSONSignature) RecoverAddress(jsonMap JSONMap) (*types.Address, error) {
+	hash, err := jsonMap.Hash()
 	if err != nil {
 		return nil, err
 	}

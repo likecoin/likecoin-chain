@@ -9,6 +9,7 @@ type Identifier interface {
 	Equals(iden Identifier) bool
 	Bytes() []byte
 	String() string
+	EIP712String() string
 	DBKey(prefix string, suffix string) []byte
 }
 

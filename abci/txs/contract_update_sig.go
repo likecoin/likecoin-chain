@@ -13,8 +13,8 @@ type ContractUpdateJSONSignature struct {
 }
 
 // GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
-func (tx *ContractUpdateTransaction) GenerateJSONMap() map[string]interface{} {
-	return map[string]interface{}{
+func (tx *ContractUpdateTransaction) GenerateJSONMap() JSONMap {
+	return JSONMap{
 		"contract_index": tx.Proposal.ContractIndex,
 		"contract_addr":  tx.Proposal.ContractAddress.String(),
 		"identity":       tx.Proposer.String(),

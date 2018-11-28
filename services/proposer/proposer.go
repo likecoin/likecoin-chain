@@ -23,7 +23,7 @@ import (
 func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 	tx.Proposal.Sort()
 	jsonMap := tx.GenerateJSONMap()
-	hash, err := txs.JSONMapToHash(jsonMap)
+	hash, err := jsonMap.Hash()
 	if err != nil {
 		panic(err)
 	}

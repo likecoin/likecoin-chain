@@ -10,11 +10,11 @@ import (
 )
 
 type contractUpdateJSON struct {
-	Identity      string `json:"identity" binding:"required,identity"`
-	ContractIndex uint64 `json:"contract_index" binding:"required,min=1"`
-	ContractAddr  string `json:"contract_addr" binding:"required,eth_addr"`
-	Nonce         uint64 `json:"nonce" binding:"required,min=1"`
-	Sig           string `json:"sig" binding:"required,eth_sig"`
+	Identity      string    `json:"identity" binding:"required,identity"`
+	ContractIndex uint64    `json:"contract_index" binding:"required,min=1"`
+	ContractAddr  string    `json:"contract_addr" binding:"required,eth_addr"`
+	Nonce         uint64    `json:"nonce" binding:"required,min=1"`
+	Sig           Signature `json:"sig" binding:"required"`
 }
 
 func postContractUpdate(c *gin.Context) {
@@ -32,7 +32,13 @@ func postContractUpdate(c *gin.Context) {
 			ContractAddress: *contractAddr,
 		},
 		Nonce: json.Nonce,
-		Sig:   &txs.ContractUpdateJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		c.JSON(http.StatusBadRequest, gin.H{"error": "EIP-712 signature not supported for ContractUpdate transaction"})
+		return
+	default:
+		tx.Sig = &txs.ContractUpdateJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 
 	data := txs.EncodeTx(&tx)

@@ -119,8 +119,8 @@ func TestSimpleTransferValidateFormat(t *testing.T) {
 	})
 }
 
-func TestSimpleTransferSignature(t *testing.T) {
-	Convey("For a SimpleTransfer transaction", t, func() {
+func TestSimpleTransferJSONSignature(t *testing.T) {
+	Convey("For a SimpleTransfer transaction with JSON signature", t, func() {
 		Convey("If the transaction is valid with some remark", func() {
 			tx := SimpleTransferTx(Alice.Address, Bob.ID, types.NewBigInt(50), "this is spartaaaaaaaa", types.NewBigInt(1), 1, "2af037daf098a5019f28a83196e28818faa74d5ec788953f8332036688b431d720a523246dc32c40a9f0c2da882a9cc68b44d090c26477827213ded82240e0101b")
 			Convey("Address recovery should succeed", func() {
@@ -133,6 +133,47 @@ func TestSimpleTransferSignature(t *testing.T) {
 		})
 		Convey("If the transaction is valid with no remark", func() {
 			tx := SimpleTransferTx(Alice.Address, Bob.ID, types.NewBigInt(50), "", types.NewBigInt(1), 1, "f4d07f91ab07941284d6a5385d361ddf6a8112529b036b5d55ed066615a231293a86add2311a5305e816f1f85bedfeebe0d0e5ec62e4fdb60addb99d81e7c4a61b")
+			Convey("Address recovery should succeed", func() {
+				recoveredAddr, err := tx.Sig.RecoverAddress(tx)
+				So(err, ShouldBeNil)
+				Convey("The recovered address should be the From address of the transfer transaction", func() {
+					So(recoveredAddr, ShouldResemble, tx.From)
+				})
+			})
+		})
+	})
+}
+
+func TestSimpleTransferEIP712Signature(t *testing.T) {
+	Convey("For a SimpleTransfer transaction with EIP-712 signature", t, func() {
+		Convey("If the transaction is valid with some remark", func() {
+			tx := &SimpleTransferTransaction{
+				From:   Alice.Address,
+				To:     Bob.ID,
+				Value:  types.NewBigInt(50),
+				Remark: "this is spartaaaaaaaa",
+				Fee:    types.NewBigInt(1),
+				Nonce:  1,
+				Sig:    &SimpleTransferEIP712Signature{SigEIP712("813156e45f00f8e885daba596da70854f6d572dd46a37460a104b383d8cd76734c59eda0e177752371e187c66249def595e3dc191433eb0c35e8bbc2af6c0da31b")},
+			}
+			Convey("Address recovery should succeed", func() {
+				recoveredAddr, err := tx.Sig.RecoverAddress(tx)
+				So(err, ShouldBeNil)
+				Convey("The recovered address should be the From address of the transfer transaction", func() {
+					So(recoveredAddr, ShouldResemble, tx.From)
+				})
+			})
+		})
+		Convey("If the transaction is valid with no remark", func() {
+			tx := &SimpleTransferTransaction{
+				From:   Alice.Address,
+				To:     Bob.ID,
+				Value:  types.NewBigInt(50),
+				Remark: "",
+				Fee:    types.NewBigInt(1),
+				Nonce:  1,
+				Sig:    &SimpleTransferEIP712Signature{SigEIP712("60881422ecacad9fa37350e7f25e17caa79dd17be547c2ff0776bd3d942a22326454c37c8f25a9977115f851e2b056ed76185322d9cd574f00d41f3244f667641b")},
+			}
 			Convey("Address recovery should succeed", func() {
 				recoveredAddr, err := tx.Sig.RecoverAddress(tx)
 				So(err, ShouldBeNil)

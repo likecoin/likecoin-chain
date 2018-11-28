@@ -65,10 +65,34 @@ func TestHashedTrasnferValidateFormat(t *testing.T) {
 	})
 }
 
-func TestHashedTransferSignature(t *testing.T) {
-	Convey("If a HashedTransfer transaction is valid", t, func() {
+func TestHashedTransferJSONSignature(t *testing.T) {
+	Convey("If a HashedTransfer transaction with JSON signature is valid", t, func() {
 		commit := make([]byte, 32)
 		hashedTransferTx := HashedTransferTx(Alice.Address, Bob.ID, 1, commit, 10, 0, 1, "f8aa5170bab5747a2216f544897adf4f2a3643cd0d6e265d663a416cc5d4a13034d090d9cd48836b2fe0c67825dacd11426f3fb737820665236ca468eb8fb3111c")
+		Convey("Address recovery should succeed", func() {
+			recoveredAddr, err := hashedTransferTx.Sig.RecoverAddress(hashedTransferTx)
+			So(err, ShouldBeNil)
+			Convey("The recovered address should be the From address of the HashedTrasnfer in the transaction", func() {
+				So(recoveredAddr, ShouldResemble, hashedTransferTx.HashedTransfer.From)
+			})
+		})
+	})
+}
+
+func TestHashedTransferEIP712Signature(t *testing.T) {
+	Convey("If a HashedTransfer transaction with EIP712 signature is valid", t, func() {
+		hashedTransferTx := &HashedTransferTransaction{
+			HashedTransfer: htlc.HashedTransfer{
+				From:       Alice.Address,
+				To:         Bob.ID,
+				Value:      types.NewBigInt(1),
+				HashCommit: [32]byte{},
+				Expiry:     10,
+			},
+			Fee:   types.NewBigInt(0),
+			Nonce: 1,
+			Sig:   &HashedTransferEIP712Signature{SigEIP712("bfdce31b9c432249ea61dd095d62425f62c648ba61331fb9621b56e7e5d91e2b283a26fc13ba2b66ee7ee1f300174a38c075bdf64094f760b37175a94aab6c041b")},
+		}
 		Convey("Address recovery should succeed", func() {
 			recoveredAddr, err := hashedTransferTx.Sig.RecoverAddress(hashedTransferTx)
 			So(err, ShouldBeNil)

@@ -61,9 +61,29 @@ func TestWithdrawValidateFormat(t *testing.T) {
 	})
 }
 
-func TestWithdrawSignature(t *testing.T) {
-	Convey("If a withdraw transaction is valid", t, func() {
+func TestWithdrawJSONSignature(t *testing.T) {
+	Convey("If a withdraw transaction with JSON signature is valid", t, func() {
 		withdrawTx := WithdrawTx(types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"), "0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9", types.NewBigInt(1), types.NewBigInt(0), 1, "fe1d84d34083c4e051e789ce2b4ba07fde811f6fc10c23e715b866bdc01c9a8f0cfd7995ed461d7240e3df28667f518c1d54475da9dc5b9567b60d10bc9aacaa1c")
+		Convey("Address recovery should succeed", func() {
+			recoveredAddr, err := withdrawTx.Sig.RecoverAddress(withdrawTx)
+			So(err, ShouldBeNil)
+			Convey("The recovered address should be the From address of the withdraw transaction", func() {
+				So(recoveredAddr, ShouldResemble, withdrawTx.From)
+			})
+		})
+	})
+}
+
+func TestWithdrawEIP712Signature(t *testing.T) {
+	Convey("If a withdraw transaction with EIP-712 signature is valid", t, func() {
+		withdrawTx := &WithdrawTransaction{
+			From:   types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"),
+			ToAddr: *types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"),
+			Value:  types.NewBigInt(1),
+			Fee:    types.NewBigInt(0),
+			Nonce:  1,
+			Sig:    &WithdrawEIP712Signature{SigEIP712("707c63febd50a4ee228ecce1ae8b3d2c00cf32a62c59df5fe6582f44a368871d0c3f32cc29903c00fa9eb278ae85a43074a8a99e7d0d8c9c0cd14cc401fa84351b")},
+		}
 		Convey("Address recovery should succeed", func() {
 			recoveredAddr, err := withdrawTx.Sig.RecoverAddress(withdrawTx)
 			So(err, ShouldBeNil)

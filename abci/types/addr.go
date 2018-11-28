@@ -60,6 +60,11 @@ func (addr *Address) String() string {
 	return strings.ToLower(common.Address(*addr).Hex())
 }
 
+// EIP712String returns the representation used when signing with EIP-712
+func (addr *Address) EIP712String() string {
+	return "Address-" + addr.String()
+}
+
 // MarshalJSON implements json.Marshaler
 func (addr *Address) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + addr.String() + `"`), nil

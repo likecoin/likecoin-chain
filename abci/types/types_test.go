@@ -29,6 +29,10 @@ func TestLikeChainID(t *testing.T) {
 						bs, err := base64.StdEncoding.DecodeString(s)
 						So(err, ShouldBeNil)
 						So(bs, ShouldResemble, idBytes)
+						Convey("The EIP-712 representation string should be 'LikeChainID-' concatenated with the string representation", func() {
+							eip712Str := id.EIP712String()
+							So(eip712Str, ShouldResemble, "LikeChainID-"+s)
+						})
 					})
 				})
 			})
@@ -173,6 +177,10 @@ func TestAddress(t *testing.T) {
 						bs, err := hex.DecodeString(s[2:])
 						So(err, ShouldBeNil)
 						So(bs, ShouldResemble, addrBytes)
+						Convey("The EIP-712 representation string should be 'Address-' concatenated with the string representation", func() {
+							eip712Str := addr.EIP712String()
+							So(eip712Str, ShouldResemble, "Address-"+s)
+						})
 					})
 				})
 			})
