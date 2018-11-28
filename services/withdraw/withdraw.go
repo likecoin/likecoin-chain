@@ -173,26 +173,6 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 	fmt.Printf("CommitWithdrawHash done status: %v, gas: %v\n", receipt.Status, receipt.GasUsed)
 }
 
-func queryWithdrawTx() {
-	tmEndPoint := "tcp://localhost:26657"
-	tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-	searchResult, err := tmClient.TxSearch("withdraw.height>0", true, 1, 100)
-	if err != nil {
-		panic(err)
-	}
-	for i := 0; i < searchResult.TotalCount; i++ {
-		packedTx := searchResult.Txs[i].TxResult.Data
-		queryResult, err := tmClient.ABCIQueryWithOptions("withdraw_proof", packedTx, tmRPC.ABCIQueryOptions{Height: 7})
-		if err != nil {
-			panic(err)
-		}
-		proof := ParseRangeProof(queryResult.Response.Value)
-		if proof == nil {
-			panic(fmt.Sprintf("Cannot parse RangeProof: %s", string(queryResult.Response.Value)))
-		}
-	}
-}
-
 type withdrawCallData struct {
 	WithdrawInfo  []byte
 	ContractProof []byte
