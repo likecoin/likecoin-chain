@@ -114,7 +114,7 @@ func (tx *WithdrawTransaction) CheckTx(state context.IImmutableState) response.R
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}

@@ -41,7 +41,7 @@ func (tx *RegisterTransaction) CheckTx(state context.IImmutableState) response.R
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *RegisterTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxResult := tx.CheckTx(state)
-	if checkTxResult.Code != 0 {
+	if checkTxResult.Code != response.Success.Code {
 		return checkTxResult
 	}
 

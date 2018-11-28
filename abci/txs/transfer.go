@@ -127,7 +127,7 @@ func (tx *TransferTransaction) CheckTx(state context.IImmutableState) response.R
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID, toIdens := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
