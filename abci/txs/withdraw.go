@@ -119,6 +119,9 @@ func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []b
 		return checkTxRes
 	}
 
+	// Since we are hashing the info into a single key in withdraw tree, if we use Address as tx.From, then querying
+	// withdraw proof with LikeChain ID will fail.
+	// Therefore here we are consistently using senderID as the key.
 	tx.From = senderID
 	account.IncrementNextNonce(state, senderID)
 
