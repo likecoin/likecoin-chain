@@ -170,7 +170,13 @@ func GetUpdateExecution(state context.IImmutableState, contractIndex uint64) *ty
 	if contractAddrBytes == nil {
 		return nil
 	}
-	addr := types.NewAddress(contractAddrBytes)
+	addr, err := types.NewAddress(contractAddrBytes)
+	if err != nil {
+		log.
+			WithField("contract_addr_bytes", cmn.HexBytes(contractAddrBytes)).
+			WithError(err).
+			Panic("Cannot reconstruct address from contract address bytes")
+	}
 	return addr
 }
 
@@ -181,7 +187,13 @@ func GetUpdateExecutionWithProof(state context.IMutableState, contractIndex uint
 	if err != nil || contractAddrBytes == nil {
 		return nil, nil
 	}
-	addr := types.NewAddress(contractAddrBytes)
+	addr, err := types.NewAddress(contractAddrBytes)
+	if err != nil {
+		log.
+			WithField("contract_addr_bytes", cmn.HexBytes(contractAddrBytes)).
+			WithError(err).
+			Panic("Cannot reconstruct address from contract address bytes")
+	}
 	return addr, proof
 }
 

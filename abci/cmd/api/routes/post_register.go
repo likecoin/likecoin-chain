@@ -50,7 +50,7 @@ func postRegister(c *gin.Context) {
 		return
 	}
 
-	id := types.NewLikeChainID(res.Data)
+	id := types.ID(res.Data)
 	c.JSON(http.StatusOK, gin.H{
 		"tx_hash": result.Hash,
 		"id":      id.String(),

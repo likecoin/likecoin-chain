@@ -43,7 +43,10 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, blockNumber uint
 	}
 	fmt.Printf("Proposing for blockNumber %d\n", blockNumber)
 	ethAddr := crypto.PubkeyToAddress(tmPrivKey.PublicKey)
-	addr := types.NewAddress(ethAddr[:])
+	addr, err := types.NewAddress(ethAddr[:])
+	if err != nil {
+		panic(err)
+	}
 	queryResult, err := tmClient.ABCIQuery("account_info", []byte(addr.String()))
 	if err != nil {
 		panic(err)
@@ -55,8 +58,12 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, blockNumber uint
 	fmt.Printf("Nonce: %d\n", accInfo.NextNonce)
 	inputs := make([]deposit.Input, 0, len(events))
 	for _, e := range events {
+		addr, err := types.NewAddress(e.From[:])
+		if err != nil {
+			panic(err)
+		}
 		inputs = append(inputs, deposit.Input{
-			FromAddr: *types.NewAddress(e.From[:]),
+			FromAddr: *addr,
 			Value:    types.BigInt{Int: e.Value},
 		})
 	}

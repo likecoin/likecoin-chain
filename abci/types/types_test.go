@@ -33,7 +33,8 @@ func TestLikeChainID(t *testing.T) {
 				})
 			})
 			Convey("It should converts to LikeChainID by bytes", func() {
-				idByBytes := NewLikeChainID(idBytes)
+				idByBytes, err := NewLikeChainID(idBytes)
+				So(err, ShouldBeNil)
 				So(idByBytes[:], ShouldResemble, idBytes)
 				idByBytes = ID(idBytes)
 				So(idByBytes[:], ShouldResemble, idBytes)
@@ -176,7 +177,8 @@ func TestAddress(t *testing.T) {
 				})
 			})
 			Convey("It should converts to Address by bytes", func() {
-				addrByBytes := NewAddress(addrBytes)
+				addrByBytes, err := NewAddress(addrBytes)
+				So(err, ShouldBeNil)
 				So(addrByBytes[:], ShouldResemble, addrBytes)
 			})
 			Convey("It should converts to a valid Address without panic", func() {
@@ -198,7 +200,8 @@ func TestAddress(t *testing.T) {
 				})
 			})
 			Convey("It should converts to Address by bytes", func() {
-				addrByBytes := NewAddress(addrBytes)
+				addrByBytes, err := NewAddress(addrBytes)
+				So(err, ShouldBeNil)
 				So(addrByBytes[:], ShouldResemble, addrBytes)
 			})
 			Convey("It should converts to a valid Address without panic", func() {

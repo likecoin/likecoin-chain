@@ -36,10 +36,13 @@ func (id *LikeChainID) DBKey(prefix string, suffix string) []byte {
 }
 
 // NewLikeChainID creates a LikeChainID from bytes
-func NewLikeChainID(bs []byte) *LikeChainID {
+func NewLikeChainID(bs []byte) (*LikeChainID, error) {
+	if len(bs) != 20 {
+		return nil, errors.New("Invalid LikeChainID length")
+	}
 	result := LikeChainID{}
 	copy(result[:], bs)
-	return &result
+	return &result, nil
 }
 
 // NewLikeChainIDFromString creates a LikeChainID from string
@@ -48,10 +51,7 @@ func NewLikeChainIDFromString(s string) (*LikeChainID, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(bs) != 20 {
-		return nil, errors.New("Invalid LikeChainID length")
-	}
-	return NewLikeChainID(bs), nil
+	return NewLikeChainID(bs)
 }
 
 func (id *LikeChainID) String() string {
@@ -79,7 +79,11 @@ func (id *LikeChainID) UnmarshalJSON(bs []byte) error {
 
 // ID is the shortcut of types.NewLikeChainID
 func ID(bs []byte) *LikeChainID {
-	return NewLikeChainID(bs)
+	id, err := NewLikeChainID(bs)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
 
 // IDStr transforms a base-64 string into LikeChainID, panic if the string is not a valid LikeChainID
