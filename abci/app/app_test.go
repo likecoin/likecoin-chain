@@ -2017,7 +2017,7 @@ func TestHashedTransferAndClaim(t *testing.T) {
 												So(queryRes.Code, ShouldEqual, response.Success.Code)
 												accountInfo := query.GetAccountInfoRes(queryRes.Value)
 												So(accountInfo, ShouldNotBeNil)
-												So(accountInfo.Balance.Cmp(big.NewInt(79)), ShouldBeZeroValue)
+												So(accountInfo.Balance.Cmp(big.NewInt(80)), ShouldBeZeroValue)
 												So(accountInfo.NextNonce, ShouldEqual, 2)
 
 												queryRes = app.Query(abci.RequestQuery{
@@ -2138,7 +2138,7 @@ func TestHashedTransferAndRevoke(t *testing.T) {
 													So(queryRes.Code, ShouldEqual, response.Success.Code)
 													accountInfo := query.GetAccountInfoRes(queryRes.Value)
 													So(accountInfo, ShouldNotBeNil)
-													So(accountInfo.Balance.Cmp(big.NewInt(99)), ShouldBeZeroValue)
+													So(accountInfo.Balance.Cmp(big.NewInt(100)), ShouldBeZeroValue)
 													So(accountInfo.NextNonce, ShouldEqual, 3)
 
 													queryRes = app.Query(abci.RequestQuery{
@@ -2215,7 +2215,7 @@ func TestSimpleTransfer(t *testing.T) {
 							So(queryRes.Code, ShouldEqual, response.Success.Code)
 							accountInfo := query.GetAccountInfoRes(queryRes.Value)
 							So(accountInfo, ShouldNotBeNil)
-							So(accountInfo.Balance.Cmp(big.NewInt(149)), ShouldBeZeroValue)
+							So(accountInfo.Balance.Cmp(big.NewInt(150)), ShouldBeZeroValue)
 							So(accountInfo.NextNonce, ShouldEqual, 2)
 
 							queryRes = app.Query(abci.RequestQuery{
@@ -2544,7 +2544,7 @@ func TestIntegrated(t *testing.T) {
 													So(queryRes.Code, ShouldEqual, response.Success.Code)
 													accountInfo := query.GetAccountInfoRes(queryRes.Value)
 													So(accountInfo, ShouldNotBeNil)
-													So(accountInfo.Balance.Cmp(big.NewInt(20)), ShouldBeZeroValue)
+													So(accountInfo.Balance.Cmp(big.NewInt(30)), ShouldBeZeroValue)
 													So(accountInfo.NextNonce, ShouldEqual, 2)
 
 													queryRes = app.Query(abci.RequestQuery{

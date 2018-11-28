@@ -100,8 +100,6 @@ func (tx *WithdrawTransaction) checkTx(state context.IImmutableState) (
 		return response.WithdrawNotEnoughBalance, senderID
 	}
 
-	// TODO: check fee
-
 	return response.Success, senderID
 }
 
@@ -124,6 +122,7 @@ func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []b
 	tx.From = senderID
 	account.IncrementNextNonce(state, senderID)
 
+	// The fee is distributed to the one who do withdraw on Ethereum
 	total := new(big.Int).Add(tx.Value.Int, tx.Fee.Int)
 	account.MinusBalance(state, senderID, total)
 	packedTx := tx.Pack()

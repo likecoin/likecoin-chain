@@ -97,7 +97,7 @@ func (tx *HashedTransferTransaction) DeliverTx(state context.IMutableState, txHa
 	account.IncrementNextNonce(state, senderID)
 
 	total := new(big.Int).Set(tx.HashedTransfer.Value.Int)
-	total.Add(total, tx.Fee.Int)
+	// TODO: in the future, we should distribute the fee to validators instead of ignore it
 	account.MinusBalance(state, senderID, total)
 	htlc.CreateHashedTransfer(state, &tx.HashedTransfer, txHash)
 
