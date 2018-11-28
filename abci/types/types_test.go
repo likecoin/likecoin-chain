@@ -272,17 +272,6 @@ func TestAddress(t *testing.T) {
 				expectedKey := []byte("prefix:addr:_\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33_suffix")
 				So(dbKey, ShouldResemble, expectedKey)
 			})
-			Convey("It should be marshaled to JSON correctly", func() {
-				bs, err := json.Marshal(&addr)
-				So(err, ShouldBeNil)
-				So(bs, ShouldResemble, []byte(`"0x3333333333333333333333333333333333333333"`))
-				Convey("JSON unmarshaling should recover the same Address", func() {
-					recoveredAddr := Address{}
-					err = json.Unmarshal(bs, &recoveredAddr)
-					So(err, ShouldBeNil)
-					So(&recoveredAddr, ShouldResemble, addr)
-				})
-			})
 		})
 		Convey("For JSON marshaling and unmarshaling", func() {
 			Convey("Given a valid Address", func() {

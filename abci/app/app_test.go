@@ -212,6 +212,42 @@ func TestInitChain(t *testing.T) {
 				}, ShouldPanic)
 			})
 		})
+		Convey("For AppStateBytes with decimal balance in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":3.14
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
+		Convey("For AppStateBytes with decimal balance string in InitChainRequest", func() {
+			s := `{
+					"accounts": [
+						{
+							"id": "ERERERERERERERERERERERERERE=",
+							"addr": "0x1111111111111111111111111111111111111111",
+							"balance":"2.718"
+						}
+					]
+				}`
+			Convey("IninChain should panic", func() {
+				So(func() {
+					app.InitChain(abci.RequestInitChain{
+						AppStateBytes: []byte(s),
+					})
+				}, ShouldPanic)
+			})
+		})
 		Convey("For AppStateBytes with invalid deposit approver weight InitChainRequest", func() {
 			s := `{
 					"accounts": [
