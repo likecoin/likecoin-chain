@@ -17,6 +17,7 @@ import (
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 
 	"github.com/tendermint/iavl"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -2270,6 +2271,99 @@ func TestGC(t *testing.T) {
 						Convey("The second versions should still be there", func() {
 							So(stateTree.VersionExists(secondStateTreeVersion), ShouldBeTrue)
 							So(withdrawTree.VersionExists(secondWithdrawTreeVersion), ShouldBeTrue)
+						})
+					})
+				})
+			})
+		})
+	})
+}
+
+func TestContractUpdate(t *testing.T) {
+	Convey("At initial state", t, func() {
+		mockCtx := context.NewMock()
+		app := &LikeChainApplication{
+			ctx: mockCtx.ApplicationContext,
+		}
+		initStateJSON := fmt.Sprintf(`{
+			"accounts": [
+				{
+					"id": "%s",
+					"addr": "%s",
+					"contractUpdaterWeight": 10
+				},
+				{
+					"id": "%s",
+					"addr": "%s",
+					"contractUpdaterWeight": 20
+				}
+			]
+		}`,
+			Alice.ID, Alice.Address,
+			Bob.ID, Bob.Address,
+		)
+		app.InitChain(abci.RequestInitChain{
+			AppStateBytes: []byte(initStateJSON),
+		})
+		Convey("If contract update transaction is valid", func() {
+			rawTx := txs.RawContractUpdateTx(Alice.Address, 1, types.Addr("0x1111111111111111111111111111111111111111"), 1, "81229384bdbe2ecc3572cb6deda168f2f0723161bc872bc53a9ef641ca2d087f1cd4aad56ddc7690550bc64aee0de76820d476b374699d4bd71dad9e7b5be8d81b")
+			Convey("CheckTx should return success", func() {
+				r := app.CheckTx(rawTx)
+				So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
+				Convey("DeliverTx should return success", func() {
+					r := app.DeliverTx(rawTx)
+					So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+					Convey("Then query tx_state should return success", func() {
+						depositTxHash := tmhash.Sum(rawTx)
+						queryRes := app.Query(abci.RequestQuery{
+							Path: "tx_state",
+							Data: depositTxHash,
+						})
+						So(queryRes.Code, ShouldEqual, response.Success.Code)
+						txStateRes := query.GetTxStateRes(queryRes.Value)
+						So(txStateRes, ShouldNotBeNil)
+						So(txStateRes.Status, ShouldEqual, "success")
+						Convey("Then for another contract update transaction on this proposal", func() {
+							rawTx := txs.RawContractUpdateTx(Bob.ID, 1, types.Addr("0x2222222222222222222222222222222222222222"), 1, "f0a8f180402795880004ab46ef99e5551782987e70f6a6899bc60c0b1c4a7bb56f0ef1db6a1c2f4b6f553332ce9cbf9856db250699822d8f9dbd03c915a90cc71c")
+							Convey("CheckTx should return success", func() {
+								r := app.CheckTx(rawTx)
+								So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
+								Convey("DeliverTx should return success", func() {
+									r := app.DeliverTx(rawTx)
+									So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
+									Convey("Then query tx_state for the transaction should return success", func() {
+										depositApprovalTxHash := tmhash.Sum(rawTx)
+										queryRes := app.Query(abci.RequestQuery{
+											Path: "tx_state",
+											Data: depositApprovalTxHash,
+										})
+										So(queryRes.Code, ShouldEqual, response.Success.Code)
+										txStateRes := query.GetTxStateRes(queryRes.Value)
+										So(txStateRes, ShouldNotBeNil)
+										So(txStateRes.Status, ShouldEqual, "success")
+										Convey("After commit", func() {
+											app.Commit()
+											Convey("Then query contract_update_proof for the contract index should return a valid proof", func() {
+												queryRes := app.Query(abci.RequestQuery{
+													Path:   "contract_update_proof",
+													Data:   utils.EncodeUint64(1),
+													Height: 1,
+												})
+												So(queryRes.Code, ShouldEqual, response.Success.Code)
+												var res struct {
+													Proof iavl.RangeProof `json:"proof"`
+												}
+												err := json.Unmarshal(queryRes.Value, &res)
+												So(err, ShouldBeNil)
+												Convey("The proof should be corresponding to the withdraw tree hash", func() {
+													err := res.Proof.Verify(mockCtx.GetMutableState().GetAppHash()[:tmhash.Size])
+													So(err, ShouldBeNil)
+												})
+											})
+										})
+									})
+								})
+							})
 						})
 					})
 				})

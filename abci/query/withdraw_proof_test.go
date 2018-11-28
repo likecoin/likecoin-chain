@@ -14,7 +14,7 @@ import (
 )
 
 func TestQueryWithdrawProof(t *testing.T) {
-	Convey("In the beginnine", t, func() {
+	Convey("In the beginning", t, func() {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
 

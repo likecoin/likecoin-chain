@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"net/http"
 
@@ -93,6 +92,6 @@ func getWithdrawProof(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"id":    idStr,
-		"proof": base64.StdEncoding.EncodeToString(result.Response.Value),
+		"proof": json.RawMessage(result.Response.Value),
 	})
 }

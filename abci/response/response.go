@@ -161,7 +161,7 @@ var DepositNotApprover = R{
 
 var DepositDoubleApproval = R{
 	Code:                 11060,
-	Info:                 "User already approved another DepositTransaction for the same block numner",
+	Info:                 "User already approved the same proposal",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: true,
 }
@@ -262,6 +262,62 @@ var WithdrawInvalidNonce = R{
 	Info:                 "Invalid WithdrawTransaction nonce",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateInvalidFormat = R{
+	Code:                 14000,
+	Info:                 "Invalid ContractUpdateTransaction format",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateInvalidSignature = R{
+	Code:                 14010,
+	Info:                 "Invalid ContractUpdateTransaction signature",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateDuplicated = R{
+	Code:                 14020,
+	Info:                 "Duplicated ContractUpdateTransaction",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateSenderNotRegistered = R{
+	Code:                 14030,
+	Info:                 "Sender of ContractUpdateTransaction not register",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateInvalidNonce = R{
+	Code:                 14040,
+	Info:                 "Invalid ContractUpdateTransaction nonce",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: false,
+}
+
+var ContractUpdateNotUpdater = R{
+	Code:                 14050,
+	Info:                 "User is not a ContractUpdater",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: true,
+}
+
+var ContractUpdateDoubleApproval = R{
+	Code:                 14060,
+	Info:                 "User already approved the same proposal",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: true,
+}
+
+var ContractUpdateInvalidIndex = R{
+	Code:                 14070,
+	Info:                 "The update proposal has index which does not match the current index",
+	Status:               txstatus.TxStatusFail,
+	ShouldIncrementNonce: true,
 }
 
 var HashedTransferInvalidFormat = R{
@@ -474,4 +530,14 @@ var QueryWithdrawProofNotExist = R{
 var QueryTxNotExist = R{
 	Code: 62000,
 	Info: "Transaction status record does not exist",
+}
+
+var QueryContractUpdateProofInvalidHeight = R{
+	Code: 62000,
+	Info: "Invalid height in contract update proof",
+}
+
+var QueryContractUpdateProofNotExist = R{
+	Code: 62010,
+	Info: "Contract update record does not exist",
 }

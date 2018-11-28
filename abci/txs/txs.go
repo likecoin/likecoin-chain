@@ -32,6 +32,7 @@ func init() {
 	cdc.RegisterConcrete(&HashedTransferTransaction{}, "github.com/likecoin/likechain/HashedTransferTransaction", nil)
 	cdc.RegisterConcrete(&ClaimHashedTransferTransaction{}, "github.com/likecoin/likechain/ClaimHashedTransferTransaction", nil)
 	cdc.RegisterConcrete(&SimpleTransferTransaction{}, "github.com/likecoin/likechain/SimpleTransferTransaction", nil)
+	cdc.RegisterConcrete(&ContractUpdateTransaction{}, "github.com/likecoin/likechain/ContractUpdateTransaction", nil)
 	cdc.RegisterInterface((*TransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&RegisterJSONSignature{}, "github.com/likecoin/likechain/RegisterJSONSignature", nil)
 	cdc.RegisterInterface((*RegisterSignature)(nil), nil)
@@ -46,6 +47,8 @@ func init() {
 	cdc.RegisterConcrete(&ClaimHashedTransferJSONSignature{}, "github.com/likecoin/likechain/ClaimHashedTransferJSONSignature", nil)
 	cdc.RegisterInterface((*SimpleTransferSignature)(nil), nil)
 	cdc.RegisterConcrete(&SimpleTransferJSONSignature{}, "github.com/likecoin/likechain/SimpleTransferJSONSignature", nil)
+	cdc.RegisterInterface((*ContractUpdateSignature)(nil), nil)
+	cdc.RegisterConcrete(&ContractUpdateJSONSignature{}, "github.com/likecoin/likechain/ContractUpdateJSONSignature", nil)
 }
 
 // EncodeTx encodes a transaction into raw bytes

@@ -8,6 +8,7 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
+	"github.com/likecoin/likechain/abci/state/contract"
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/txstatus"
@@ -129,6 +130,7 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 		}
 		state := app.ctx.GetMutableState()
 		depositApprovers := make([]deposit.Approver, 0, len(appInitState.Accounts))
+		contractUpdaters := make([]contract.Updater, 0, len(appInitState.Accounts))
 		usedIDs := make(map[types.LikeChainID]bool)
 		usedAddrs := make(map[types.Address]bool)
 		for i, accInfo := range appInitState.Accounts {
@@ -165,8 +167,15 @@ func (app *LikeChainApplication) InitChain(params abci.RequestInitChain) abci.Re
 					Weight: accInfo.DepositApproverWeight,
 				})
 			}
+			if accInfo.ContractUpdaterWeight > 0 {
+				contractUpdaters = append(contractUpdaters, contract.Updater{
+					ID:     &id,
+					Weight: accInfo.ContractUpdaterWeight,
+				})
+			}
 		}
 		deposit.SetDepositApprovers(state, depositApprovers)
+		contract.SetContractUpdaters(state, contractUpdaters)
 	}
 	return abci.ResponseInitChain{
 		ConsensusParams: params.ConsensusParams,

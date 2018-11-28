@@ -428,7 +428,7 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["proof"], ShouldNotBeNil)
-		So(res["proof"], ShouldEqual, proof)
+		So(res["proof"], ShouldResemble, proof)
 		So(code, ShouldEqual, http.StatusOK)
 
 		// Missing params
