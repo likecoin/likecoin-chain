@@ -34,7 +34,7 @@ func postHashedTransfer(c *gin.Context) {
 		return
 	}
 
-	fee, ok := types.NewBigIntFromString(json.Value)
+	fee, ok := types.NewBigIntFromString(json.Fee)
 	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid fee"})
 		return
