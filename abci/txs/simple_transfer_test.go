@@ -228,7 +228,7 @@ func TestCheckAndDeliverSimpleTransfer(t *testing.T) {
 				})
 			})
 		})
-		Convey("If a transfer transaction from LikeChainID is valid", func() {
+		Convey("If a SimpleTransfer transaction from LikeChainID is valid", func() {
 			tx.From = Alice.ID
 			tx.Sig = &SimpleTransferJSONSignature{Sig("582815c336ec854fdd2306be5ad4166ae38a8c290daa20726522c191ea7535603bd262ba53f5ccee9edd8ebaefd0b0550d45515bfe240b00981c94a9b723da671c")}
 			Convey("CheckTx should succeed", func() {
@@ -241,6 +241,23 @@ func TestCheckAndDeliverSimpleTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(150)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(50)), ShouldBeZeroValue)
+					So(account.FetchNextNonce(state, Alice.ID), ShouldEqual, 2)
+				})
+			})
+		})
+		Convey("If a SimpleTransfer transaction to an unregistered address is valid", func() {
+			tx.To = Carol.Address
+			tx.Sig = &SimpleTransferJSONSignature{Sig("03ad56927b8c7c516e6957130f0e25a37fdd41e4e71e115be451865232117456131d32d7852a4ca398ccdc331fc877d00da215358133a7780bfdde936f72a6ab1c")}
+			Convey("CheckTx should succeed", func() {
+				r := tx.CheckTx(state)
+				So(r.Code, ShouldEqual, response.Success.Code)
+				Convey("DeliverTx should succeed", func() {
+					txHash := utils.HashRawTx(EncodeTx(tx))
+					r := tx.DeliverTx(state, txHash)
+					So(r.Code, ShouldEqual, response.Success.Code)
+					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(150)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Carol.Address).Cmp(big.NewInt(50)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Alice.ID), ShouldEqual, 2)
 				})
 			})
