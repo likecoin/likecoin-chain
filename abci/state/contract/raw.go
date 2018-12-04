@@ -9,6 +9,7 @@ import (
 	"github.com/likecoin/likechain/abci/utils"
 
 	"github.com/tendermint/iavl"
+	"github.com/tendermint/tendermint/crypto"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
@@ -64,7 +65,7 @@ func executedKey(contractIndex uint64) []byte {
 	// Not using JoinKeys since we want better interoperability with smart contract
 	key := []byte("exec")
 	key = append(key, utils.EncodeUint64(contractIndex)...)
-	return key
+	return crypto.Sha256(key)
 }
 
 // GetContractUpdatersWeightSum loads the weight sum of the contract updaters from state tree

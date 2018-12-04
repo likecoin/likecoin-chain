@@ -12,6 +12,7 @@ import (
 
 	"github.com/tendermint/iavl"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -30,6 +31,7 @@ func TestQueryContractUpdateProof(t *testing.T) {
 		contractIndexBytes1 := utils.EncodeUint64(proposal1.ContractIndex)
 		key1 := []byte("exec")
 		key1 = append(key1, contractIndexBytes1...)
+		key1 = crypto.Sha256(key1)
 		withdrawTree.Set(key1, proposal1.ContractAddress[:])
 		_, version1, _ := withdrawTree.SaveVersion()
 
@@ -51,6 +53,7 @@ func TestQueryContractUpdateProof(t *testing.T) {
 		contractIndexBytes2 := utils.EncodeUint64(proposal2.ContractIndex)
 		key2 := []byte("exec")
 		key2 = append(key2, contractIndexBytes2...)
+		key2 = crypto.Sha256(key2)
 		withdrawTree.Set(key2, proposal1.ContractAddress[:])
 		_, version2, _ := withdrawTree.SaveVersion()
 
