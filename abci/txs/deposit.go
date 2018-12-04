@@ -26,15 +26,7 @@ func (tx *DepositTransaction) ValidateFormat() bool {
 	if tx.Proposer == nil || tx.Sig == nil {
 		return false
 	}
-	if len(tx.Proposal.Inputs) == 0 {
-		return false
-	}
-	for _, input := range tx.Proposal.Inputs {
-		if input.Value.Int == nil || !input.Value.IsWithinRange() {
-			return false
-		}
-	}
-	return true
+	return tx.Proposal.Validate()
 }
 
 func (tx *DepositTransaction) checkTx(state context.IImmutableState) (
@@ -82,12 +74,7 @@ func (tx *DepositTransaction) CheckTx(state context.IImmutableState) response.R 
 func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
 	if checkTxRes.Code != 0 {
-		switch checkTxRes.Code {
-		case response.DepositAlreadyExecuted.Code:
-			fallthrough
-		case response.DepositDoubleApproval.Code:
-			fallthrough
-		case response.DepositNotApprover.Code:
+		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes

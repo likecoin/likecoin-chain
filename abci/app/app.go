@@ -34,7 +34,9 @@ func NewLikeChainApplication(ctx *context.ApplicationContext) *LikeChainApplicat
 // BeginBlock implements ABCI BeginBlock
 func (app *LikeChainApplication) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	log.Info("APP BeginBlock")
-	app.ctx.GetMutableState().SetBlockHash(req.Hash)
+	state := app.ctx.GetMutableState()
+	state.SetBlockHash(req.Hash)
+	state.SetBlockTime(req.Header.Time)
 	return abci.ResponseBeginBlock{}
 }
 

@@ -7,6 +7,24 @@ import (
 	"github.com/likecoin/likechain/abci/types"
 )
 
+// Validate checks if a deposit input is valid
+func (input Input) Validate() bool {
+	return input.Value.Int != nil && input.Value.IsWithinRange()
+}
+
+// Validate checks if a deposit proposal is valid
+func (proposal Proposal) Validate() bool {
+	if len(proposal.Inputs) == 0 {
+		return false
+	}
+	for _, input := range proposal.Inputs {
+		if !input.Validate() {
+			return false
+		}
+	}
+	return true
+}
+
 // GetDepositApproverInfo checks if a LikeChain ID is one of the DepositApprovers
 func GetDepositApproverInfo(state context.IImmutableState, id *types.LikeChainID) *Approver {
 	depositApprovers := GetDepositApprovers(state)
