@@ -5,7 +5,7 @@ WD=`cd $(dirname "$0") && pwd -P`
 
 cd "${WD}"
 
-./docker/golang-godep/build.sh
+./docker/golang/build.sh
 ./tendermint/cli/build.sh
 ./tendermint/build.sh
 

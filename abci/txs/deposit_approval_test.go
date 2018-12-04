@@ -1,25 +1,26 @@
 package txs
 
 import (
-	// "math/big"
 	"testing"
 
 	"github.com/likecoin/likechain/abci/account"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/fixture"
+	. "github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDepositApprovalValidateFormat(t *testing.T) {
 	Convey("For a deposit approval transaction", t, func() {
-		txHash := make([]byte, 20)
-		depositApprovalTx := DepositApprovalTx(fixture.Alice.Address, txHash, 1, "f05ba8c73518c9d65fa07d38124fa6008a8771fd35ae95f77ca0cb260bb8e84812e8fe6e4d0b27c01b45193437fa27214c3c9b9e96981471767458546c1cb1b41b")
+		txHash := make([]byte, tmhash.Size)
+		depositApprovalTx := DepositApprovalTx(Alice.Address, txHash, 1, "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 		Convey("If the transaction has valid format", func() {
 			Convey("The validation should succeed", func() {
 				So(depositApprovalTx.ValidateFormat(), ShouldBeTrue)
@@ -55,7 +56,7 @@ func TestDepositApprovalValidateFormat(t *testing.T) {
 func TestDepositApprovalSignature(t *testing.T) {
 	Convey("If a deposit approval transaction is valid", t, func() {
 		txHash := make([]byte, 20)
-		depositApprovalTx := DepositApprovalTx(fixture.Alice.Address, txHash, 1, "f05ba8c73518c9d65fa07d38124fa6008a8771fd35ae95f77ca0cb260bb8e84812e8fe6e4d0b27c01b45193437fa27214c3c9b9e96981471767458546c1cb1b41b")
+		depositApprovalTx := DepositApprovalTx(Alice.Address, txHash, 1, "f05ba8c73518c9d65fa07d38124fa6008a8771fd35ae95f77ca0cb260bb8e84812e8fe6e4d0b27c01b45193437fa27214c3c9b9e96981471767458546c1cb1b41b")
 		Convey("Address recovery should succeed", func() {
 			recoveredAddr, err := depositApprovalTx.Sig.RecoverAddress(depositApprovalTx)
 			So(err, ShouldBeNil)
@@ -71,60 +72,52 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
 
-		id0 := fixture.Alice.ID
-		id1 := fixture.Bob.ID
-		id2 := fixture.Carol.ID
-		id3 := fixture.Dave.ID
-		id4 := fixture.Erin.ID
-
 		inputs1 := []deposit.Input{
 			{
-				FromAddr: *fixture.Alice.Address,
+				FromAddr: *Alice.Address,
 				Value:    types.NewBigInt(10),
 			},
 			{
-				FromAddr: *fixture.Bob.Address,
+				FromAddr: *Bob.Address,
 				Value:    types.NewBigInt(20),
 			},
 		}
 		inputs2 := []deposit.Input{
 			{
-				FromAddr: *fixture.Carol.Address,
+				FromAddr: *Carol.Address,
 				Value:    types.NewBigInt(10),
 			},
 			{
-				FromAddr: *fixture.Mallory.Address,
+				FromAddr: *Mallory.Address,
 				Value:    types.NewBigInt(20),
 			},
 		}
 
-		account.NewAccountFromID(state, id0, fixture.Alice.Address)
-		account.NewAccountFromID(state, id1, fixture.Bob.Address)
-		account.NewAccountFromID(state, id2, fixture.Carol.Address)
-		account.NewAccountFromID(state, id3, fixture.Dave.Address)
-		account.NewAccountFromID(state, id4, fixture.Erin.Address)
+		account.NewAccountFromID(state, Alice.ID, Alice.Address)
+		account.NewAccountFromID(state, Bob.ID, Bob.Address)
+		account.NewAccountFromID(state, Carol.ID, Carol.Address)
+		account.NewAccountFromID(state, Dave.ID, Dave.Address)
+		account.NewAccountFromID(state, Erin.ID, Erin.Address)
 		deposit.SetDepositApprovers(state, []deposit.Approver{
 			// Specially set value, so the sums is larger than 2^32, and the sum of the first 3 will be just larger
 			// than 2/3 of the sum
-			{ID: id0, Weight: 2000000000},
-			{ID: id1, Weight: 4000000001},
-			{ID: id2, Weight: 2000000000},
-			{ID: id3, Weight: 4000000000},
+			{ID: Alice.ID, Weight: 2000000000},
+			{ID: Bob.ID, Weight: 4000000001},
+			{ID: Carol.ID, Weight: 2000000000},
+			{ID: Dave.ID, Weight: 4000000000},
 		})
-		depositTx1 := DepositTx(fixture.Alice.Address, 1337, inputs1, 1, "af6109def6aebe496980b7cda873781fecf0c1d8f1b432b736a91f67b0372ee50d74c30d6718bdfcf0097aefeed5dbeebde3200030edbc7c064e29d76d5e60b11b")
-		depositTx2 := DepositTx(id3, 1337, inputs2, 1, "2dce3d4d6613937900f40f70fb3e5d9f3f4e6f2c1c6bd407bc354a5966d252220395f1e6d8d13d77bb6df00c29fde0dd02ae818a32ffb74e969d19054716c6731c")
+		depositTx1 := DepositTx(Alice.Address, 1337, inputs1, 1, "af6109def6aebe496980b7cda873781fecf0c1d8f1b432b736a91f67b0372ee50d74c30d6718bdfcf0097aefeed5dbeebde3200030edbc7c064e29d76d5e60b11b")
+		depositTx2 := DepositTx(Dave.ID, 1337, inputs2, 1, "2dce3d4d6613937900f40f70fb3e5d9f3f4e6f2c1c6bd407bc354a5966d252220395f1e6d8d13d77bb6df00c29fde0dd02ae818a32ffb74e969d19054716c6731c")
 		depositTxHash1 := utils.HashRawTx(EncodeTx(depositTx1))
-		depositTxHashDecoded, _ := utils.Hex2Bytes("ce03d2e7922d2c81842f3a937a06eef5e5616a2a")
+		depositTxHashDecoded, _ := utils.Hex2Bytes("ce03d2e7922d2c81842f3a937a06eef5e5616a2aff29c5fc45ada469060c885a")
 		So(depositTxHash1, ShouldResemble, depositTxHashDecoded)
 		depositTxHash2 := utils.HashRawTx(EncodeTx(depositTx2))
-		depositTxHashDecoded, _ = utils.Hex2Bytes("af5885cdc7ea2c44073bab8064ea65113c372a6c")
+		depositTxHashDecoded, _ = utils.Hex2Bytes("af5885cdc7ea2c44073bab8064ea65113c372a6c90af0ad0e263fc60be1f3d6e")
 		So(depositTxHash2, ShouldResemble, depositTxHashDecoded)
 		r := depositTx1.DeliverTx(state, depositTxHash1)
 		So(r.Code, ShouldEqual, 0)
-		r = depositTx2.DeliverTx(state, depositTxHash2)
-		So(r.Code, ShouldEqual, 0)
 
-		depositApprovalTx1 := DepositApprovalTx(fixture.Bob.Address, depositTxHash1, 1, "1607f6a849f698540cd8e4d62a430eb04b560156c4a28ddb4aa29b302228fc6c56556678bd6ac4b269a0e86c617f0e9a55b1ffd81e3a2fa522a49d50daa2307c1c")
+		depositApprovalTx1 := DepositApprovalTx(Bob.Address, depositTxHash1, 1, "63b529352d681ae1c08c50e18702ab290ba2ebc0a77b0ec5ce86234c02185a5777b738199e167eac330636d7e899303f64f75b0609f4218faa3eef06fb23b1931c")
 		Convey("If a deposit approval transaction from address is valid", func() {
 			Convey("CheckTx should succeed", func() {
 				r := depositApprovalTx1.CheckTx(state)
@@ -133,7 +126,7 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 					txHash := utils.HashRawTx(EncodeTx(depositApprovalTx1))
 					r := depositApprovalTx1.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
-					So(deposit.GetDepositApproval(state, id1, depositTx1.Proposal.BlockNumber), ShouldResemble, depositTxHash1)
+					So(deposit.GetDepositApproval(state, Bob.ID, depositTx1.Proposal.BlockNumber), ShouldResemble, depositTxHash1)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					Convey("CheckTx again should return Duplicated", func() {
 						r := depositApprovalTx1.CheckTx(state)
@@ -147,26 +140,26 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 				})
 			})
 			Convey("RawTransferTx should return the same encoded raw tx", func() {
-				rawTx := RawDepositApprovalTx(fixture.Bob.Address, depositTxHash1, 1, "1607f6a849f698540cd8e4d62a430eb04b560156c4a28ddb4aa29b302228fc6c56556678bd6ac4b269a0e86c617f0e9a55b1ffd81e3a2fa522a49d50daa2307c1c")
+				rawTx := RawDepositApprovalTx(Bob.Address, depositTxHash1, 1, "63b529352d681ae1c08c50e18702ab290ba2ebc0a77b0ec5ce86234c02185a5777b738199e167eac330636d7e899303f64f75b0609f4218faa3eef06fb23b1931c")
 				So(rawTx, ShouldResemble, EncodeTx(depositApprovalTx1))
 				Convey("Decoded transaction should resemble the original transaction", func() {
 					var decodedTx *DepositApprovalTransaction
-					err := types.AminoCodec().UnmarshalBinary(rawTx, &decodedTx)
+					err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(rawTx, &decodedTx)
 					So(err, ShouldBeNil)
 					So(decodedTx, ShouldResemble, depositApprovalTx1)
 				})
 			})
 		})
 		Convey("If a deposit approval transaction from LikeChainID is valid", func() {
-			depositApprovalTx1.Approver = id1
-			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("b19858ee7439436a703560cb5fe50e884f7d57760cfb7c97d806525c3e2de31303973898da36364237305724bbf11a81ae77efb8d393f3f96cbd12b31d31a0011b")}
+			depositApprovalTx1.Approver = Bob.ID
+			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("06959fb8f14ac2a2e38194cbce81fb482129ab7f588e8bfaf1a769af0ec5fcc61afcb4f10796cea629ea2c49f2cb951b4b9ff86b5fd717008032f46c946a7df31b")}
 			Convey("CheckTx should succeed", func() {
 				So(r.Code, ShouldEqual, response.Success.Code)
 				Convey("DeliverTx should succeed", func() {
 					txHash := utils.HashRawTx(EncodeTx(depositApprovalTx1))
 					r := depositApprovalTx1.DeliverTx(state, txHash)
 					So(r.Code, ShouldEqual, response.Success.Code)
-					So(deposit.GetDepositApproval(state, id1, depositTx1.Proposal.BlockNumber), ShouldResemble, depositTxHash1)
+					So(deposit.GetDepositApproval(state, Bob.ID, depositTx1.Proposal.BlockNumber), ShouldResemble, depositTxHash1)
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 				})
 			})
@@ -185,8 +178,8 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If a deposit approval transaction has unregistered sender", func() {
-			depositApprovalTx1.Approver = fixture.Mallory.Address
-			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("773cdf99716432ff9c583af746b989bf5c1a3723ad0222c426f625dd4c2882e730bc5ae9881cd21ae11646a7b70cdd2a6ffb6bf448d38e375b7e76855f8292601b")}
+			depositApprovalTx1.Approver = Mallory.Address
+			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("e74dfc17ca81d5430abaa7db4a714d0e9098dc69e1186ce7bac3a7c7ce3e2b8c24a24fed905c3bbf3b3d8c20d8cffc53309ed514b8b5191433e818f28a6d77651b")}
 			Convey("CheckTx should return SenderNotRegistered", func() {
 				r := depositApprovalTx1.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalSenderNotRegistered.Code)
@@ -212,7 +205,7 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If a deposit approval transaction has signature not from sender", func() {
-			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("18ddf99f2c7167a60e2d17bc891a1f1d5943cac309b17ff23664892a7e235f8722bc5daea93ee2e661404a7bcca8a96fd112e4f9404daa62060df554c74108ff1b")}
+			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("ef21709b824fc5ee1fe3f9af6b66a356c46875b237a5f20d6056008ac413325759daff0f92be27a3638de18e89a88b1c0e4ae6ff077f90df1e7e4a7e09d330ab1b")}
 			Convey("CheckTx should return InvalidSignature", func() {
 				r := depositApprovalTx1.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalInvalidSignature.Code)
@@ -226,7 +219,7 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 		})
 		Convey("If a deposit approval transaction has invalid nonce", func() {
 			depositApprovalTx1.Nonce = 2
-			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("2d91655d35e4cdd39b0797340a9e345e670324c5dc3845ff1e59b782139c16706404fe3e3f62e8ef1b1a6ab22ae56828e218cc51501434321dc62c1a462e823b1c")}
+			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("5714ec00a4fc7615faaee06d59d6796630e37120ff7d8f1c689aaab8f246b5fc0d2e0071118d3491d087d104836aae3caf1b1fa6b2741664f358d20f0a0b372c1b")}
 			Convey("CheckTx should return InvalidNonce", func() {
 				r := depositApprovalTx1.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalInvalidNonce.Code)
@@ -239,31 +232,35 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If after a deposit approval transaction, the proposal has total weight sum not yet more than 2/3", func() {
-			txHash := EncodeTx(depositApprovalTx1)
+			depositApprovalTx := DepositApprovalTx(Carol.ID, depositTxHash1, 1, "cff7853b921b49ccd4d4f9f3fd759f3785b992f7a37da37a8bb6eb109773b4c6075f002ec03153a66b2643ff8862d130d6224620cd7e6505ff111d89f389a1e91b")
+			txHash := EncodeTx(depositApprovalTx)
 			Convey("After DeliverTx, the deposit proposal should not be executed yet", func() {
-				depositApprovalTx1.DeliverTx(state, txHash)
+				depositApprovalTx.DeliverTx(state, txHash)
 				So(deposit.GetDepositExecution(state, depositTx1.Proposal.BlockNumber), ShouldBeNil)
 				Convey("If after another deposit approval transaction, the proposal has total weight sum more than 2/3", func() {
-					depositApprovalTx := DepositApprovalTx(id2, depositTxHash1, 1, "0fbfa1af5db7c43f9eeb47ad4302e74ecc929f0c3d46ca5a4f58174c5a2e83d53847826fcd288fdd2cf3037d2b631b883c78806cb54048e1543f6717ce0ad9431c")
-					txHash := EncodeTx(depositApprovalTx)
+					txHash := EncodeTx(depositApprovalTx1)
 					Convey("After DeliverTx, the deposit proposal should be executed", func() {
-						depositApprovalTx.DeliverTx(state, txHash)
+						r := depositApprovalTx1.DeliverTx(state, txHash)
+						So(r.Code, ShouldEqual, response.Success.Code)
 						So(deposit.GetDepositExecution(state, depositTx1.Proposal.BlockNumber), ShouldResemble, depositTxHash1)
 					})
 				})
 				Convey("If after another deposit approval transaction, the proposal has total weight still not yet sum more than 2/3", func() {
-					depositApprovalTx := DepositApprovalTx(id3, depositTxHash1, 1, "c74e72c4fe9f154bea1c6ddc9c294173f7e206606910c43c4508fbdac19153d83244a3eaba20579aa1fab7d865f1ca0f5d28c5621398ba68b8ab20d5be4192511c")
+					depositApprovalTx := DepositApprovalTx(Dave.ID, depositTxHash1, 1, "ea1c130626f15f392877c29206c10095d488a7fc0ef91603dd1fe062038c23c414ed06829f431e8b50cc140f8a7f4403c26446d6695cca2b24b55620ccd24e301b")
 					txHash := EncodeTx(depositApprovalTx)
 					Convey("After DeliverTx, the deposit proposal should still not be executed yet", func() {
-						depositApprovalTx.DeliverTx(state, txHash)
+						r := depositApprovalTx.DeliverTx(state, txHash)
+						So(r.Code, ShouldEqual, response.Success.Code)
 						So(deposit.GetDepositExecution(state, depositTx1.Proposal.BlockNumber), ShouldBeNil)
 					})
 				})
 			})
 		})
 		Convey("If after a deposit proposal execution, there is an deposit approval transaction for another proposal on the same block number", func() {
+			r := depositTx2.DeliverTx(state, depositTxHash2)
+			So(r.Code, ShouldEqual, response.Success.Code)
 			deposit.ExecuteDepositProposal(state, depositTxHash1)
-			depositApprovalTx := DepositApprovalTx(id1, depositTxHash2, 1, "c6f3080133ec27e67cd823924ad0838b273776348ea76842a3750a62830c1a1479ba3bb1701e048c7b84f1f86a10fd82511ae5c1eaaa54c9691049f408e997581c")
+			depositApprovalTx := DepositApprovalTx(Bob.ID, depositTxHash2, 1, "d08a8cda9f44d2a3ff76b1723002fa2826b2c96ae53c67fb50c1eb676b22904f4f2b0012be5fadd41fa6a8aded020bf607222f72cc762a9747c1f08f08215b981b")
 			Convey("CheckTx should return AlreadyExecuted", func() {
 				r := depositApprovalTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalAlreadyExecuted.Code)
@@ -276,7 +273,9 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If a deposit approval transaction has approver who has already proposed another proposal", func() {
-			depositApprovalTx := DepositApprovalTx(id0, depositTxHash2, 2, "28904ab129d715d0ea4548e79178324089666762b346a113461b18234ec20ee62dadbce87e65d746055844abbf0d28495f3b754b64a267bce8c0fff18f45f6c51b")
+			r := depositTx2.DeliverTx(state, depositTxHash2)
+			So(r.Code, ShouldEqual, response.Success.Code)
+			depositApprovalTx := DepositApprovalTx(Alice.ID, depositTxHash2, 2, "d54b0599bc3261b588777a24fe8e25bcb8266bf44a5bb5879dd9e1d7870c5b592e7210196ac5413dd48c84c938724b9611ca29f00357f773b670e919c3418ea01c")
 			Convey("CheckTx should return DoubleApproval", func() {
 				r := depositApprovalTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalDoubleApproval.Code)
@@ -289,9 +288,11 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If a deposit approval transaction has approver who has already approved another proposal", func() {
+			r := depositTx2.DeliverTx(state, depositTxHash2)
+			So(r.Code, ShouldEqual, response.Success.Code)
 			txHash := utils.HashRawTx(EncodeTx(depositApprovalTx1))
 			depositApprovalTx1.DeliverTx(state, txHash)
-			depositApprovalTx := DepositApprovalTx(id1, depositTxHash2, 2, "962f71ca2f2bde4b69ae25e80e60f94416f45a83a44defd6519b578197ae553b7387c6585e49dc8e2c8daa3fe8c86136ee71ed78b8e3088e4ac2c5d770a837001b")
+			depositApprovalTx := DepositApprovalTx(Bob.ID, depositTxHash2, 2, "46a5c70ac73632568f87dd029b57ab2d4e94404b399b77aac768b5098831882e131ed860d4e8901f7ff2b306aa02975d121af9d9b028c257a78d95c413615a711b")
 			Convey("CheckTx should return DoubleApproval", func() {
 				r := depositApprovalTx.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalDoubleApproval.Code)
@@ -304,8 +305,8 @@ func TestCheckAndDeliverDepositApproval(t *testing.T) {
 			})
 		})
 		Convey("If a deposit approval transaction has non-existing proposal as DepositTxHash", func() {
-			depositApprovalTx1.DepositTxHash = make([]byte, 20)
-			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("0c3416ea3dea94bd5187fed0948bb82803038687d70c34b8ee9d2ae4ef98aad44c8db86df67ddf69786983e9aacc71bbe02d16fe0ee015d4d6bbb7f9edce80461b")}
+			depositApprovalTx1.DepositTxHash = make([]byte, 32)
+			depositApprovalTx1.Sig = &DepositApprovalJSONSignature{Sig("eba99d868db9489ab37d106d7a92c70b64b8c87f7e021f645ffb675dbfe0e57a23c6df5f8c77963c428895ce6e2cbbaac1c4a4452cda109f97707ee15c1a5f651b")}
 			Convey("CheckTx should return ProposalNotExist", func() {
 				r := depositApprovalTx1.CheckTx(state)
 				So(r.Code, ShouldEqual, response.DepositApprovalProposalNotExist.Code)

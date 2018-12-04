@@ -20,6 +20,9 @@ func NewBigInt(n int64) BigInt {
 
 // MarshalAmino implements AminoMarshaler
 func (n BigInt) MarshalAmino() ([]byte, error) {
+	if n.Int.IsInt64() && n.Int.Int64() == 0 {
+		return []byte{0}, nil
+	}
 	return n.Bytes(), nil
 }
 

@@ -14,8 +14,6 @@ func AminoCodec() *amino.Codec {
 }
 
 func init() {
-	cdc.RegisterInterface((*crypto.Signature)(nil), nil)
-	cdc.RegisterConcrete(secp256k1.SignatureSecp256k1{}, "tendermint/SignatureSecp256k1", nil)
 	cdc.RegisterInterface((*crypto.PubKey)(nil), nil)
 	cdc.RegisterConcrete(secp256k1.PubKeySecp256k1{}, "tendermint/PubKeySecp256k1", nil)
 }

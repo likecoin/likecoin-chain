@@ -3,6 +3,7 @@ services:
   api:
     image: likechain/abci-production
     environment:
+      GO111MODULE: "on"
       LIKECHAIN_ENV: production
       LIKECHAIN_API_CLIENT_HOST: tendermint-1:26657
       GIN_MODE: release
@@ -12,6 +13,7 @@ services:
   abci-1: &abci-node
     image: likechain/abci-production
     environment:
+      GO111MODULE: "on"
       LIKECHAIN_ENV: production
       LIKECHAIN_INITIAL_BALANCE: 0
       LIKECHAIN_LOG_CONFIG: |

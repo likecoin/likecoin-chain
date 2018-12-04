@@ -1,0 +1,80 @@
+module github.com/likecoin/likechain
+
+require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/VividCortex/gohistogram v1.0.0 // indirect
+	github.com/aristanetworks/goarista v0.0.0-20181109020153-5faa74ffbed7 // indirect
+	github.com/banzaicloud/logrus-runtime-formatter v0.0.0-20180617171254-12df4a18567f
+	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
+	github.com/btcsuite/btcd v0.0.0-20181013004428-67e573d211ac // indirect
+	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a // indirect
+	github.com/cespare/cp v1.0.0 // indirect
+	github.com/deckarep/golang-set v1.7.1 // indirect
+	github.com/edsrzf/mmap-go v0.0.0-20170320065105-0bce6a688712 // indirect
+	github.com/ethereum/go-ethereum v1.8.17
+	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
+	github.com/fjl/memsize v0.0.0-20180929194037-2a09253e352a // indirect
+	github.com/fortytw2/leaktest v1.3.0 // indirect
+	github.com/gin-contrib/cors v0.0.0-20181008113111-488de3ec974f
+	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
+	github.com/gin-gonic/gin v1.3.0
+	github.com/go-akka/configuration v0.0.0-20180418110749-6065b2d05c3b // indirect
+	github.com/go-kit/kit v0.8.0 // indirect
+	github.com/go-logfmt/logfmt v0.3.0 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/gogap/config v0.0.0-20180418140818-a1522129698c
+	github.com/gogap/logrus_mate v1.1.0
+	github.com/gogo/protobuf v1.1.1 // indirect
+	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
+	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
+	github.com/gorilla/websocket v1.4.0 // indirect
+	github.com/hashicorp/golang-lru v0.5.0 // indirect
+	github.com/huin/goupnp v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jackpal/go-nat-pmp v1.0.1 // indirect
+	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
+	github.com/jmhodges/levigo v0.0.0-20161115193449-c42d9e0ca023 // indirect
+	github.com/jonboulle/clockwork v0.1.0 // indirect
+	github.com/json-iterator/go v1.1.5 // indirect
+	github.com/jtolds/gls v4.2.1+incompatible // indirect
+	github.com/karalabe/hid v0.0.0-20180420081245-2b4488a37358 // indirect
+	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
+	github.com/lestrrat-go/envload v0.0.0-20180220234015-a3eb8ddeffcc // indirect
+	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible // indirect
+	github.com/lestrrat-go/strftime v0.0.0-20180821113735-8b31f9c59b0f // indirect
+	github.com/mattn/go-colorable v0.0.9 // indirect
+	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/onsi/gomega v1.4.2 // indirect
+	github.com/pborman/uuid v1.2.0 // indirect
+	github.com/pkg/errors v0.8.0 // indirect
+	github.com/prometheus/client_golang v0.9.1 // indirect
+	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 // indirect
+	github.com/prometheus/common v0.0.0-20181109100915-0b1957f9d949 // indirect
+	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
+	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
+	github.com/rjeczalik/notify v0.9.2 // indirect
+	github.com/rs/cors v1.6.0 // indirect
+	github.com/sirupsen/logrus v1.2.0
+	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
+	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c
+	github.com/spf13/cobra v0.0.3
+	github.com/spf13/viper v1.2.1
+	github.com/syndtr/goleveldb v0.0.0-20181105012736-f9080354173f // indirect
+	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
+	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f // indirect
+	github.com/tendermint/go-amino v0.14.1
+	github.com/tendermint/iavl v0.11.1
+	github.com/tendermint/tendermint v0.26.3
+	github.com/ugorji/go/codec v0.0.0-20181022190402-e5e69e061d4f // indirect
+	golang.org/x/crypto v0.0.0-20181106171534-e4dc69e5b2fd // indirect
+	golang.org/x/net v0.0.0-20181108082009-03003ca0c849 // indirect
+	google.golang.org/grpc v1.16.0 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.2
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
+	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
+)

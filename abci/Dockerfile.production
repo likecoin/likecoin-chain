@@ -1,4 +1,4 @@
-FROM likechain/golang-godep as builder
+FROM likechain/golang as builder
 
 # Copy files to WORKDIR
 COPY . ./abci

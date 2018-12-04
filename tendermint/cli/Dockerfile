@@ -1,4 +1,4 @@
-FROM likechain/golang-godep AS builder
+FROM likechain/golang AS builder
 
 ARG SRC=/go/src/github.com/likecoin/likechain/tendermint/cli
 

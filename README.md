@@ -43,15 +43,9 @@ docker-compose up --force-recreate
 ```
 
 ## Manage dependancies
-We use `dep` for package manager, for example:
-```sh
-# After import package(s) in code / add constrain(s) in Gopkg.toml
-cd abci
-dep ensure
+We use Go 1.11 modules for dependencies, so after installing Go 1.11, the general commands (`go run`, `go build`, `go test`, etc) should install the dependencies automatically.
 
-# Build image
-./build.sh
-```
+Since module support is an experimental feature in Go 1.11, if you are placing the project in `GOPATH`, you need to `export GO111MODULE=on`.
 
 ## Usage
 ```sh

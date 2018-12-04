@@ -47,7 +47,7 @@ func hashedTransferKey(txHash []byte) []byte {
 
 // CreateHashedTransfer stores a HashedTransfer into state tree, associated with a transaction hash
 func CreateHashedTransfer(state context.IMutableState, ht *HashedTransfer, txHash []byte) {
-	bs, err := types.AminoCodec().MarshalBinary(ht)
+	bs, err := types.AminoCodec().MarshalBinaryLengthPrefixed(ht)
 	if err != nil {
 		log.
 			WithField("hashed_transfer", ht).
@@ -66,7 +66,7 @@ func GetHashedTransfer(state context.IImmutableState, txHash []byte) *HashedTran
 		return nil
 	}
 	ht := HashedTransfer{}
-	err := types.AminoCodec().UnmarshalBinary(bs, &ht)
+	err := types.AminoCodec().UnmarshalBinaryLengthPrefixed(bs, &ht)
 	if err != nil {
 		log.
 			WithField("data", cmn.HexBytes(bs)).

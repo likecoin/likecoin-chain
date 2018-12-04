@@ -69,7 +69,7 @@ func (ctx *ApplicationContext) GetImmutableState() *ImmutableState {
 		}
 	}
 
-	stateTreeVersion := ctx.state.stateTree.Version64()
+	stateTreeVersion := ctx.state.stateTree.Version()
 	stateTree, err := ctx.state.stateTree.GetImmutable(stateTreeVersion)
 	if err != nil {
 		log.
@@ -78,7 +78,7 @@ func (ctx *ApplicationContext) GetImmutableState() *ImmutableState {
 			Panic("Unable to get versioned state tree")
 	}
 
-	withdrawTreeVersion := ctx.state.withdrawTree.Version64()
+	withdrawTreeVersion := ctx.state.withdrawTree.Version()
 	withdrawTree, err := ctx.state.withdrawTree.GetImmutable(withdrawTreeVersion)
 	if err != nil {
 		log.

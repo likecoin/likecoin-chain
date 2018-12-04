@@ -11,7 +11,7 @@ import (
 
 type claimHashedTrasnferJSON struct {
 	Identity   string `json:"identity" binding:"required,identity"`
-	HTLCTxHash string `json:"htlc_tx_hash" binding:"required,txHash"`
+	HTLCTxHash string `json:"htlc_tx_hash" binding:"required,bytes32"`
 	Secret     string `json:"secret" binding:"required"`
 	Nonce      int64  `json:"nonce" binding:"required,min=1"`
 	Sig        string `json:"sig" binding:"required,eth_sig"`
