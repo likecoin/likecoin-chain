@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"encoding/hex"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/state/htlc"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 )
 
 type hashedTransferJSON struct {
@@ -40,12 +40,13 @@ func postHashedTransfer(c *gin.Context) {
 		return
 	}
 
-	commit := [32]byte{}
-	n, err := hex.Decode(commit[:], []byte(json.HashCommit))
-	if err != nil || n != 32 {
+	commitSlice, err := utils.Hex2Bytes(json.HashCommit)
+	if err != nil || len(commitSlice) != 32 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid hash commit"})
 		return
 	}
+	commit := [32]byte{}
+	copy(commit[:], commitSlice)
 
 	tx := txs.HashedTransferTransaction{
 		HashedTransfer: htlc.HashedTransfer{
