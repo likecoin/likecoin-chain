@@ -37,7 +37,8 @@ func postClaimHashedTransfer(c *gin.Context) {
 	if len(json.Secret) == 0 {
 		secret = nil
 	} else if len(json.Secret) == 64 {
-		secret, err := hex.DecodeString(json.Secret)
+		var err error
+		secret, err = hex.DecodeString(json.Secret)
 		if err != nil || len(secret) != 32 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid secret"})
 			return
