@@ -38,20 +38,27 @@ import (
 // 	}
 // }
 
-func extractAppendix(vote *types.CanonicalVote) (time, suffix []byte) {
+func encodeTimestamp(vote *types.CanonicalVote) []byte {
 	cdc := types.GetCodec()
 	buf := new(bytes.Buffer)
+	// Field 4, typ3 = variable length struct (2), so field index = 00100|010 = 0x22
+	// See comments in the Relay smart contract  for more details
 	buf.WriteByte(0x22)
 	buf.Write(cdc.MustMarshalBinaryLengthPrefixed(vote.Timestamp))
-	time = buf.Bytes()
+	return buf.Bytes()
+}
 
-	buf = new(bytes.Buffer)
+func encodeSuffix(vote *types.CanonicalVote) []byte {
+	cdc := types.GetCodec()
+	buf := new(bytes.Buffer)
+	// Field 5, typ3 = variable length struct (2), so field index = 00101|010 = 0x2A
+	// See comments in the Relay smart contract  for more details
 	buf.WriteByte(0x2A)
 	buf.Write(cdc.MustMarshalBinaryLengthPrefixed(vote.BlockID))
+	// Field 6, typ3 = variable length struct (2), so field index = 00110|010 = 0x32
 	buf.WriteByte(0x32)
 	buf.Write(cdc.MustMarshalBinaryBare(vote.ChainID))
-	suffix = buf.Bytes()
-	return time, suffix
+	return buf.Bytes()
 }
 
 func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[int]common.Address) []byte {
@@ -71,7 +78,7 @@ func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[i
 	}
 
 	cv := types.CanonicalizeVote(header.ChainID, votes[0])
-	_, suffix := extractAppendix(&cv)
+	suffix := encodeSuffix(&cv)
 
 	buf := new(bytes.Buffer)
 	buf.WriteByte(uint8(len(suffix)))
@@ -80,7 +87,7 @@ func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[i
 
 	for _, vote := range votes {
 		cv := types.CanonicalizeVote(header.ChainID, vote)
-		time, _ := extractAppendix(&cv)
+		time := encodeTimestamp(&cv)
 		buf.WriteByte(uint8(len(time)))
 		buf.Write(time)
 
