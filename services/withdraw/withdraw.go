@@ -17,8 +17,11 @@ import (
 	"github.com/tendermint/tendermint/types"
 
 	"github.com/likecoin/likechain/services/abi/relay"
+	logger "github.com/likecoin/likechain/services/log"
 	"github.com/likecoin/likechain/services/tendermint"
 )
+
+var log = logger.L
 
 // type AppHashContractProof struct {
 // 	Height     uint64
@@ -128,7 +131,10 @@ func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.Tr
 		panic(err)
 	}
 
-	// fmt.Printf("Calling withdraw, withdrawInfo: 0x%v, contractProof: 0x%v\n", cmn.HexBytes(callData.WithdrawInfo), cmn.HexBytes(callData.ContractProof))
+	log.
+		WithField("withdraw_info", common.Bytes2Hex(callData.WithdrawInfo)).
+		WithField("contract_proof", common.Bytes2Hex(callData.ContractProof)).
+		Info("Calling withdraw on Ethereum")
 	tx, err := contract.Withdraw(auth, callData.WithdrawInfo, callData.ContractProof)
 	if err != nil {
 		panic(err)
@@ -138,7 +144,10 @@ func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.Tr
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Withdraw done, status: %v, gas: %v\n", receipt.Status, receipt.GasUsed)
+	log.
+		WithField("gas_used", receipt.GasUsed).
+		WithField("status", receipt.Status).
+		Info("withdraw call executed on Ethereum")
 }
 
 func getContractHeight(ethClient *ethclient.Client, contractAddr common.Address) int64 {
@@ -159,15 +168,22 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 
 	signedHeader := tendermint.GetSignedHeader(tmClient, height)
 
-	// fmt.Printf("SignedHeader block hash: %v\n", signedHeader.Commit.BlockID.Hash)
+	log.
+		WithField("header_block_hash", signedHeader.Commit.BlockID.Hash).
+		Debug("Got SignedHeader")
 	contractPayload := genContractProofPayload(&signedHeader, tmToEthAddr)
-	// fmt.Printf("Calling commitWithdrawHash, contract payload: 0x%v\n", cmn.HexBytes(contractPayload))
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
 		panic(err)
 	}
 
 	round := uint64(signedHeader.Commit.Round())
+	log.
+		WithField("height", height).
+		WithField("round", round).
+		WithField("contract_payload", common.Bytes2Hex(contractPayload)).
+		Info("Calling commitWithdrawHash on Ethereum")
+
 	tx, err := contract.CommitWithdrawHash(auth, uint64(height), round, contractPayload)
 	if err != nil {
 		panic(err)
@@ -177,7 +193,10 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("CommitWithdrawHash done status: %v, gas: %v\n", receipt.Status, receipt.GasUsed)
+	log.
+		WithField("gas_used", receipt.GasUsed).
+		WithField("status", receipt.Status).
+		Info("commitWithdrawHash call executed on Ethereum")
 }
 
 type withdrawCallData struct {
@@ -186,7 +205,10 @@ type withdrawCallData struct {
 }
 
 func getWithdrawCallDataArr(tmClient *tmRPC.HTTP, lastHeight, newHeight int64) []withdrawCallData {
-	fmt.Printf("Search withdraws with %d < height <= %d\n", lastHeight, newHeight)
+	log.
+		WithField("last_height", lastHeight).
+		WithField("new_height", newHeight).
+		Info("Searching withdraws on LikeChain")
 	queryString := fmt.Sprintf("withdraw.height>%d AND withdraw.height<=%d", lastHeight, newHeight)
 	// TODO: may need pagination
 	searchResult, err := tmClient.TxSearch(queryString, true, 1, 100)
@@ -194,22 +216,35 @@ func getWithdrawCallDataArr(tmClient *tmRPC.HTTP, lastHeight, newHeight int64) [
 		panic(err)
 	}
 	if searchResult.TotalCount <= 0 {
-		fmt.Println("No search result")
+		log.
+			WithField("new_height", newHeight).
+			Info("No withdraw search result")
 		return nil
 	}
 	callDataArr := make([]withdrawCallData, searchResult.TotalCount)
 	for i := 0; i < searchResult.TotalCount; i++ {
 		packedTx := searchResult.Txs[i].TxResult.Data
-		// fmt.Printf("Result %d: %v\n", i, cmn.HexBytes(packedTx))
+		log.
+			WithField("result_index", i).
+			WithField("tx_hash", searchResult.Txs[i].Hash).
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			Debug("Withdraw search result")
 		queryResult, err := tmClient.ABCIQueryWithOptions("withdraw_proof", packedTx, tmRPC.ABCIQueryOptions{Height: newHeight})
 		if err != nil {
-			panic(err)
+			log.
+				WithField("packed_tx", common.Bytes2Hex(packedTx)).
+				WithError(err).
+				Panic("Cannot get withdraw_proof from LikeChain")
 		}
 		proof := ParseRangeProof(queryResult.Response.Value)
 		if proof == nil {
-			panic(fmt.Sprintf("Cannot parse RangeProof: %s", string(queryResult.Response.Value)))
+			log.
+				WithField("range_proof_json", string(queryResult.Response.Value)).
+				Panic("Cannot parse RangeProof")
 		}
-		// fmt.Printf("Proof rootHash: %v\n", cmn.HexBytes(proof.ComputeRootHash()))
+		log.
+			WithField("root_hash", common.Bytes2Hex(proof.ComputeRootHash())).
+			Debug("Computed RangeProof root hash")
 		contractProof := proof.ContractProof()
 		callDataArr[i] = withdrawCallData{packedTx, contractProof}
 	}
@@ -223,7 +258,9 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 		// TODO: load lastHeight from database?
 		newHeight := tendermint.GetHeight(tmClient)
 		if newHeight == lastHeight {
-			fmt.Printf("No new blocks since last height (%d)\n", lastHeight)
+			log.
+				WithField("last_height", lastHeight).
+				Info("No new LikeChain block since last height")
 			continue
 		}
 		withdrawCallDataArr := getWithdrawCallDataArr(tmClient, lastHeight, newHeight)
@@ -234,7 +271,10 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 		if contractHeight < newHeight {
 			commitWithdrawHash(tmClient, ethClient, auth, contractAddr, newHeight)
 		} else if contractHeight > newHeight {
-			panic("contractHeight > newHeight")
+			log.
+				WithField("contract_height", contractHeight).
+				WithField("new_height", newHeight).
+				Panic("New height is less than contract height")
 		}
 		// TODO: save callDataArr in database
 		// TODO: save lastHeight in database?

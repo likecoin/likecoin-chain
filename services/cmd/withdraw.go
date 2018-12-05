@@ -20,14 +20,20 @@ var withdrawCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		tmClient := tmRPC.NewHTTP(viper.GetString("tmEndPoint"), "/websocket")
 		contractAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
-		ethClient, err := ethclient.Dial(viper.GetString("ethEndPoint"))
+		ethEndPoint := viper.GetString("ethEndPoint")
+		ethClient, err := ethclient.Dial(ethEndPoint)
 		if err != nil {
-			panic(err)
+			log.
+				WithField("eth_endpoint", ethEndPoint).
+				WithError(err).
+				Panic("Cannot initialize Ethereum endpoint")
 		}
 		privKeyBytes := common.Hex2Bytes(viper.GetString("ethPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
-			panic(err)
+			log.
+				WithError(err).
+				Panic("Cannot initialize ECDSA private key for Ethereum")
 		}
 		auth := bind.NewKeyedTransactor(privKey)
 

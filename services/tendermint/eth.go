@@ -91,7 +91,10 @@ func MapValidatorIndexToEthAddr(validators []types.Validator) map[int]common.Add
 	for i, v := range validators {
 		pubKey := v.PubKey.(secp256k1.PubKeySecp256k1)
 		tmToEthAddr[i] = PubKeyToEthAddr(&pubKey)
-		// fmt.Printf("Validator %d: %v\n", i, tmToEthAddr[i].Hex())
+		log.
+			WithField("validator_index", i).
+			WithField("validator_addr", tmToEthAddr[i].Hex()).
+			Debug("Mapped validator with index")
 	}
 	return tmToEthAddr
 }
