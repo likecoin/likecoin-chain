@@ -5,19 +5,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/likecoin/likechain/abci/account"
 	likechain "github.com/likecoin/likechain/abci/app"
 	"github.com/likecoin/likechain/abci/cmd/api/routes"
 	customvalidator "github.com/likecoin/likechain/abci/cmd/api/validator"
 	"github.com/likecoin/likechain/abci/context"
-	"github.com/likecoin/likechain/abci/fixture"
+	. "github.com/likecoin/likechain/abci/fixture"
 	"github.com/likecoin/likechain/abci/response"
+	"github.com/likecoin/likechain/abci/state/contract"
+	"github.com/likecoin/likechain/abci/state/deposit"
 	. "github.com/smartystreets/goconvey/convey"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	rpctest "github.com/tendermint/tendermint/rpc/test"
@@ -60,6 +62,21 @@ func TestAPI(t *testing.T) {
 	Convey("Testing API", t, func() {
 		mockCtx := context.NewMock()
 
+		state := mockCtx.GetMutableState()
+		account.NewAccountFromID(state, Carol.ID, Carol.Address)
+		account.NewAccountFromID(state, Dave.ID, Dave.Address)
+
+		approvers := []deposit.Approver{
+			{ID: Carol.ID, Weight: 33},
+			{ID: Dave.ID, Weight: 67},
+		}
+		deposit.SetDepositApprovers(state, approvers)
+		contractUpdaters := []contract.Updater{
+			{ID: Carol.ID, Weight: 33},
+			{ID: Dave.ID, Weight: 67},
+		}
+		contract.SetContractUpdaters(state, contractUpdaters)
+
 		app := likechain.NewLikeChainApplication(mockCtx.ApplicationContext)
 		node := rpctest.StartTendermint(app)
 
@@ -98,10 +115,9 @@ func TestAPI(t *testing.T) {
 		So(code, ShouldEqual, http.StatusBadRequest)
 
 		// Register A account
-		mockCtx.SetInitialBalance(big.NewInt(100))
 		sig := "0xcf3a79ff76b94dd6bee6bfbbd2da201a9972b28e1ef47f4d7c66034d1aa74bf016d22572fdad933ebd867eec110234f88490f105ec5ad0af39ebc5db787b08011b"
 		params := map[string]interface{}{
-			"addr": fixture.Alice.Address.String(),
+			"addr": Alice.Address.String(),
 			"sig": map[string]interface{}{
 				"type":  "eip712",
 				"value": sig,
@@ -162,7 +178,7 @@ func TestAPI(t *testing.T) {
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, aliceID)
-		So(res["balance"], ShouldEqual, "100")
+		So(res["balance"], ShouldEqual, "0")
 
 		// Missing params
 		uri = "/v1/account_info"
@@ -179,11 +195,11 @@ func TestAPI(t *testing.T) {
 		//
 		// Test GET /address_info
 		//
-		uri = "/v1/address_info?addr=" + fixture.Alice.Address.String()
+		uri = "/v1/address_info?addr=" + Alice.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, aliceID)
-		So(res["balance"], ShouldEqual, "100")
+		So(res["balance"], ShouldEqual, "0")
 
 		// Missing params
 		uri = "/v1/address_info"
@@ -197,12 +213,91 @@ func TestAPI(t *testing.T) {
 		So(code, ShouldEqual, http.StatusBadRequest)
 		So(res["error"], ShouldNotBeNil)
 
+		// Deposit into A and B account addresses proposed by C
+		uri = "/v1/deposit"
+		sig = "0x254c15e8d2baf6ac11cc3d549cc94f7445c839a2a2f75ca724ebcb6dc9a498205da5773c55ff3c5cbdc3830c296ace91979deeb264407b96e52c5dc67fb4ee3a1b"
+		res, code = request(router, "POST", uri, map[string]interface{}{
+			"block_number": 1,
+			"identity":     Carol.Address.String(),
+			"inputs": []map[string]interface{}{
+				{"from_addr": Alice.Address.String(), "value": "100"},
+				{"from_addr": Bob.Address.String(), "value": "200"},
+			},
+			"nonce": 1,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		})
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "0")
+
+		uri = "/v1/address_info?addr=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "0")
+
+		// Deposit into A and B account addresses proposed by D
+		uri = "/v1/deposit"
+		sig = "0x180fd088d9c26b7b6b62272b797cd52a572870cb2a4ffc3a7cc6f04c1b7fde3a333cbbaf113fe672264c7729dd939bfe658992e02b62445e08789b49fc4b45911c"
+		res, code = request(router, "POST", uri, map[string]interface{}{
+			"block_number": 1,
+			"identity":     Dave.ID.String(),
+			"inputs": []map[string]interface{}{
+				{"from_addr": Alice.Address.String(), "value": "100"},
+				{"from_addr": Bob.Address.String(), "value": "200"},
+			},
+			"nonce": 1,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		})
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "100")
+
+		uri = "/v1/address_info?addr=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "200")
+
 		// Register B account
-		mockCtx.SetInitialBalance(big.NewInt(200))
 		uri = "/v1/register"
 		sig = "0x6d8c7bb3292cab67f4814f9c2d1986430bd188b4eadf82a3fdf1e6be10f7599751985388c2a79429ee60761169e4c67e3b453daf88b637d77f87d7be68196b2c1b"
 		res, code = request(router, "POST", uri, map[string]interface{}{
-			"addr": fixture.Bob.Address.String(),
+			"addr": Bob.Address.String(),
 			"sig": map[string]interface{}{
 				"value": sig,
 			},
@@ -217,7 +312,7 @@ func TestAPI(t *testing.T) {
 			t.Error(err)
 		}
 
-		uri = "/v1/account_info?identity=" + fixture.Bob.Address.String()
+		uri = "/v1/account_info?identity=" + Bob.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
 		So(res["id"], ShouldEqual, bobID)
@@ -262,11 +357,11 @@ func TestAPI(t *testing.T) {
 		sig = "0x3cd8332511becc97ddcca750adf591a434a309331f9db77f69072dc440fa20b62496a816e6850bd1c1e5c1d17756c4f86b2e6b44d82cad813e95b6a4004798371b"
 		params = map[string]interface{}{
 			"fee":      "0",
-			"identity": fixture.Alice.Address.String(),
+			"identity": Alice.Address.String(),
 			"nonce":    1,
 			"outputs": []map[string]interface{}{
 				{
-					"identity": fixture.Bob.Address.String(),
+					"identity": Bob.Address.String(),
 					"value":    "1",
 				},
 			},
@@ -294,7 +389,7 @@ func TestAPI(t *testing.T) {
 		params["nonce"] = 2
 		params["outputs"] = []map[string]interface{}{
 			{
-				"identity": fixture.Bob.Address.String(),
+				"identity": Bob.Address.String(),
 				"value":    "999",
 			},
 		}
@@ -350,7 +445,7 @@ func TestAPI(t *testing.T) {
 		uri = "/v1/withdraw"
 		sig = "0x221546d3afaa5875f153a726979a90e76d8c1155abd4ed50fc888f7072c509515ada487f12f5f59a640c19735e95135b2165b1a12566171371f7b7045f7c84071c"
 		params = map[string]interface{}{
-			"identity": fixture.Alice.Address.String(),
+			"identity": Alice.Address.String(),
 			"nonce":    2,
 			"to_addr":  "0x0000000000000000000000000000000000000000",
 			"value":    "1",
@@ -376,6 +471,11 @@ func TestAPI(t *testing.T) {
 		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
 			t.Error(err)
 		}
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "98")
 
 		//
 		// Test GET /tx_state
@@ -436,7 +536,7 @@ func TestAPI(t *testing.T) {
 		// Using address
 		uri = fmt.Sprintf(
 			formattedQuery,
-			fixture.Alice.Address.String(),
+			Alice.Address.String(),
 			"0x0000000000000000000000000000000000000000",
 			withdrawHeight,
 			2,
@@ -468,5 +568,198 @@ func TestAPI(t *testing.T) {
 		res, code = request(router, "GET", uri, nil)
 		So(res["error"], ShouldNotBeNil)
 		So(code, ShouldEqual, http.StatusBadRequest)
+
+		//
+		// Test POST /contract_update
+		//
+		uri = "/v1/contract_update"
+		sig = "0xfa14ecac48c39fa32be02bc31ea25f8c2841f6e071763fcef4edb40744b9a3a13b2acdcc497726eb8a55b8cd6eb765dff557e3505ffc53ae8004241ccb84f2ae1c"
+		params = map[string]interface{}{
+			"identity":       Carol.Address.String(),
+			"nonce":          2,
+			"contract_addr":  "0x0102030405060708091011121314151617181920",
+			"contract_index": 1,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		uri = "/v1/contract_update"
+		sig = "0x8311a84142712d3eb1e81294400169097926a7b9e685df776c53db10b0846b3440e713aac7533d72b4d25d0afdf95e75733b8ac3b556ef7acb546cae215781761b"
+		params = map[string]interface{}{
+			"identity":       Dave.ID.String(),
+			"nonce":          2,
+			"contract_addr":  "0x0102030405060708091011121314151617181920",
+			"contract_index": 1,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		status, err = client.Status()
+		if err != nil {
+			t.Error(err)
+		}
+		contractUpdateHeight := status.SyncInfo.LatestBlockHeight
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		//
+		// Test GET /contract_update_proof
+		//
+		formattedQuery = "/v1/contract_update_proof?height=%d&contract_index=1"
+		uri = fmt.Sprintf(formattedQuery, contractUpdateHeight)
+		res, code = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["proof"], ShouldNotBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+
+		//
+		// Test POST /simple_transfer
+		//
+		uri = "/v1/simple_transfer"
+		sig = "0x623f31cc53432dd5ba38e8dde93edf71c6fc3467e52c773db40a03a461a9ac316f80dbc38717e4645efcacbf45a6b4c704153765e62140b4a46174989c40fa2d1c"
+		params = map[string]interface{}{
+			"identity": Alice.Address.String(),
+			"to":       Bob.Address.String(),
+			"value":    "1",
+			"remark":   "there is no spoon",
+			"fee":      "1",
+			"nonce":    3,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "97")
+
+		uri = "/v1/account_info?identity=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "202")
+
+		//
+		// Test POST /hashed_transfer
+		//
+		secret := "0x1111111111111111111111111111111111111111111111111111111111111111"
+		commit := "0x02d449a31fbb267c8f352e9968a79e3e5fc95c1bbeaa502fd6454ebde5a4bedc"
+		uri = "/v1/hashed_transfer"
+		sig = "0xe3675fdc2d6d68e156f6b2b860fdf60c3fb7af59e1fdabb2c71791f4ebf352f645005b4f599d6461792d88ffc42a50b815e1a781c91bb09d5d5a97389695c8341b"
+		params = map[string]interface{}{
+			"identity":    Bob.Address.String(),
+			"to":          Alice.Address.String(),
+			"value":       "2",
+			"hash_commit": commit,
+			"expiry":      999999999999,
+			"fee":         "0",
+			"nonce":       1,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		htlcTxHash := res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + htlcTxHash
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "pending")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "97")
+
+		uri = "/v1/account_info?identity=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "200")
+
+		//
+		// Test POST /claim_hashed_transfer
+		//
+		uri = "/v1/claim_hashed_transfer"
+		sig = "0x5d019201a4fd20c86e23ed28b17b9410b87cdbcbde97183f6dab4dfb7aef9ded7a8dcf103023960e0194b034500a02f0448965f4f71dd0739804bd626d9c37e71c"
+		params = map[string]interface{}{
+			"identity":     Alice.Address.String(),
+			"htlc_tx_hash": htlcTxHash,
+			"secret":       secret,
+			"nonce":        4,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/tx_state?tx_hash=" + htlcTxHash
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "99")
+
+		uri = "/v1/account_info?identity=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "200")
 	})
 }
