@@ -39,7 +39,7 @@ func postSimpleTransfer(c *gin.Context) {
 
 	tx := txs.SimpleTransferTransaction{
 		From:   types.NewIdentifier(json.Identity),
-		To:     types.NewIdentifier(json.Identity),
+		To:     types.NewIdentifier(json.To),
 		Value:  value,
 		Remark: json.Remark,
 		Nonce:  uint64(json.Nonce),
