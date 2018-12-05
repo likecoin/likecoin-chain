@@ -41,7 +41,7 @@ func ProcessDeposit(state context.IMutableState, proposal Proposal, proposer *ty
 	approverInfo := GetDepositApproverInfo(state, proposer)
 	newWeight := IncreaseDepositProposalWeight(state, proposalHash, approverInfo.Weight)
 	weightSum := GetDepositApproversWeightSum(state)
-	if newWeight*3 < weightSum*2 {
+	if newWeight*3 <= weightSum*2 {
 		return false
 	}
 	setDepositExecution(state, blockNumber, proposalHash)

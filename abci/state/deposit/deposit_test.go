@@ -127,8 +127,9 @@ func TestProcessDeposit(t *testing.T) {
 			Convey("ProcessDeposit should return false when proposer's weight is not enough to execute the proposal", func() {
 				approvers := []Approver{
 					{Alice.ID, 33},
-					{Bob.ID, 34},
-					{Carol.ID, 33},
+					{Bob.ID, 33},
+					{Carol.ID, 1},
+					{Dave.ID, 32},
 				}
 				SetDepositApprovers(state, approvers)
 				account.NewAccountFromID(state, Carol.ID, Carol.Address)
@@ -139,17 +140,23 @@ func TestProcessDeposit(t *testing.T) {
 					Convey("GetDepositProposalWeight should return proposer's weight", func() {
 						queriedWeight := GetDepositProposalWeight(state, proposalHash)
 						So(queriedWeight, ShouldEqual, approvers[0].Weight)
-						Convey("When someone further propose the same proposal, making the total weight >2/3", func() {
-							Convey("ProcessDeposit should return true", func() {
-								executed := ProcessDeposit(state, proposal, Bob.ID)
-								So(executed, ShouldBeTrue)
-								Convey("Account balance should change accordingly", func() {
-									balance := account.FetchBalance(state, Alice.Address)
-									So(balance.String(), ShouldResemble, "100")
-									balance = account.FetchBalance(state, Bob.Address)
-									So(balance.String(), ShouldResemble, "200")
-									balance = account.FetchBalance(state, Carol.ID)
-									So(balance.String(), ShouldResemble, "300")
+						Convey("When someone further propose the same proposal, making the total weight to exactly 2/3", func() {
+							executed := ProcessDeposit(state, proposal, Bob.ID)
+							Convey("ProcessDeposit should return false", func() {
+								So(executed, ShouldBeFalse)
+								Convey("When someone further propose the same proposal, making the total weight >2/3", func() {
+									executed := ProcessDeposit(state, proposal, Carol.ID)
+									Convey("ProcessDeposit should return true", func() {
+										So(executed, ShouldBeTrue)
+										Convey("Account balance should change accordingly", func() {
+											balance := account.FetchBalance(state, Alice.Address)
+											So(balance.String(), ShouldResemble, "100")
+											balance = account.FetchBalance(state, Bob.Address)
+											So(balance.String(), ShouldResemble, "200")
+											balance = account.FetchBalance(state, Carol.ID)
+											So(balance.String(), ShouldResemble, "300")
+										})
+									})
 								})
 							})
 						})
