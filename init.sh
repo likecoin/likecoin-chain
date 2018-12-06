@@ -68,7 +68,7 @@ for (( i = 1; i <= $node_count; i++ )); do
         echo "${comment}" >> docker-compose.yml
         echo "${comment}" >> docker-compose.production.yml
     else
-        echo $(cat $default_genesis | jq ".validators |= .+ $(cat tendermint/nodes/${i}/config/genesis.json | jq '.validators')") > $default_genesis
+        echo $(cat $default_genesis | jq '.consensus_params.validator.pub_key_types = ["secp256k1"]' | jq ".validators |= .+ $(cat tendermint/nodes/${i}/config/genesis.json | jq '.validators')") > $default_genesis
 
         port1=$((26658 + $i * 2))
         port2=$((26658 + $i * 2 + 1))
