@@ -38,10 +38,13 @@ func (addr *Address) DBKey(prefix string, suffix string) []byte {
 }
 
 // NewAddress creates an Address from bytes
-func NewAddress(bs []byte) *Address {
+func NewAddress(bs []byte) (*Address, error) {
+	if len(bs) != 20 {
+		return nil, errors.New("Invalid Address length")
+	}
 	result := Address{}
 	copy(result[:], bs)
-	return &result
+	return &result, nil
 }
 
 // NewAddressFromHex creates an Address from hex string
@@ -50,14 +53,16 @@ func NewAddressFromHex(s string) (*Address, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(bs) != 20 {
-		return nil, errors.New("Invalid Address length")
-	}
-	return NewAddress(bs), nil
+	return NewAddress(bs)
 }
 
 func (addr *Address) String() string {
 	return strings.ToLower(common.Address(*addr).Hex())
+}
+
+// EIP712String returns the representation used when signing with EIP-712
+func (addr *Address) EIP712String() string {
+	return "Address-" + addr.String()
 }
 
 // MarshalJSON implements json.Marshaler

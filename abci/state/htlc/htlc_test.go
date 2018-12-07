@@ -124,7 +124,7 @@ func TestCheckClaimHashedTransfer(t *testing.T) {
 			})
 			Convey("For an invalid secret", func() {
 				secret[0] = 1
-				Convey("CheckClaimHashedTransfer should return Success", func() {
+				Convey("CheckClaimHashedTransfer should return InvalidSecret", func() {
 					r := CheckClaimHashedTransfer(state, &ht, secret)
 					So(r.Code, ShouldEqual, response.ClaimHashedTransferInvalidSecret.Code)
 				})

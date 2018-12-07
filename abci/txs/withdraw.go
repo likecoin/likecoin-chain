@@ -25,17 +25,6 @@ type WithdrawTransaction struct {
 	Sig    WithdrawSignature
 }
 
-func bigIntToUint256Bytes(n types.BigInt) []byte {
-	result := make([]byte, 32)
-	b := n.Bytes()
-	l := len(b)
-	if l > 32 {
-		return nil
-	}
-	copy(result[32-l:], b)
-	return result
-}
-
 // Pack returns the packed form of the withdraw transaction, which is used for withdraw in Ethereum contract
 // Packing format: 20-byte From, 20-byte ToAddr, 32-byte Value, 32-Byte Fee, 8-byte Nonce
 // All numbers are in big endian
@@ -43,12 +32,12 @@ func (tx *WithdrawTransaction) Pack() []byte {
 	buf := new(bytes.Buffer)
 	buf.Write(tx.From.Bytes())
 	buf.Write(tx.ToAddr.Bytes())
-	valueBytes := bigIntToUint256Bytes(tx.Value)
+	valueBytes := tx.Value.ToUint256Bytes()
 	if valueBytes == nil {
 		return nil
 	}
 	buf.Write(valueBytes)
-	feeBytes := bigIntToUint256Bytes(tx.Fee)
+	feeBytes := tx.Fee.ToUint256Bytes()
 	if feeBytes == nil {
 		return nil
 	}
@@ -111,8 +100,6 @@ func (tx *WithdrawTransaction) checkTx(state context.IImmutableState) (
 		return response.WithdrawNotEnoughBalance, senderID
 	}
 
-	// TODO: check fee
-
 	return response.Success, senderID
 }
 
@@ -125,16 +112,20 @@ func (tx *WithdrawTransaction) CheckTx(state context.IImmutableState) response.R
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *WithdrawTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
 		return checkTxRes
 	}
 
+	// Since we are hashing the info into a single key in withdraw tree, if we use Address as tx.From, then querying
+	// withdraw proof with LikeChain ID will fail.
+	// Therefore here we are consistently using senderID as the key.
 	tx.From = senderID
 	account.IncrementNextNonce(state, senderID)
 
+	// The fee is distributed to the one who do withdraw on Ethereum
 	total := new(big.Int).Add(tx.Value.Int, tx.Fee.Int)
 	account.MinusBalance(state, senderID, total)
 	packedTx := tx.Pack()

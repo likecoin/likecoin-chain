@@ -161,7 +161,7 @@ var DepositNotApprover = R{
 
 var DepositDoubleApproval = R{
 	Code:                 11060,
-	Info:                 "User already approved another DepositTransaction for the same block numner",
+	Info:                 "User already approved the same proposal",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: true,
 }
@@ -264,65 +264,58 @@ var WithdrawInvalidNonce = R{
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalInvalidFormat = R{
+var ContractUpdateInvalidFormat = R{
 	Code:                 14000,
-	Info:                 "Invalid DepositApprovalTransaction format",
+	Info:                 "Invalid ContractUpdateTransaction format",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalInvalidSignature = R{
+var ContractUpdateInvalidSignature = R{
 	Code:                 14010,
-	Info:                 "Invalid DepositApprovalTransaction signature",
+	Info:                 "Invalid ContractUpdateTransaction signature",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalDuplicated = R{
+var ContractUpdateDuplicated = R{
 	Code:                 14020,
-	Info:                 "Duplicated DepositApprovalTransaction",
+	Info:                 "Duplicated ContractUpdateTransaction",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalSenderNotRegistered = R{
+var ContractUpdateSenderNotRegistered = R{
 	Code:                 14030,
-	Info:                 "Sender of DepositApprovalTransaction not register",
+	Info:                 "Sender of ContractUpdateTransaction not register",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalInvalidNonce = R{
+var ContractUpdateInvalidNonce = R{
 	Code:                 14040,
-	Info:                 "Invalid DepositApprovalTransaction nonce",
+	Info:                 "Invalid ContractUpdateTransaction nonce",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: false,
 }
 
-var DepositApprovalNotApprover = R{
+var ContractUpdateNotUpdater = R{
 	Code:                 14050,
-	Info:                 "User is not a DepositApprovalApprover",
+	Info:                 "User is not a ContractUpdater",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: true,
 }
 
-var DepositApprovalDoubleApproval = R{
+var ContractUpdateDoubleApproval = R{
 	Code:                 14060,
-	Info:                 "User already approved another DepositApprovalTransaction for the same block numner",
+	Info:                 "User already approved the same proposal",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: true,
 }
 
-var DepositApprovalAlreadyExecuted = R{
+var ContractUpdateInvalidIndex = R{
 	Code:                 14070,
-	Info:                 "The deposit proposal has already executed for the given block number",
-	Status:               txstatus.TxStatusFail,
-	ShouldIncrementNonce: true,
-}
-
-var DepositApprovalProposalNotExist = R{
-	Code:                 14080,
-	Info:                 "The deposit proposal does not exist",
+	Info:                 "The update proposal has index which does not match the current index",
 	Status:               txstatus.TxStatusFail,
 	ShouldIncrementNonce: true,
 }
@@ -537,4 +530,14 @@ var QueryWithdrawProofNotExist = R{
 var QueryTxNotExist = R{
 	Code: 62000,
 	Info: "Transaction status record does not exist",
+}
+
+var QueryContractUpdateProofInvalidHeight = R{
+	Code: 62000,
+	Info: "Invalid height in contract update proof",
+}
+
+var QueryContractUpdateProofNotExist = R{
+	Code: 62010,
+	Info: "Contract update record does not exist",
 }

@@ -9,8 +9,8 @@ import (
 )
 
 type registerJSON struct {
-	Addr string `json:"addr" binding:"required,eth_addr"`
-	Sig  string `json:"sig" binding:"required,eth_sig"`
+	Addr string    `json:"addr" binding:"required,eth_addr"`
+	Sig  Signature `json:"sig" binding:"required"`
 }
 
 func postRegister(c *gin.Context) {
@@ -22,7 +22,12 @@ func postRegister(c *gin.Context) {
 
 	tx := txs.RegisterTransaction{
 		Addr: *types.Addr(json.Addr),
-		Sig:  &txs.RegisterJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.RegisterEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.RegisterJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 	data := txs.EncodeTx(&tx)
 
@@ -50,7 +55,7 @@ func postRegister(c *gin.Context) {
 		return
 	}
 
-	id := types.NewLikeChainID(res.Data)
+	id := types.ID(res.Data)
 	c.JSON(http.StatusOK, gin.H{
 		"tx_hash": result.Hash,
 		"id":      id.String(),

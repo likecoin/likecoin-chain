@@ -127,7 +127,7 @@ func (tx *TransferTransaction) CheckTx(state context.IImmutableState) response.R
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID, toIdens := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
@@ -136,7 +136,8 @@ func (tx *TransferTransaction) DeliverTx(state context.IMutableState, txHash []b
 
 	account.IncrementNextNonce(state, senderID)
 
-	total := new(big.Int).Set(tx.Fee.Int)
+	total := big.NewInt(0)
+	// TODO: in the future, we should distribute the fee to validators instead of ignore it
 	for identity, value := range toIdens {
 		account.AddBalance(state, identity, value)
 		total.Add(total, value)

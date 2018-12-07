@@ -29,11 +29,16 @@ func TestLikeChainID(t *testing.T) {
 						bs, err := base64.StdEncoding.DecodeString(s)
 						So(err, ShouldBeNil)
 						So(bs, ShouldResemble, idBytes)
+						Convey("The EIP-712 representation string should be 'LikeChainID-' concatenated with the string representation", func() {
+							eip712Str := id.EIP712String()
+							So(eip712Str, ShouldResemble, "LikeChainID-"+s)
+						})
 					})
 				})
 			})
 			Convey("It should converts to LikeChainID by bytes", func() {
-				idByBytes := NewLikeChainID(idBytes)
+				idByBytes, err := NewLikeChainID(idBytes)
+				So(err, ShouldBeNil)
 				So(idByBytes[:], ShouldResemble, idBytes)
 				idByBytes = ID(idBytes)
 				So(idByBytes[:], ShouldResemble, idBytes)
@@ -172,11 +177,16 @@ func TestAddress(t *testing.T) {
 						bs, err := hex.DecodeString(s[2:])
 						So(err, ShouldBeNil)
 						So(bs, ShouldResemble, addrBytes)
+						Convey("The EIP-712 representation string should be 'Address-' concatenated with the string representation", func() {
+							eip712Str := addr.EIP712String()
+							So(eip712Str, ShouldResemble, "Address-"+s)
+						})
 					})
 				})
 			})
 			Convey("It should converts to Address by bytes", func() {
-				addrByBytes := NewAddress(addrBytes)
+				addrByBytes, err := NewAddress(addrBytes)
+				So(err, ShouldBeNil)
 				So(addrByBytes[:], ShouldResemble, addrBytes)
 			})
 			Convey("It should converts to a valid Address without panic", func() {
@@ -198,7 +208,8 @@ func TestAddress(t *testing.T) {
 				})
 			})
 			Convey("It should converts to Address by bytes", func() {
-				addrByBytes := NewAddress(addrBytes)
+				addrByBytes, err := NewAddress(addrBytes)
+				So(err, ShouldBeNil)
 				So(addrByBytes[:], ShouldResemble, addrBytes)
 			})
 			Convey("It should converts to a valid Address without panic", func() {
@@ -268,17 +279,6 @@ func TestAddress(t *testing.T) {
 				dbKey := addr.DBKey("prefix", "suffix")
 				expectedKey := []byte("prefix:addr:_\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33\x33_suffix")
 				So(dbKey, ShouldResemble, expectedKey)
-			})
-			Convey("It should be marshaled to JSON correctly", func() {
-				bs, err := json.Marshal(&addr)
-				So(err, ShouldBeNil)
-				So(bs, ShouldResemble, []byte(`"0x3333333333333333333333333333333333333333"`))
-				Convey("JSON unmarshaling should recover the same Address", func() {
-					recoveredAddr := Address{}
-					err = json.Unmarshal(bs, &recoveredAddr)
-					So(err, ShouldBeNil)
-					So(&recoveredAddr, ShouldResemble, addr)
-				})
 			})
 		})
 		Convey("For JSON marshaling and unmarshaling", func() {
@@ -489,6 +489,34 @@ func TestBigInt(t *testing.T) {
 				Convey("n.IsWithinRange() should return false", func() {
 					So(n.IsWithinRange(), ShouldBeFalse)
 				})
+			})
+		})
+	})
+}
+
+func TestBigIntToUint256Bytes(t *testing.T) {
+	Convey("In the beginning", t, func() {
+		n := new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil)
+		Convey("If a big integer has 256 bits", func() {
+			n.Sub(n, big.NewInt(1))
+			Convey("bigIntToUint256Bytes should return the bytes", func() {
+				bs := BigInt{Int: n}.ToUint256Bytes()
+				So(bs, ShouldResemble, n.Bytes())
+			})
+		})
+		Convey("If a big integer has 248 bits", func() {
+			Convey("bigIntToUint256Bytes should return the bytes padded by zero at the beginning", func() {
+				n.Sub(n, big.NewInt(1))
+				n.Rsh(n, 8)
+				bs := BigInt{Int: n}.ToUint256Bytes()
+				So(bs[0:1], ShouldResemble, []byte{0})
+				So(bs[1:], ShouldResemble, n.Bytes())
+			})
+		})
+		Convey("If a big integer has more than 256 bits", func() {
+			Convey("bigIntToUint256Bytes should return nil", func() {
+				bs := BigInt{Int: n}.ToUint256Bytes()
+				So(bs, ShouldBeNil)
 			})
 		})
 	})

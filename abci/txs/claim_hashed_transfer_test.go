@@ -67,8 +67,8 @@ func TestClaimHashedTrasnferValidateFormat(t *testing.T) {
 	})
 }
 
-func TestClaimHashedTransferSignature(t *testing.T) {
-	Convey("For a ClaimHashedTransfer transaction", t, func() {
+func TestClaimHashedTransferJSONSignature(t *testing.T) {
+	Convey("For a ClaimHashedTransfer transaction with JSON signature", t, func() {
 		htlcTxHash := make([]byte, tmhash.Size)
 		secret := make([]byte, 32)
 		claimHashedTransferTx := ClaimHashedTransferTx(Alice.Address, htlcTxHash, secret, 1, "33cbe33180cd8bd7056c13f4f955d804702138680a977e6d979449057fb9e0a507597a542dc1fbe43410c0bc18915b8a1aab66366ac124b1a17cd223e260095f1b")
@@ -84,6 +84,40 @@ func TestClaimHashedTransferSignature(t *testing.T) {
 		Convey("If a ClaimHashedTransfer transaction is valid with secret length 0", func() {
 			claimHashedTransferTx.Secret = nil
 			claimHashedTransferTx.Sig = &ClaimHashedTransferJSONSignature{Sig("c011b32ed5b9df48b22a476dbc4f243a47520facb2bd3ca0ca7b2fa644257240073e895e87418194ea39a3b236c35b7623c42d04f3bf38553188f1fc1deedb301c")}
+			Convey("Address recovery should succeed", func() {
+				recoveredAddr, err := claimHashedTransferTx.Sig.RecoverAddress(claimHashedTransferTx)
+				So(err, ShouldBeNil)
+				Convey("The recovered address should be the From address in the transaction", func() {
+					So(recoveredAddr, ShouldResemble, claimHashedTransferTx.From)
+				})
+			})
+		})
+	})
+}
+
+func TestClaimHashedTransferEIP712Signature(t *testing.T) {
+	Convey("For a ClaimHashedTransfer transaction with JSON signature", t, func() {
+		secret := make([]byte, 32)
+		secret[31] = 1
+		claimHashedTransferTx := &ClaimHashedTransferTransaction{
+			From:       Alice.Address,
+			HTLCTxHash: make([]byte, tmhash.Size),
+			Secret:     secret,
+			Nonce:      1,
+			Sig:        &ClaimHashedTransferEIP712Signature{SigEIP712("41d918a1896715b4cd7c4c16d8fa3f0ca2d2366ff962935fe4c75a5efaccaf076fa8df5aa68e951ff523284fb28e622f79835dabbab08afcfb211b985cbf446d1b")},
+		}
+		Convey("If a ClaimHashedTransfer transaction is valid with secret length 32", func() {
+			Convey("Address recovery should succeed", func() {
+				recoveredAddr, err := claimHashedTransferTx.Sig.RecoverAddress(claimHashedTransferTx)
+				So(err, ShouldBeNil)
+				Convey("The recovered address should be the From address in the transaction", func() {
+					So(recoveredAddr, ShouldResemble, claimHashedTransferTx.From)
+				})
+			})
+		})
+		Convey("If a ClaimHashedTransfer transaction is valid with secret length 0", func() {
+			claimHashedTransferTx.Secret = nil
+			claimHashedTransferTx.Sig = &ClaimHashedTransferEIP712Signature{SigEIP712("3252a8e16d8fc6ab60cbbcb35b3fada9dffeed133277870c779cf70d5147dc136fea034ca9235aa1c2cb98e2e2b8feff819a6ae27bc63fa7724d42e7705dd53f1b")}
 			Convey("Address recovery should succeed", func() {
 				recoveredAddr, err := claimHashedTransferTx.Sig.RecoverAddress(claimHashedTransferTx)
 				So(err, ShouldBeNil)
@@ -123,7 +157,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(txstatus.GetStatus(state, htlcTxHash), ShouldEqual, txstatus.TxStatusSuccess)
 					So(htlc.GetHashedTransfer(state, htlcTxHash), ShouldBeNil)
-					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(79)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(80)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(20)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Bob.ID), ShouldEqual, 2)
 					Convey("CheckTx again should return Duplicated", func() {
@@ -162,7 +196,7 @@ func TestCheckAndDeliverClaimHashedTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(txstatus.GetStatus(state, htlcTxHash), ShouldEqual, txstatus.TxStatusSuccess)
 					So(htlc.GetHashedTransfer(state, htlcTxHash), ShouldBeNil)
-					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(79)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(80)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(20)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Bob.ID), ShouldEqual, 2)
 				})
@@ -330,7 +364,7 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(txstatus.GetStatus(state, htlcTxHash), ShouldEqual, txstatus.TxStatusSuccess)
 					So(htlc.GetHashedTransfer(state, htlcTxHash), ShouldBeNil)
-					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(100)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Alice.ID), ShouldEqual, 3)
 					Convey("CheckTx again should return Duplicated", func() {
@@ -370,7 +404,7 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(txstatus.GetStatus(state, htlcTxHash), ShouldEqual, txstatus.TxStatusSuccess)
 					So(htlc.GetHashedTransfer(state, htlcTxHash), ShouldBeNil)
-					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(100)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Alice.ID), ShouldEqual, 3)
 				})
@@ -388,7 +422,7 @@ func TestCheckAndDeliverRevokeHashedTransfer(t *testing.T) {
 					So(r.Status, ShouldEqual, txstatus.TxStatusSuccess)
 					So(txstatus.GetStatus(state, htlcTxHash), ShouldEqual, txstatus.TxStatusSuccess)
 					So(htlc.GetHashedTransfer(state, htlcTxHash), ShouldBeNil)
-					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(99)), ShouldBeZeroValue)
+					So(account.FetchBalance(state, Alice.ID).Cmp(big.NewInt(100)), ShouldBeZeroValue)
 					So(account.FetchBalance(state, Bob.ID).Cmp(big.NewInt(0)), ShouldBeZeroValue)
 					So(account.FetchNextNonce(state, Alice.ID), ShouldEqual, 3)
 				})

@@ -67,8 +67,8 @@ require (
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f // indirect
 	github.com/tendermint/go-amino v0.14.1
-	github.com/tendermint/iavl v0.11.1
-	github.com/tendermint/tendermint v0.26.3
+	github.com/tendermint/iavl v0.12.0
+	github.com/tendermint/tendermint v0.27.0
 	github.com/ugorji/go/codec v0.0.0-20181022190402-e5e69e061d4f // indirect
 	golang.org/x/crypto v0.0.0-20181106171534-e4dc69e5b2fd // indirect
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849 // indirect

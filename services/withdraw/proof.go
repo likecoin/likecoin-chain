@@ -79,13 +79,9 @@ func (proof *RangeProof) ComputeRootHash() (rootHash []byte) {
 	path := proof.LeftPath
 	leaf := proof.Leaves[0]
 
-	// fmt.Printf("Leaf key: %v\n", cmn.HexBytes(leaf.Key))
-	// fmt.Printf("Leaf value hash: %v\n", cmn.HexBytes(leaf.ValueHash))
 	rootHash = leaf.Hash()
-	// fmt.Printf("Leaf hash: %v\n", cmn.HexBytes(rootHash))
 	for i := len(path) - 1; i >= 0; i-- {
 		rootHash = path[i].Hash(rootHash)
-		// fmt.Printf("Intermediate hash: %v\n", cmn.HexBytes(rootHash))
 	}
 
 	return rootHash

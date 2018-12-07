@@ -139,7 +139,7 @@ func generateLikeChainID(state context.IMutableState) *types.LikeChainID {
 func AddressToLikeChainID(state context.IImmutableState, addr *types.Address) *types.LikeChainID {
 	_, value := state.ImmutableStateTree().Get(getAddrIDPairKey(addr))
 	if value != nil {
-		return types.NewLikeChainID(value)
+		return types.ID(value)
 	}
 	return nil
 }

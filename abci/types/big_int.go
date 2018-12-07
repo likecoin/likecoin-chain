@@ -65,3 +65,15 @@ func NewBigIntFromString(s string) (BigInt, bool) {
 	}
 	return BigInt{n}, true
 }
+
+// ToUint256Bytes converts a BigInt to []byte of length 32 by padding. If the BigInt has more than 256 bits, nil is returned.
+func (n BigInt) ToUint256Bytes() []byte {
+	result := make([]byte, 32)
+	b := n.Bytes()
+	l := len(b)
+	if l > 32 {
+		return nil
+	}
+	copy(result[32-l:], b)
+	return result
+}

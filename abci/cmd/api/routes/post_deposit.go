@@ -19,7 +19,7 @@ type depositJSON struct {
 	BlockNumber uint64             `json:"block_number" binding:"required"`
 	Inputs      []depositInputJSON `json:"inputs" binding:"required"`
 	Nonce       int64              `json:"nonce" binding:"required,min=1"`
-	Sig         string             `json:"sig" binding:"required,eth_sig"`
+	Sig         Signature          `json:"sig" binding:"required"`
 }
 
 func postDeposit(c *gin.Context) {
@@ -36,7 +36,13 @@ func postDeposit(c *gin.Context) {
 			Inputs:      make([]deposit.Input, 0, len(json.Inputs)),
 		},
 		Nonce: uint64(json.Nonce),
-		Sig:   &txs.DepositJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		c.JSON(http.StatusBadRequest, gin.H{"error": "EIP-712 signature not supported for Deposit transaction"})
+		return
+	default:
+		tx.Sig = &txs.DepositJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 	for _, input := range json.Inputs {
 		value, ok := types.NewBigIntFromString(input.Value)

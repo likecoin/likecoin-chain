@@ -20,18 +20,26 @@ var proposerCmd = &cobra.Command{
 		tmClient := tmRPC.NewHTTP(viper.GetString("tmEndPoint"), "/websocket")
 		tokenAddr := common.HexToAddress(viper.GetString("tokenContractAddr"))
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
-		ethClient, err := ethclient.Dial(viper.GetString("ethEndPoint"))
+		ethEndPoint := viper.GetString("ethEndPoint")
+		ethClient, err := ethclient.Dial(ethEndPoint)
 		if err != nil {
-			panic(err)
+			log.
+				WithField("eth_endpoint", ethEndPoint).
+				WithError(err).
+				Panic("Cannot initialize Ethereum endpoint")
 		}
 		privKeyBytes := common.Hex2Bytes(viper.GetString("tmPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
-			panic(err)
+			log.
+				WithError(err).
+				Panic("Cannot initialize ECDSA private key for LikeChain")
 		}
 		proposerDelay := viper.GetInt64("proposerDelay")
 		if proposerDelay <= 0 {
-			panic("Wrong proposer delay")
+			log.
+				WithField("proposer_delay", proposerDelay).
+				Panic("Invalid proposer delay value")
 		}
 		proposer.Run(tmClient, ethClient, tokenAddr, relayAddr, privKey, uint64(proposerDelay))
 	},

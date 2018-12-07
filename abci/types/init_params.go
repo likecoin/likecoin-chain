@@ -6,6 +6,7 @@ type InitAccountInfo struct {
 	Addr                  Address     `json:"addr"`
 	Balance               BigInt      `json:"balance"`
 	DepositApproverWeight uint32      `json:"depositApproverWeight"`
+	ContractUpdaterWeight uint32      `json:"contractUpdaterWeight"`
 }
 
 // AppInitState is for genesis initial blockchain data, including initial account list

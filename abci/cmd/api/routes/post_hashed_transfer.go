@@ -1,24 +1,24 @@
 package routes
 
 import (
-	"encoding/hex"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/likecoin/likechain/abci/state/htlc"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
+	"github.com/likecoin/likechain/abci/utils"
 )
 
 type hashedTransferJSON struct {
-	Identity   string `json:"identity" binding:"required,identity"`
-	To         string `json:"to" binding:"required,identity"`
-	Value      string `json:"value" binding:"required,biginteger"`
-	Fee        string `json:"fee" binding:"required,biginteger"`
-	HashCommit string `json:"hash_commit" binding:"required,bytes32"`
-	Expiry     int64  `json:"expiry" binding:"required"`
-	Nonce      int64  `json:"nonce" binding:"required,min=1"`
-	Sig        string `json:"sig" binding:"required,eth_sig"`
+	Identity   string    `json:"identity" binding:"required,identity"`
+	To         string    `json:"to" binding:"required,identity"`
+	Value      string    `json:"value" binding:"required,biginteger"`
+	Fee        string    `json:"fee" binding:"required,biginteger"`
+	HashCommit string    `json:"hash_commit" binding:"required,bytes32"`
+	Expiry     int64     `json:"expiry" binding:"required"`
+	Nonce      int64     `json:"nonce" binding:"required,min=1"`
+	Sig        Signature `json:"sig" binding:"required"`
 }
 
 func postHashedTransfer(c *gin.Context) {
@@ -34,18 +34,19 @@ func postHashedTransfer(c *gin.Context) {
 		return
 	}
 
-	fee, ok := types.NewBigIntFromString(json.Value)
+	fee, ok := types.NewBigIntFromString(json.Fee)
 	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid fee"})
 		return
 	}
 
-	commit := [32]byte{}
-	n, err := hex.Decode(commit[:], []byte(json.HashCommit))
-	if err != nil || n != 32 {
+	commitSlice, err := utils.Hex2Bytes(json.HashCommit)
+	if err != nil || len(commitSlice) != 32 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid hash commit"})
 		return
 	}
+	commit := [32]byte{}
+	copy(commit[:], commitSlice)
 
 	tx := txs.HashedTransferTransaction{
 		HashedTransfer: htlc.HashedTransfer{
@@ -57,9 +58,13 @@ func postHashedTransfer(c *gin.Context) {
 		},
 		Fee:   fee,
 		Nonce: uint64(json.Nonce),
-		Sig:   &txs.HashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
 	}
-
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.HashedTransferEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.HashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
+	}
 	data := txs.EncodeTx(&tx)
 
 	result, err := tendermint.BroadcastTxCommit(data)

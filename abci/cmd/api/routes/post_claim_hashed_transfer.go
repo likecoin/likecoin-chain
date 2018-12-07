@@ -10,11 +10,11 @@ import (
 )
 
 type claimHashedTrasnferJSON struct {
-	Identity   string `json:"identity" binding:"required,identity"`
-	HTLCTxHash string `json:"htlc_tx_hash" binding:"required,bytes32"`
-	Secret     string `json:"secret" binding:"required"`
-	Nonce      int64  `json:"nonce" binding:"required,min=1"`
-	Sig        string `json:"sig" binding:"required,eth_sig"`
+	Identity   string    `json:"identity" binding:"required,identity"`
+	HTLCTxHash string    `json:"htlc_tx_hash" binding:"required,bytes32"`
+	Secret     string    `json:"secret" binding:"required"`
+	Nonce      int64     `json:"nonce" binding:"required,min=1"`
+	Sig        Signature `json:"sig" binding:"required"`
 }
 
 func postClaimHashedTransfer(c *gin.Context) {
@@ -37,7 +37,8 @@ func postClaimHashedTransfer(c *gin.Context) {
 	if len(json.Secret) == 0 {
 		secret = nil
 	} else if len(json.Secret) == 64 {
-		secret, err := hex.DecodeString(json.Secret)
+		var err error
+		secret, err = hex.DecodeString(json.Secret)
 		if err != nil || len(secret) != 32 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid secret"})
 			return
@@ -52,7 +53,12 @@ func postClaimHashedTransfer(c *gin.Context) {
 		HTLCTxHash: htlcTxHash,
 		Secret:     secret,
 		Nonce:      uint64(json.Nonce),
-		Sig:        &txs.ClaimHashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		tx.Sig = &txs.ClaimHashedTransferEIP712Signature{EIP712Signature: txs.SigEIP712(json.Sig.Value)}
+	default:
+		tx.Sig = &txs.ClaimHashedTransferJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 
 	data := txs.EncodeTx(&tx)

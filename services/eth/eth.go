@@ -46,8 +46,12 @@ func SubscribeTransfer(ethClient *ethclient.Client, tokenAddr, relayAddr common.
 	for {
 		select {
 		case e := <-ch:
+			addr, err := types.NewAddress(e.From[:])
+			if err != nil {
+				panic(err)
+			}
 			input := deposit.Input{
-				FromAddr: *types.NewAddress(e.From[:]),
+				FromAddr: *addr,
 				Value:    types.BigInt{Int: e.Value},
 			}
 			cont := fn(&input, e.Raw)

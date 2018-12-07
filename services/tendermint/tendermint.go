@@ -3,7 +3,11 @@ package tendermint
 import (
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tendermint/tendermint/types"
+
+	logger "github.com/likecoin/likechain/services/log"
 )
+
+var log = logger.L
 
 // GetSignedHeader returns the signed header at the given height
 func GetSignedHeader(tmClient *tmRPC.HTTP, height int64) types.SignedHeader {

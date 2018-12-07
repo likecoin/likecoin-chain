@@ -32,9 +32,25 @@ func TestRegisterValidateFormat(t *testing.T) {
 	})
 }
 
-func TestRegisterSignature(t *testing.T) {
-	Convey("If a register transaction is valid", t, func() {
+func TestRegisterJSONSignature(t *testing.T) {
+	Convey("If a register transaction with JSON signature is valid", t, func() {
 		regTx := RegisterTx("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9", "65e6d31224fbcec8e41251d7b014e569d4a94c866227637c6b1fcf75a4505f241b2009557e79d5879a8bfbbb5dec86205c3481ed3042ad87f0643778022f54141b")
+		Convey("Address recovery should succeed", func() {
+			recoveredAddr, err := regTx.Sig.RecoverAddress(regTx)
+			So(err, ShouldBeNil)
+			Convey("The recovered address should be the address of the register transaction", func() {
+				So(recoveredAddr, ShouldResemble, &regTx.Addr)
+			})
+		})
+	})
+}
+
+func TestRegisterEIP712Signature(t *testing.T) {
+	Convey("If a register transaction with EIP-712 signature is valid", t, func() {
+		regTx := &RegisterTransaction{
+			Addr: *types.Addr("0x539c17e9e5fd1c8e3b7506f4a7d9ba0a0677eae9"),
+			Sig:  &RegisterEIP712Signature{SigEIP712("f7eb8becb45a72a7a253d84b568116fd6562edf08c828b7c523a38a679d1f9fe176c9151a033138a046a954c6213b99eeb470aa62443342e76dd26d0961c09651c")},
+		}
 		Convey("Address recovery should succeed", func() {
 			recoveredAddr, err := regTx.Sig.RecoverAddress(regTx)
 			So(err, ShouldBeNil)

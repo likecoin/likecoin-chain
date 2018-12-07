@@ -13,16 +13,16 @@ type TransferJSONSignature struct {
 }
 
 // GenerateJSONMap generates the JSON map from the transaction, which is used for generating and verifying JSON signature
-func (tx *TransferTransaction) GenerateJSONMap() map[string]interface{} {
-	outputs := make([]map[string]interface{}, len(tx.Outputs))
+func (tx *TransferTransaction) GenerateJSONMap() JSONMap {
+	outputs := make([]JSONMap, len(tx.Outputs))
 	for i, output := range tx.Outputs {
-		outputs[i] = map[string]interface{}{
+		outputs[i] = JSONMap{
 			"identity": output.To.String(),
 			"remark":   output.Remark.String(),
 			"value":    output.Value.String(),
 		}
 	}
-	return map[string]interface{}{
+	return JSONMap{
 		"fee":      tx.Fee.String(),
 		"identity": tx.From.String(),
 		"nonce":    tx.Nonce,

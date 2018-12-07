@@ -92,7 +92,7 @@ func (tx *SimpleTransferTransaction) CheckTx(state context.IImmutableState) resp
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *SimpleTransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
@@ -102,7 +102,7 @@ func (tx *SimpleTransferTransaction) DeliverTx(state context.IMutableState, txHa
 	account.IncrementNextNonce(state, senderID)
 
 	total := new(big.Int).Set(tx.Value.Int)
-	total.Add(total, tx.Fee.Int)
+	// TODO: in the future, we should distribute the fee to validators instead of ignore it
 	account.AddBalance(state, tx.To, tx.Value.Int)
 	account.MinusBalance(state, senderID, total)
 

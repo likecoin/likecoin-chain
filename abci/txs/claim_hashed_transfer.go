@@ -89,7 +89,7 @@ func (tx *ClaimHashedTransferTransaction) CheckTx(state context.IImmutableState)
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *ClaimHashedTransferTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID, ht := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}

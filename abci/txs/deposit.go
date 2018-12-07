@@ -7,7 +7,6 @@ import (
 	"github.com/likecoin/likechain/abci/context"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/state/deposit"
-	"github.com/likecoin/likechain/abci/txstatus"
 	"github.com/likecoin/likechain/abci/types"
 
 	cmn "github.com/tendermint/tendermint/libs/common"
@@ -61,7 +60,7 @@ func (tx *DepositTransaction) checkTx(state context.IImmutableState) (
 		return response.DepositDuplicated, senderID
 	}
 
-	return deposit.CheckDepositProposal(state, tx.Proposal, senderID), senderID
+	return deposit.CheckDeposit(state, tx.Proposal, senderID), senderID
 }
 
 // CheckTx checks the transaction to see if it should be executed
@@ -73,7 +72,7 @@ func (tx *DepositTransaction) CheckTx(state context.IImmutableState) response.R 
 // DeliverTx checks the transaction to see if it should be executed
 func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []byte) response.R {
 	checkTxRes, senderID := tx.checkTx(state)
-	if checkTxRes.Code != 0 {
+	if checkTxRes.Code != response.Success.Code {
 		if checkTxRes.ShouldIncrementNonce {
 			account.IncrementNextNonce(state, senderID)
 		}
@@ -81,9 +80,6 @@ func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []by
 	}
 
 	account.IncrementNextNonce(state, senderID)
-	weight := deposit.CreateDepositProposal(state, txHash, tx.Proposal, senderID)
-	txStatus := txstatus.TxStatusPending
-
 	height := state.GetHeight() + 1
 	tags := []cmn.KVPair{
 		{
@@ -91,11 +87,8 @@ func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []by
 			Value: []byte(strconv.FormatInt(height, 10)),
 		},
 	}
-
-	weightSum := deposit.GetDepositApproversWeightSum(state)
-	if weight*3 > weightSum*2 {
-		deposit.ExecuteDepositProposal(state, txHash)
-		txStatus = txstatus.TxStatusSuccess
+	executed := deposit.ProcessDeposit(state, tx.Proposal, senderID)
+	if executed {
 		tags = append(tags, cmn.KVPair{
 			Key:   []byte("deposit_execution.height"),
 			Value: []byte(strconv.FormatInt(height, 10)),
@@ -103,8 +96,7 @@ func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []by
 	}
 
 	return response.Success.Merge(response.R{
-		Tags:   tags,
-		Status: txStatus,
+		Tags: tags,
 	})
 }
 

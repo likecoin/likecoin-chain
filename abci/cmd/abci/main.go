@@ -12,7 +12,7 @@ import (
 var log = logger.L
 
 func main() {
-	app := app.NewLikeChainApplication(context.New("/tmp"))
+	app := app.NewLikeChainApplication(context.New("/like"))
 	svr, err := server.NewServer("tcp://0.0.0.0:26658", "socket", app)
 	if err != nil {
 		log.WithError(err).Panic("Error when initializing server")

@@ -19,7 +19,7 @@ type transferJSON struct {
 	Outputs  []transferTargetJSON `json:"outputs" binding:"required"`
 	Nonce    int64                `json:"nonce" binding:"required,min=1"`
 	Fee      string               `json:"fee" binding:"required,biginteger"`
-	Sig      string               `json:"sig" binding:"required,eth_sig"`
+	Sig      Signature            `json:"sig" binding:"required"`
 }
 
 func postTransfer(c *gin.Context) {
@@ -40,7 +40,13 @@ func postTransfer(c *gin.Context) {
 		Outputs: make([]txs.TransferOutput, len(json.Outputs)),
 		Nonce:   uint64(json.Nonce),
 		Fee:     fee,
-		Sig:     &txs.TransferJSONSignature{JSONSignature: txs.Sig(json.Sig)},
+	}
+	switch json.Sig.Type {
+	case "eip712":
+		c.JSON(http.StatusBadRequest, gin.H{"error": "EIP-712 signature not supported for Transfer transaction"})
+		return
+	default:
+		tx.Sig = &txs.TransferJSONSignature{JSONSignature: txs.Sig(json.Sig.Value)}
 	}
 
 	for i, t := range json.Outputs {

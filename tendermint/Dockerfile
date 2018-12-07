@@ -11,25 +11,8 @@ RUN addgroup tmuser && \
 RUN mkdir -p $DATA_ROOT && \
     chown -R tmuser:tmuser $DATA_ROOT
 
-# Install Git
-RUN apk update && apk upgrade && apk add --no-cache build-base git bash
-
-# Download latest source code of Tendermint on master branch
-RUN mkdir -p $GOPATH/src/github.com/tendermint && \
-    cd $GOPATH/src/github.com/tendermint && \
-    git clone https://github.com/tendermint/tendermint.git && \
-    cd tendermint && \
-    git checkout v0.26.1
-
-WORKDIR $GOPATH/src/github.com/tendermint/tendermint
-
-# Get Tools & Dependencies
-RUN make get_tools && \
-    make get_vendor_deps && \
-    make install && \
-    make build
-
-RUN mkdir -p $DATA_ROOT
+RUN wget https://github.com/tendermint/tendermint/releases/download/v0.27.0/tendermint_0.27.0_linux_amd64.zip && \
+    unzip tendermint_0.27.0_linux_amd64.zip -d /usr/bin
 
 WORKDIR $DATA_ROOT
 
