@@ -120,7 +120,7 @@ func TestUpdateApproval(t *testing.T) {
 		Convey("HasApprovedUpdate should return false", func() {
 			HasApprovedUpdate(state, id, proposalBytes)
 			So(HasApprovedUpdate(state, id, proposalBytes), ShouldBeFalse)
-			Convey("After setting DepositApproval", func() {
+			Convey("After setting UpdateApproval", func() {
 				setUpdateApproval(state, id, proposalBytes)
 				Convey("HasApprovedUpdate should return true", func() {
 					So(HasApprovedUpdate(state, id, proposalBytes), ShouldBeTrue)

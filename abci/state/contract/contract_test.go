@@ -108,7 +108,7 @@ func TestCheckUpdate(t *testing.T) {
 	})
 }
 
-func TestProcessDeposit(t *testing.T) {
+func TestProcessUpdate(t *testing.T) {
 	Convey("Given a valid proposal", t, func() {
 		appCtx := context.NewMock()
 		state := appCtx.GetMutableState()
@@ -123,8 +123,9 @@ func TestProcessDeposit(t *testing.T) {
 			Convey("ProcessUpdate should return false when proposer's weight is not enough to execute the proposal", func() {
 				updaters := []Updater{
 					{Alice.ID, 33},
-					{Bob.ID, 34},
-					{Carol.ID, 33},
+					{Bob.ID, 33},
+					{Carol.ID, 1},
+					{Bob.ID, 32},
 				}
 				SetContractUpdaters(state, updaters)
 				executed := ProcessUpdate(state, proposal, Alice.ID)
@@ -134,14 +135,20 @@ func TestProcessDeposit(t *testing.T) {
 					Convey("GetUpdateProposalWeight should return proposer's weight", func() {
 						queriedWeight := GetUpdateProposalWeight(state, proposalBytes)
 						So(queriedWeight, ShouldEqual, updaters[0].Weight)
-						Convey("When someone further propose the same proposal, making the total weight >2/3", func() {
-							Convey("ProcessUpdate should return true", func() {
+						Convey("When someone further propose the same proposal, making the total weight exactly 2/3", func() {
+							Convey("ProcessUpdate should return false", func() {
 								executed := ProcessUpdate(state, proposal, Bob.ID)
-								So(executed, ShouldBeTrue)
-								Convey("GetUpdateExecution should return the contract address", func() {
-									So(GetUpdateExecution(state, proposal.ContractIndex), ShouldResemble, &proposal.ContractAddress)
-									Convey("GetContractIndex should return increased value", func() {
-										So(GetContractIndex(state), ShouldEqual, 1)
+								So(executed, ShouldBeFalse)
+								Convey("When someone further propose the same proposal, making the total weight >2/3", func() {
+									Convey("ProcessUpdate should return true", func() {
+										executed := ProcessUpdate(state, proposal, Carol.ID)
+										So(executed, ShouldBeTrue)
+										Convey("GetUpdateExecution should return the contract address", func() {
+											So(GetUpdateExecution(state, proposal.ContractIndex), ShouldResemble, &proposal.ContractAddress)
+											Convey("GetContractIndex should return increased value", func() {
+												So(GetContractIndex(state), ShouldEqual, 1)
+											})
+										})
 									})
 								})
 							})

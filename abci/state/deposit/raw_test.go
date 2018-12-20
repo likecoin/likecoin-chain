@@ -343,7 +343,6 @@ func TestDepositApproval(t *testing.T) {
 		id := Alice.ID
 		proposalHash := common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")
 		Convey("HasApprovedDeposit should return false", func() {
-			HasApprovedDeposit(state, id, proposalHash)
 			So(HasApprovedDeposit(state, id, proposalHash), ShouldBeFalse)
 			Convey("After setting DepositApproval", func() {
 				setDepositApproval(state, id, proposalHash)

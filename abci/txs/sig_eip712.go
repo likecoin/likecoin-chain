@@ -2,7 +2,6 @@ package txs
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/likecoin/likechain/abci/types"
 	"github.com/likecoin/likechain/abci/utils"
@@ -103,10 +102,14 @@ func (bs EIP712Bytes32) TypeName() string {
 
 // EncodedValue returns the value encoded in binary following EIP-712 standard
 func (bs EIP712Bytes32) EncodedValue() []byte {
-	if len(bs) == 0 {
-		return make([]byte, 32)
+	l := len(bs)
+	if l == 32 {
+		return bs
 	}
-	return bs
+	// l should not be greater than 32
+	result := make([]byte, 32)
+	copy(result, bs)
+	return result
 }
 
 // EIP712Field represents a field in a struct in EIP-712 standard. It includes the field name, type and value
@@ -140,7 +143,6 @@ func (signData EIP712SignData) Hash() ([]byte, error) {
 	buf.WriteByte(')')
 	bs := buf.Bytes()
 	typeHash := crypto.Keccak256(bs)
-	fmt.Printf("typeHash(%s) = %v\n", signData.Name, common.Bytes2Hex(typeHash))
 
 	buf = new(bytes.Buffer)
 	buf.Write(typeHash)
@@ -148,7 +150,6 @@ func (signData EIP712SignData) Hash() ([]byte, error) {
 		buf.Write((field.Value.EncodedValue()))
 	}
 	bs = buf.Bytes()
-	fmt.Printf("encodeData(%s) = %v\n", signData.Name, common.Bytes2Hex(bs))
 	structHash := crypto.Keccak256(bs)
 
 	buf = new(bytes.Buffer)

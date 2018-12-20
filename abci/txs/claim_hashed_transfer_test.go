@@ -96,7 +96,7 @@ func TestClaimHashedTransferJSONSignature(t *testing.T) {
 }
 
 func TestClaimHashedTransferEIP712Signature(t *testing.T) {
-	Convey("For a ClaimHashedTransfer transaction with JSON signature", t, func() {
+	Convey("For a ClaimHashedTransfer transaction with EIP-712 signature", t, func() {
 		secret := make([]byte, 32)
 		secret[31] = 1
 		claimHashedTransferTx := &ClaimHashedTransferTransaction{
