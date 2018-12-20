@@ -12,27 +12,32 @@ import (
 var (
 	log     = logger.L
 	cfgFile string
-	debug   bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "likechain",
 	Short: "likechain is a program for LikeChain validators to run LikeChain related background services.",
-	Run: func(cmd *cobra.Command, args []string) {
-		if debug {
-			log.Level = logrus.DebugLevel
-			log.Debug("Using debug mode")
-		}
-	},
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./config.json", "config file (default: ./config.json)")
-	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug logs")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./config.json", "config file path")
+
+	rootCmd.PersistentFlags().Bool("debug", false, "enable debug logs")
+	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
+
+	rootCmd.PersistentFlags().String("tm-endpoint", "tcp://localhost:26657", "Tendermint endpoint")
+	viper.BindPFlag("tmEndPoint", rootCmd.PersistentFlags().Lookup("tm-endpoint"))
+
+	rootCmd.PersistentFlags().String("eth-endpoint", "http://localhost:8545", "Ethereum endpoint")
+	viper.BindPFlag("ethEndPoint", rootCmd.PersistentFlags().Lookup("eth-endpoint"))
+
+	rootCmd.PersistentFlags().String("relay-addr", "", "Ethereum address of the relay contract")
+	viper.BindPFlag("relayContractAddr", rootCmd.PersistentFlags().Lookup("relay-addr"))
+
 	rootCmd.AddCommand(withdrawCmd)
 	rootCmd.AddCommand(validatorsCmd)
-	rootCmd.AddCommand(proposerCmd)
+	rootCmd.AddCommand(depositCmd)
 }
 
 func initConfig() {
@@ -41,6 +46,10 @@ func initConfig() {
 		log.
 			WithError(err).
 			Panic("Cannot read config file")
+	}
+	if viper.GetBool("debug") {
+		log.Level = logrus.DebugLevel
+		log.Debug("Using debug mode")
 	}
 }
 

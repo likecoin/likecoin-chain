@@ -13,7 +13,10 @@ import (
 	"github.com/likecoin/likechain/abci/types"
 
 	"github.com/likecoin/likechain/services/abi/token"
+	logger "github.com/likecoin/likechain/services/log"
 )
+
+var log = logger.L
 
 // GetHeight returns the block number of the newest block header
 func GetHeight(ethClient *ethclient.Client) int64 {
@@ -24,6 +27,7 @@ func GetHeight(ethClient *ethclient.Client) int64 {
 // SubscribeHeader subscribes to new block headers
 func SubscribeHeader(ethClient *ethclient.Client, fn func(*ethTypes.Header) bool) {
 	for ; ; time.Sleep(time.Minute) {
+		log.Debug("Getting new Ethereum block")
 		header, _ := ethClient.HeaderByNumber(context.Background(), nil)
 		if !fn(header) {
 			return
@@ -62,23 +66,40 @@ func SubscribeTransfer(ethClient *ethclient.Client, tokenAddr, relayAddr common.
 	}
 }
 
-// GetTransfersFromBlock returns all the Transfer events on a token contract to a specific address
-func GetTransfersFromBlock(ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, blockNumber uint64) []token.TokenTransfer {
+// GetTransfersFromBlocks returns all the Transfer events on a token contract to a specific address
+func GetTransfersFromBlocks(ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, fromBlock, toBlock uint64) []deposit.Proposal {
 	tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
 	if err != nil {
 		panic(err)
 	}
 	opts := bind.FilterOpts{
-		Start: blockNumber,
-		End:   &blockNumber,
+		Start: fromBlock,
+		End:   &toBlock,
 	}
 	it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
 	if err != nil {
 		panic(err)
 	}
-	events := []token.TokenTransfer{}
+	proposals := []deposit.Proposal{}
+	blockToProposal := map[uint64]*deposit.Proposal{}
 	for it.Next() {
-		events = append(events, *it.Event)
+		e := it.Event
+		blockNumber := e.Raw.BlockNumber
+		proposal, ok := blockToProposal[blockNumber]
+		if !ok {
+			proposals = append(proposals, deposit.Proposal{})
+			proposal = &proposals[len(proposals)-1]
+			blockToProposal[blockNumber] = proposal
+			proposal.BlockNumber = blockNumber
+		}
+		addr, err := types.NewAddress(e.From[:])
+		if err != nil {
+			panic(err)
+		}
+		proposal.Inputs = append(proposal.Inputs, deposit.Input{
+			FromAddr: *addr,
+			Value:    types.BigInt{Int: e.Value},
+		})
 	}
-	return events
+	return proposals
 }

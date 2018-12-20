@@ -3,7 +3,8 @@ package withdraw
 import (
 	"bytes"
 	"context"
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
@@ -125,21 +126,40 @@ func waitForReceipt(ethClient *ethclient.Client, txHash common.Hash) (*ethTypes.
 	}
 }
 
-func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, callData withdrawCallData) {
+func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, packedTx []byte) {
+	// TODO: better error handling
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
 		panic(err)
 	}
+	// TODO: check consumedIds from contract
+	contractHeight := getContractHeight(ethClient, contractAddr)
+	queryResult, err := tmClient.ABCIQueryWithOptions("withdraw_proof", packedTx, tmRPC.ABCIQueryOptions{Height: contractHeight})
+	if err != nil {
+		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			WithError(err).
+			Panic("Cannot get withdraw_proof from LikeChain")
+	}
+	proof := ParseRangeProof(queryResult.Response.Value)
+	if proof == nil {
+		log.
+			WithField("range_proof_json", string(queryResult.Response.Value)).
+			Panic("Cannot parse RangeProof")
+	}
+	log.
+		WithField("root_hash", common.Bytes2Hex(proof.ComputeRootHash())).
+		Debug("Computed RangeProof root hash")
+	contractProof := proof.ContractProof()
 
 	log.
-		WithField("withdraw_info", common.Bytes2Hex(callData.WithdrawInfo)).
-		WithField("contract_proof", common.Bytes2Hex(callData.ContractProof)).
+		WithField("packed_tx", common.Bytes2Hex(packedTx)).
+		WithField("contract_proof", common.Bytes2Hex(contractProof)).
 		Info("Calling withdraw on Ethereum")
-	tx, err := contract.Withdraw(auth, callData.WithdrawInfo, callData.ContractProof)
+	tx, err := contract.Withdraw(auth, packedTx, contractProof)
 	if err != nil {
 		panic(err)
 	}
-
 	receipt, err := waitForReceipt(ethClient, tx.Hash())
 	if err != nil {
 		panic(err)
@@ -204,67 +224,84 @@ type withdrawCallData struct {
 	ContractProof []byte
 }
 
-func getWithdrawCallDataArr(tmClient *tmRPC.HTTP, lastHeight, newHeight int64) []withdrawCallData {
+func getWithdrawPackedTxs(tmClient *tmRPC.HTTP, lastHeight, newHeight int64) [][]byte {
 	log.
 		WithField("last_height", lastHeight).
 		WithField("new_height", newHeight).
 		Info("Searching withdraws on LikeChain")
-	queryString := fmt.Sprintf("withdraw.height>%d AND withdraw.height<=%d", lastHeight, newHeight)
-	// TODO: may need pagination
-	searchResult, err := tmClient.TxSearch(queryString, true, 1, 100)
-	if err != nil {
-		panic(err)
-	}
-	if searchResult.TotalCount <= 0 {
-		log.
-			WithField("new_height", newHeight).
-			Info("No withdraw search result")
+	resultTxs := tendermint.TxSearch(tmClient, "withdraw.height", lastHeight+1, newHeight)
+	if len(resultTxs) == 0 {
 		return nil
 	}
-	callDataArr := make([]withdrawCallData, searchResult.TotalCount)
-	for i := 0; i < searchResult.TotalCount; i++ {
-		packedTx := searchResult.Txs[i].TxResult.Data
+	packedTxs := make([][]byte, 0, len(resultTxs))
+	for _, resultTx := range resultTxs {
+		packedTx := resultTx.TxResult.Data
 		log.
-			WithField("result_index", i).
-			WithField("tx_hash", searchResult.Txs[i].Hash).
+			WithField("tx_hash", resultTx.Hash).
 			WithField("packed_tx", common.Bytes2Hex(packedTx)).
 			Debug("Withdraw search result")
-		queryResult, err := tmClient.ABCIQueryWithOptions("withdraw_proof", packedTx, tmRPC.ABCIQueryOptions{Height: newHeight})
-		if err != nil {
-			log.
-				WithField("packed_tx", common.Bytes2Hex(packedTx)).
-				WithError(err).
-				Panic("Cannot get withdraw_proof from LikeChain")
-		}
-		proof := ParseRangeProof(queryResult.Response.Value)
-		if proof == nil {
-			log.
-				WithField("range_proof_json", string(queryResult.Response.Value)).
-				Panic("Cannot parse RangeProof")
-		}
-		log.
-			WithField("root_hash", common.Bytes2Hex(proof.ComputeRootHash())).
-			Debug("Computed RangeProof root hash")
-		contractProof := proof.ContractProof()
-		callDataArr[i] = withdrawCallData{packedTx, contractProof}
+		packedTxs = append(packedTxs, packedTx)
 	}
-	return callDataArr
+	return packedTxs
+}
+
+type runState struct {
+	LastHeight int64
+}
+
+func loadState(path string) (*runState, error) {
+	jsonBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	state := runState{}
+	err = json.Unmarshal(jsonBytes, &state)
+	if err != nil {
+		return nil, err
+	}
+	return &state, nil
+}
+
+func (state *runState) save(path string) error {
+	jsonBytes, err := json.Marshal(&state)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(path, jsonBytes, 0644)
+	return err
 }
 
 // Run starts the subscription to the withdraws on LikeChain and commits proofs onto Ethereum
-func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address) {
-	lastHeight := getContractHeight(ethClient, contractAddr)
+func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, statePath string) {
+	state, err := loadState(statePath)
+	if err != nil {
+		log.
+			WithField("state_path", statePath).
+			WithError(err).
+			Info("Failed to load state, creating empty state")
+		state = &runState{}
+		state.save(statePath)
+	}
 	for ; ; time.Sleep(time.Minute) {
-		// TODO: load lastHeight from database?
 		newHeight := tendermint.GetHeight(tmClient)
-		if newHeight == lastHeight {
+		if newHeight == state.LastHeight {
 			log.
-				WithField("last_height", lastHeight).
+				WithField("last_height", state.LastHeight).
 				Info("No new LikeChain block since last height")
 			continue
 		}
-		withdrawCallDataArr := getWithdrawCallDataArr(tmClient, lastHeight, newHeight)
-		if len(withdrawCallDataArr) <= 0 {
+		log.
+			WithField("last_height", state.LastHeight).
+			WithField("new_height", newHeight).
+			Info("New LikeChain height")
+		packedTxs := getWithdrawPackedTxs(tmClient, state.LastHeight, newHeight)
+		if len(packedTxs) <= 0 {
+			log.
+				WithField("last_height", state.LastHeight).
+				WithField("new_height", newHeight).
+				Info("No withdraw transaction within range")
+			state.LastHeight = newHeight
+			state.save(statePath)
 			continue
 		}
 		contractHeight := getContractHeight(ethClient, contractAddr)
@@ -276,11 +313,10 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 				WithField("new_height", newHeight).
 				Panic("New height is less than contract height")
 		}
-		// TODO: save callDataArr in database
-		// TODO: save lastHeight in database?
-		lastHeight = newHeight
-		for _, callData := range withdrawCallDataArr {
-			doWithdraw(tmClient, ethClient, auth, contractAddr, callData)
+		for _, packedTx := range packedTxs {
+			doWithdraw(tmClient, ethClient, auth, contractAddr, packedTx)
 		}
+		state.LastHeight = newHeight
+		state.save(statePath)
 	}
 }
