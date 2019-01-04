@@ -13,7 +13,7 @@ var (
 )
 
 // TODO: Configurable
-var cacheSize = 1048576
+var cacheSize = 4096
 
 // ApplicationContext stores context of application
 type ApplicationContext struct {
