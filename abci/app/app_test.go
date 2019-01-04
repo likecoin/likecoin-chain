@@ -12,6 +12,7 @@ import (
 	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/likecoin/likechain/abci/context"
 	. "github.com/likecoin/likechain/abci/fixture"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/state/deposit"
@@ -23,6 +24,11 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/tmhash"
+	cmn "github.com/tendermint/tendermint/libs/common"
+
+	ethCrypto "github.com/ethereum/go-ethereum/crypto"
+
+	"github.com/sirupsen/logrus"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -2659,4 +2665,87 @@ func TestIntegrated(t *testing.T) {
 			})
 		})
 	})
+}
+
+func BenchmarkRegister(b *testing.B) {
+	oldLogLevel := logger.L.Level
+	logger.L.Level = logrus.FatalLevel
+	for _, perBlock := range []int{1, 10, 50, 100, 500, 1000} {
+		b.Run(fmt.Sprintf("Tx per block = %d", perBlock), func(b *testing.B) {
+			appCtx := context.New("test-db-" + cmn.RandStr(20))
+			app := &LikeChainApplication{
+				ctx: appCtx,
+			}
+			app.InitChain(abci.RequestInitChain{})
+
+			rawTxs := make([][]byte, 0, b.N)
+			privKeyBytes := make([]byte, 32)
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < 32; j++ {
+					if privKeyBytes[j] != 255 {
+						privKeyBytes[j]++
+						for k := 0; k < j; k++ {
+							privKeyBytes[k] = 0
+						}
+						break
+					}
+				}
+				privKey, err := ethCrypto.ToECDSA(privKeyBytes)
+				if err != nil {
+					panic(err)
+				}
+				ethAddr := ethCrypto.PubkeyToAddress(privKey.PublicKey)
+				addr, err := types.NewAddress(ethAddr[:])
+				if err != nil {
+					panic(err)
+				}
+				regTx := txs.RegisterTransaction{
+					Addr: *addr,
+				}
+				jsonMap := regTx.GenerateJSONMap()
+				hash, err := jsonMap.Hash()
+				if err != nil {
+					panic(err)
+				}
+				sig, err := ethCrypto.Sign(hash, privKey)
+				if err != nil {
+					panic(err)
+				}
+				sig[64] += 27
+				jsonSig := txs.RegisterJSONSignature{}
+				copy(jsonSig.JSONSignature[:], sig)
+				regTx.Sig = &jsonSig
+				rawTxs = append(rawTxs, txs.EncodeTx(&regTx))
+			}
+			b.ResetTimer()
+			height := int64(1)
+			app.BeginBlock(abci.RequestBeginBlock{
+				Header: abci.Header{
+					Time: time.Unix(height, 0),
+				},
+			})
+			for i := 0; i < b.N; i++ {
+				rawTx := rawTxs[i]
+				app.CheckTx(rawTx)
+				app.DeliverTx(rawTx)
+				if (i+1)%perBlock == 0 {
+					app.EndBlock(abci.RequestEndBlock{
+						Height: height,
+					})
+					app.Commit()
+					height++
+					app.BeginBlock(abci.RequestBeginBlock{
+						Header: abci.Header{
+							Time: time.Unix(height, 0),
+						},
+					})
+				}
+			}
+			app.EndBlock(abci.RequestEndBlock{
+				Height: height,
+			})
+			app.Commit()
+		})
+	}
+	logger.L.Level = oldLogLevel
 }
