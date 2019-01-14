@@ -6,6 +6,7 @@ type Config struct {
 	LogConfig      string `mapstructure:"log_config"`
 	InitialBalance string `mapstructure:"initial_balance"`
 	KeepBlocks     int64  `mapstructure:"keep_blocks"`
+	DBCacheSize    int    `mapstructure:"db_cache_size"`
 }
 
 // IsProduction returns true in environment set to production

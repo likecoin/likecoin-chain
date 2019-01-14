@@ -12,9 +12,6 @@ var (
 	config = appConf.GetConfig()
 )
 
-// TODO: Configurable
-var cacheSize = 4096
-
 // ApplicationContext stores context of application
 type ApplicationContext struct {
 	state *MutableState
@@ -55,7 +52,7 @@ func newDb(name, path string) *db.GoLevelDB {
 }
 
 func newTree(db db.DB) *iavl.MutableTree {
-	return iavl.NewMutableTree(db, cacheSize)
+	return iavl.NewMutableTree(db, config.DBCacheSize)
 }
 
 // GetImmutableState returns an immutable context
