@@ -28,7 +28,8 @@ func prefixKey(key string) string {
 	return strings.ToUpper(envPrefix + "_" + key)
 }
 
-func readConfig() {
+// ReadConfig reads the config from config file
+func ReadConfig() {
 	v = viper.New()
 	v.SetConfigType("toml")
 
@@ -59,6 +60,9 @@ func readConfig() {
 
 func init() {
 	c = new(Config)
-
-	readConfig()
+	v := viper.New()
+	v.ReadConfig(bytes.NewBuffer(defaultConf))
+	if err := v.Unmarshal(c); err != nil {
+		log.Panicf("Unable to decode into struct, %v", err)
+	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/likecoin/likechain/abci/app"
+	"github.com/likecoin/likechain/abci/config"
 	"github.com/likecoin/likechain/abci/context"
 	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/tendermint/tendermint/abci/server"
@@ -12,6 +13,7 @@ import (
 var log = logger.L
 
 func main() {
+	config.ReadConfig()
 	app := app.NewLikeChainApplication(context.New("/like"))
 	svr, err := server.NewServer("tcp://0.0.0.0:26658", "socket", app)
 	if err != nil {
