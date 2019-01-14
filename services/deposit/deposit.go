@@ -186,12 +186,12 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr
 				WithField("begin_block", state.LastEthBlock-blockDelay).
 				WithField("end_block", newBlock-blockDelay-1).
 				Info("No transfer events in range")
-			return true
-		}
-		for _, proposal := range proposals {
-			utils.RetryIfPanic(5, func() {
-				propose(tmClient, tmPrivKey, proposal)
-			})
+		} else {
+			for _, proposal := range proposals {
+				utils.RetryIfPanic(5, func() {
+					propose(tmClient, tmPrivKey, proposal)
+				})
+			}
 		}
 		state.LastEthBlock = newBlock
 		state.save(statePath)
