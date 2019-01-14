@@ -20,6 +20,7 @@ import (
 	"github.com/likecoin/likechain/services/abi/relay"
 	logger "github.com/likecoin/likechain/services/log"
 	"github.com/likecoin/likechain/services/tendermint"
+	"github.com/likecoin/likechain/services/utils"
 )
 
 var log = logger.L
@@ -117,8 +118,6 @@ func waitForReceipt(ethClient *ethclient.Client, txHash common.Hash) (*ethTypes.
 		if receipt != nil {
 			return receipt, nil
 		}
-		if err != nil {
-		}
 		if err != ethereum.NotFound {
 			return nil, err
 		}
@@ -127,12 +126,26 @@ func waitForReceipt(ethClient *ethclient.Client, txHash common.Hash) (*ethTypes.
 }
 
 func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, packedTx []byte) {
-	// TODO: better error handling
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
 		panic(err)
 	}
-	// TODO: check consumedIds from contract
+	withdrawIDBytes := crypto.Sha256(packedTx)
+	withdrawIDBytes32 := [32]byte{}
+	copy(withdrawIDBytes32[:], withdrawIDBytes)
+	consumed, err := contract.ConsumedIds(nil, withdrawIDBytes32)
+	if err != nil {
+		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			WithError(err).
+			Panic("Cannot check if the withdraw is already consumed from Ethereum contract")
+	}
+	if consumed {
+		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			Info("The withdraw is already processed on Ethereum contract, skipping")
+		return
+	}
 	contractHeight := getContractHeight(ethClient, contractAddr)
 	queryResult, err := tmClient.ABCIQueryWithOptions("withdraw_proof", packedTx, tmRPC.ABCIQueryOptions{Height: contractHeight})
 	if err != nil {
@@ -283,7 +296,10 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 		state.save(statePath)
 	}
 	for ; ; time.Sleep(time.Minute) {
-		newHeight := tendermint.GetHeight(tmClient)
+		var newHeight int64
+		utils.RetryIfPanic(5, func() {
+			newHeight = tendermint.GetHeight(tmClient)
+		})
 		if newHeight == state.LastHeight {
 			log.
 				WithField("last_height", state.LastHeight).
@@ -294,7 +310,10 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 			WithField("last_height", state.LastHeight).
 			WithField("new_height", newHeight).
 			Info("New LikeChain height")
-		packedTxs := getWithdrawPackedTxs(tmClient, state.LastHeight, newHeight)
+		var packedTxs [][]byte
+		utils.RetryIfPanic(5, func() {
+			packedTxs = getWithdrawPackedTxs(tmClient, state.LastHeight, newHeight)
+		})
 		if len(packedTxs) <= 0 {
 			log.
 				WithField("last_height", state.LastHeight).
@@ -306,15 +325,19 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 		}
 		contractHeight := getContractHeight(ethClient, contractAddr)
 		if contractHeight < newHeight {
-			commitWithdrawHash(tmClient, ethClient, auth, contractAddr, newHeight)
+			utils.RetryIfPanic(5, func() {
+				commitWithdrawHash(tmClient, ethClient, auth, contractAddr, newHeight)
+			})
 		} else if contractHeight > newHeight {
 			log.
 				WithField("contract_height", contractHeight).
 				WithField("new_height", newHeight).
-				Panic("New height is less than contract height")
+				Error("New height is less than contract height")
 		}
 		for _, packedTx := range packedTxs {
-			doWithdraw(tmClient, ethClient, auth, contractAddr, packedTx)
+			utils.RetryIfPanic(5, func() {
+				doWithdraw(tmClient, ethClient, auth, contractAddr, packedTx)
+			})
 		}
 		state.LastHeight = newHeight
 		state.save(statePath)

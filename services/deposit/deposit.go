@@ -13,12 +13,14 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/likecoin/likechain/abci/query"
+	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/txs"
 	"github.com/likecoin/likechain/abci/types"
 
 	"github.com/likecoin/likechain/services/eth"
 	logger "github.com/likecoin/likechain/services/log"
+	"github.com/likecoin/likechain/services/utils"
 )
 
 var log = logger.L
@@ -71,14 +73,28 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	log.
 		WithField("raw_tx", common.Bytes2Hex(rawTx)).
 		Debug("Broadcasting transaction onto LikeChain")
-	_, err = tmClient.BroadcastTxCommit(rawTx)
+	result, err := tmClient.BroadcastTxCommit(rawTx)
 	if err != nil {
 		log.
 			WithField("raw_tx", common.Bytes2Hex(rawTx)).
 			WithError(err).
 			Panic("Broadcast transaction onto LikeChain failed")
 	}
-	log.Info("Finished broadcasting transaction onto LikeChain")
+	if result.CheckTx.Code != response.Success.Code {
+		log.
+			WithField("code", result.CheckTx.Code).
+			WithField("info", result.CheckTx.Info).
+			WithField("log", result.CheckTx.Log).
+			Error("Deposit transaction failed in CheckTx")
+	} else if result.DeliverTx.Code != response.Success.Code {
+		log.
+			WithField("code", result.DeliverTx.Code).
+			WithField("info", result.DeliverTx.Info).
+			WithField("log", result.DeliverTx.Log).
+			Error("Deposit transaction failed in DeliverTx")
+	} else {
+		log.Info("Successfully broadcasted deposit transaction onto LikeChain")
+	}
 }
 
 type proposedBlockSet struct {
@@ -140,8 +156,8 @@ func (state *runState) save(path string) error {
 	return err
 }
 
-// RunProposer starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
-func RunProposer(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
+// Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
+func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
 	state, err := loadState(statePath)
 	if err != nil {
 		log.
@@ -173,7 +189,9 @@ func RunProposer(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, r
 			return true
 		}
 		for _, proposal := range proposals {
-			propose(tmClient, tmPrivKey, proposal)
+			utils.RetryIfPanic(5, func() {
+				propose(tmClient, tmPrivKey, proposal)
+			})
 		}
 		state.LastEthBlock = newBlock
 		state.save(statePath)
