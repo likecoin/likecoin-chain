@@ -165,7 +165,11 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr
 			WithError(err).
 			Info("Failed to load state, creating empty state")
 		state = &runState{}
-		state.LastEthBlock = eth.GetHeight(ethClient) - blockDelay
+		var blockNumber int64
+		utils.RetryIfPanic(5, func() {
+			blockNumber = eth.GetHeight(ethClient)
+		})
+		state.LastEthBlock = blockNumber - blockDelay
 		state.save(statePath)
 	}
 	eth.SubscribeHeader(ethClient, func(header *ethTypes.Header) bool {
