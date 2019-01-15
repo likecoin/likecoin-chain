@@ -13,7 +13,7 @@ func RetryIfPanic(retryCount uint, f func()) {
 			defer func() {
 				if err := recover(); err != nil {
 					if retryCount == 0 {
-						log.WithField("panic_value", err).Panic("Panci retry limit exceeded")
+						log.WithField("panic_value", err).Panic("Panic retry limit exceeded")
 					} else {
 						log.
 							WithField("remaining_retry_count", retryCount).
