@@ -34,6 +34,7 @@ func ReadConfig() {
 	v.SetConfigType("toml")
 
 	v.AddConfigPath(".")
+	v.AddConfigPath("/likechain/abci")
 	v.AddConfigPath("$GOPATH/src/github.com/likecoin/likechain/abci")
 	v.SetConfigName("config")
 
