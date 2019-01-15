@@ -20,7 +20,10 @@ var log = logger.L
 
 // GetHeight returns the block number of the newest block header
 func GetHeight(ethClient *ethclient.Client) int64 {
-	header, _ := ethClient.HeaderByNumber(context.Background(), nil)
+	header, err := ethClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.WithError(err).Panic("Cannot get latest Ethereum header")
+	}
 	return header.Number.Int64()
 }
 
@@ -28,7 +31,10 @@ func GetHeight(ethClient *ethclient.Client) int64 {
 func SubscribeHeader(ethClient *ethclient.Client, fn func(*ethTypes.Header) bool) {
 	for ; ; time.Sleep(time.Minute) {
 		log.Debug("Getting new Ethereum block")
-		header, _ := ethClient.HeaderByNumber(context.Background(), nil)
+		header, err := ethClient.HeaderByNumber(context.Background(), nil)
+		if err != nil {
+			log.WithError(err).Panic("Cannot get latest Ethereum header")
+		}
 		if !fn(header) {
 			return
 		}
