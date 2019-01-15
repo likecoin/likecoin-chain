@@ -45,3 +45,9 @@ services:
     command: ["./abci"]
   tendermint-1: &tendermint-node
     entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname` --p2p.persistent_peers=""
+  service-1:
+    image: likechain/services
+    container_name: likechain_service-1
+    volumes:
+      - ${PWD}/services:/likechain/services
+    command: ["./like_service", "deposit", "--config", "/likechain/services/config.json", "--deposit-state-path", "/likechain/services/state_deposit.json", "--tm-endpoint", "tcp://tendermint-1:26657"]
