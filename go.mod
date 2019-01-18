@@ -63,7 +63,7 @@ require (
 	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f // indirect
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/iavl v0.12.0
-	github.com/tendermint/tendermint v0.27.4
+	github.com/tendermint/tendermint v0.28.0
 	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc // indirect
 	golang.org/x/sys v0.0.0-20190102155601-82a175fd1598 // indirect
 	google.golang.org/genproto v0.0.0-20181221175505-bd9b4fb69e2f // indirect
