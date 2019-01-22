@@ -11,8 +11,8 @@ RUN addgroup tmuser && \
 RUN mkdir -p $DATA_ROOT && \
     chown -R tmuser:tmuser $DATA_ROOT
 
-RUN wget https://github.com/tendermint/tendermint/releases/download/v0.28.0/tendermint_0.28.0_linux_amd64.zip && \
-    unzip tendermint_0.28.0_linux_amd64.zip -d /usr/bin
+RUN wget https://github.com/tendermint/tendermint/releases/download/v0.28.1/tendermint_0.28.1_linux_amd64.zip && \
+    unzip tendermint_0.28.1_linux_amd64.zip -d /usr/bin
 
 WORKDIR $DATA_ROOT
 
