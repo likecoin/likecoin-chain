@@ -7,5 +7,6 @@ cd "${WD}"
 
 ./build.sh
 ./abci/build.production.sh
+./services/build.production.sh
 
 cd "${PWD}"
