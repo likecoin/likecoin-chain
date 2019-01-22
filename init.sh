@@ -50,7 +50,10 @@ for (( i = 1; i <= $node_count; i++ )); do
 
     mkdir -p tendermint/nodes/${i}
 
-    docker run --rm -v `pwd`/tendermint/nodes/${i}/config:/cli/config $cli_image --output_dir /cli/config --type secp256k1
+    docker run --rm \
+        -v `pwd`/tendermint/nodes/${i}/config:/cli/config \
+        -v `pwd`/tendermint/nodes/${i}/data:/cli/data \
+        $cli_image --key_output_dir /cli/config --state_output_dir /cli/data --type secp256k1
     docker run --rm -v `pwd`/tendermint/nodes/${i}:/tendermint $tendermint_image init
 
     node_id=$(docker run --rm -v `pwd`/tendermint/nodes/${i}:/tendermint $tendermint_image show_node_id)
