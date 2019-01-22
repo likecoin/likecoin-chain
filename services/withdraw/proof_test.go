@@ -19,7 +19,7 @@ func TestProof(t *testing.T) {
 		Convey("Given an IAVL RangeProof", func() {
 			key := [32]byte{}
 			value := []byte{1}
-			for i := 0; i < 100000; i++ {
+			for i := 0; i < 10000; i++ {
 				// treat key as a 32-byte little-endian integer and increment it
 				for j := 0; j < 32; j++ {
 					if j != 255 {
@@ -30,8 +30,8 @@ func TestProof(t *testing.T) {
 					}
 				}
 				tree.Set(key[:], value)
+				tree.SaveVersion()
 			}
-			tree.SaveVersion()
 			_, proof, err := tree.GetWithProof(key[:])
 			So(err, ShouldBeNil)
 			Convey("The JSON representation should be parsed into a RangeProof in withdraw service", func() {

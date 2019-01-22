@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
@@ -20,34 +19,33 @@ func main() {
 	cryptoAmino.RegisterAmino(cdc)
 
 	var typ string
-	var outputDir string
+	var keyOutputDir string
+	var stateOutputDir string
 
 	initCmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialize config files for Tendermint",
 		Args:  cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			pv := privval.FilePV{}
+			var privKey crypto.PrivKey
 			switch typ {
 			case "secp256k1":
-				pv.PrivKey = secp256k1.GenPrivKey()
+				privKey = secp256k1.GenPrivKey()
 			case "ed25519":
-				pv.PrivKey = ed25519.GenPrivKey()
+				privKey = ed25519.GenPrivKey()
 			default:
 				panic(fmt.Sprintf("Unknown key type %s", typ))
 			}
-			pv.PubKey = pv.PrivKey.PubKey()
-			pv.Address = pv.PubKey.Address()
-			jsonBytes, err := cdc.MarshalJSONIndent(&pv, "", "  ")
-			if err != nil {
-				panic(err)
-			}
-			os.Mkdir(outputDir, 0755)
-			err = common.WriteFileAtomic(outputDir+"/priv_validator.json", jsonBytes, 0600)
-			if err != nil {
-				panic(err)
-			}
-			nodeKey, err := p2p.LoadOrGenNodeKey(outputDir + "/node_key.json")
+			pubKey := privKey.PubKey()
+			address := pubKey.Address()
+			keyFilePath := keyOutputDir + "/priv_validator_key.json"
+			stateFilePath := stateOutputDir + "/priv_validator_state.json"
+			pv := privval.GenFilePV(keyFilePath, stateFilePath)
+			pv.Key.PrivKey = privKey
+			pv.Key.PubKey = pubKey
+			pv.Key.Address = address
+			pv.Save()
+			nodeKey, err := p2p.LoadOrGenNodeKey(keyOutputDir + "/node_key.json")
 			if err != nil {
 				panic(err)
 			}
@@ -56,10 +54,13 @@ func main() {
 				PubKey crypto.PubKey
 			}{
 				NodeID: nodeKey.ID(),
-				PubKey: pv.PubKey,
+				PubKey: pubKey,
 			}
-			jsonBytes, err = cdc.MarshalJSONIndent(&publicInfo, "", "  ")
-			err = common.WriteFileAtomic(outputDir+"/public.json", jsonBytes, 0755)
+			jsonBytes, err := cdc.MarshalJSONIndent(&publicInfo, "", "  ")
+			if err != nil {
+				panic(err)
+			}
+			err = common.WriteFileAtomic(keyOutputDir+"/public.json", jsonBytes, 0755)
 			if err != nil {
 				panic(err)
 			}
@@ -67,7 +68,8 @@ func main() {
 	}
 
 	initCmd.Flags().StringVar(&typ, "type", "secp256k1", "private key type [secp256k1, ed25519]")
-	initCmd.Flags().StringVar(&outputDir, "output_dir", ".", "output directory for generated files")
+	initCmd.Flags().StringVar(&keyOutputDir, "key_output_dir", "./config", "output directory for generated key files")
+	initCmd.Flags().StringVar(&stateOutputDir, "state_output_dir", "./data", "output directory for generated state file")
 
 	initCmd.Execute()
 }

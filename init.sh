@@ -49,12 +49,12 @@ for (( i = 1; i <= $node_count; i++ )); do
     echo "Initializing node $i..."
 
     mkdir -p tendermint/nodes/${i}
-    chmod 777 tendermint/nodes/${i}
 
-    docker run --rm -v `pwd`/tendermint/nodes/${i}/config:/cli/config $cli_image --output_dir /cli/config --type secp256k1
+    docker run --rm \
+        -v `pwd`/tendermint/nodes/${i}/config:/cli/config \
+        -v `pwd`/tendermint/nodes/${i}/data:/cli/data \
+        $cli_image --key_output_dir /cli/config --state_output_dir /cli/data --type secp256k1
     docker run --rm -v `pwd`/tendermint/nodes/${i}:/tendermint $tendermint_image init
-
-    chmod -R 777 tendermint/nodes/${i}
 
     node_id=$(docker run --rm -v `pwd`/tendermint/nodes/${i}:/tendermint $tendermint_image show_node_id)
     persistent_peers="$persistent_peers$node_id@tendermint-$i:26656"
@@ -67,8 +67,9 @@ for (( i = 1; i <= $node_count; i++ )); do
   # Auto-generated configs")
         echo "${comment}" >> docker-compose.yml
         echo "${comment}" >> docker-compose.production.yml
+        echo $(cat $default_genesis | jq '.consensus_params.validator.pub_key_types = ["secp256k1"]') > $default_genesis
     else
-        echo $(cat $default_genesis | jq '.consensus_params.validator.pub_key_types = ["secp256k1"]' | jq ".validators |= .+ $(cat tendermint/nodes/${i}/config/genesis.json | jq '.validators')") > $default_genesis
+        echo $(cat $default_genesis | jq ".validators |= .+ $(cat tendermint/nodes/${i}/config/genesis.json | jq '.validators')") > $default_genesis
 
         port1=$((26658 + $i * 2))
         port2=$((26658 + $i * 2 + 1))

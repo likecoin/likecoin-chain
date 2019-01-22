@@ -5,8 +5,6 @@ WD=`cd $(dirname "$0") && pwd -P`
 
 cd "${WD}"
 
-./build.sh
-./abci/build.production.sh
-./services/build.production.sh
+docker build -f Dockerfile.production -t likechain/services ..
 
 cd "${PWD}"

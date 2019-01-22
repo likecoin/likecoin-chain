@@ -6,9 +6,10 @@ env = "dev"
 
 initial_balance = 0
 keep_blocks = 10000
+db_cache_size = 4096
 
 log_config = """{
-  level = "debug"
+  level = "info"
 
   formatter.name = "json"
   formatter.options {

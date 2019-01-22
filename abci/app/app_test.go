@@ -12,6 +12,7 @@ import (
 	appConf "github.com/likecoin/likechain/abci/config"
 	"github.com/likecoin/likechain/abci/context"
 	. "github.com/likecoin/likechain/abci/fixture"
+	logger "github.com/likecoin/likechain/abci/log"
 	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/response"
 	"github.com/likecoin/likechain/abci/state/deposit"
@@ -23,6 +24,11 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/tmhash"
+	cmn "github.com/tendermint/tendermint/libs/common"
+
+	ethCrypto "github.com/ethereum/go-ethereum/crypto"
+
+	"github.com/sirupsen/logrus"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -2350,17 +2356,17 @@ func TestContractUpdate(t *testing.T) {
 					r := app.DeliverTx(rawTx)
 					So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
 					Convey("Then query tx_state should return success", func() {
-						depositTxHash := tmhash.Sum(rawTx)
+						contractUpdateHash := tmhash.Sum(rawTx)
 						queryRes := app.Query(abci.RequestQuery{
 							Path: "tx_state",
-							Data: depositTxHash,
+							Data: contractUpdateHash,
 						})
 						So(queryRes.Code, ShouldEqual, response.Success.Code)
 						txStateRes := query.GetTxStateRes(queryRes.Value)
 						So(txStateRes, ShouldNotBeNil)
 						So(txStateRes.Status, ShouldEqual, "success")
 						Convey("Then for another contract update transaction on this proposal", func() {
-							rawTx := txs.RawContractUpdateTx(Bob.ID, 1, types.Addr("0x2222222222222222222222222222222222222222"), 1, "f0a8f180402795880004ab46ef99e5551782987e70f6a6899bc60c0b1c4a7bb56f0ef1db6a1c2f4b6f553332ce9cbf9856db250699822d8f9dbd03c915a90cc71c")
+							rawTx := txs.RawContractUpdateTx(Bob.ID, 1, types.Addr("0x1111111111111111111111111111111111111111"), 1, "947129f1e750dc4b6b8aa4959c473ab42f587445e7f7113ab91eba23cf3d36600e16a5f4d0fa5679ab7d808b2e2c8a8f45798cff25066ea0d8f02a4c018dc6971c")
 							Convey("CheckTx should return success", func() {
 								r := app.CheckTx(rawTx)
 								So(r.Code, ShouldEqual, response.Success.ToResponseCheckTx().Code)
@@ -2368,10 +2374,10 @@ func TestContractUpdate(t *testing.T) {
 									r := app.DeliverTx(rawTx)
 									So(r.Code, ShouldEqual, response.Success.ToResponseDeliverTx().Code)
 									Convey("Then query tx_state for the transaction should return success", func() {
-										depositApprovalTxHash := tmhash.Sum(rawTx)
+										contractUpdateHash := tmhash.Sum(rawTx)
 										queryRes := app.Query(abci.RequestQuery{
 											Path: "tx_state",
-											Data: depositApprovalTxHash,
+											Data: contractUpdateHash,
 										})
 										So(queryRes.Code, ShouldEqual, response.Success.Code)
 										txStateRes := query.GetTxStateRes(queryRes.Value)
@@ -2659,4 +2665,87 @@ func TestIntegrated(t *testing.T) {
 			})
 		})
 	})
+}
+
+func BenchmarkRegister(b *testing.B) {
+	oldLogLevel := logger.L.Level
+	logger.L.Level = logrus.FatalLevel
+	for _, perBlock := range []int{1, 10, 50, 100, 500, 1000} {
+		b.Run(fmt.Sprintf("Tx per block = %d", perBlock), func(b *testing.B) {
+			appCtx := context.New("test-db-" + cmn.RandStr(20))
+			app := &LikeChainApplication{
+				ctx: appCtx,
+			}
+			app.InitChain(abci.RequestInitChain{})
+
+			rawTxs := make([][]byte, 0, b.N)
+			privKeyBytes := make([]byte, 32)
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < 32; j++ {
+					if privKeyBytes[j] != 255 {
+						privKeyBytes[j]++
+						for k := 0; k < j; k++ {
+							privKeyBytes[k] = 0
+						}
+						break
+					}
+				}
+				privKey, err := ethCrypto.ToECDSA(privKeyBytes)
+				if err != nil {
+					panic(err)
+				}
+				ethAddr := ethCrypto.PubkeyToAddress(privKey.PublicKey)
+				addr, err := types.NewAddress(ethAddr[:])
+				if err != nil {
+					panic(err)
+				}
+				regTx := txs.RegisterTransaction{
+					Addr: *addr,
+				}
+				jsonMap := regTx.GenerateJSONMap()
+				hash, err := jsonMap.Hash()
+				if err != nil {
+					panic(err)
+				}
+				sig, err := ethCrypto.Sign(hash, privKey)
+				if err != nil {
+					panic(err)
+				}
+				sig[64] += 27
+				jsonSig := txs.RegisterJSONSignature{}
+				copy(jsonSig.JSONSignature[:], sig)
+				regTx.Sig = &jsonSig
+				rawTxs = append(rawTxs, txs.EncodeTx(&regTx))
+			}
+			b.ResetTimer()
+			height := int64(1)
+			app.BeginBlock(abci.RequestBeginBlock{
+				Header: abci.Header{
+					Time: time.Unix(height, 0),
+				},
+			})
+			for i := 0; i < b.N; i++ {
+				rawTx := rawTxs[i]
+				app.CheckTx(rawTx)
+				app.DeliverTx(rawTx)
+				if (i+1)%perBlock == 0 {
+					app.EndBlock(abci.RequestEndBlock{
+						Height: height,
+					})
+					app.Commit()
+					height++
+					app.BeginBlock(abci.RequestBeginBlock{
+						Header: abci.Header{
+							Time: time.Unix(height, 0),
+						},
+					})
+				}
+			}
+			app.EndBlock(abci.RequestEndBlock{
+				Height: height,
+			})
+			app.Commit()
+		})
+	}
+	logger.L.Level = oldLogLevel
 }

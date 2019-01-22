@@ -1,7 +1,10 @@
 package tendermint
 
 import (
+	"fmt"
+
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
+	"github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 
 	logger "github.com/likecoin/likechain/services/log"
@@ -46,4 +49,36 @@ func GetHeight(tmClient *tmRPC.HTTP) int64 {
 		panic(err)
 	}
 	return abciInfo.Response.GetLastBlockHeight()
+}
+
+// TxSearch returns all transactions with specific tag valued within range
+func TxSearch(tmClient *tmRPC.HTTP, tag string, from, to int64) []*core_types.ResultTx {
+	queryString := fmt.Sprintf("%s>=%d AND %s<=%d", tag, from, tag, to)
+	var result []*core_types.ResultTx
+	doneCount := 0
+	for page := 1; ; page++ {
+		searchResult, err := tmClient.TxSearch(queryString, true, page, 100)
+		if err != nil {
+			log.
+				WithField("tag", tag).
+				WithField("from", from).
+				WithField("to", to).
+				WithField("page", page).
+				WithError(err).
+				Panic("Search transaction failed")
+		}
+		if searchResult.TotalCount <= 0 {
+			return nil
+		}
+		if result == nil {
+			result = make([]*core_types.ResultTx, 0, searchResult.TotalCount)
+		}
+		for _, tx := range searchResult.Txs {
+			result = append(result, tx)
+		}
+		doneCount += len(searchResult.Txs)
+		if doneCount >= searchResult.TotalCount {
+			return result
+		}
+	}
 }

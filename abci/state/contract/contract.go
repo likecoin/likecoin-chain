@@ -40,7 +40,7 @@ func ProcessUpdate(state context.IMutableState, proposal *Proposal, proposer *ty
 	updaterInfo := GetContractUpdaterInfo(state, proposer)
 	newWeight := IncreaseUpdateProposalWeight(state, proposalBytes, updaterInfo.Weight)
 	weightSum := GetContractUpdatersWeightSum(state)
-	if newWeight*3 < weightSum*2 {
+	if newWeight*3 <= weightSum*2 {
 		return false
 	}
 	setUpdateExecution(state, proposal)
