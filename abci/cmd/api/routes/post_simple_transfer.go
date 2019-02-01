@@ -12,7 +12,7 @@ type simpleTransferJSON struct {
 	Identity string    `json:"identity" binding:"required,identity"`
 	To       string    `json:"to" binding:"required,identity"`
 	Value    string    `json:"value" binding:"required,biginteger"`
-	Remark   string    `json:"remark" binding:"required"`
+	Remark   string    `json:"remark"`
 	Nonce    int64     `json:"nonce" binding:"required,min=1"`
 	Fee      string    `json:"fee" binding:"required,biginteger"`
 	Sig      Signature `json:"sig" binding:"required"`
