@@ -58,7 +58,10 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 	accInfo := query.GetAccountInfoRes(queryResult.Response.Value)
 	if accInfo == nil {
-		panic("Cannot parse account_info result")
+		log.
+			WithField("account_info_res", string(queryResult.Response.Value)).
+			WithField("account_info_res_raw", queryResult.Response.Value).
+			Panic("Cannot parse account info result")
 	}
 	log.
 		WithField("nonce", accInfo.NextNonce).
