@@ -20,4 +20,4 @@ WORKDIR $DATA_ROOT
 EXPOSE 26657
 
 ENTRYPOINT ["tendermint"]
-CMD ["node", "--consensus.create_empty_blocks=false"]
+CMD ["node"]

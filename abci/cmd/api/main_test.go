@@ -671,6 +671,47 @@ func TestAPI(t *testing.T) {
 		So(res["balance"], ShouldEqual, "202")
 
 		//
+		// Test POST /simple_transfer with no remark
+		//
+		uri = "/v1/simple_transfer"
+		sig = "0x12571283ce3f744d0a448204b94024520764d5fbba538dfd0cca82e888f3df1560ef6fb97b66c668931108bc8dbf10ce6cf24fa48b5e4f5f2e627c735bb07c001c"
+		params = map[string]interface{}{
+			"identity": Alice.Address.String(),
+			"to":       Bob.Address.String(),
+			"value":    "1",
+			"fee":      "1",
+			"nonce":    4,
+			"sig": map[string]interface{}{
+				"value": sig,
+			},
+		}
+		res, code = request(router, "POST", uri, params)
+		So(res["error"], ShouldBeNil)
+		So(code, ShouldEqual, http.StatusOK)
+		So(res, ShouldContainKey, "tx_hash")
+		txHashHex = res["tx_hash"].(string)
+		appHeight += 2
+
+		if err := rpcclient.WaitForHeight(client, appHeight, nil); err != nil {
+			t.Error(err)
+		}
+
+		uri = "/v1/tx_state?tx_hash=" + txHashHex
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["status"], ShouldEqual, "success")
+
+		uri = "/v1/account_info?identity=" + Alice.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "96")
+
+		uri = "/v1/account_info?identity=" + Bob.Address.String()
+		res, _ = request(router, "GET", uri, nil)
+		So(res["error"], ShouldBeNil)
+		So(res["balance"], ShouldEqual, "203")
+
+		//
 		// Test POST /hashed_transfer
 		//
 		secret := "0x1111111111111111111111111111111111111111111111111111111111111111"
@@ -709,23 +750,23 @@ func TestAPI(t *testing.T) {
 		uri = "/v1/account_info?identity=" + Alice.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
-		So(res["balance"], ShouldEqual, "97")
+		So(res["balance"], ShouldEqual, "96")
 
 		uri = "/v1/account_info?identity=" + Bob.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
-		So(res["balance"], ShouldEqual, "200")
+		So(res["balance"], ShouldEqual, "201")
 
 		//
 		// Test POST /claim_hashed_transfer
 		//
 		uri = "/v1/claim_hashed_transfer"
-		sig = "0x5d019201a4fd20c86e23ed28b17b9410b87cdbcbde97183f6dab4dfb7aef9ded7a8dcf103023960e0194b034500a02f0448965f4f71dd0739804bd626d9c37e71c"
+		sig = "0xa276348dbf18a4f144008c7d382493bf970401a935061e97433fb6cb3c918da52f440736c8299b6644933b632e0cc292a374385316fa728bba2933f394a120f91b"
 		params = map[string]interface{}{
 			"identity":     Alice.Address.String(),
 			"htlc_tx_hash": htlcTxHash,
 			"secret":       secret,
-			"nonce":        4,
+			"nonce":        5,
 			"sig": map[string]interface{}{
 				"value": sig,
 			},
@@ -755,11 +796,11 @@ func TestAPI(t *testing.T) {
 		uri = "/v1/account_info?identity=" + Alice.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
-		So(res["balance"], ShouldEqual, "99")
+		So(res["balance"], ShouldEqual, "98")
 
 		uri = "/v1/account_info?identity=" + Bob.Address.String()
 		res, _ = request(router, "GET", uri, nil)
 		So(res["error"], ShouldBeNil)
-		So(res["balance"], ShouldEqual, "200")
+		So(res["balance"], ShouldEqual, "201")
 	})
 }

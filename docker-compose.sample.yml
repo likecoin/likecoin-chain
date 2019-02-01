@@ -30,6 +30,6 @@ services:
     ports:
       - 26656:26656
       - 26657:26657
-    entrypoint: tendermint node --consensus.create_empty_blocks=false --moniker=`hostname` --p2p.persistent_peers=""
+    entrypoint: tendermint node --moniker=`hostname` --p2p.persistent_peers=""
     command:
       - --proxy_app=tcp://abci-1:26658
