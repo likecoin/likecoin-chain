@@ -3,6 +3,9 @@
 
 [![CircleCI](https://circleci.com/gh/likecoin/likechain.svg?style=svg)](https://circleci.com/gh/likecoin/likechain) [![codecov](https://codecov.io/gh/likecoin/likechain/branch/master/graph/badge.svg)](https://codecov.io/gh/likecoin/likechain)
 
+## Requirement
+Linux or macOS, with Docker installed and working
+
 ## Development Setup
 ```sh
 # Build all
@@ -17,10 +20,8 @@
 # Build ABCI
 ./abci/build.sh
 
-export NODE_COUNT=4
-
-# Initialize nodes
-./init.sh
+# Initialize 4 nodes
+./init.sh 4
 
 # Start development
 docker-compose up
@@ -29,8 +30,7 @@ docker-compose up
 ### Scale nodes
 ```sh
 # Change number of nodes
-export NODE_COUNT=5
-./init.sh
+./init.sh 5
 docker-compose up --force-recreate
 ```
 
@@ -42,7 +42,7 @@ docker-compose up --force-recreate
 docker-compose up --force-recreate
 ```
 
-## Manage dependancies
+## Manage dependencies
 We use Go 1.11 modules for dependencies, so after installing Go 1.11, the general commands (`go run`, `go build`, `go test`, etc) should install the dependencies automatically.
 
 Since module support is an experimental feature in Go 1.11, if you are placing the project in `GOPATH`, you need to `export GO111MODULE=on`.

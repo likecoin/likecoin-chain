@@ -1,10 +1,7 @@
 #!/bin/bash
 
-PWD=`pwd`
-WD=`cd $(dirname "$0") && pwd -P`
+pushd "$(dirname $0)"
 
-cd "${WD}"
+docker build -t likechain/key-cli -f ./Dockerfile ../..
 
-docker build -t likechain/key-cli .
-
-cd "${PWD}"
+popd
