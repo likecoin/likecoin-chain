@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
@@ -19,93 +20,128 @@ import (
 var log = logger.L
 
 // GetHeight returns the block number of the newest block header
-func GetHeight(ethClient *ethclient.Client) int64 {
-	header, err := ethClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.WithError(err).Panic("Cannot get latest Ethereum header")
-	}
-	return header.Number.Int64()
+func GetHeight(lb *LoadBalancer) int64 {
+	height := int64(0)
+	lb.Do(func(ethClient *ethclient.Client) error {
+		c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		header, err := ethClient.HeaderByNumber(c, nil)
+		if err != nil {
+			log.WithError(err).Panic("Cannot get latest Ethereum header")
+			return err
+		}
+		height = header.Number.Int64()
+		return nil
+	})
+	return height
 }
 
 // SubscribeHeader subscribes to new block headers
-func SubscribeHeader(ethClient *ethclient.Client, fn func(*ethTypes.Header) bool) {
+func SubscribeHeader(lb *LoadBalancer, fn func(*ethTypes.Header) bool) {
 	for ; ; time.Sleep(time.Minute) {
 		log.Debug("Getting new Ethereum block")
-		header, err := ethClient.HeaderByNumber(context.Background(), nil)
-		if err != nil {
-			log.WithError(err).Panic("Cannot get latest Ethereum header")
-		}
+		var header *ethTypes.Header
+		lb.Do(func(ethClient *ethclient.Client) error {
+			c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+			h, err := ethClient.HeaderByNumber(c, nil)
+			if err != nil {
+				log.WithError(err).Panic("Cannot get latest Ethereum header")
+				return err
+			}
+			header = h
+			return nil
+		})
 		if !fn(header) {
 			return
 		}
 	}
 }
 
-// SubscribeTransfer subscribes to Transfer events on the token contract to the relay contract address
-func SubscribeTransfer(ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, fn func(*deposit.Input, ethTypes.Log) bool) {
-	tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
-	if err != nil {
-		panic(err)
-	}
-	ch := make(chan *token.TokenTransfer)
-	sub, err := tokenFilter.WatchTransfer(nil, ch, nil, []common.Address{relayAddr})
-	if err != nil {
-		panic(err)
-	}
-	defer sub.Unsubscribe()
-	for {
-		select {
-		case e := <-ch:
+// GetTransfersFromBlocks returns all the Transfer events on a token contract to a specific address
+func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Address, fromBlock, toBlock uint64) []deposit.Proposal {
+	var proposals []deposit.Proposal
+	lb.Do(func(ethClient *ethclient.Client) error {
+		tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
+		if err != nil {
+			return err
+		}
+		c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		opts := bind.FilterOpts{
+			Start:   fromBlock,
+			End:     &toBlock,
+			Context: c,
+		}
+		it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
+		if err != nil {
+			return err
+		}
+		blockToProposal := map[uint64]*deposit.Proposal{}
+		for it.Next() {
+			e := it.Event
+			blockNumber := e.Raw.BlockNumber
+			proposal, ok := blockToProposal[blockNumber]
+			if !ok {
+				proposals = append(proposals, deposit.Proposal{})
+				proposal = &proposals[len(proposals)-1]
+				blockToProposal[blockNumber] = proposal
+				proposal.BlockNumber = blockNumber
+			}
 			addr, err := types.NewAddress(e.From[:])
 			if err != nil {
 				panic(err)
 			}
-			input := deposit.Input{
+			proposal.Inputs = append(proposal.Inputs, deposit.Input{
 				FromAddr: *addr,
 				Value:    types.BigInt{Int: e.Value},
-			}
-			cont := fn(&input, e.Raw)
-			if !cont {
-				return
-			}
+			})
 		}
+		return nil
+	})
+	return proposals
+}
+
+// WaitForReceipt polls for the receipt of a transaction
+func WaitForReceipt(lb *LoadBalancer, txHash common.Hash) *ethTypes.Receipt {
+	var receipt *ethTypes.Receipt
+	for {
+		lb.Do(func(ethClient *ethclient.Client) error {
+			c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+			r, err := ethClient.TransactionReceipt(c, txHash)
+			if r != nil {
+				receipt = r
+				return nil
+			}
+			if err != ethereum.NotFound {
+				return err
+			}
+			return nil
+		})
+		if receipt != nil {
+			return receipt
+		}
+		time.Sleep(15 * time.Second)
 	}
 }
 
-// GetTransfersFromBlocks returns all the Transfer events on a token contract to a specific address
-func GetTransfersFromBlocks(ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, fromBlock, toBlock uint64) []deposit.Proposal {
-	tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
-	if err != nil {
-		panic(err)
-	}
-	opts := bind.FilterOpts{
-		Start: fromBlock,
-		End:   &toBlock,
-	}
-	it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
-	if err != nil {
-		panic(err)
-	}
-	proposals := []deposit.Proposal{}
-	blockToProposal := map[uint64]*deposit.Proposal{}
-	for it.Next() {
-		e := it.Event
-		blockNumber := e.Raw.BlockNumber
-		proposal, ok := blockToProposal[blockNumber]
-		if !ok {
-			proposals = append(proposals, deposit.Proposal{})
-			proposal = &proposals[len(proposals)-1]
-			blockToProposal[blockNumber] = proposal
-			proposal.BlockNumber = blockNumber
-		}
-		addr, err := types.NewAddress(e.From[:])
+// GetNonce return the current usable nonce for the given Ethereum address
+func GetNonce(lb *LoadBalancer, addr common.Address) int64 {
+	nonce := int64(0)
+	lb.Do(func(ethClient *ethclient.Client) error {
+		c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		ethNonce, err := ethClient.NonceAt(c, addr, nil)
 		if err != nil {
-			panic(err)
+			log.
+				WithField("addr", addr.Hex()).
+				WithError(err).
+				Error("Error when getting Ethereum nonce")
+			return err
 		}
-		proposal.Inputs = append(proposal.Inputs, deposit.Input{
-			FromAddr: *addr,
-			Value:    types.BigInt{Int: e.Value},
-		})
-	}
-	return proposals
+		nonce = int64(ethNonce)
+		return nil
+	})
+	return nonce
 }

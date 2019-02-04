@@ -1,5 +1,7 @@
 {
-    "ethEndPoint": "http://localhost:8545",
+    "ethEndPoints": [
+        "http://localhost:8545"
+    ],
     "ethPrivKey": "0000000000000000000000000000000000000000000000000000000000000000",
     "tmEndPoint": "tcp://localhost:26657",
     "tmPrivKey": "0000000000000000000000000000000000000000000000000000000000000000",

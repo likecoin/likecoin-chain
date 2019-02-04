@@ -4,13 +4,13 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/likecoin/likechain/services/eth"
 	"github.com/likecoin/likechain/services/withdraw"
 )
 
@@ -19,24 +19,18 @@ var withdrawCmd = &cobra.Command{
 	Short: "run the withdraw-relay service",
 	Run: func(cmd *cobra.Command, args []string) {
 		tmEndPoint := viper.GetString("tmEndPoint")
-		ethEndPoint := viper.GetString("ethEndPoint")
+		ethEndPoints := viper.GetStringSlice("ethEndPoints")
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
 		statePath := viper.GetString("withdrawStatePath")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
-			WithField("eth_endpoint", ethEndPoint).
+			WithField("eth_endpoints", ethEndPoints).
 			WithField("relay_addr", relayAddr).
 			WithField("state_path", statePath).
 			Debug("Read withdraw config and parameters")
 
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-		ethClient, err := ethclient.Dial(ethEndPoint)
-		if err != nil {
-			log.
-				WithField("eth_endpoint", ethEndPoint).
-				WithError(err).
-				Panic("Cannot initialize Ethereum endpoint")
-		}
+		lb := eth.NewLoadBalancer(ethEndPoints)
 		privKeyBytes := common.Hex2Bytes(viper.GetString("ethPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
@@ -46,7 +40,7 @@ var withdrawCmd = &cobra.Command{
 		}
 		auth := bind.NewKeyedTransactor(privKey)
 
-		withdraw.Run(tmClient, ethClient, auth, relayAddr, statePath)
+		withdraw.Run(tmClient, lb, auth, relayAddr, statePath)
 	},
 }
 
