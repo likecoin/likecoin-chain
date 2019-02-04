@@ -128,7 +128,10 @@ func waitForReceipt(ethClient *ethclient.Client, txHash common.Hash) (*ethTypes.
 func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, packedTx []byte) {
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("relay_addr", contractAddr.Hex()).
+			WithError(err).
+			Panic("Cannot initialize relay contract in withdraw")
 	}
 	withdrawIDBytes := crypto.Sha256(packedTx)
 	withdrawIDBytes32 := [32]byte{}
@@ -157,10 +160,12 @@ func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.Tr
 	proof := ParseRangeProof(queryResult.Response.Value)
 	if proof == nil {
 		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
 			WithField("range_proof_json", string(queryResult.Response.Value)).
 			Panic("Cannot parse RangeProof")
 	}
 	log.
+		WithField("packed_tx", common.Bytes2Hex(packedTx)).
 		WithField("root_hash", common.Bytes2Hex(proof.ComputeRootHash())).
 		Debug("Computed RangeProof root hash")
 	contractProof := proof.ContractProof()
@@ -171,13 +176,24 @@ func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.Tr
 		Info("Calling withdraw on Ethereum")
 	tx, err := contract.Withdraw(auth, packedTx, contractProof)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			WithField("contract_proof", common.Bytes2Hex(contractProof)).
+			WithError(err).
+			Panic("Cannot call withdraw on relay contract")
 	}
 	receipt, err := waitForReceipt(ethClient, tx.Hash())
 	if err != nil {
-		panic(err)
+		log.
+			WithField("packed_tx", common.Bytes2Hex(packedTx)).
+			WithField("contract_proof", common.Bytes2Hex(contractProof)).
+			WithField("eth_tx_hash", tx.Hash().Hex()).
+			WithError(err).
+			Panic("Cannot get receipt from contract")
 	}
 	log.
+		WithField("packed_tx", common.Bytes2Hex(packedTx)).
+		WithField("eth_tx_hash", tx.Hash().Hex()).
 		WithField("gas_used", receipt.GasUsed).
 		WithField("status", receipt.Status).
 		Info("withdraw call executed on Ethereum")
@@ -186,11 +202,17 @@ func doWithdraw(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.Tr
 func getContractHeight(ethClient *ethclient.Client, contractAddr common.Address) int64 {
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("relay_addr", contractAddr.Hex()).
+			WithError(err).
+			Panic("Cannot initialize relay contract when getting contract height")
 	}
 	height, err := contract.LatestBlockHeight(nil)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("relay_addr", contractAddr.Hex()).
+			WithError(err).
+			Panic("Cannot get contract height")
 	}
 	return height.Int64()
 }
@@ -210,7 +232,10 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 	}
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("relay_addr", contractAddr.Hex()).
+			WithError(err).
+			Panic("Cannot initialize relay contract in commit withdraw hash")
 	}
 
 	round := uint64(signedHeader.Commit.Round())
@@ -222,14 +247,26 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 
 	tx, err := contract.CommitWithdrawHash(auth, uint64(height), round, contractPayload)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("height", height).
+			WithField("round", round).
+			WithField("contract_payload", common.Bytes2Hex(contractPayload)).
+			WithError(err).
+			Panic("Cannot call withdraw on relay contract")
 	}
 
 	receipt, err := waitForReceipt(ethClient, tx.Hash())
 	if err != nil {
-		panic(err)
+		log.
+			WithField("height", height).
+			WithField("round", round).
+			WithField("contract_payload", common.Bytes2Hex(contractPayload)).
+			WithField("eth_tx_hash", tx.Hash().Hex()).
+			WithError(err).
+			Panic("Cannot get receipt from contract")
 	}
 	log.
+		WithField("eth_tx_hash", tx.Hash().Hex()).
 		WithField("gas_used", receipt.GasUsed).
 		WithField("status", receipt.Status).
 		Info("commitWithdrawHash call executed on Ethereum")
