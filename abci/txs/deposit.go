@@ -93,6 +93,10 @@ func (tx *DepositTransaction) DeliverTx(state context.IMutableState, txHash []by
 			Key:   []byte("deposit_execution.height"),
 			Value: []byte(strconv.FormatInt(height, 10)),
 		})
+		tags = append(tags, cmn.KVPair{
+			Key:   []byte("deposit_execution.eth_block"),
+			Value: []byte(strconv.FormatInt(int64(tx.Proposal.BlockNumber), 10)),
+		})
 	}
 
 	return response.Success.Merge(response.R{
