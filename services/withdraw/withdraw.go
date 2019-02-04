@@ -72,7 +72,7 @@ func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[i
 	votes := []*types.Vote{}
 
 	for _, vote := range rawVotes {
-		if vote != nil {
+		if vote != nil && len(vote.BlockID.Hash) > 0 {
 			votes = append(votes, vote)
 		}
 	}
@@ -195,7 +195,7 @@ func getContractHeight(ethClient *ethclient.Client, contractAddr common.Address)
 	return height.Int64()
 }
 
-func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, height int64) {
+func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactOpts, contractAddr common.Address, height int64) bool {
 	validators := tendermint.GetValidators(tmClient)
 	tmToEthAddr := tendermint.MapValidatorIndexToEthAddr(validators)
 
@@ -205,6 +205,9 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 		WithField("header_block_hash", signedHeader.Commit.BlockID.Hash).
 		Debug("Got SignedHeader")
 	contractPayload := genContractProofPayload(&signedHeader, tmToEthAddr)
+	if len(contractPayload) == 0 {
+		return false
+	}
 	contract, err := relay.NewRelay(contractAddr, ethClient)
 	if err != nil {
 		panic(err)
@@ -230,6 +233,7 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth 
 		WithField("gas_used", receipt.GasUsed).
 		WithField("status", receipt.Status).
 		Info("commitWithdrawHash call executed on Ethereum")
+	return true
 }
 
 type withdrawCallData struct {
@@ -325,9 +329,16 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, auth *bind.TransactO
 		}
 		contractHeight := getContractHeight(ethClient, contractAddr)
 		if contractHeight < newHeight {
+			commitOk := false
 			utils.RetryIfPanic(5, func() {
-				commitWithdrawHash(tmClient, ethClient, auth, contractAddr, newHeight)
+				commitOk = commitWithdrawHash(tmClient, ethClient, auth, contractAddr, newHeight)
 			})
+			if !commitOk {
+				log.
+					WithField("new_height", newHeight).
+					Error("Commit withdraw hash failed for this height, skipping")
+				continue
+			}
 		} else if contractHeight > newHeight {
 			log.
 				WithField("contract_height", contractHeight).
