@@ -24,11 +24,7 @@ import (
 	"github.com/likecoin/likechain/services/utils"
 )
 
-var (
-	log          = logger.L
-	ethNonce     uint64
-	ethNonceLock sync.Mutex
-)
+var log = logger.L
 
 // type AppHashContractProof struct {
 // 	Height     uint64
