@@ -147,7 +147,7 @@ func doWithdraw(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, refAuth *bind.Transa
 				WithField("packed_tx", common.Bytes2Hex(packedTx)).
 				WithError(err).
 				Error("Cannot get withdraw_proof from LikeChain")
-			return nil
+			return err
 		}
 		proof := ParseRangeProof(queryResult.Response.Value)
 		if proof == nil {
@@ -155,7 +155,7 @@ func doWithdraw(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, refAuth *bind.Transa
 				WithField("packed_tx", common.Bytes2Hex(packedTx)).
 				WithField("range_proof_json", string(queryResult.Response.Value)).
 				Error("Cannot parse RangeProof")
-			return nil
+			return err
 		}
 		log.
 			WithField("packed_tx", common.Bytes2Hex(packedTx)).
