@@ -77,7 +77,7 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 						log.
 							WithField("panic_count", panicCount).
 							WithField("panic_value", err).
-							Info("LoadBalancer caught panic, recovered")
+							Warn("LoadBalancer caught panic, recovered")
 					}
 				}
 				lb.lock.Lock()
@@ -101,7 +101,7 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 				log.
 					WithField("client_index", clientIndex).
 					WithError(err).
-					Error("LoadBalancer request failed")
+					Warn("LoadBalancer request failed")
 			}
 		}()
 	}

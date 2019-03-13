@@ -27,7 +27,7 @@ func GetHeight(lb *LoadBalancer) int64 {
 		defer cancel()
 		header, err := ethClient.HeaderByNumber(c, nil)
 		if err != nil {
-			log.WithError(err).Panic("Cannot get latest Ethereum header")
+			log.WithError(err).Error("Cannot get latest Ethereum header")
 			return err
 		}
 		height = header.Number.Int64()
