@@ -59,25 +59,32 @@ func (lb *LoadBalancer) Get() (int, *ethclient.Client) {
 
 // Do accepts a job which requires a Client and a context, then executes and retries the job with the listed Clients
 func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
-	panicCount := 0
+	trialCount := 0
 	success := false
-	for !success {
+	usedClients := map[int]bool{}
+	for !success && trialCount < 100 {
+		trialCount++
 		func() {
 			clientIndex, client := lb.Get()
-			log.WithField("client_index", clientIndex).Debug("Load balancer executing request")
+			log.WithField("client_index", clientIndex).Debug("LoadBalancer executing request")
 			defer func() {
+				usedClients[clientIndex] = true
 				err := recover()
 				if err != nil {
-					panicCount++
-					if panicCount > 5 {
+					log.
+						WithField("panic_value", err).
+						Warn("LoadBalancer caught panic, recovered")
+				}
+				if !success {
+					if len(usedClients) >= len(lb.clients) {
 						log.
-							WithField("panic_value", err).
-							Panic("LoadBalancer panic count exceeded")
+							WithField("trial_count", trialCount).
+							Panic("LoadBalancer tried all clients but none succeeded")
 					} else {
 						log.
-							WithField("panic_count", panicCount).
-							WithField("panic_value", err).
-							Warn("LoadBalancer caught panic, recovered")
+							WithField("client_index", clientIndex).
+							WithField("trial_count", trialCount).
+							Warn("LoadBalancer execution failed, retrying")
 					}
 				}
 				lb.lock.Lock()
@@ -92,17 +99,13 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 				log.
 					WithField("client_index", clientIndex).
 					WithField("weight", weight).
-					Debug("Load balancer adjusted client weighting")
+					Debug("LoadBalancer adjusted client weighting")
 			}()
 			err := f(client)
 			if err == nil {
 				success = true
-			} else {
-				log.
-					WithField("client_index", clientIndex).
-					WithError(err).
-					Warn("LoadBalancer request failed")
 			}
 		}()
 	}
+	log.WithField("trial_count", trialCount).Panic("LoadBalancer trial count exceeded hard limit")
 }
