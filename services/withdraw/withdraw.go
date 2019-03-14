@@ -67,19 +67,24 @@ func encodeSuffix(vote *types.CanonicalVote) []byte {
 	return buf.Bytes()
 }
 
-func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[int]common.Address) []byte {
+func genContractProofPayload(signedHeader *types.SignedHeader, validators []types.Validator) []byte {
 	header := signedHeader.Header
 	rawVotes := signedHeader.Commit.Precommits
 	votes := []*types.Vote{}
+	power := int64(0)
 
 	for _, vote := range rawVotes {
 		if vote != nil && len(vote.BlockID.Hash) > 0 {
 			votes = append(votes, vote)
+			power += validators[vote.ValidatorIndex].VotingPower
 		}
 	}
 
-	votesCount := len(votes)
-	if votesCount == 0 {
+	totalPower := int64(0)
+	for _, validator := range validators {
+		totalPower += validator.VotingPower
+	}
+	if power*3 <= totalPower*2 {
 		return nil
 	}
 
@@ -89,8 +94,9 @@ func genContractProofPayload(signedHeader *types.SignedHeader, tmToEthAddr map[i
 	buf := new(bytes.Buffer)
 	buf.WriteByte(uint8(len(suffix)))
 	buf.Write(suffix)
-	buf.WriteByte(uint8(votesCount))
+	buf.WriteByte(uint8(len(votes)))
 
+	tmToEthAddr := tendermint.MapValidatorIndexToEthAddr(validators)
 	for _, vote := range votes {
 		cv := types.CanonicalizeVote(header.ChainID, vote)
 		time := encodeTimestamp(&cv)
@@ -226,14 +232,12 @@ func commitWithdrawHash(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, refAuth *bin
 	result := false
 	lb.Do(func(ethClient *ethclient.Client) error {
 		validators := tendermint.GetValidators(tmClient)
-		tmToEthAddr := tendermint.MapValidatorIndexToEthAddr(validators)
-
 		signedHeader := tendermint.GetSignedHeader(tmClient, height)
 
 		log.
 			WithField("header_block_hash", signedHeader.Commit.BlockID.Hash).
 			Debug("Got SignedHeader")
-		contractPayload := genContractProofPayload(&signedHeader, tmToEthAddr)
+		contractPayload := genContractProofPayload(&signedHeader, validators)
 		if len(contractPayload) == 0 {
 			result = false
 			return nil
