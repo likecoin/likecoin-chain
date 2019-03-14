@@ -214,7 +214,12 @@ func getContractHeight(lb *eth.LoadBalancer, contractAddr common.Address) int64 
 				Error("Cannot initialize relay contract when getting contract height")
 			return err
 		}
-		h, err := contract.LatestBlockHeight(nil)
+		c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		opts := bind.CallOpts{
+			Context: c,
+		}
+		h, err := contract.LatestBlockHeight(&opts)
 		if err != nil {
 			log.
 				WithField("relay_addr", contractAddr.Hex()).
