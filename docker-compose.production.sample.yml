@@ -44,7 +44,7 @@ services:
       - ${PWD}/abci/config.toml:/likechain/abci/config.toml
     command: ["./abci"]
   tendermint-1: &tendermint-node
-    entrypoint: tendermint node --moniker=`hostname` --p2p.persistent_peers=""
+    entrypoint: tendermint node --moniker=`hostname` --p2p.persistent_peers=$PERSISTENT_PEERS
   service-1:
     image: likechain/services
     container_name: likechain_service-1

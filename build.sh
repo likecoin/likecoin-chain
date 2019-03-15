@@ -1,10 +1,7 @@
 #!/bin/bash
 
-PWD=`pwd`
-WD=`cd $(dirname "$0") && pwd -P`
-
-cd "${WD}"
+pushd "$(dirname $0)"
 
 ./build.base.sh
 
-cd "${PWD}"
+popd

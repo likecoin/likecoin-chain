@@ -1,12 +1,9 @@
 #!/bin/bash
 
-PWD=`pwd`
-WD=`cd $(dirname "$0") && pwd -P`
-
-cd "${WD}"
+pushd "$(dirname $0)"
 
 ./docker/golang/build.sh
 ./tendermint/cli/build.sh
 ./tendermint/build.sh
 
-cd "${PWD}"
+popd

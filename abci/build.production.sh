@@ -1,10 +1,7 @@
 #!/bin/bash
 
-PWD=`pwd`
-WD=`cd $(dirname "$0") && pwd -P`
-
-cd "${WD}"
+pushd "$(dirname $0)"
 
 docker build -f Dockerfile.production -t likechain/abci-production .
 
-cd "${PWD}"
+popd

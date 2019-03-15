@@ -1,10 +1,7 @@
 #!/bin/bash
 
-PWD=`pwd`
-WD=`cd $(dirname "$0") && pwd -P`
-
-cd "${WD}"
+pushd "$(dirname $0)"
 
 docker build -t likechain/tendermint .
 
-cd "${PWD}"
+popd

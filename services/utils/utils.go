@@ -6,17 +6,18 @@ var log = logger.L
 
 // RetryIfPanic retries the operation if there is a panic
 func RetryIfPanic(retryCount uint, f func()) {
-	for retryCount > 0 {
+	panicCount := uint(0)
+	for {
 		success := false
 		func() {
-			retryCount--
 			defer func() {
 				if err := recover(); err != nil {
-					if retryCount == 0 {
+					panicCount++
+					if panicCount > retryCount {
 						log.WithField("panic_value", err).Panic("Panic retry limit exceeded")
 					} else {
 						log.
-							WithField("remaining_retry_count", retryCount).
+							WithField("panic_count", panicCount).
 							WithField("panic_value", err).
 							Error("Caught panic, retrying")
 					}

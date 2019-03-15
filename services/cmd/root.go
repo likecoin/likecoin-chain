@@ -29,7 +29,7 @@ func init() {
 	rootCmd.PersistentFlags().String("tm-endpoint", "tcp://localhost:26657", "Tendermint endpoint")
 	viper.BindPFlag("tmEndPoint", rootCmd.PersistentFlags().Lookup("tm-endpoint"))
 
-	rootCmd.PersistentFlags().String("eth-endpoint", "http://localhost:8545", "Ethereum endpoint")
+	rootCmd.PersistentFlags().StringArray("eth-endpoints", []string{"http://localhost:8545"}, "Ethereum endpoints")
 	viper.BindPFlag("ethEndPoint", rootCmd.PersistentFlags().Lookup("eth-endpoint"))
 
 	rootCmd.PersistentFlags().String("relay-addr", "", "Ethereum address of the relay contract")

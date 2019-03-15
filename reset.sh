@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -e
+
+WD=$(cd $(dirname "$0"); pwd)
+NODE_COUNT=$(grep -e '\s*abci-\d\+:\(\s*&abci-node\)\?$' $WD/docker-compose.yml | wc -l)
+
 for (( i = 1; i <= $NODE_COUNT; i++ )); do
     echo "Resetting node $i..."
 

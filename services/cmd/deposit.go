@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/likecoin/likechain/services/deposit"
+	"github.com/likecoin/likechain/services/eth"
 )
 
 var depositCmd = &cobra.Command{
@@ -18,14 +18,14 @@ var depositCmd = &cobra.Command{
 	Short: "run the deposit service",
 	Run: func(cmd *cobra.Command, args []string) {
 		tmEndPoint := viper.GetString("tmEndPoint")
-		ethEndPoint := viper.GetString("ethEndPoint")
+		ethEndPoints := viper.GetStringSlice("ethEndPoints")
 		tokenAddr := common.HexToAddress(viper.GetString("tokenContractAddr"))
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
 		blockDelay := viper.GetInt64("blockDelay")
 		statePath := viper.GetString("depositStatePath")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
-			WithField("eth_endpoint", ethEndPoint).
+			WithField("eth_endpoints", ethEndPoints).
 			WithField("token_addr", tokenAddr).
 			WithField("relay_addr", relayAddr).
 			WithField("block_delay", blockDelay).
@@ -33,13 +33,7 @@ var depositCmd = &cobra.Command{
 			Debug("Read deposit config and parameters")
 
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-		ethClient, err := ethclient.Dial(ethEndPoint)
-		if err != nil {
-			log.
-				WithField("eth_endpoint", ethEndPoint).
-				WithError(err).
-				Panic("Cannot initialize Ethereum endpoint")
-		}
+		lb := eth.NewLoadBalancer(ethEndPoints)
 		privKeyBytes := common.Hex2Bytes(viper.GetString("tmPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
@@ -52,7 +46,7 @@ var depositCmd = &cobra.Command{
 				WithField("block_delay", blockDelay).
 				Panic("Invalid block delay value")
 		}
-		deposit.Run(tmClient, ethClient, tokenAddr, relayAddr, privKey, blockDelay, statePath)
+		deposit.Run(tmClient, lb, tokenAddr, relayAddr, privKey, blockDelay, statePath)
 	},
 }
 

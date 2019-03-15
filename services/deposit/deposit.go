@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/likecoin/likechain/abci/query"
 	"github.com/likecoin/likechain/abci/response"
@@ -160,7 +159,7 @@ func (state *runState) save(path string) error {
 }
 
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
-func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
+func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
 	state, err := loadState(statePath)
 	if err != nil {
 		log.
@@ -168,14 +167,11 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr
 			WithError(err).
 			Info("Failed to load state, creating empty state")
 		state = &runState{}
-		var blockNumber int64
-		utils.RetryIfPanic(5, func() {
-			blockNumber = eth.GetHeight(ethClient)
-		})
+		blockNumber := eth.GetHeight(lb)
 		state.LastEthBlock = blockNumber - blockDelay
 		state.save(statePath)
 	}
-	eth.SubscribeHeader(ethClient, func(header *ethTypes.Header) bool {
+	eth.SubscribeHeader(lb, func(header *ethTypes.Header) bool {
 		newBlock := header.Number.Int64()
 		if newBlock <= 0 {
 			return true
@@ -187,7 +183,7 @@ func Run(tmClient *tmRPC.HTTP, ethClient *ethclient.Client, tokenAddr, relayAddr
 			WithField("last_block", state.LastEthBlock).
 			WithField("new_block", newBlock).
 			Info("Received new Ethereum block")
-		proposals := eth.GetTransfersFromBlocks(ethClient, tokenAddr, relayAddr, uint64(state.LastEthBlock-blockDelay), uint64(newBlock-blockDelay-1))
+		proposals := eth.GetTransfersFromBlocks(lb, tokenAddr, relayAddr, uint64(state.LastEthBlock-blockDelay), uint64(newBlock-blockDelay-1))
 		if len(proposals) == 0 {
 			log.
 				WithField("begin_block", state.LastEthBlock-blockDelay).
