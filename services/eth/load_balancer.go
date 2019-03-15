@@ -104,6 +104,10 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 			err := f(client)
 			if err == nil {
 				success = true
+			} else {
+				log.
+					WithError(err).
+					Warn("LoadBalancer failed when executing request")
 			}
 		}()
 	}
