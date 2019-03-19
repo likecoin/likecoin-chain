@@ -111,5 +111,7 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 			}
 		}()
 	}
-	log.WithField("trial_count", trialCount).Panic("LoadBalancer trial count exceeded hard limit")
+	if !success {
+		log.WithField("trial_count", trialCount).Panic("LoadBalancer trial count exceeded hard limit")
+	}
 }
