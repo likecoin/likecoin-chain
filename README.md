@@ -4,7 +4,15 @@
 [![CircleCI](https://circleci.com/gh/likecoin/likechain.svg?style=svg)](https://circleci.com/gh/likecoin/likechain) [![codecov](https://codecov.io/gh/likecoin/likechain/branch/master/graph/badge.svg)](https://codecov.io/gh/likecoin/likechain)
 
 ## Requirement
-Linux or macOS, with Docker installed and working
+Linux or macOS, with Docker installed and working.
+
+Tested OS: Ubuntu 16.04, Ububtu 18.04, macOS
+
+Recommended Docker version: 18.09.2 or later
+
+Recommeneded Docker Compose version: 1.23.2 or later
+
+Recommended hardware: 2-core CPU, 1 GB RAM, 20 GB Harddisk
 
 ## Development Setup
 ```sh
