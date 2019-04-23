@@ -22,15 +22,19 @@ var withdrawCmd = &cobra.Command{
 		ethEndPoints := viper.GetStringSlice("ethEndPoints")
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
 		statePath := viper.GetString("withdrawStatePath")
+		minTrialPerClient := viper.GetInt("ethMinTrialPerClient")
+		maxTrialCount := viper.GetInt("ethMaxTrialCount")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
 			WithField("relay_addr", relayAddr).
 			WithField("state_path", statePath).
+			WithField("min_trial_per_client", minTrialPerClient).
+			WithField("max_trial_count", maxTrialCount).
 			Debug("Read withdraw config and parameters")
 
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-		lb := eth.NewLoadBalancer(ethEndPoints)
+		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("ethPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {

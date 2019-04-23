@@ -9,13 +9,15 @@ import (
 
 // LoadBalancer stores a list of available Client and returns one when needed
 type LoadBalancer struct {
-	clients []*ethclient.Client
-	weights []int64
-	lock    sync.Mutex
+	clients           []*ethclient.Client
+	weights           []int64
+	lock              sync.Mutex
+	minTrialPerClient uint
+	maxTrialCount     uint
 }
 
 // NewLoadBalancer creates and initializes a LoadBalancer
-func NewLoadBalancer(endpoints []string) *LoadBalancer {
+func NewLoadBalancer(endpoints []string, minTrialPerClient, maxTrialCount uint) *LoadBalancer {
 	l := len(endpoints)
 	clients := make([]*ethclient.Client, 0, l)
 	for _, endpoint := range endpoints {
@@ -33,9 +35,11 @@ func NewLoadBalancer(endpoints []string) *LoadBalancer {
 		weights[i] = 0xFFFFFFFF
 	}
 	return &LoadBalancer{
-		clients: clients,
-		weights: weights,
-		lock:    sync.Mutex{},
+		clients:           clients,
+		weights:           weights,
+		lock:              sync.Mutex{},
+		minTrialPerClient: minTrialPerClient,
+		maxTrialCount:     maxTrialCount,
 	}
 }
 
@@ -59,16 +63,20 @@ func (lb *LoadBalancer) Get() (int, *ethclient.Client) {
 
 // Do accepts a job which requires a Client and a context, then executes and retries the job with the listed Clients
 func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
-	trialCount := 0
+	trialCount := uint(0)
 	success := false
-	usedClients := map[int]bool{}
-	for !success && trialCount < 100 {
+	clientUseCounts := map[int]uint{}
+	remainingClientBitmap := (uint64(1) << uint(len(lb.clients))) - 1
+	for !success && trialCount < lb.maxTrialCount {
 		trialCount++
 		func() {
 			clientIndex, client := lb.Get()
 			log.WithField("client_index", clientIndex).Debug("LoadBalancer executing request")
 			defer func() {
-				usedClients[clientIndex] = true
+				clientUseCounts[clientIndex]++
+				if clientUseCounts[clientIndex] >= lb.minTrialPerClient {
+					remainingClientBitmap &= 0xFFFFFFFFFFFFFFFF ^ (1 << uint(clientIndex))
+				}
 				err := recover()
 				if err != nil {
 					log.
@@ -76,7 +84,7 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 						Warn("LoadBalancer caught panic, recovered")
 				}
 				if !success {
-					if len(usedClients) >= len(lb.clients) {
+					if remainingClientBitmap == 0 {
 						log.
 							WithField("trial_count", trialCount).
 							Panic("LoadBalancer tried all clients but none succeeded")

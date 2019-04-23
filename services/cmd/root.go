@@ -35,6 +35,12 @@ func init() {
 	rootCmd.PersistentFlags().String("relay-addr", "", "Ethereum address of the relay contract")
 	viper.BindPFlag("relayContractAddr", rootCmd.PersistentFlags().Lookup("relay-addr"))
 
+	rootCmd.PersistentFlags().Int("eth-min-trial-per-client", 5, "Minimum trial count per Ethereum endpoint")
+	viper.BindPFlag("ethMinTrialPerClient", rootCmd.PersistentFlags().Lookup("eth-min-trial-per-client"))
+
+	rootCmd.PersistentFlags().Int("eth-max-trial-count", 100, "Maximum trial count sum for all Ethereum endpoint")
+	viper.BindPFlag("ethMaxTrialCount", rootCmd.PersistentFlags().Lookup("eth-max-trial-count"))
+
 	rootCmd.AddCommand(withdrawCmd)
 	rootCmd.AddCommand(validatorsCmd)
 	rootCmd.AddCommand(depositCmd)
