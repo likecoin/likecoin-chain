@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -72,6 +73,15 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 	fillSig(tx, tmPrivKey)
 	rawTx := txs.EncodeTx(tx)
+	txHash := tmhash.Sum(rawTx)
+	txResult, err := tmClient.Tx(txHash, false)
+	if err == nil {
+		log.
+			WithField("tx_hash", common.Bytes2Hex(txHash)).
+			WithField("tx_height", txResult.Height).
+			Info("Deposit tx is already processed, skipping")
+		return
+	}
 	log.
 		WithField("raw_tx", common.Bytes2Hex(rawTx)).
 		Debug("Broadcasting transaction onto LikeChain")
