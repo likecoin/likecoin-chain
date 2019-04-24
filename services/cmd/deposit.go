@@ -50,7 +50,15 @@ var depositCmd = &cobra.Command{
 				WithField("block_delay", blockDelay).
 				Panic("Invalid block delay value")
 		}
-		deposit.Run(tmClient, lb, tokenAddr, relayAddr, privKey, blockDelay, statePath)
+		deposit.Run(&deposit.Config{
+			TMClient:     tmClient,
+			LoadBalancer: lb,
+			TokenAddr:    tokenAddr,
+			RelayAddr:    relayAddr,
+			TMPrivKey:    privKey,
+			BlockDelay:   blockDelay,
+			StatePath:    statePath,
+		})
 	},
 }
 

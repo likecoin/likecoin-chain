@@ -168,46 +168,63 @@ func (state *runState) save(path string) error {
 	return err
 }
 
+// Config is the configuration about deposit
+type Config struct {
+	TMClient     *tmRPC.HTTP
+	LoadBalancer *eth.LoadBalancer
+	TokenAddr    common.Address
+	RelayAddr    common.Address
+	TMPrivKey    *ecdsa.PrivateKey
+	BlockDelay   int64
+	StatePath    string
+}
+
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
-func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
-	state, err := loadState(statePath)
+func Run(config *Config) {
+	state, err := loadState(config.StatePath)
 	if err != nil {
 		log.
-			WithField("state_path", statePath).
+			WithField("state_path", config.StatePath).
 			WithError(err).
 			Info("Failed to load state, creating empty state")
 		state = &runState{}
-		blockNumber := eth.GetHeight(lb)
-		state.LastEthBlock = blockNumber - blockDelay
-		state.save(statePath)
+		blockNumber := eth.GetHeight(config.LoadBalancer)
+		state.LastEthBlock = blockNumber - config.BlockDelay
+		state.save(config.StatePath)
 	}
-	eth.SubscribeHeader(lb, func(header *ethTypes.Header) bool {
+	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {
 		newBlock := header.Number.Int64()
 		if newBlock <= 0 {
 			return true
 		}
-		if newBlock < blockDelay {
+		if newBlock < config.BlockDelay {
 			return true
 		}
 		log.
 			WithField("last_block", state.LastEthBlock).
 			WithField("new_block", newBlock).
 			Info("Received new Ethereum block")
-		proposals := eth.GetTransfersFromBlocks(lb, tokenAddr, relayAddr, uint64(state.LastEthBlock-blockDelay), uint64(newBlock-blockDelay-1))
+		proposals := eth.GetTransfersFromBlocks(
+			config.LoadBalancer,
+			config.TokenAddr,
+			config.RelayAddr,
+			uint64(state.LastEthBlock-config.BlockDelay),
+			uint64(newBlock-config.BlockDelay-1),
+		)
 		if len(proposals) == 0 {
 			log.
-				WithField("begin_block", state.LastEthBlock-blockDelay).
-				WithField("end_block", newBlock-blockDelay-1).
+				WithField("begin_block", state.LastEthBlock-config.BlockDelay).
+				WithField("end_block", newBlock-config.BlockDelay-1).
 				Info("No transfer events in range")
 		} else {
 			for _, proposal := range proposals {
 				utils.RetryIfPanic(5, func() {
-					propose(tmClient, tmPrivKey, proposal)
+					propose(config.TMClient, config.TMPrivKey, proposal)
 				})
 			}
 		}
 		state.LastEthBlock = newBlock
-		state.save(statePath)
+		state.save(config.StatePath)
 		return true
 	})
 }

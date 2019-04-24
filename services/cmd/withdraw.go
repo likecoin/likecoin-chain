@@ -44,7 +44,13 @@ var withdrawCmd = &cobra.Command{
 		}
 		auth := bind.NewKeyedTransactor(privKey)
 
-		withdraw.Run(tmClient, lb, auth, relayAddr, statePath)
+		withdraw.Run(&withdraw.Config{
+			TMClient:     tmClient,
+			LoadBalancer: lb,
+			Auth:         auth,
+			ContractAddr: relayAddr,
+			StatePath:    statePath,
+		})
 	},
 }
 

@@ -340,21 +340,30 @@ func (state *runState) save(path string) error {
 	return err
 }
 
+// Config is the configuration about withdraw
+type Config struct {
+	TMClient     *tmRPC.HTTP
+	LoadBalancer *eth.LoadBalancer
+	Auth         *bind.TransactOpts
+	ContractAddr common.Address
+	StatePath    string
+}
+
 // Run starts the subscription to the withdraws on LikeChain and commits proofs onto Ethereum
-func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, auth *bind.TransactOpts, contractAddr common.Address, statePath string) {
-	state, err := loadState(statePath)
+func Run(config *Config) {
+	state, err := loadState(config.StatePath)
 	if err != nil {
 		log.
-			WithField("state_path", statePath).
+			WithField("state_path", config.StatePath).
 			WithError(err).
 			Info("Failed to load state, creating empty state")
 		state = &runState{}
-		state.save(statePath)
+		state.save(config.StatePath)
 	}
 	for ; ; time.Sleep(time.Minute) {
 		var newHeight int64
 		utils.RetryIfPanic(5, func() {
-			newHeight = tendermint.GetHeight(tmClient)
+			newHeight = tendermint.GetHeight(config.TMClient)
 		})
 		if newHeight == state.LastHeight {
 			log.
@@ -368,7 +377,7 @@ func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, auth *bind.TransactOpts, co
 			Info("New LikeChain height")
 		var packedTxs [][]byte
 		utils.RetryIfPanic(5, func() {
-			packedTxs = getWithdrawPackedTxs(tmClient, state.LastHeight, newHeight)
+			packedTxs = getWithdrawPackedTxs(config.TMClient, state.LastHeight, newHeight)
 		})
 		if len(packedTxs) <= 0 {
 			log.
@@ -376,12 +385,18 @@ func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, auth *bind.TransactOpts, co
 				WithField("new_height", newHeight).
 				Info("No withdraw transaction within range")
 			state.LastHeight = newHeight
-			state.save(statePath)
+			state.save(config.StatePath)
 			continue
 		}
-		contractHeight := getContractHeight(lb, contractAddr)
+		contractHeight := getContractHeight(config.LoadBalancer, config.ContractAddr)
 		if contractHeight < newHeight {
-			commitOk := commitWithdrawHash(tmClient, lb, auth, contractAddr, newHeight)
+			commitOk := commitWithdrawHash(
+				config.TMClient,
+				config.LoadBalancer,
+				config.Auth,
+				config.ContractAddr,
+				newHeight,
+			)
 			if !commitOk {
 				log.
 					WithField("new_height", newHeight).
@@ -396,16 +411,23 @@ func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, auth *bind.TransactOpts, co
 		}
 		wg := sync.WaitGroup{}
 		wg.Add(len(packedTxs))
-		nonce := eth.GetNonce(lb, auth.From)
+		nonce := eth.GetNonce(config.LoadBalancer, config.Auth.From)
 		for _, packedTx := range packedTxs {
 			go func(packedTx []byte, nonce int64) {
-				doWithdraw(tmClient, lb, auth, contractAddr, packedTx, nonce)
+				doWithdraw(
+					config.TMClient,
+					config.LoadBalancer,
+					config.Auth,
+					config.ContractAddr,
+					packedTx,
+					nonce,
+				)
 				wg.Done()
 			}(packedTx, nonce)
 			nonce++
 		}
 		wg.Wait()
 		state.LastHeight = newHeight
-		state.save(statePath)
+		state.save(config.StatePath)
 	}
 }
