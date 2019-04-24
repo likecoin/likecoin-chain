@@ -170,13 +170,14 @@ func (state *runState) save(path string) error {
 
 // Config is the configuration about deposit
 type Config struct {
-	TMClient     *tmRPC.HTTP
-	LoadBalancer *eth.LoadBalancer
-	TokenAddr    common.Address
-	RelayAddr    common.Address
-	TMPrivKey    *ecdsa.PrivateKey
-	BlockDelay   int64
-	StatePath    string
+	TMClient       *tmRPC.HTTP
+	LoadBalancer   *eth.LoadBalancer
+	TokenAddr      common.Address
+	RelayAddr      common.Address
+	TMPrivKey      *ecdsa.PrivateKey
+	BlockDelay     int64
+	StatePath      string
+	StartFromBlock int64
 }
 
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
@@ -189,7 +190,10 @@ func Run(config *Config) {
 			Info("Failed to load state, creating empty state")
 		state = &runState{}
 		blockNumber := eth.GetHeight(config.LoadBalancer)
-		state.LastEthBlock = blockNumber - config.BlockDelay
+		state.LastEthBlock = config.StartFromBlock + config.BlockDelay
+		if config.StartFromBlock < 0 || blockNumber < state.LastEthBlock {
+			state.LastEthBlock = blockNumber
+		}
 		state.save(config.StatePath)
 	}
 	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {

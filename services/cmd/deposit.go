@@ -25,6 +25,7 @@ var depositCmd = &cobra.Command{
 		statePath := viper.GetString("depositStatePath")
 		minTrialPerClient := viper.GetInt("ethMinTrialPerClient")
 		maxTrialCount := viper.GetInt("ethMaxTrialCount")
+		startFromBlock := viper.GetInt64("startFromBlock")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
@@ -34,6 +35,7 @@ var depositCmd = &cobra.Command{
 			WithField("state_path", statePath).
 			WithField("min_trial_per_client", minTrialPerClient).
 			WithField("max_trial_count", maxTrialCount).
+			WithField("start_from_block", startFromBlock).
 			Debug("Read deposit config and parameters")
 
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
@@ -51,13 +53,14 @@ var depositCmd = &cobra.Command{
 				Panic("Invalid block delay value")
 		}
 		deposit.Run(&deposit.Config{
-			TMClient:     tmClient,
-			LoadBalancer: lb,
-			TokenAddr:    tokenAddr,
-			RelayAddr:    relayAddr,
-			TMPrivKey:    privKey,
-			BlockDelay:   blockDelay,
-			StatePath:    statePath,
+			TMClient:       tmClient,
+			LoadBalancer:   lb,
+			TokenAddr:      tokenAddr,
+			RelayAddr:      relayAddr,
+			TMPrivKey:      privKey,
+			BlockDelay:     blockDelay,
+			StatePath:      statePath,
+			StartFromBlock: startFromBlock,
 		})
 	},
 }
@@ -74,4 +77,7 @@ func init() {
 
 	depositCmd.PersistentFlags().String("deposit-state-path", "./state_deposit.json", "State storage file path")
 	viper.BindPFlag("depositStatePath", depositCmd.PersistentFlags().Lookup("deposit-state-path"))
+
+	depositCmd.PersistentFlags().Int("start-from-block", -1, "Search deposit events on Ethereum starting from block if there is no previous record (-1 means current block)")
+	viper.BindPFlag("startFromBlock", depositCmd.PersistentFlags().Lookup("start-from-block"))
 }
