@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"io/ioutil"
+	"sync"
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
@@ -23,7 +24,12 @@ import (
 	"github.com/likecoin/likechain/services/utils"
 )
 
-var log = logger.L
+const blockBatchSize = 10000
+
+var (
+	log         = logger.L
+	proposeLock = &sync.Mutex{}
+)
 
 func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 	tx.Proposal.Sort()
@@ -43,6 +49,8 @@ func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 }
 
 func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit.Proposal) {
+	proposeLock.Lock()
+	defer proposeLock.Unlock()
 	log.
 		WithField("block_number", proposal.BlockNumber).
 		WithField("event_count", len(proposal.Inputs)).
@@ -109,41 +117,10 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 }
 
-type proposedBlockSet struct {
-	Map       map[uint64]bool
-	Queue     []uint64
-	QueueHead int
-	QueueTail int
-	Capacity  int
-}
-
-func newProposedBlockSet(capacity int) proposedBlockSet {
-	return proposedBlockSet{
-		Map:       make(map[uint64]bool),
-		Queue:     make([]uint64, capacity),
-		QueueHead: 0,
-		QueueTail: 0,
-		Capacity:  capacity,
-	}
-}
-
-func (set proposedBlockSet) Has(block uint64) bool {
-	return set.Map[block]
-}
-
-func (set proposedBlockSet) Put(block uint64) {
-	set.Map[block] = true
-	if len(set.Map) > set.Capacity {
-		toRemove := set.Queue[set.QueueHead]
-		delete(set.Map, toRemove)
-		set.QueueHead = (set.QueueHead + 1) % set.Capacity
-	}
-	set.Queue[set.QueueTail] = block
-	set.QueueTail = (set.QueueTail + 1) % set.Capacity
-}
-
 type runState struct {
-	LastEthBlock int64
+	LastEthBlock       int64
+	PendingBlockRanges [][]int64
+	lock               *sync.Mutex
 }
 
 func loadState(path string) (*runState, error) {
@@ -156,16 +133,48 @@ func loadState(path string) (*runState, error) {
 	if err != nil {
 		return nil, err
 	}
+	state.lock = &sync.Mutex{}
 	return &state, nil
 }
 
 func (state *runState) save(path string) error {
+	state.lock.Lock()
+	defer state.lock.Unlock()
 	jsonBytes, err := json.Marshal(&state)
 	if err != nil {
 		return err
 	}
 	err = ioutil.WriteFile(path, jsonBytes, 0644)
 	return err
+}
+
+func scanAndProposeForRange(config *Config, from, to uint64) {
+	log.
+		WithField("begin_block", from).
+		WithField("end_block", to).
+		Debug("Searching blocks in range")
+	proposals := eth.GetTransfersFromBlocks(
+		config.LoadBalancer,
+		config.TokenAddr,
+		config.RelayAddr,
+		uint64(from),
+		uint64(to),
+	)
+	if len(proposals) == 0 {
+		log.
+			WithField("begin_block", from).
+			WithField("end_block", to).
+			Info("No transfer events in range")
+	} else {
+		for _, proposal := range proposals {
+			log.
+				WithField("block", proposal.BlockNumber).
+				Info("Proposing proposal")
+			utils.RetryIfPanic(5, func() {
+				propose(config.TMClient, config.TMPrivKey, proposal)
+			})
+		}
+	}
 }
 
 // Config is the configuration about deposit
@@ -183,19 +192,50 @@ type Config struct {
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
 func Run(config *Config) {
 	state, err := loadState(config.StatePath)
+	blockNumber := eth.GetHeight(config.LoadBalancer)
 	if err != nil {
 		log.
 			WithField("state_path", config.StatePath).
 			WithError(err).
 			Info("Failed to load state, creating empty state")
-		state = &runState{}
-		blockNumber := eth.GetHeight(config.LoadBalancer)
-		state.LastEthBlock = config.StartFromBlock + config.BlockDelay
-		if config.StartFromBlock < 0 || blockNumber < state.LastEthBlock {
-			state.LastEthBlock = blockNumber
+		state = &runState{lock: &sync.Mutex{}}
+		state.LastEthBlock = blockNumber
+		if config.StartFromBlock > 0 && blockNumber >= config.StartFromBlock+config.BlockDelay {
+			state.PendingBlockRanges = [][]int64{{config.StartFromBlock, blockNumber - config.BlockDelay}}
 		}
-		state.save(config.StatePath)
 	}
+	if state.LastEthBlock < blockNumber {
+		state.PendingBlockRanges = append(
+			state.PendingBlockRanges,
+			[]int64{state.LastEthBlock - config.BlockDelay + 1, blockNumber - config.BlockDelay},
+		)
+	}
+	state.LastEthBlock = blockNumber
+	state.save(config.StatePath)
+	go func() {
+		log.
+			WithField("ranges", state.PendingBlockRanges).
+			Info("Clearing pending block ranges previously left and accumulated during service halt")
+		for len(state.PendingBlockRanges) > 0 {
+			i := len(state.PendingBlockRanges) - 1
+			start := state.PendingBlockRanges[i][0]
+			end := state.PendingBlockRanges[i][1]
+			for to := end; to >= start; to -= blockBatchSize {
+				from := to - blockBatchSize + 1
+				if from < start {
+					from = start
+				}
+				scanAndProposeForRange(config, uint64(from), uint64(to))
+				if from == start {
+					state.PendingBlockRanges = state.PendingBlockRanges[:i]
+				} else {
+					state.PendingBlockRanges[i][1] = from - 1
+				}
+				state.save(config.StatePath)
+			}
+		}
+		log.Info("All pending blocks cleared")
+	}()
 	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {
 		newBlock := header.Number.Int64()
 		if newBlock <= 0 {
@@ -208,27 +248,15 @@ func Run(config *Config) {
 			WithField("last_block", state.LastEthBlock).
 			WithField("new_block", newBlock).
 			Info("Received new Ethereum block")
-		proposals := eth.GetTransfersFromBlocks(
-			config.LoadBalancer,
-			config.TokenAddr,
-			config.RelayAddr,
-			uint64(state.LastEthBlock-config.BlockDelay),
-			uint64(newBlock-config.BlockDelay-1),
-		)
-		if len(proposals) == 0 {
-			log.
-				WithField("begin_block", state.LastEthBlock-config.BlockDelay).
-				WithField("end_block", newBlock-config.BlockDelay-1).
-				Info("No transfer events in range")
-		} else {
-			for _, proposal := range proposals {
-				utils.RetryIfPanic(5, func() {
-					propose(config.TMClient, config.TMPrivKey, proposal)
-				})
+		for from := state.LastEthBlock - config.BlockDelay + 1; from <= newBlock-config.BlockDelay; from += blockBatchSize {
+			to := from + blockBatchSize
+			if to > newBlock-config.BlockDelay {
+				to = newBlock - config.BlockDelay
 			}
+			scanAndProposeForRange(config, uint64(from), uint64(to))
+			state.LastEthBlock = newBlock
+			state.save(config.StatePath)
 		}
-		state.LastEthBlock = newBlock
-		state.save(config.StatePath)
 		return true
 	})
 }
