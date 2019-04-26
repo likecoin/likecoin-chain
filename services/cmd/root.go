@@ -44,6 +44,7 @@ func init() {
 	rootCmd.AddCommand(withdrawCmd)
 	rootCmd.AddCommand(validatorsCmd)
 	rootCmd.AddCommand(depositCmd)
+	rootCmd.AddCommand(decodeCmd)
 }
 
 func initConfig() {
