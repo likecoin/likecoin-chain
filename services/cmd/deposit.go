@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/likecoin/likechain/services/deposit"
 	"github.com/likecoin/likechain/services/eth"
+	logger "github.com/likecoin/likechain/services/log"
 )
 
 var depositCmd = &cobra.Command{
@@ -26,6 +28,7 @@ var depositCmd = &cobra.Command{
 		minTrialPerClient := viper.GetInt("ethMinTrialPerClient")
 		maxTrialCount := viper.GetInt("ethMaxTrialCount")
 		startFromBlock := viper.GetInt64("startFromBlock")
+		logEndPoint := viper.GetString("logEndPoint")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
@@ -36,6 +39,7 @@ var depositCmd = &cobra.Command{
 			WithField("min_trial_per_client", minTrialPerClient).
 			WithField("max_trial_count", maxTrialCount).
 			WithField("start_from_block", startFromBlock).
+			WithField("log_endpoint", logEndPoint).
 			Debug("Read deposit config and parameters")
 
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
@@ -52,6 +56,17 @@ var depositCmd = &cobra.Command{
 				WithField("block_delay", blockDelay).
 				Panic("Invalid block delay value")
 		}
+
+		var httpHook *logger.HTTPHook = nil
+		if logEndPoint != "" {
+			id := crypto.PubkeyToAddress(privKey.PublicKey).Hex()
+			httpHook = logger.NewHTTPHook(id, logEndPoint)
+			log.AddHook(httpHook)
+			log.
+				WithField("id", id).
+				WithField("endpoint", logEndPoint).
+				Info("Logging endpoint initialized")
+		}
 		deposit.Run(&deposit.Config{
 			TMClient:       tmClient,
 			LoadBalancer:   lb,
@@ -61,6 +76,7 @@ var depositCmd = &cobra.Command{
 			BlockDelay:     blockDelay,
 			StatePath:      statePath,
 			StartFromBlock: startFromBlock,
+			HTTPLogHook:    httpHook,
 		})
 	},
 }
@@ -80,4 +96,7 @@ func init() {
 
 	depositCmd.PersistentFlags().Int("start-from-block", -1, "Search deposit events on Ethereum starting from block if there is no previous record (-1 means current block)")
 	viper.BindPFlag("startFromBlock", depositCmd.PersistentFlags().Lookup("start-from-block"))
+
+	depositCmd.PersistentFlags().String("log-endpoint", "", "Endpoint to send logs with level warning or above (empty means not using HTTP endpoint)")
+	viper.BindPFlag("logEndPoint", depositCmd.PersistentFlags().Lookup("log-endpoint"))
 }

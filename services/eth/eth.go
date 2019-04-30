@@ -103,7 +103,10 @@ func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Addres
 				}
 				addr, err := types.NewAddress(e.From[:])
 				if err != nil {
-					panic(err)
+					log.
+						WithField("eth_addr", e.From.Hex()).
+						WithError(err).
+						Panic("Cannot convert Ethereum address to LikeChain address")
 				}
 				proposal.Inputs = append(proposal.Inputs, deposit.Input{
 					FromAddr: *addr,

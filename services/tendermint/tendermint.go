@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
-	"github.com/tendermint/tendermint/rpc/core/types"
+	core_types "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 
 	logger "github.com/likecoin/likechain/services/log"
@@ -16,7 +16,10 @@ var log = logger.L
 func GetSignedHeader(tmClient *tmRPC.HTTP, height int64) types.SignedHeader {
 	commit, err := tmClient.Commit(&height)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("height", height).
+			WithError(err).
+			Panic("Cannot get Tendermint commit with height")
 	}
 	return commit.SignedHeader
 }
@@ -26,6 +29,9 @@ func GetValidators(tmClient *tmRPC.HTTP) []types.Validator {
 	rawConsensusState, err := tmClient.DumpConsensusState()
 	if err != nil {
 		panic(err)
+		log.
+			WithError(err).
+			Panic("Cannot dump Tendermint consensus state")
 	}
 
 	jsonRes := struct {
@@ -36,7 +42,10 @@ func GetValidators(tmClient *tmRPC.HTTP) []types.Validator {
 
 	err = AminoCodec().UnmarshalJSON(rawConsensusState.RoundState, &jsonRes)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("round_state", rawConsensusState.RoundState).
+			WithError(err).
+			Panic("Cannot unmarshal consensus round state into JSON")
 	}
 
 	return jsonRes.Validators.Validators
@@ -46,7 +55,9 @@ func GetValidators(tmClient *tmRPC.HTTP) []types.Validator {
 func GetHeight(tmClient *tmRPC.HTTP) int64 {
 	abciInfo, err := tmClient.ABCIInfo()
 	if err != nil {
-		panic(err)
+		log.
+			WithError(err).
+			Panic("Cannot get Tendermint ABCI info")
 	}
 	return abciInfo.Response.GetLastBlockHeight()
 }

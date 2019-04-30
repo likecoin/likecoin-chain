@@ -36,11 +36,17 @@ func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 	jsonMap := tx.GenerateJSONMap()
 	hash, err := jsonMap.Hash()
 	if err != nil {
-		panic(err)
+		log.
+			WithField("tx", tx).
+			WithError(err).
+			Panic("Cannot hash deposit transaction")
 	}
 	sig, err := crypto.Sign(hash, privKey)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("tx", tx).
+			WithError(err).
+			Panic("Cannot sign deposit transaction")
 	}
 	sig[64] += 27
 	jsonSig := txs.DepositJSONSignature{}
@@ -58,11 +64,17 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	ethAddr := crypto.PubkeyToAddress(tmPrivKey.PublicKey)
 	addr, err := types.NewAddress(ethAddr[:])
 	if err != nil {
-		panic(err)
+		log.
+			WithField("eth_addr", ethAddr.Hex()).
+			WithError(err).
+			Panic("Cannot convert Ethereum address to LikeChain address")
 	}
 	queryResult, err := tmClient.ABCIQuery("account_info", []byte(addr.String()))
 	if err != nil {
-		panic(err)
+		log.
+			WithField("addr", addr.String()).
+			WithError(err).
+			Panic("Cannot query account info from ABCI")
 	}
 	accInfo := query.GetAccountInfoRes(queryResult.Response.Value)
 	if accInfo == nil {
@@ -187,10 +199,20 @@ type Config struct {
 	BlockDelay     int64
 	StatePath      string
 	StartFromBlock int64
+	HTTPLogHook    *logger.HTTPHook
 }
 
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
 func Run(config *Config) {
+	if config.HTTPLogHook != nil {
+		defer func() {
+			err := recover()
+			if err != nil {
+				config.HTTPLogHook.Cleanup()
+				panic(err)
+			}
+		}()
+	}
 	state, err := loadState(config.StatePath)
 	blockNumber := eth.GetHeight(config.LoadBalancer)
 	if err != nil {
@@ -213,6 +235,15 @@ func Run(config *Config) {
 	state.LastEthBlock = blockNumber
 	state.save(config.StatePath)
 	go func() {
+		if config.HTTPLogHook != nil {
+			defer func() {
+				err := recover()
+				if err != nil {
+					config.HTTPLogHook.Cleanup()
+					panic(err)
+				}
+			}()
+		}
 		log.
 			WithField("ranges", state.PendingBlockRanges).
 			Info("Clearing pending block ranges previously left and accumulated during service halt")
