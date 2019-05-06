@@ -113,17 +113,39 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 			Panic("Broadcast transaction onto LikeChain failed")
 	}
 	if result.CheckTx.Code != response.Success.Code {
-		log.
-			WithField("code", result.CheckTx.Code).
-			WithField("info", result.CheckTx.Info).
-			WithField("log", result.CheckTx.Log).
-			Error("Deposit transaction failed in CheckTx")
+		switch result.CheckTx.Code {
+		case response.DepositDoubleApproval.Code:
+			fallthrough
+		case response.DepositAlreadyExecuted.Code:
+			log.
+				WithField("code", result.CheckTx.Code).
+				WithField("info", result.CheckTx.Info).
+				WithField("log", result.CheckTx.Log).
+				Info("Deposit transaction unnecessary and rejected in CheckTx, skipping")
+		default:
+			log.
+				WithField("code", result.CheckTx.Code).
+				WithField("info", result.CheckTx.Info).
+				WithField("log", result.CheckTx.Log).
+				Panic("Deposit transaction failed in CheckTx")
+		}
 	} else if result.DeliverTx.Code != response.Success.Code {
-		log.
-			WithField("code", result.DeliverTx.Code).
-			WithField("info", result.DeliverTx.Info).
-			WithField("log", result.DeliverTx.Log).
-			Error("Deposit transaction failed in DeliverTx")
+		switch result.DeliverTx.Code {
+		case response.DepositDoubleApproval.Code:
+			fallthrough
+		case response.DepositAlreadyExecuted.Code:
+			log.
+				WithField("code", result.DeliverTx.Code).
+				WithField("info", result.DeliverTx.Info).
+				WithField("log", result.DeliverTx.Log).
+				Info("Deposit transaction unnecessary and rejected in DeliverTx, skipping")
+		default:
+			log.
+				WithField("code", result.DeliverTx.Code).
+				WithField("info", result.DeliverTx.Info).
+				WithField("log", result.DeliverTx.Log).
+				Panic("Deposit transaction failed in DeliverTx")
+		}
 	} else {
 		log.Info("Successfully broadcasted deposit transaction onto LikeChain")
 	}
