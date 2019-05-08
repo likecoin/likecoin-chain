@@ -91,7 +91,7 @@ func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Addres
 								WithField("begin_block", from).
 								WithField("end_block", to).
 								WithError(err).
-								Info("Endpoint complained too many query results, but cannot backoff the range anymore")
+								Error("Endpoint complained too many query results, but cannot backoff the range anymore")
 							return err
 						}
 						log.
