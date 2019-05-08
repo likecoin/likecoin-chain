@@ -172,8 +172,6 @@ func loadState(path string) (*runState, error) {
 }
 
 func (state *runState) save(path string) error {
-	state.lock.Lock()
-	defer state.lock.Unlock()
 	jsonBytes, err := json.Marshal(&state)
 	if err != nil {
 		return err
@@ -279,12 +277,16 @@ func Run(config *Config) {
 					from = start
 				}
 				scanAndProposeForRange(config, uint64(from), uint64(to))
-				if from == start {
-					state.PendingBlockRanges = state.PendingBlockRanges[:i]
-				} else {
-					state.PendingBlockRanges[i][1] = from - 1
-				}
-				state.save(config.StatePath)
+				func() {
+					state.lock.Lock()
+					defer state.lock.Unlock()
+					if from == start {
+						state.PendingBlockRanges = state.PendingBlockRanges[:i]
+					} else {
+						state.PendingBlockRanges[i][1] = from - 1
+					}
+					state.save(config.StatePath)
+				}()
 			}
 		}
 		log.Info("All pending blocks cleared")
@@ -307,8 +309,12 @@ func Run(config *Config) {
 				to = newBlock - config.BlockDelay
 			}
 			scanAndProposeForRange(config, uint64(from), uint64(to))
-			state.LastEthBlock = newBlock
-			state.save(config.StatePath)
+			func() {
+				state.lock.Lock()
+				defer state.lock.Unlock()
+				state.LastEthBlock = newBlock
+				state.save(config.StatePath)
+			}()
 		}
 		return true
 	})
