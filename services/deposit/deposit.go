@@ -312,7 +312,7 @@ func Run(config *Config) {
 			func() {
 				state.lock.Lock()
 				defer state.lock.Unlock()
-				state.LastEthBlock = newBlock
+				state.LastEthBlock = to + config.BlockDelay
 				state.save(config.StatePath)
 			}()
 		}
