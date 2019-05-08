@@ -86,6 +86,14 @@ func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Addres
 				switch err.(type) {
 				case rpc.Error:
 					if err.(rpc.Error).ErrorCode() == infuraQueryLimitErrorCode {
+						if to == from {
+							log.
+								WithField("begin_block", from).
+								WithField("end_block", to).
+								WithError(err).
+								Info("Endpoint complained too many query results, but cannot backoff the range anymore")
+							return err
+						}
 						log.
 							WithField("begin_block", from).
 							WithField("end_block", to).
