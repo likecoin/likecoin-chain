@@ -304,7 +304,7 @@ func Run(config *Config) {
 			WithField("new_block", newBlock).
 			Info("Received new Ethereum block")
 		for from := state.LastEthBlock - config.BlockDelay + 1; from <= newBlock-config.BlockDelay; from += blockBatchSize {
-			to := from + blockBatchSize
+			to := from + blockBatchSize - 1
 			if to > newBlock-config.BlockDelay {
 				to = newBlock - config.BlockDelay
 			}
