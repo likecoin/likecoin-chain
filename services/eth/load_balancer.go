@@ -66,16 +66,16 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 	trialCount := uint(0)
 	success := false
 	clientUseCounts := map[int]uint{}
-	remainingClientBitmap := (uint64(1) << uint(len(lb.clients))) - 1
-	for !success && trialCount < lb.maxTrialCount {
-		trialCount++
+	doneClientsSet := map[int]struct{}{}
+	for !success {
 		func() {
 			clientIndex, client := lb.Get()
 			log.WithField("client_index", clientIndex).Debug("LoadBalancer executing request")
 			defer func() {
+				trialCount++
 				clientUseCounts[clientIndex]++
 				if clientUseCounts[clientIndex] >= lb.minTrialPerClient {
-					remainingClientBitmap &= 0xFFFFFFFFFFFFFFFF ^ (1 << uint(clientIndex))
+					doneClientsSet[clientIndex] = struct{}{}
 				}
 				err := recover()
 				if err != nil {
@@ -84,10 +84,14 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 						Warn("LoadBalancer caught panic, recovered")
 				}
 				if !success {
-					if remainingClientBitmap == 0 {
+					if len(doneClientsSet) >= len(lb.clients) {
 						log.
 							WithField("trial_count", trialCount).
 							Panic("LoadBalancer tried all clients but none succeeded")
+					} else if trialCount >= lb.maxTrialCount {
+						log.
+							WithField("trial_count", trialCount).
+							Panic("LoadBalancer trial count exceeded hard limit")
 					} else {
 						log.
 							WithField("client_index", clientIndex).
@@ -118,8 +122,5 @@ func (lb *LoadBalancer) Do(f func(*ethclient.Client) error) {
 					Warn("LoadBalancer failed when executing request")
 			}
 		}()
-	}
-	if !success {
-		log.WithField("trial_count", trialCount).Panic("LoadBalancer trial count exceeded hard limit")
 	}
 }
