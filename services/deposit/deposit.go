@@ -114,9 +114,9 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 	if result.CheckTx.Code != response.Success.Code {
 		switch result.CheckTx.Code {
-		case response.DepositDoubleApproval.Code:
+		case response.DepositDoubleApproval.ToResponseCheckTx().Code:
 			fallthrough
-		case response.DepositAlreadyExecuted.Code:
+		case response.DepositAlreadyExecuted.ToResponseCheckTx().Code:
 			log.
 				WithField("code", result.CheckTx.Code).
 				WithField("info", result.CheckTx.Info).
@@ -131,9 +131,9 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 		}
 	} else if result.DeliverTx.Code != response.Success.Code {
 		switch result.DeliverTx.Code {
-		case response.DepositDoubleApproval.Code:
+		case response.DepositDoubleApproval.ToResponseDeliverTx().Code:
 			fallthrough
-		case response.DepositAlreadyExecuted.Code:
+		case response.DepositAlreadyExecuted.ToResponseDeliverTx().Code:
 			log.
 				WithField("code", result.DeliverTx.Code).
 				WithField("info", result.DeliverTx.Info).
