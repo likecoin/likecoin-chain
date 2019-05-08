@@ -2,7 +2,6 @@ package eth
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
@@ -10,6 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/types"
@@ -19,6 +19,10 @@ import (
 )
 
 var log = logger.L
+
+// Infura refuses to return more than 1000 results
+// See: https://infura.io/docs/ethereum/json-rpc/eth_getLogs
+const infuraQueryLimitErrorCode = -32005
 
 // GetHeight returns the block number of the newest block header
 func GetHeight(lb *LoadBalancer) int64 {
@@ -79,14 +83,18 @@ func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Addres
 			}
 			it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
 			if err != nil {
-				if strings.Contains(err.Error(), "query returned more than") && from != to { // Infura refuses to return more than 1000 results
-					log.
-						WithField("begin_block", from).
-						WithField("end_block", to).
-						WithField("new_end_block", from+(to-from)/2).
-						Info("Endpoint complained too many query results, backoff the range by half")
-					to = from + (to-from)/2
-					return nil
+				switch err.(type) {
+				case rpc.Error:
+					if err.(rpc.Error).ErrorCode() == infuraQueryLimitErrorCode {
+						log.
+							WithField("begin_block", from).
+							WithField("end_block", to).
+							WithField("new_end_block", from+(to-from)/2).
+							WithError(err).
+							Info("Endpoint complained too many query results, backoff the range by half")
+						to = from + (to-from)/2
+						return nil
+					}
 				}
 				return err
 			}
