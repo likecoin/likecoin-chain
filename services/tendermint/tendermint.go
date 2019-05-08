@@ -28,7 +28,6 @@ func GetSignedHeader(tmClient *tmRPC.HTTP, height int64) types.SignedHeader {
 func GetValidators(tmClient *tmRPC.HTTP) []types.Validator {
 	rawConsensusState, err := tmClient.DumpConsensusState()
 	if err != nil {
-		panic(err)
 		log.
 			WithError(err).
 			Panic("Cannot dump Tendermint consensus state")
