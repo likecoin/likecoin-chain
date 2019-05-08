@@ -42,6 +42,16 @@ var depositCmd = &cobra.Command{
 			WithField("log_endpoint", logEndPoint).
 			Debug("Read deposit config and parameters")
 
+		if minTrialPerClient <= 0 {
+			log.
+				WithField("min_trial_per_client", minTrialPerClient).
+				Panic("Invalid minTrialPerClient value (expect > 0)")
+		}
+		if maxTrialCount <= 0 {
+			log.
+				WithField("max_trial_count", maxTrialCount).
+				Panic("Invalid maxTrialCount value (expect > 0)")
+		}
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
 		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("tmPrivKey"))
