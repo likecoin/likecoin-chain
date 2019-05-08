@@ -29,13 +29,13 @@ func shouldCallString(v reflect.Value) bool {
 	return false
 }
 
-func simpleValueToString(v reflect.Value) string {
+func simpleValueToString(v reflect.Value) (string, bool) {
 	switch v.Kind() {
 	case reflect.Bool:
 		if v.Bool() {
-			return "true"
+			return "true", true
 		}
-		return "false"
+		return "false", true
 	case reflect.Int:
 		fallthrough
 	case reflect.Int8:
@@ -45,7 +45,7 @@ func simpleValueToString(v reflect.Value) string {
 	case reflect.Int32:
 		fallthrough
 	case reflect.Int64:
-		return fmt.Sprintf("%d", v.Int())
+		return fmt.Sprintf("%d", v.Int()), true
 	case reflect.Uint:
 		fallthrough
 	case reflect.Uint8:
@@ -55,22 +55,22 @@ func simpleValueToString(v reflect.Value) string {
 	case reflect.Uint32:
 		fallthrough
 	case reflect.Uint64:
-		return fmt.Sprintf("%d", v.Uint())
+		return fmt.Sprintf("%d", v.Uint()), true
 	case reflect.Float32:
 		fallthrough
 	case reflect.Float64:
-		return fmt.Sprintf("%f", v.Float())
+		return fmt.Sprintf("%f", v.Float()), true
 	case reflect.String:
-		return fmt.Sprintf("\"%s\"", v.String())
+		return fmt.Sprintf("\"%s\"", v.String()), true
 	default:
 		if shouldCallString(v) {
 			m := v.MethodByName("String")
 			if m.IsValid() {
-				return m.Call(nil)[0].String()
+				return m.Call(nil)[0].String(), true
 			} else if v.CanAddr() {
 				m = v.Addr().MethodByName("String")
 				if m.IsValid() {
-					return m.Call(nil)[0].String()
+					return m.Call(nil)[0].String(), true
 				}
 			}
 		}
@@ -84,18 +84,18 @@ func simpleValueToString(v reflect.Value) string {
 		case reflect.Slice:
 			t := v.Type().Elem()
 			if t.Kind() == reflect.Uint8 {
-				return hex.EncodeToString(v.Slice(0, v.Len()).Bytes())
+				return hex.EncodeToString(v.Slice(0, v.Len()).Bytes()), true
 			}
 			fallthrough
 		default:
-			return ""
+			return "", false
 		}
 	}
 }
 
 func printValue(v reflect.Value, indent int) {
-	s := simpleValueToString(v)
-	if s != "" {
+	s, ok := simpleValueToString(v)
+	if ok {
 		fmt.Printf("%s\n", s)
 		return
 	}
