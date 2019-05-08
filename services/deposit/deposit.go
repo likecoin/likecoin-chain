@@ -224,15 +224,12 @@ type Config struct {
 
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
 func Run(config *Config) {
-	if config.HTTPLogHook != nil {
-		defer func() {
-			err := recover()
-			if err != nil {
-				config.HTTPLogHook.Cleanup()
-				panic(err)
-			}
-		}()
+	httpHookCleanupFunc := func() {
+		if config.HTTPLogHook != nil {
+			config.HTTPLogHook.Cleanup()
+		}
 	}
+	defer httpHookCleanupFunc()
 	state, err := loadState(config.StatePath)
 	blockNumber := eth.GetHeight(config.LoadBalancer)
 	if err != nil {
@@ -255,15 +252,7 @@ func Run(config *Config) {
 	state.LastEthBlock = blockNumber
 	state.save(config.StatePath)
 	go func() {
-		if config.HTTPLogHook != nil {
-			defer func() {
-				err := recover()
-				if err != nil {
-					config.HTTPLogHook.Cleanup()
-					panic(err)
-				}
-			}()
-		}
+		defer httpHookCleanupFunc()
 		log.
 			WithField("ranges", state.PendingBlockRanges).
 			Info("Clearing pending block ranges previously left and accumulated during service halt")
