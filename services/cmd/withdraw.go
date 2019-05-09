@@ -44,6 +44,9 @@ var withdrawCmd = &cobra.Command{
 				Panic("Invalid maxTrialCount value (expect > 0)")
 		}
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
+		if len(ethEndPoints) == 0 {
+			log.Panic("No Ethereum endpoints supplied")
+		}
 		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("ethPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
