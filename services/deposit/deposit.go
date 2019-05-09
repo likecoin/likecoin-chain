@@ -303,7 +303,7 @@ func Run(config *Config) {
 	// The subscriber, which subscribes and processes newly confirmed Ethereum blocks
 	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {
 		newConfirmedBlock := header.Number.Int64() - config.BlockDelay
-		if newConfirmedBlock < config.BlockDelay {
+		if newConfirmedBlock <= 0 {
 			return true
 		}
 		log.
