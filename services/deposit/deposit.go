@@ -152,9 +152,11 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 }
 
 type runState struct {
-	LastEthBlock       int64
-	PendingBlockRanges [][]int64
-	lock               *sync.Mutex
+	LastEthBlock                   int64     `json:",omitempty"` // For compatibility
+	LastProcessedSubscriptionBlock int64     // The last block processed by the subscriber goroutine
+	PendingBlockRanges             [][]int64 // Ranges of blocks to be processed by the backward-scanner goroutine
+
+	lock *sync.Mutex
 }
 
 func loadState(path string) (*runState, error) {
@@ -231,31 +233,48 @@ func Run(config *Config) {
 	}
 	defer httpHookCleanupFunc()
 	state, err := loadState(config.StatePath)
-	blockNumber := eth.GetHeight(config.LoadBalancer)
+	networkConfirmedBlock := eth.GetHeight(config.LoadBalancer) - config.BlockDelay
 	if err != nil {
 		log.
 			WithField("state_path", config.StatePath).
 			WithError(err).
 			Info("Failed to load state, creating empty state")
 		state = &runState{lock: &sync.Mutex{}}
-		state.LastEthBlock = blockNumber
-		if config.StartFromBlock > 0 && blockNumber >= config.StartFromBlock+config.BlockDelay {
-			state.PendingBlockRanges = [][]int64{{config.StartFromBlock, blockNumber - config.BlockDelay}}
+		state.LastProcessedSubscriptionBlock = networkConfirmedBlock
+		if config.StartFromBlock > 0 && networkConfirmedBlock >= config.StartFromBlock {
+			state.PendingBlockRanges = [][]int64{{config.StartFromBlock, networkConfirmedBlock}}
 		}
 	}
-	if state.LastEthBlock < blockNumber {
+	if state.LastEthBlock != 0 && state.LastProcessedSubscriptionBlock == 0 {
+		state.LastProcessedSubscriptionBlock = state.LastEthBlock - config.BlockDelay
+		log.
+			WithField("last_eth_block", state.LastEthBlock).
+			WithField("block_delay", config.BlockDelay).
+			WithField("converted_last_processed_subscription_block", state.LastProcessedSubscriptionBlock).
+			Info("Converted deprecated LastEthBlock to LastProcessedSubscriptionBlock in deposit state")
+		state.LastEthBlock = 0
+	}
+	if state.LastProcessedSubscriptionBlock < networkConfirmedBlock {
 		state.PendingBlockRanges = append(
 			state.PendingBlockRanges,
-			[]int64{state.LastEthBlock - config.BlockDelay + 1, blockNumber - config.BlockDelay},
+			[]int64{state.LastProcessedSubscriptionBlock + 1, networkConfirmedBlock},
 		)
+		log.
+			WithField("last_processed_subscription_block", state.LastProcessedSubscriptionBlock).
+			WithField("network_confirmed_block", networkConfirmedBlock).
+			WithField("new_pending_block_ranges", state.PendingBlockRanges).
+			Info("Detected unprocessed blocks during service suspension, added to pending block ranges")
 	}
-	state.LastEthBlock = blockNumber
+	// The blocks before networkConfirmedBlock are processed by the backward-scanner goroutine
+	state.LastProcessedSubscriptionBlock = networkConfirmedBlock
 	state.save(config.StatePath)
+
+	// The backward-scanner, which scans and processes pending blocks previously left
 	go func() {
 		defer httpHookCleanupFunc()
 		log.
 			WithField("ranges", state.PendingBlockRanges).
-			Info("Clearing pending block ranges previously left and accumulated during service halt")
+			Info("Clearing pending block ranges previously left and accumulated during service suspension")
 		for len(state.PendingBlockRanges) > 0 {
 			i := len(state.PendingBlockRanges) - 1
 			start := state.PendingBlockRanges[i][0]
@@ -280,28 +299,27 @@ func Run(config *Config) {
 		}
 		log.Info("All pending blocks cleared")
 	}()
+
+	// The subscriber, which subscribes and processes newly confirmed Ethereum blocks
 	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {
-		newBlock := header.Number.Int64()
-		if newBlock <= 0 {
-			return true
-		}
-		if newBlock < config.BlockDelay {
+		newConfirmedBlock := header.Number.Int64() - config.BlockDelay
+		if newConfirmedBlock < config.BlockDelay {
 			return true
 		}
 		log.
-			WithField("last_block", state.LastEthBlock).
-			WithField("new_block", newBlock).
+			WithField("last_processed_block", state.LastProcessedSubscriptionBlock).
+			WithField("new_confirmed_block", newConfirmedBlock).
 			Info("Received new Ethereum block")
-		for from := state.LastEthBlock - config.BlockDelay + 1; from <= newBlock-config.BlockDelay; from += blockBatchSize {
+		for from := state.LastProcessedSubscriptionBlock + 1; from <= newConfirmedBlock; from += blockBatchSize {
 			to := from + blockBatchSize - 1
-			if to > newBlock-config.BlockDelay {
-				to = newBlock - config.BlockDelay
+			if to > newConfirmedBlock {
+				to = newConfirmedBlock
 			}
 			scanAndProposeForRange(config, uint64(from), uint64(to))
 			func() {
 				state.lock.Lock()
 				defer state.lock.Unlock()
-				state.LastEthBlock = to + config.BlockDelay
+				state.LastProcessedSubscriptionBlock = to
 				state.save(config.StatePath)
 			}()
 		}
