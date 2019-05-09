@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"net/url"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
@@ -56,6 +58,18 @@ var depositCmd = &cobra.Command{
 		if len(ethEndPoints) == 0 {
 			log.Panic("No Ethereum endpoints supplied")
 		}
+		ethEndpointHosts := []string{}
+		for i, endpoint := range ethEndPoints {
+			ethURL, err := url.Parse(endpoint)
+			if err != nil {
+				log.
+					WithField("eth_endpoint_index", i).
+					WithField("eth_endpoint", endpoint).
+					WithError(err).
+					Panic("Invalid Ethereum endpoint")
+			}
+			ethEndpointHosts = append(ethEndpointHosts, ethURL.Host)
+		}
 		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("tmPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
@@ -73,7 +87,7 @@ var depositCmd = &cobra.Command{
 		var httpHook *logger.HTTPHook = nil
 		if logEndPoint != "" {
 			id := crypto.PubkeyToAddress(privKey.PublicKey).Hex()
-			httpHook = logger.NewHTTPHook(id, logEndPoint)
+			httpHook = logger.NewHTTPHook(id, logEndPoint, ethEndpointHosts)
 			log.AddHook(httpHook)
 			log.
 				WithField("id", id).

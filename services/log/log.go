@@ -14,9 +14,11 @@ import (
 // L is an instance of a logger
 var L = logrus.New()
 
-type httpHookMsg struct {
-	format    string
-	logString string
+// HTTPHookMsg represents a message to be sent to the HTTP log endpoint
+type HTTPHookMsg struct {
+	Format  string
+	Type    string
+	Content string
 }
 
 // HTTPHook is the logrus hook which sends logs with level warning or above to the specified HTTP endpoint
@@ -24,7 +26,7 @@ type HTTPHook struct {
 	id            string
 	endpoint      string
 	cleanupSignal chan bool
-	msgs          chan httpHookMsg
+	msgs          chan HTTPHookMsg
 }
 
 func (hook *HTTPHook) run() {
@@ -37,10 +39,11 @@ func (hook *HTTPHook) run() {
 		case <-hook.cleanupSignal:
 			isDone = true
 		case msg := <-hook.msgs:
-			requestContent := map[string]interface{}{
-				"from":   hook.id,
-				"format": msg.format,
-				"log":    msg.logString,
+			requestContent := map[string]string{
+				"from":    hook.id,
+				"format":  msg.Format,
+				"type":    msg.Type,
+				"content": msg.Content,
 			}
 			requestBody, err := json.Marshal(requestContent)
 			if err != nil {
@@ -81,28 +84,7 @@ func (hook *HTTPHook) run() {
 }
 
 // Push pushes a log message into queue, which will be sent to the HTTP endpoint asynchronously
-func (hook *HTTPHook) Push(entry *logrus.Entry) {
-	msg := httpHookMsg{}
-	var formatter logrus.Formatter
-	formatter = &logrus.JSONFormatter{}
-	bs, err := formatter.Format(entry)
-	if err == nil {
-		msg.format = "json"
-		msg.logString = string(bs)
-	} else {
-		formatter = &logrus.TextFormatter{
-			DisableColors: true,
-			FullTimestamp: true,
-		}
-		bs, err = formatter.Format(entry)
-		if err == nil {
-			msg.format = "text"
-			msg.logString = string(bs)
-		} else {
-			msg.format = "fallback"
-			msg.logString = fmt.Sprintf("All formatters failed (msg: {{%s}}, timestamp: {{%v}})", entry.Message, entry.Time)
-		}
-	}
+func (hook *HTTPHook) Push(msg HTTPHookMsg) {
 	hook.msgs <- msg
 }
 
@@ -113,18 +95,31 @@ func (hook *HTTPHook) Cleanup() {
 }
 
 // NewHTTPHook initializes a HTTPHook
-func NewHTTPHook(id, endpoint string) *HTTPHook {
+func NewHTTPHook(id, endpoint string, ethEndpointHosts []string) *HTTPHook {
 	hook := &HTTPHook{
 		id:            id,
 		endpoint:      endpoint,
 		cleanupSignal: make(chan bool),
-		msgs:          make(chan httpHookMsg, 64),
-	}
-	hook.msgs <- httpHookMsg{
-		format:    "init",
-		logString: fmt.Sprintf("HTTP Endpoint Initialized at %v", time.Now()),
+		msgs:          make(chan HTTPHookMsg, 64),
 	}
 	go hook.run()
+	initMsg := HTTPHookMsg{
+		Type: "init",
+	}
+	initContent := map[string]interface{}{
+		"msg":              "HTTP endpoint initialized",
+		"timestamp":        time.Now(),
+		"ethEndpointHosts": ethEndpointHosts,
+	}
+	initContentJSON, err := json.Marshal(initContent)
+	if err == nil {
+		initMsg.Format = "json"
+		initMsg.Content = string(initContentJSON)
+	} else {
+		initMsg.Format = "fallback"
+		initMsg.Content = fmt.Sprintf("HTTP endpoint initialized (timestamp: %v, ethEndpointHosts: %v)", time.Now(), ethEndpointHosts)
+	}
+	hook.Push(initMsg)
 	return hook
 }
 
@@ -140,7 +135,31 @@ func (hook *HTTPHook) Levels() []logrus.Level {
 
 // Fire is triggered when there are logrus logs with matching level, implements logrus.Hook
 func (hook *HTTPHook) Fire(entry *logrus.Entry) error {
-	hook.Push(entry)
+	msg := HTTPHookMsg{Type: "log"}
+	var formatter logrus.Formatter
+	formatter = &logrus.JSONFormatter{}
+	bs, err := formatter.Format(entry)
+	if err == nil {
+		msg.Format = "json"
+		msg.Content = string(bs)
+	} else {
+		formatter = &logrus.TextFormatter{
+			DisableColors: true,
+			FullTimestamp: true,
+		}
+		bs, err = formatter.Format(entry)
+		if err == nil {
+			msg.Format = "text"
+			msg.Content = string(bs)
+		} else {
+			msg.Format = "fallback"
+			msg.Content = fmt.Sprintf(
+				"All formatters failed (timestamp: {{%v}}, msg: {{%s}}, data: {{%v}})",
+				entry.Time, entry.Message, entry.Data,
+			)
+		}
+	}
+	hook.Push(msg)
 	return nil
 }
 
