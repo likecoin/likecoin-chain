@@ -7,5 +7,7 @@
     "tmPrivKey": "0000000000000000000000000000000000000000000000000000000000000000",
     "relayContractAddr": "0x0000000000000000000000000000000000000000",
     "tokenContractAddr": "0x0000000000000000000000000000000000000000",
-    "blockDelay": 12
+    "blockDelay": 12,
+    "startFromBlock": 7000000,
+    "logEndPoint": "https://your.logging.endpoint/path (empty means disabled)"
 }

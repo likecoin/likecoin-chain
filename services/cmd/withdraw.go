@@ -22,15 +22,32 @@ var withdrawCmd = &cobra.Command{
 		ethEndPoints := viper.GetStringSlice("ethEndPoints")
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
 		statePath := viper.GetString("withdrawStatePath")
+		minTrialPerClient := viper.GetInt("ethMinTrialPerClient")
+		maxTrialCount := viper.GetInt("ethMaxTrialCount")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
-			WithField("relay_addr", relayAddr).
+			WithField("relay_addr", relayAddr.Hex()).
 			WithField("state_path", statePath).
+			WithField("min_trial_per_client", minTrialPerClient).
+			WithField("max_trial_count", maxTrialCount).
 			Debug("Read withdraw config and parameters")
 
+		if minTrialPerClient <= 0 {
+			log.
+				WithField("min_trial_per_client", minTrialPerClient).
+				Panic("Invalid minTrialPerClient value (expect > 0)")
+		}
+		if maxTrialCount <= 0 {
+			log.
+				WithField("max_trial_count", maxTrialCount).
+				Panic("Invalid maxTrialCount value (expect > 0)")
+		}
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-		lb := eth.NewLoadBalancer(ethEndPoints)
+		if len(ethEndPoints) == 0 {
+			log.Panic("No Ethereum endpoints supplied")
+		}
+		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("ethPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
@@ -40,7 +57,13 @@ var withdrawCmd = &cobra.Command{
 		}
 		auth := bind.NewKeyedTransactor(privKey)
 
-		withdraw.Run(tmClient, lb, auth, relayAddr, statePath)
+		withdraw.Run(&withdraw.Config{
+			TMClient:     tmClient,
+			LoadBalancer: lb,
+			Auth:         auth,
+			ContractAddr: relayAddr,
+			StatePath:    statePath,
+		})
 	},
 }
 

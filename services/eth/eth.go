@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 
 	"github.com/likecoin/likechain/abci/state/deposit"
 	"github.com/likecoin/likechain/abci/types"
@@ -18,6 +19,10 @@ import (
 )
 
 var log = logger.L
+
+// Infura refuses to return more than 1000 results
+// See: https://infura.io/docs/ethereum/json-rpc/eth_getLogs
+const infuraQueryLimitErrorCode = -32005
 
 // GetHeight returns the block number of the newest block header
 func GetHeight(lb *LoadBalancer) int64 {
@@ -61,44 +66,74 @@ func SubscribeHeader(lb *LoadBalancer, fn func(*ethTypes.Header) bool) {
 // GetTransfersFromBlocks returns all the Transfer events on a token contract to a specific address
 func GetTransfersFromBlocks(lb *LoadBalancer, tokenAddr, relayAddr common.Address, fromBlock, toBlock uint64) []deposit.Proposal {
 	var proposals []deposit.Proposal
-	lb.Do(func(ethClient *ethclient.Client) error {
-		tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
-		if err != nil {
-			return err
-		}
-		c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		opts := bind.FilterOpts{
-			Start:   fromBlock,
-			End:     &toBlock,
-			Context: c,
-		}
-		it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
-		if err != nil {
-			return err
-		}
-		blockToProposal := map[uint64]*deposit.Proposal{}
-		for it.Next() {
-			e := it.Event
-			blockNumber := e.Raw.BlockNumber
-			proposal, ok := blockToProposal[blockNumber]
-			if !ok {
-				proposals = append(proposals, deposit.Proposal{})
-				proposal = &proposals[len(proposals)-1]
-				blockToProposal[blockNumber] = proposal
-				proposal.BlockNumber = blockNumber
-			}
-			addr, err := types.NewAddress(e.From[:])
+	from := fromBlock
+	to := toBlock
+	for from <= to {
+		lb.Do(func(ethClient *ethclient.Client) error {
+			tokenFilter, err := token.NewTokenFilterer(tokenAddr, ethClient)
 			if err != nil {
-				panic(err)
+				return err
 			}
-			proposal.Inputs = append(proposal.Inputs, deposit.Input{
-				FromAddr: *addr,
-				Value:    types.BigInt{Int: e.Value},
-			})
-		}
-		return nil
-	})
+			c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+			opts := bind.FilterOpts{
+				Start:   from,
+				End:     &to,
+				Context: c,
+			}
+			it, err := tokenFilter.FilterTransfer(&opts, nil, []common.Address{relayAddr})
+			if err != nil {
+				switch err.(type) {
+				case rpc.Error:
+					if err.(rpc.Error).ErrorCode() == infuraQueryLimitErrorCode {
+						if to == from {
+							log.
+								WithField("begin_block", from).
+								WithField("end_block", to).
+								WithError(err).
+								Error("Endpoint complained too many query results, but cannot backoff the range anymore")
+							return err
+						}
+						log.
+							WithField("begin_block", from).
+							WithField("end_block", to).
+							WithField("new_end_block", from+(to-from)/2).
+							WithError(err).
+							Info("Endpoint complained too many query results, backoff the range by half")
+						to = from + (to-from)/2
+						return nil
+					}
+				}
+				return err
+			}
+			blockToProposal := map[uint64]*deposit.Proposal{}
+			for it.Next() {
+				e := it.Event
+				blockNumber := e.Raw.BlockNumber
+				proposal, ok := blockToProposal[blockNumber]
+				if !ok {
+					proposals = append(proposals, deposit.Proposal{})
+					proposal = &proposals[len(proposals)-1]
+					blockToProposal[blockNumber] = proposal
+					proposal.BlockNumber = blockNumber
+				}
+				addr, err := types.NewAddress(e.From[:])
+				if err != nil {
+					log.
+						WithField("eth_addr", e.From.Hex()).
+						WithError(err).
+						Panic("Cannot convert Ethereum address to LikeChain address")
+				}
+				proposal.Inputs = append(proposal.Inputs, deposit.Input{
+					FromAddr: *addr,
+					Value:    types.BigInt{Int: e.Value},
+				})
+			}
+			from = to + 1
+			to = toBlock
+			return nil
+		})
+	}
 	return proposals
 }
 

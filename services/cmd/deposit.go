@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"net/url"
+
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
@@ -11,6 +14,7 @@ import (
 
 	"github.com/likecoin/likechain/services/deposit"
 	"github.com/likecoin/likechain/services/eth"
+	logger "github.com/likecoin/likechain/services/log"
 )
 
 var depositCmd = &cobra.Command{
@@ -23,17 +27,50 @@ var depositCmd = &cobra.Command{
 		relayAddr := common.HexToAddress(viper.GetString("relayContractAddr"))
 		blockDelay := viper.GetInt64("blockDelay")
 		statePath := viper.GetString("depositStatePath")
+		minTrialPerClient := viper.GetInt("ethMinTrialPerClient")
+		maxTrialCount := viper.GetInt("ethMaxTrialCount")
+		startFromBlock := viper.GetInt64("startFromBlock")
+		logEndPoint := viper.GetString("logEndPoint")
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
-			WithField("token_addr", tokenAddr).
-			WithField("relay_addr", relayAddr).
+			WithField("token_addr", tokenAddr.Hex()).
+			WithField("relay_addr", relayAddr.Hex()).
 			WithField("block_delay", blockDelay).
 			WithField("state_path", statePath).
+			WithField("min_trial_per_client", minTrialPerClient).
+			WithField("max_trial_count", maxTrialCount).
+			WithField("start_from_block", startFromBlock).
+			WithField("log_endpoint", logEndPoint).
 			Debug("Read deposit config and parameters")
 
+		if minTrialPerClient <= 0 {
+			log.
+				WithField("min_trial_per_client", minTrialPerClient).
+				Panic("Invalid minTrialPerClient value (expect > 0)")
+		}
+		if maxTrialCount <= 0 {
+			log.
+				WithField("max_trial_count", maxTrialCount).
+				Panic("Invalid maxTrialCount value (expect > 0)")
+		}
 		tmClient := tmRPC.NewHTTP(tmEndPoint, "/websocket")
-		lb := eth.NewLoadBalancer(ethEndPoints)
+		if len(ethEndPoints) == 0 {
+			log.Panic("No Ethereum endpoints supplied")
+		}
+		ethEndpointHosts := []string{}
+		for i, endpoint := range ethEndPoints {
+			ethURL, err := url.Parse(endpoint)
+			if err != nil {
+				log.
+					WithField("eth_endpoint_index", i).
+					WithField("eth_endpoint", endpoint).
+					WithError(err).
+					Panic("Invalid Ethereum endpoint")
+			}
+			ethEndpointHosts = append(ethEndpointHosts, ethURL.Host)
+		}
+		lb := eth.NewLoadBalancer(ethEndPoints, uint(minTrialPerClient), uint(maxTrialCount))
 		privKeyBytes := common.Hex2Bytes(viper.GetString("tmPrivKey"))
 		privKey, err := ethCrypto.ToECDSA(privKeyBytes)
 		if err != nil {
@@ -46,7 +83,28 @@ var depositCmd = &cobra.Command{
 				WithField("block_delay", blockDelay).
 				Panic("Invalid block delay value")
 		}
-		deposit.Run(tmClient, lb, tokenAddr, relayAddr, privKey, blockDelay, statePath)
+
+		var httpHook *logger.HTTPHook = nil
+		if logEndPoint != "" {
+			id := crypto.PubkeyToAddress(privKey.PublicKey).Hex()
+			httpHook = logger.NewHTTPHook(id, logEndPoint, ethEndpointHosts)
+			log.AddHook(httpHook)
+			log.
+				WithField("id", id).
+				WithField("endpoint", logEndPoint).
+				Info("Logging endpoint initialized")
+		}
+		deposit.Run(&deposit.Config{
+			TMClient:       tmClient,
+			LoadBalancer:   lb,
+			TokenAddr:      tokenAddr,
+			RelayAddr:      relayAddr,
+			TMPrivKey:      privKey,
+			BlockDelay:     blockDelay,
+			StatePath:      statePath,
+			StartFromBlock: startFromBlock,
+			HTTPLogHook:    httpHook,
+		})
 	},
 }
 
@@ -62,4 +120,10 @@ func init() {
 
 	depositCmd.PersistentFlags().String("deposit-state-path", "./state_deposit.json", "State storage file path")
 	viper.BindPFlag("depositStatePath", depositCmd.PersistentFlags().Lookup("deposit-state-path"))
+
+	depositCmd.PersistentFlags().Int("start-from-block", -1, "Search deposit events on Ethereum starting from block if there is no previous record (-1 means current block)")
+	viper.BindPFlag("startFromBlock", depositCmd.PersistentFlags().Lookup("start-from-block"))
+
+	depositCmd.PersistentFlags().String("log-endpoint", "", "Endpoint to send logs with level warning or above (empty means not using HTTP endpoint)")
+	viper.BindPFlag("logEndPoint", depositCmd.PersistentFlags().Lookup("log-endpoint"))
 }

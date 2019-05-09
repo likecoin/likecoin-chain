@@ -13,20 +13,28 @@ import (
 
 func signatureToEthereumSigDer(sig, msgHash []byte, ethAddr common.Address) []byte {
 	if sig[0] != 0x30 {
-		panic("sig[0] is not 0x30")
+		log.
+			WithField("sig", common.ToHex(sig)).
+			Panic("sig[0] is not 0x30")
 	}
 	sigLen := int(sig[1])
 	if len(sig) != sigLen+2 {
-		panic("sig len not correct")
+		log.
+			WithField("sig", common.ToHex(sig)).
+			Panic("sig len not correct")
 	}
 	if sig[2] != 0x02 {
-		panic("r part not start with 0x02")
+		log.
+			WithField("sig", common.ToHex(sig)).
+			Panic("r part not start with 0x02")
 	}
 	rLen := int(sig[3])
 	sStart := 4 + rLen
 	r := sig[4:sStart]
 	if sig[sStart] != 0x02 {
-		panic("s part not start with 0x02")
+		log.
+			WithField("sig", common.ToHex(sig)).
+			Panic("s part not start with 0x02")
 	}
 	sLen := int(sig[sStart+1])
 	sEnd := sStart + 2 + sLen
@@ -60,7 +68,12 @@ func signatureToEthereumSig64(sig, msgHash []byte, ethAddr common.Address) []byt
 			return result
 		}
 	}
-	panic("Cannot find v to recover the address from signature")
+	log.
+		WithField("sig", common.ToHex(sig)).
+		WithField("msg_hash", common.ToHex(msgHash)).
+		WithField("eth_addr", ethAddr.Hex()).
+		Panic("Cannot find v to recover the address from signature")
+	return nil
 }
 
 // SignatureToEthereumSig transforms an encoded Tendermint secp256k1 signature to an Ethereum one

@@ -4,7 +4,9 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"io/ioutil"
+	"sync"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -22,18 +24,29 @@ import (
 	"github.com/likecoin/likechain/services/utils"
 )
 
-var log = logger.L
+const blockBatchSize = 10000
+
+var (
+	log         = logger.L
+	proposeLock = &sync.Mutex{}
+)
 
 func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 	tx.Proposal.Sort()
 	jsonMap := tx.GenerateJSONMap()
 	hash, err := jsonMap.Hash()
 	if err != nil {
-		panic(err)
+		log.
+			WithField("tx", tx).
+			WithError(err).
+			Panic("Cannot hash deposit transaction")
 	}
 	sig, err := crypto.Sign(hash, privKey)
 	if err != nil {
-		panic(err)
+		log.
+			WithField("tx", tx).
+			WithError(err).
+			Panic("Cannot sign deposit transaction")
 	}
 	sig[64] += 27
 	jsonSig := txs.DepositJSONSignature{}
@@ -42,6 +55,8 @@ func fillSig(tx *txs.DepositTransaction, privKey *ecdsa.PrivateKey) {
 }
 
 func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit.Proposal) {
+	proposeLock.Lock()
+	defer proposeLock.Unlock()
 	log.
 		WithField("block_number", proposal.BlockNumber).
 		WithField("event_count", len(proposal.Inputs)).
@@ -49,11 +64,17 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	ethAddr := crypto.PubkeyToAddress(tmPrivKey.PublicKey)
 	addr, err := types.NewAddress(ethAddr[:])
 	if err != nil {
-		panic(err)
+		log.
+			WithField("eth_addr", ethAddr.Hex()).
+			WithError(err).
+			Panic("Cannot convert Ethereum address to LikeChain address")
 	}
 	queryResult, err := tmClient.ABCIQuery("account_info", []byte(addr.String()))
 	if err != nil {
-		panic(err)
+		log.
+			WithField("addr", addr.String()).
+			WithError(err).
+			Panic("Cannot query account info from ABCI")
 	}
 	accInfo := query.GetAccountInfoRes(queryResult.Response.Value)
 	if accInfo == nil {
@@ -72,6 +93,15 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 	fillSig(tx, tmPrivKey)
 	rawTx := txs.EncodeTx(tx)
+	txHash := tmhash.Sum(rawTx)
+	txResult, err := tmClient.Tx(txHash, false)
+	if err == nil {
+		log.
+			WithField("tx_hash", common.Bytes2Hex(txHash)).
+			WithField("tx_height", txResult.Height).
+			Info("Deposit tx is already processed, skipping")
+		return
+	}
 	log.
 		WithField("raw_tx", common.Bytes2Hex(rawTx)).
 		Debug("Broadcasting transaction onto LikeChain")
@@ -83,57 +113,50 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 			Panic("Broadcast transaction onto LikeChain failed")
 	}
 	if result.CheckTx.Code != response.Success.Code {
-		log.
-			WithField("code", result.CheckTx.Code).
-			WithField("info", result.CheckTx.Info).
-			WithField("log", result.CheckTx.Log).
-			Error("Deposit transaction failed in CheckTx")
+		switch result.CheckTx.Code {
+		case response.DepositDoubleApproval.ToResponseCheckTx().Code:
+			fallthrough
+		case response.DepositAlreadyExecuted.ToResponseCheckTx().Code:
+			log.
+				WithField("code", result.CheckTx.Code).
+				WithField("info", result.CheckTx.Info).
+				WithField("log", result.CheckTx.Log).
+				Info("Deposit transaction unnecessary and rejected in CheckTx, skipping")
+		default:
+			log.
+				WithField("code", result.CheckTx.Code).
+				WithField("info", result.CheckTx.Info).
+				WithField("log", result.CheckTx.Log).
+				Panic("Deposit transaction failed in CheckTx")
+		}
 	} else if result.DeliverTx.Code != response.Success.Code {
-		log.
-			WithField("code", result.DeliverTx.Code).
-			WithField("info", result.DeliverTx.Info).
-			WithField("log", result.DeliverTx.Log).
-			Error("Deposit transaction failed in DeliverTx")
+		switch result.DeliverTx.Code {
+		case response.DepositDoubleApproval.ToResponseDeliverTx().Code:
+			fallthrough
+		case response.DepositAlreadyExecuted.ToResponseDeliverTx().Code:
+			log.
+				WithField("code", result.DeliverTx.Code).
+				WithField("info", result.DeliverTx.Info).
+				WithField("log", result.DeliverTx.Log).
+				Info("Deposit transaction unnecessary and rejected in DeliverTx, skipping")
+		default:
+			log.
+				WithField("code", result.DeliverTx.Code).
+				WithField("info", result.DeliverTx.Info).
+				WithField("log", result.DeliverTx.Log).
+				Panic("Deposit transaction failed in DeliverTx")
+		}
 	} else {
 		log.Info("Successfully broadcasted deposit transaction onto LikeChain")
 	}
 }
 
-type proposedBlockSet struct {
-	Map       map[uint64]bool
-	Queue     []uint64
-	QueueHead int
-	QueueTail int
-	Capacity  int
-}
-
-func newProposedBlockSet(capacity int) proposedBlockSet {
-	return proposedBlockSet{
-		Map:       make(map[uint64]bool),
-		Queue:     make([]uint64, capacity),
-		QueueHead: 0,
-		QueueTail: 0,
-		Capacity:  capacity,
-	}
-}
-
-func (set proposedBlockSet) Has(block uint64) bool {
-	return set.Map[block]
-}
-
-func (set proposedBlockSet) Put(block uint64) {
-	set.Map[block] = true
-	if len(set.Map) > set.Capacity {
-		toRemove := set.Queue[set.QueueHead]
-		delete(set.Map, toRemove)
-		set.QueueHead = (set.QueueHead + 1) % set.Capacity
-	}
-	set.Queue[set.QueueTail] = block
-	set.QueueTail = (set.QueueTail + 1) % set.Capacity
-}
-
 type runState struct {
-	LastEthBlock int64
+	LastEthBlock                   int64     `json:",omitempty"` // For compatibility
+	LastProcessedSubscriptionBlock int64     // The last block processed by the subscriber goroutine
+	PendingBlockRanges             [][]int64 // Ranges of blocks to be processed by the backward-scanner goroutine
+
+	lock *sync.Mutex
 }
 
 func loadState(path string) (*runState, error) {
@@ -146,6 +169,7 @@ func loadState(path string) (*runState, error) {
 	if err != nil {
 		return nil, err
 	}
+	state.lock = &sync.Mutex{}
 	return &state, nil
 }
 
@@ -158,46 +182,147 @@ func (state *runState) save(path string) error {
 	return err
 }
 
+func scanAndProposeForRange(config *Config, from, to uint64) {
+	log.
+		WithField("begin_block", from).
+		WithField("end_block", to).
+		Debug("Searching blocks in range")
+	proposals := eth.GetTransfersFromBlocks(
+		config.LoadBalancer,
+		config.TokenAddr,
+		config.RelayAddr,
+		uint64(from),
+		uint64(to),
+	)
+	if len(proposals) == 0 {
+		log.
+			WithField("begin_block", from).
+			WithField("end_block", to).
+			Info("No transfer events in range")
+	} else {
+		for _, proposal := range proposals {
+			log.
+				WithField("block", proposal.BlockNumber).
+				Info("Proposing proposal")
+			utils.RetryIfPanic(5, func() {
+				propose(config.TMClient, config.TMPrivKey, proposal)
+			})
+		}
+	}
+}
+
+// Config is the configuration about deposit
+type Config struct {
+	TMClient       *tmRPC.HTTP
+	LoadBalancer   *eth.LoadBalancer
+	TokenAddr      common.Address
+	RelayAddr      common.Address
+	TMPrivKey      *ecdsa.PrivateKey
+	BlockDelay     int64
+	StatePath      string
+	StartFromBlock int64
+	HTTPLogHook    *logger.HTTPHook
+}
+
 // Run starts the subscription to the deposits on Ethereum into the relay contract and commits proposal onto LikeChain
-func Run(tmClient *tmRPC.HTTP, lb *eth.LoadBalancer, tokenAddr, relayAddr common.Address, tmPrivKey *ecdsa.PrivateKey, blockDelay int64, statePath string) {
-	state, err := loadState(statePath)
+func Run(config *Config) {
+	httpHookCleanupFunc := func() {
+		if config.HTTPLogHook != nil {
+			config.HTTPLogHook.Cleanup()
+		}
+	}
+	defer httpHookCleanupFunc()
+	state, err := loadState(config.StatePath)
+	networkConfirmedBlock := eth.GetHeight(config.LoadBalancer) - config.BlockDelay
 	if err != nil {
 		log.
-			WithField("state_path", statePath).
+			WithField("state_path", config.StatePath).
 			WithError(err).
 			Info("Failed to load state, creating empty state")
-		state = &runState{}
-		blockNumber := eth.GetHeight(lb)
-		state.LastEthBlock = blockNumber - blockDelay
-		state.save(statePath)
-	}
-	eth.SubscribeHeader(lb, func(header *ethTypes.Header) bool {
-		newBlock := header.Number.Int64()
-		if newBlock <= 0 {
-			return true
+		state = &runState{lock: &sync.Mutex{}}
+		state.LastProcessedSubscriptionBlock = networkConfirmedBlock
+		if config.StartFromBlock > 0 && networkConfirmedBlock >= config.StartFromBlock {
+			state.PendingBlockRanges = [][]int64{{config.StartFromBlock, networkConfirmedBlock}}
 		}
-		if newBlock < blockDelay {
+	}
+	if state.LastEthBlock != 0 && state.LastProcessedSubscriptionBlock == 0 {
+		state.LastProcessedSubscriptionBlock = state.LastEthBlock - config.BlockDelay
+		log.
+			WithField("last_eth_block", state.LastEthBlock).
+			WithField("block_delay", config.BlockDelay).
+			WithField("converted_last_processed_subscription_block", state.LastProcessedSubscriptionBlock).
+			Info("Converted deprecated LastEthBlock to LastProcessedSubscriptionBlock in deposit state")
+		state.LastEthBlock = 0
+	}
+	if state.LastProcessedSubscriptionBlock < networkConfirmedBlock {
+		state.PendingBlockRanges = append(
+			state.PendingBlockRanges,
+			[]int64{state.LastProcessedSubscriptionBlock + 1, networkConfirmedBlock},
+		)
+		log.
+			WithField("last_processed_subscription_block", state.LastProcessedSubscriptionBlock).
+			WithField("network_confirmed_block", networkConfirmedBlock).
+			WithField("new_pending_block_ranges", state.PendingBlockRanges).
+			Info("Detected unprocessed blocks during service suspension, added to pending block ranges")
+	}
+	// The blocks before networkConfirmedBlock are processed by the backward-scanner goroutine
+	state.LastProcessedSubscriptionBlock = networkConfirmedBlock
+	state.save(config.StatePath)
+
+	// The backward-scanner, which scans and processes pending blocks previously left
+	go func() {
+		defer httpHookCleanupFunc()
+		log.
+			WithField("ranges", state.PendingBlockRanges).
+			Info("Clearing pending block ranges previously left and accumulated during service suspension")
+		for len(state.PendingBlockRanges) > 0 {
+			i := len(state.PendingBlockRanges) - 1
+			start := state.PendingBlockRanges[i][0]
+			end := state.PendingBlockRanges[i][1]
+			for to := end; to >= start; to -= blockBatchSize {
+				from := to - blockBatchSize + 1
+				if from < start {
+					from = start
+				}
+				scanAndProposeForRange(config, uint64(from), uint64(to))
+				func() {
+					state.lock.Lock()
+					defer state.lock.Unlock()
+					if from == start {
+						state.PendingBlockRanges = state.PendingBlockRanges[:i]
+					} else {
+						state.PendingBlockRanges[i][1] = from - 1
+					}
+					state.save(config.StatePath)
+				}()
+			}
+		}
+		log.Info("All pending blocks cleared")
+	}()
+
+	// The subscriber, which subscribes and processes newly confirmed Ethereum blocks
+	eth.SubscribeHeader(config.LoadBalancer, func(header *ethTypes.Header) bool {
+		newConfirmedBlock := header.Number.Int64() - config.BlockDelay
+		if newConfirmedBlock <= 0 {
 			return true
 		}
 		log.
-			WithField("last_block", state.LastEthBlock).
-			WithField("new_block", newBlock).
+			WithField("last_processed_block", state.LastProcessedSubscriptionBlock).
+			WithField("new_confirmed_block", newConfirmedBlock).
 			Info("Received new Ethereum block")
-		proposals := eth.GetTransfersFromBlocks(lb, tokenAddr, relayAddr, uint64(state.LastEthBlock-blockDelay), uint64(newBlock-blockDelay-1))
-		if len(proposals) == 0 {
-			log.
-				WithField("begin_block", state.LastEthBlock-blockDelay).
-				WithField("end_block", newBlock-blockDelay-1).
-				Info("No transfer events in range")
-		} else {
-			for _, proposal := range proposals {
-				utils.RetryIfPanic(5, func() {
-					propose(tmClient, tmPrivKey, proposal)
-				})
+		for from := state.LastProcessedSubscriptionBlock + 1; from <= newConfirmedBlock; from += blockBatchSize {
+			to := from + blockBatchSize - 1
+			if to > newConfirmedBlock {
+				to = newConfirmedBlock
 			}
+			scanAndProposeForRange(config, uint64(from), uint64(to))
+			func() {
+				state.lock.Lock()
+				defer state.lock.Unlock()
+				state.LastProcessedSubscriptionBlock = to
+				state.save(config.StatePath)
+			}()
 		}
-		state.LastEthBlock = newBlock
-		state.save(statePath)
 		return true
 	})
 }
