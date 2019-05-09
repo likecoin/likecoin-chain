@@ -27,7 +27,7 @@ var withdrawCmd = &cobra.Command{
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
-			WithField("relay_addr", relayAddr).
+			WithField("relay_addr", relayAddr.Hex()).
 			WithField("state_path", statePath).
 			WithField("min_trial_per_client", minTrialPerClient).
 			WithField("max_trial_count", maxTrialCount).

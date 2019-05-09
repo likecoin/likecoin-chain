@@ -32,8 +32,8 @@ var depositCmd = &cobra.Command{
 		log.
 			WithField("tm_endpoint", tmEndPoint).
 			WithField("eth_endpoints", ethEndPoints).
-			WithField("token_addr", tokenAddr).
-			WithField("relay_addr", relayAddr).
+			WithField("token_addr", tokenAddr.Hex()).
+			WithField("relay_addr", relayAddr.Hex()).
 			WithField("block_delay", blockDelay).
 			WithField("state_path", statePath).
 			WithField("min_trial_per_client", minTrialPerClient).
