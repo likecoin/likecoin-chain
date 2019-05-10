@@ -3,7 +3,6 @@ package tendermint
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 
@@ -27,6 +26,11 @@ type BroadcastTxResult struct {
 	Height int64
 }
 
+// BroadcastTimeout wraps Tendermint broadcast transaction error with a type of timeout semantic
+type BroadcastTimeout struct {
+	error
+}
+
 // BroadcastTxCommit broadcast a Tendermint transaction if needed, then query and return the results
 func BroadcastTxCommit(tmClient *tmRPC.HTTP, rawTx types.Tx) (*BroadcastTxResult, error) {
 	txHash := tmhash.Sum(rawTx)
@@ -48,28 +52,7 @@ func BroadcastTxCommit(tmClient *tmRPC.HTTP, rawTx types.Tx) (*BroadcastTxResult
 	if err != nil {
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "Tx already exists in cache") || strings.Contains(errMsg, "Timed out waiting for tx to be included in a block") {
-			log.
-				WithField("tx_hash", common.Bytes2Hex(txHash)).
-				Info("Commit deposit transaction failed but tx entered the cache")
-			for {
-				time.Sleep(10 * time.Second)
-				log.
-					WithField("tx_hash", common.Bytes2Hex(txHash)).
-					Info("Polling deposit transaction")
-				txResult, err := tmClient.Tx(txHash, false)
-				if err == nil {
-					log.
-						WithField("tx_hash", common.Bytes2Hex(txHash)).
-						Info("Successfully polled deposit transaction")
-					return &BroadcastTxResult{
-						Code:   txResult.TxResult.Code,
-						Info:   txResult.TxResult.Info,
-						Log:    txResult.TxResult.Log,
-						Hash:   txResult.Hash,
-						Height: txResult.Height,
-					}, nil
-				}
-			}
+			return nil, BroadcastTimeout{error: err}
 		}
 		return nil, err
 	}
