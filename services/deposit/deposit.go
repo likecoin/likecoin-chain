@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/likecoin/likechain/services/eth"
 	logger "github.com/likecoin/likechain/services/log"
+	"github.com/likecoin/likechain/services/tendermint"
 	"github.com/likecoin/likechain/services/utils"
 )
 
@@ -93,61 +93,39 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	}
 	fillSig(tx, tmPrivKey)
 	rawTx := txs.EncodeTx(tx)
-	txHash := tmhash.Sum(rawTx)
-	txResult, err := tmClient.Tx(txHash, false)
-	if err == nil {
-		log.
-			WithField("tx_hash", common.Bytes2Hex(txHash)).
-			WithField("tx_height", txResult.Height).
-			Info("Deposit tx is already processed, skipping")
-		return
-	}
 	log.
 		WithField("raw_tx", common.Bytes2Hex(rawTx)).
 		Debug("Broadcasting transaction onto LikeChain")
-	result, err := tmClient.BroadcastTxCommit(rawTx)
+	result, err := tendermint.BroadcastTxCommit(tmClient, rawTx)
 	if err != nil {
 		log.
 			WithField("raw_tx", common.Bytes2Hex(rawTx)).
 			WithError(err).
 			Panic("Broadcast transaction onto LikeChain failed")
 	}
-	if result.CheckTx.Code != response.Success.Code {
-		switch result.CheckTx.Code {
+	if result.Code != response.Success.Code {
+		switch result.Code {
 		case response.DepositDoubleApproval.ToResponseCheckTx().Code:
 			fallthrough
-		case response.DepositAlreadyExecuted.ToResponseCheckTx().Code:
-			log.
-				WithField("code", result.CheckTx.Code).
-				WithField("info", result.CheckTx.Info).
-				WithField("log", result.CheckTx.Log).
-				Info("Deposit transaction unnecessary and rejected in CheckTx, skipping")
-		default:
-			log.
-				WithField("code", result.CheckTx.Code).
-				WithField("info", result.CheckTx.Info).
-				WithField("log", result.CheckTx.Log).
-				Panic("Deposit transaction failed in CheckTx")
-		}
-	} else if result.DeliverTx.Code != response.Success.Code {
-		switch result.DeliverTx.Code {
 		case response.DepositDoubleApproval.ToResponseDeliverTx().Code:
+			fallthrough
+		case response.DepositAlreadyExecuted.ToResponseCheckTx().Code:
 			fallthrough
 		case response.DepositAlreadyExecuted.ToResponseDeliverTx().Code:
 			log.
-				WithField("code", result.DeliverTx.Code).
-				WithField("info", result.DeliverTx.Info).
-				WithField("log", result.DeliverTx.Log).
-				Info("Deposit transaction unnecessary and rejected in DeliverTx, skipping")
+				WithField("code", result.Code).
+				WithField("info", result.Info).
+				WithField("log", result.Log).
+				Info("Deposit transaction unnecessary and rejected, skipping")
 		default:
 			log.
-				WithField("code", result.DeliverTx.Code).
-				WithField("info", result.DeliverTx.Info).
-				WithField("log", result.DeliverTx.Log).
-				Panic("Deposit transaction failed in DeliverTx")
+				WithField("code", result.Code).
+				WithField("info", result.Info).
+				WithField("log", result.Log).
+				Panic("Deposit transaction executed but failed")
 		}
 	} else {
-		log.Info("Successfully broadcasted deposit transaction onto LikeChain")
+		log.Info("Successfully executed deposit transaction onto LikeChain")
 	}
 }
 

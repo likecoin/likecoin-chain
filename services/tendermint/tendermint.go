@@ -2,7 +2,13 @@ package tendermint
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/tendermint/tendermint/crypto/tmhash"
+	cmn "github.com/tendermint/tendermint/libs/common"
 	tmRPC "github.com/tendermint/tendermint/rpc/client"
 	core_types "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
@@ -11,6 +17,77 @@ import (
 )
 
 var log = logger.L
+
+// BroadcastTxResult wraps the result of BroadcastTxCommit in different cases (e.g. Tx already committed, Tx timeout)
+type BroadcastTxResult struct {
+	Code   uint32
+	Info   string
+	Log    string
+	Hash   cmn.HexBytes
+	Height int64
+}
+
+// BroadcastTxCommit broadcast a Tendermint transaction if needed, then query and return the results
+func BroadcastTxCommit(tmClient *tmRPC.HTTP, rawTx types.Tx) (*BroadcastTxResult, error) {
+	txHash := tmhash.Sum(rawTx)
+	txResult, err := tmClient.Tx(txHash, false)
+	if err == nil {
+		log.
+			WithField("tx_hash", common.Bytes2Hex(txHash)).
+			WithField("tx_height", txResult.Height).
+			Info("Deposit tx is already processed, skipping")
+		return &BroadcastTxResult{
+			Code:   txResult.TxResult.Code,
+			Info:   txResult.TxResult.Info,
+			Log:    txResult.TxResult.Log,
+			Hash:   txResult.Hash,
+			Height: txResult.Height,
+		}, nil
+	}
+	broadcastTxResult, err := tmClient.BroadcastTxCommit(rawTx)
+	if err != nil {
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "Tx already exists in cache") || strings.Contains(errMsg, "Timed out waiting for tx to be included in a block") {
+			log.
+				WithField("tx_hash", common.Bytes2Hex(txHash)).
+				Info("Commit deposit transaction failed but tx entered the cache")
+			for {
+				time.Sleep(10 * time.Second)
+				log.
+					WithField("tx_hash", common.Bytes2Hex(txHash)).
+					Info("Polling deposit transaction")
+				txResult, err := tmClient.Tx(txHash, false)
+				if err == nil {
+					log.
+						WithField("tx_hash", common.Bytes2Hex(txHash)).
+						Info("Successfully polled deposit transaction")
+					return &BroadcastTxResult{
+						Code:   txResult.TxResult.Code,
+						Info:   txResult.TxResult.Info,
+						Log:    txResult.TxResult.Log,
+						Hash:   txResult.Hash,
+						Height: txResult.Height,
+					}, nil
+				}
+			}
+		}
+		return nil, err
+	}
+	result := &BroadcastTxResult{
+		Hash:   broadcastTxResult.Hash,
+		Height: broadcastTxResult.Height,
+	}
+	if broadcastTxResult.CheckTx.Code != 0 {
+		result.Code = broadcastTxResult.CheckTx.Code
+		result.Info = broadcastTxResult.CheckTx.Info
+		result.Log = broadcastTxResult.CheckTx.Log
+	} else {
+		result.Code = broadcastTxResult.DeliverTx.Code
+		result.Info = broadcastTxResult.DeliverTx.Info
+		result.Log = broadcastTxResult.DeliverTx.Log
+	}
+	return result, nil
+}
 
 // GetSignedHeader returns the signed header at the given height
 func GetSignedHeader(tmClient *tmRPC.HTTP, height int64) types.SignedHeader {
