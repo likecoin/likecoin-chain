@@ -1,0 +1,2 @@
+ - Tendermint error message for `Tx already exists in cache`
+ - Tendermint error message for `Timed out waiting for tx to be included in a block`
