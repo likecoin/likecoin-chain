@@ -160,7 +160,11 @@ func ethSubscriber(config *Config, state *runState) {
 func Run(config *Config) {
 	httpHookCleanupFunc := func() {
 		if config.HTTPLogHook != nil {
-			config.HTTPLogHook.Cleanup()
+			err := recover()
+			if err != nil {
+				config.HTTPLogHook.Cleanup()
+				panic(err)
+			}
 		}
 	}
 	defer httpHookCleanupFunc()
