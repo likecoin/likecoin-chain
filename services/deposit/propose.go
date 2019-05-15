@@ -64,20 +64,23 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	queryResult, err := tmClient.ABCIQuery("account_info", []byte(addr.String()))
 	if err != nil {
 		log.
+			WithField("block_number", proposal.BlockNumber).
 			WithField("addr", addr.String()).
 			WithError(err).
-			Panic("Cannot query account info from ABCI")
+			Panic("Propose block failed: cannot query account info from ABCI")
 	}
 	accInfo := query.GetAccountInfoRes(queryResult.Response.Value)
 	if accInfo == nil {
 		log.
+			WithField("block_number", proposal.BlockNumber).
 			WithField("account_info_res", string(queryResult.Response.Value)).
 			WithField("account_info_res_raw", queryResult.Response.Value).
-			Panic("Cannot parse account info result")
+			Panic("Propose block failed: cannot parse account info result")
 	}
 	log.
+		WithField("block_number", proposal.BlockNumber).
 		WithField("nonce", accInfo.NextNonce).
-		Debug("Got account info")
+		Debug("Propose block: got account info")
 	tx := &txs.DepositTransaction{
 		Proposer: addr,
 		Proposal: proposal,
@@ -87,7 +90,8 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 	rawTx := txs.EncodeTx(tx)
 	log.
 		WithField("raw_tx", common.Bytes2Hex(rawTx)).
-		Debug("Broadcasting transaction onto LikeChain")
+		WithField("block_number", proposal.BlockNumber).
+		Debug("Propose block: broadcasting transaction onto LikeChain")
 	result, err := tendermint.BroadcastTxCommit(tmClient, rawTx)
 	if err != nil {
 		switch err.(type) {
@@ -95,9 +99,10 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 			return false
 		default:
 			log.
+				WithField("block_number", proposal.BlockNumber).
 				WithField("raw_tx", common.Bytes2Hex(rawTx)).
 				WithError(err).
-				Panic("Broadcast transaction onto LikeChain failed")
+				Panic("Propose block failed: broadcast transaction onto LikeChain failed")
 		}
 	}
 	if result.Code != response.Success.Code {
@@ -110,19 +115,23 @@ func propose(tmClient *tmRPC.HTTP, tmPrivKey *ecdsa.PrivateKey, proposal deposit
 			fallthrough
 		case response.DepositAlreadyExecuted.ToResponseDeliverTx().Code:
 			log.
+				WithField("block_number", proposal.BlockNumber).
 				WithField("code", result.Code).
 				WithField("info", result.Info).
 				WithField("log", result.Log).
-				Info("Deposit transaction unnecessary and rejected, skipping")
+				Info("Propose block skipped: deposit transaction unnecessary and rejected")
 		default:
 			log.
+				WithField("block_number", proposal.BlockNumber).
 				WithField("code", result.Code).
 				WithField("info", result.Info).
 				WithField("log", result.Log).
-				Panic("Deposit transaction executed but failed")
+				Panic("Propose block failed: deposit transaction executed but failed")
 		}
 	} else {
-		log.Info("Successfully executed deposit transaction onto LikeChain")
+		log.
+			WithField("block_number", proposal.BlockNumber).
+			Info("Propose block: successfully executed deposit transaction onto LikeChain")
 	}
 	return true
 }
