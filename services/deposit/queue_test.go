@@ -53,32 +53,30 @@ func TestQueue(t *testing.T) {
 		})
 		for i := 0; i < 100; i++ {
 			Convey(fmt.Sprintf("After some random operations (iteration %d)", i), func() {
-				ops := rand.Intn(9000) + 1000
-				arr := make([]uint64, 0, 10000)
-				head := 0
-				for j := 0; j < ops; j++ {
+				ops := uint64(rand.Intn(9000) + 1000)
+				ch := make(chan uint64, 10000)
+				for j := uint64(0); j < ops; j++ {
 					switch rand.Intn(2) {
 					case 0:
-						q.enqueue(uint64(j))
-						arr = append(arr, uint64(j))
+						q.enqueue(j)
+						ch <- j
 					case 1:
 						q.dequeue()
-						if head < len(arr) {
-							head++
+						if len(ch) > 0 {
+							<-ch
 						}
 					}
 				}
 				Convey("The size of the queue should be correct", func() {
 					size := q.size()
-					So(size, ShouldEqual, len(arr)-head)
+					So(size, ShouldEqual, len(ch))
 					Convey("The contents should be correct", func() {
 						for j := 0; j < size; j++ {
 							n, ok := q.peek()
 							So(ok, ShouldBeTrue)
-							So(n, ShouldEqual, arr[head])
+							So(n, ShouldEqual, <-ch)
 							q.dequeue()
-							So(q.size(), ShouldEqual, size-j-1)
-							head++
+							So(q.size(), ShouldEqual, len(ch))
 						}
 						_, ok := q.peek()
 						So(ok, ShouldBeFalse)
