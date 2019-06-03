@@ -1,0 +1,16 @@
+version: "3.6"
+services:
+    gaiad:
+        image: likechain/gaia
+        container_name: likechain_gaiad
+        volumes:
+            - $GAIA_HOME/.gaiad:/root/.gaiad
+            - $GAIA_HOME/.gaiacli:/root/.gaiacli
+        ports:
+            - 26656:26656
+            - 26657:26657
+        restart: always
+        command: ["gaiad", "start"]
+networks:
+    default:
+        name: likechain
