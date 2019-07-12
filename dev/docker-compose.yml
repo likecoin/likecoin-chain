@@ -1,0 +1,22 @@
+version: "3.6"
+services:
+    liked:
+        image: likechain/likechain
+        container_name: likechain_dev_liked
+        volumes:
+            - ./.liked:/root/.liked
+            - ./.likecli:/root/.likecli
+        ports:
+            - 26656:26656
+            - 26657:26657
+        restart: always
+        command: ["liked", "start"]
+    lcd:
+        image: likechain/likechain
+        container_name: likechain_dev_lcd
+        ports:
+            - 1317:1317
+        depends_on:
+            - liked
+        restart: always
+        command: ["likecli", "rest-server", "--cors", "*", "--chain-id", "likechain-local-testnet", "--node", "tcp://liked:26657", "--laddr", "tcp://0.0.0.0:1317"]

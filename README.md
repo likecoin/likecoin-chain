@@ -1,7 +1,5 @@
 LikeChain is a blockchain built on the Cosmos SDK.
 
-Currently, it is just running the gaia software provided by Cosmos, with custom genesis and parameters.
-
 ## Requirements
 
  - At least 20 GB disk space
