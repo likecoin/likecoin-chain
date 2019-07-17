@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/likecoin/likechain/x/staking"
+	"github.com/likecoin/likechain/x/staking/types"
 )
 
 // GetCmdQueryValidator implements the validator query command.
@@ -41,6 +41,34 @@ $ likecli query staking validator cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ld
 			}
 
 			return cliCtx.PrintOutput(types.MustUnmarshalValidator(cdc, res))
+		},
+	}
+}
+
+// GetCmdQueryWhitelist implements the validator whitelist query command.
+func GetCmdQueryWhitelist(storeName string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "whitelist",
+		Short: "Query the current validator whitelist",
+		Long: strings.TrimSpace(`Query the current validator whitelist:
+
+$ likecli query staking whitelist
+`),
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, err := cliCtx.QueryStore(staking.ValidatorsWhitelistKey, storeName)
+			if err != nil {
+				return err
+			}
+
+			whitelist := types.ValidatorsWhitelist{}
+			if len(res) > 0 {
+				cdc.MustUnmarshalBinaryLengthPrefixed(res, &whitelist.Validators)
+			}
+
+			return cliCtx.PrintOutput(whitelist)
 		},
 	}
 }

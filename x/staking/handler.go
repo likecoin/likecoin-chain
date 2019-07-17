@@ -1,6 +1,7 @@
 package staking
 
 import (
+	"encoding/json"
 	"time"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -8,9 +9,9 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/cosmos/cosmos-sdk/x/staking/tags"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/likecoin/likechain/x/staking/keeper"
+	"github.com/likecoin/likechain/x/staking/tags"
+	"github.com/likecoin/likechain/x/staking/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -27,6 +28,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleMsgBeginRedelegate(ctx, msg, k)
 		case types.MsgUndelegate:
 			return handleMsgUndelegate(ctx, msg, k)
+		case types.MsgSetValidatorWhitelist:
+			return handlMsgSetValidatorWhitelist(ctx, msg, k)
 		default:
 			return sdk.ErrTxDecode("invalid message parse in staking module").Result()
 		}
@@ -114,6 +117,12 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 				tmPubKey.Type,
 				ctx.ConsensusParams().Validator.PubKeyTypes).Result()
 		}
+	}
+
+	// TODO: handle special case for init chain?
+	whitelist := k.GetValidatorWhitelist(ctx)
+	if !checkCanCreateValidator(whitelist, msg.ValidatorAddress) {
+		return ErrValidatorNotInWEhitelist(k.Codespace()).Result()
 	}
 
 	validator := NewValidator(msg.ValidatorAddress, msg.PubKey, msg.Description)
@@ -275,4 +284,20 @@ func handleMsgBeginRedelegate(ctx sdk.Context, msg types.MsgBeginRedelegate, k k
 	)
 
 	return sdk.Result{Data: finishTime, Tags: resTags}
+}
+
+func handlMsgSetValidatorWhitelist(ctx sdk.Context, msg types.MsgSetValidatorWhitelist, k keeper.Keeper) sdk.Result {
+	approver := k.WhitelistApprover(ctx)
+	if !msg.ApproverAddress.Equals(approver) {
+		return ErrInvalidApprover(k.Codespace()).Result()
+	}
+	k.SetValidatorWhitelist(ctx, msg.Whitelist)
+	bz, err := json.Marshal(msg.Whitelist)
+	if err != nil {
+		panic(err)
+	}
+	resTags := sdk.NewTags(
+		tags.Whitelist, bz,
+	)
+	return sdk.Result{Tags: resTags}
 }

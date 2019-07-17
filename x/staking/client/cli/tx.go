@@ -216,6 +216,37 @@ $ likecli tx staking unbond cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 	}
 }
 
+// GetCmdSetWhitelist implements the set validator whitelist command
+func GetCmdSetWhitelist(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set-whitelist",
+		Short: "set validator whitelist",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContext().
+				WithCodec(cdc).
+				WithAccountDecoder(cdc)
+
+			valAddrs := []sdk.ValAddress{}
+			for _, valAddrStr := range args {
+				valAddr, err := sdk.ValAddressFromBech32(valAddrStr)
+				if err != nil {
+					return err
+				}
+				valAddrs = append(valAddrs, valAddr)
+			}
+			approverAddr := cliCtx.GetFromAddress()
+
+			msg := staking.NewMsgSetValidatorWhitelist(valAddrs, approverAddr)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, true)
+		},
+	}
+
+	cmd.MarkFlagRequired(client.FlagFrom)
+
+	return cmd
+}
+
 // BuildCreateValidatorMsg makes a new MsgCreateValidator.
 func BuildCreateValidatorMsg(cliCtx context.CLIContext, txBldr authtxb.TxBuilder) (authtxb.TxBuilder, sdk.Msg, error) {
 	amounstStr := viper.GetString(FlagAmount)

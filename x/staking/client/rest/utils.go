@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/staking/tags"
 	"github.com/likecoin/likechain/x/staking"
+	"github.com/likecoin/likechain/x/staking/tags"
 )
 
 // contains checks if the a given query contains one of the tx types

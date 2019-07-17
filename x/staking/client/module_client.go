@@ -5,8 +5,8 @@ import (
 	amino "github.com/tendermint/go-amino"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/likecoin/likechain/x/staking/client/cli"
+	"github.com/likecoin/likechain/x/staking/types"
 )
 
 // ModuleClient exports all client functionality from this module
@@ -38,7 +38,9 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		cli.GetCmdQueryValidatorUnbondingDelegations(mc.storeKey, mc.cdc),
 		cli.GetCmdQueryValidatorRedelegations(mc.storeKey, mc.cdc),
 		cli.GetCmdQueryParams(mc.storeKey, mc.cdc),
-		cli.GetCmdQueryPool(mc.storeKey, mc.cdc))...)
+		cli.GetCmdQueryPool(mc.storeKey, mc.cdc),
+		cli.GetCmdQueryWhitelist(mc.storeKey, mc.cdc),
+	)...)
 
 	return stakingQueryCmd
 
@@ -57,6 +59,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 		cli.GetCmdDelegate(mc.cdc),
 		cli.GetCmdRedelegate(mc.storeKey, mc.cdc),
 		cli.GetCmdUnbond(mc.storeKey, mc.cdc),
+		cli.GetCmdSetWhitelist(mc.cdc),
 	)...)
 
 	return stakingTxCmd

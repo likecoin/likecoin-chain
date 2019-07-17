@@ -41,7 +41,8 @@
         "unbonding_time": "600000000000",
         "max_validators": 100,
         "max_entries": 7,
-        "bond_denom": "nanolike"
+        "bond_denom": "nanolike",
+        "whitelist_approver": "cosmos16s47cyy5w6ja07w42s3yxe7p37pdvcrr39sc8e"
       },
       "last_total_power": "0",
       "last_validator_powers": null,

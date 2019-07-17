@@ -12,8 +12,8 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keep "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
+	keep "github.com/likecoin/likechain/x/staking/keeper"
+	"github.com/likecoin/likechain/x/staking/types"
 )
 
 //______________________________________________________________________

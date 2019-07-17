@@ -5,6 +5,8 @@ set -e
 CHAIN_ID="likechain-local-testnet"
 MONIKER="local-dev"
 PASSWORD="password"
+SEED_VALIDATOR="knife what dinosaur unknown payment gallery stamp unfair turtle neither student aspect harsh divide subject mystery mandate once polar inspire wing dignity million harbor" # Address: cosmos16s47cyy5w6ja07w42s3yxe7p37pdvcrr39sc8e
+SEED_FAUCET="sad ordinary multiply purpose add comfort warrior split wrestle ugly dismiss march buddy axis glove coral earth post pen object caught salute green accuse" # Address: cosmos134ckwu586qzgfhyx584rahc6lmc9vj8e6l8gu9
 
 LIKE_HOME=$(dirname "$0")
 
@@ -15,8 +17,10 @@ popd > /dev/null
 
 if [ ! -d "$LIKE_HOME/.likecli" ]; then
     mkdir -p "$LIKE_HOME/.likecli"
-    printf "$PASSWORD\n$PASSWORD\n" | docker run --rm -i --volume "$LIKE_HOME/.likecli:/root/.likecli" likechain/likechain likecli keys add validator
-    printf "$PASSWORD\n$PASSWORD\n" | docker run --rm -i --volume "$LIKE_HOME/.likecli:/root/.likecli" likechain/likechain likecli keys add faucet
+    printf "$PASSWORD\n$SEED_VALIDATOR\n" | \
+        docker run --rm -i --volume "$LIKE_HOME/.likecli:/root/.likecli" likechain/likechain likecli keys add --recover validator
+    printf "$PASSWORD\n$SEED_FAUCET\n" | \
+        docker run --rm -i --volume "$LIKE_HOME/.likecli:/root/.likecli" likechain/likechain likecli keys add --recover faucet
 fi
 
 if [ ! -d "$LIKE_HOME/.liked" ]; then

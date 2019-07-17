@@ -2,10 +2,10 @@
 package staking
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/cosmos/cosmos-sdk/x/staking/querier"
-	"github.com/cosmos/cosmos-sdk/x/staking/tags"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/likecoin/likechain/x/staking/keeper"
+	"github.com/likecoin/likechain/x/staking/querier"
+	"github.com/likecoin/likechain/x/staking/tags"
+	"github.com/likecoin/likechain/x/staking/types"
 )
 
 type (
@@ -69,6 +69,7 @@ var (
 	UnbondingQueueKey            = keeper.UnbondingQueueKey
 	RedelegationQueueKey         = keeper.RedelegationQueueKey
 	ValidatorQueueKey            = keeper.ValidatorQueueKey
+	ValidatorsWhitelistKey       = keeper.ValidatorsWhitelistKey
 	RegisterInvariants           = keeper.RegisterInvariants
 	AllInvariants                = keeper.AllInvariants
 	SupplyInvariants             = keeper.SupplyInvariants
@@ -92,11 +93,12 @@ var (
 	DefaultGenesisState   = types.DefaultGenesisState
 	RegisterCodec         = types.RegisterCodec
 
-	NewMsgCreateValidator = types.NewMsgCreateValidator
-	NewMsgEditValidator   = types.NewMsgEditValidator
-	NewMsgDelegate        = types.NewMsgDelegate
-	NewMsgUndelegate      = types.NewMsgUndelegate
-	NewMsgBeginRedelegate = types.NewMsgBeginRedelegate
+	NewMsgCreateValidator       = types.NewMsgCreateValidator
+	NewMsgEditValidator         = types.NewMsgEditValidator
+	NewMsgDelegate              = types.NewMsgDelegate
+	NewMsgUndelegate            = types.NewMsgUndelegate
+	NewMsgBeginRedelegate       = types.NewMsgBeginRedelegate
+	NewMsgSetValidatorWhitelist = types.NewMsgSetValidatorWhitelist
 
 	NewQuerier               = querier.NewQuerier
 	NewQueryDelegatorParams  = querier.NewQueryDelegatorParams
@@ -173,6 +175,9 @@ var (
 	ErrMinSelfDelegationInvalid   = types.ErrMinSelfDelegationInvalid
 	ErrMinSelfDelegationDecreased = types.ErrMinSelfDelegationDecreased
 	ErrSelfDelegationBelowMinimum = types.ErrSelfDelegationBelowMinimum
+
+	ErrInvalidApprover          = types.ErrInvalidApprover
+	ErrValidatorNotInWEhitelist = types.ErrValidatorNotInWEhitelist
 )
 
 var (
