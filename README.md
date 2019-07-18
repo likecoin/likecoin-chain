@@ -24,4 +24,6 @@ Example: `./scripts/init.sh chung ~/Downloads/genesis-likechain-cosmos-testnet-1
 
 ## Development
 
-1. Setup or reset the one node local testnet by running `./dev/testnet-local.sh`.
+ - Setup or reset the one node local testnet by running `./dev/testnet-local.sh`.
+ - Use the `docker-compose.yml` in `dev` to run a local server with light client.
+ - When code is updated and `go.mod` and `go.sum` are not updated, you can use `./docker/app/build.sh` to quickly rebuild the image.
