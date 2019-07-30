@@ -10,7 +10,7 @@ services:
             - 26656:26656
             - 26657:26657
         restart: always
-        command: ["liked", "start"]
+        command: ["liked", "--get-ip", "start"]
 networks:
     default:
         name: likechain
