@@ -26,8 +26,6 @@ docker run --rm --volume "$LIKE_HOME/.liked:/root/.liked" likechain/likechain li
 
 # not using sed -i since different behaviour on Linux and Mac
 sed "s/persistent_peers *=.*/persistent_peers=\"$PEERS\"/g" "$LIKE_HOME/.liked/config/config.toml" \
-| sed "s/create_empty_blocks_interval *=.*/create_empty_blocks_interval=\"60s\"/g" \
-| sed "s/^timeout_commit *=.*/timeout_commit=\"60s\"/g" \
 > "$LIKE_HOME/.liked/config/config.toml.new"
 mv "$LIKE_HOME/.liked/config/config.toml.new" "$LIKE_HOME/.liked/config/config.toml"
 cp "$GENESIS_PATH" "$LIKE_HOME/.liked/config/genesis.json"
