@@ -28,6 +28,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+
+	stakingwrap "github.com/likecoin/likechain/x/staking"
+	"github.com/likecoin/likechain/x/whitelist"
 )
 
 const appName = "LikeApp"
@@ -55,6 +58,7 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
+		whitelist.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -92,16 +96,17 @@ type LikeApp struct {
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// keepers
-	accountKeeper  auth.AccountKeeper
-	bankKeeper     bank.Keeper
-	supplyKeeper   supply.Keeper
-	stakingKeeper  staking.Keeper
-	slashingKeeper slashing.Keeper
-	mintKeeper     mint.Keeper
-	distrKeeper    distr.Keeper
-	govKeeper      gov.Keeper
-	crisisKeeper   crisis.Keeper
-	paramsKeeper   params.Keeper
+	accountKeeper   auth.AccountKeeper
+	bankKeeper      bank.Keeper
+	supplyKeeper    supply.Keeper
+	stakingKeeper   staking.Keeper
+	slashingKeeper  slashing.Keeper
+	mintKeeper      mint.Keeper
+	distrKeeper     distr.Keeper
+	govKeeper       gov.Keeper
+	crisisKeeper    crisis.Keeper
+	paramsKeeper    params.Keeper
+	whitelistKeeper whitelist.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -120,7 +125,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey,
+		gov.StoreKey, params.StoreKey, whitelist.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -142,6 +147,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	whitelistSubspace := app.paramsKeeper.Subspace(whitelist.DefaultParamspace)
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
@@ -158,6 +164,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace, slashing.DefaultCodespace,
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
+	app.whitelistKeeper = whitelist.NewKeeper(app.cdc, keys[whitelist.StoreKey], whitelistSubspace, whitelist.DefaultCodespace)
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -188,7 +195,8 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		stakingwrap.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.whitelistKeeper),
+		whitelist.NewAppModule(app.whitelistKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -201,7 +209,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
-		genaccounts.ModuleName, distr.ModuleName, staking.ModuleName,
+		genaccounts.ModuleName, distr.ModuleName, staking.ModuleName, whitelist.ModuleName,
 		auth.ModuleName, bank.ModuleName, slashing.ModuleName, gov.ModuleName,
 		mint.ModuleName, supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
 	)
