@@ -76,7 +76,7 @@ func RunProviders(ipGetters []IPGetter, timeout time.Duration) (string, error) {
 	for i := 0; i < len(ipGetters); i++ {
 		ip := <-ch
 		ipCount[ip]++
-		if ipCount[ip] >= limit {
+		if len(ip) > 0 && ipCount[ip] >= limit {
 			return ip, nil
 		}
 	}

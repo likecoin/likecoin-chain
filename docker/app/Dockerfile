@@ -7,6 +7,7 @@ RUN go build -o /go/bin/likecli cmd/likecli/main.go
 
 FROM alpine:latest
 
+RUN apk add ca-certificates
 WORKDIR /bin
 COPY --from=builder /go/bin/liked .
 COPY --from=builder /go/bin/likecli .
