@@ -4,13 +4,13 @@ services:
         image: likechain/likechain
         container_name: likechain_liked
         volumes:
-            - ./.liked:/root/.liked
-            - ./.likecli:/root/.likecli
+            - ./.liked:/likechain/.liked
+            - ./.likecli:/likechain/.likecli
         ports:
             - 26656:26656
             - 26657:26657
         restart: always
-        command: ["liked", "--get-ip", "start"]
+        command: ["liked", "--get-ip", "start" "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "__SEED_NODES__"]
 networks:
     default:
         name: likechain

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+COMMISSION_RATE="0.5"
+COMMISSION_RATE_MAX="0.8"
+COMMISSION_RATE_CHANGE="0.10"
+
 set -e
 
 LIKE_HOME="$(dirname "$0")/.."
@@ -34,6 +38,9 @@ echo "Staking amount: $AMOUNT"
 
 read -p "Enter some description of your node: " DETAILS
 
+read -p "(Optional) Enter identity of your node (e.g. UPort, Keybase): " IDENTITY
+read -p "(Optional) Enter the website of your site (optional): " WEBSITE
+
 echo ""
 echo "Now the script will generate and send the stake transaction, please confirm and enter your passphrase."
 
@@ -42,10 +49,12 @@ docker exec -it likechain_liked \
         --amount "$AMOUNT" \
         --moniker "$MONIKER" \
         --pubkey "$VAL_PUBKEY" \
-        --commission-rate 0.03 \
-        --commission-max-rate 0.1 \
-        --commission-max-change-rate 0.01 \
+        --commission-rate "$COMMISSION_RATE" \
+        --commission-max-rate "$COMMISSION_RATE_MAX" \
+        --commission-max-change-rate "$COMMISSION_RATE_CHANGE" \
+        --identity "$IDENTITY" \
         --details "$DETAILS" \
+        --website "$WEBSITE" \
         --min-self-delegation 1 \
         --from validator \
         --chain-id "$CHAIN_ID" \
