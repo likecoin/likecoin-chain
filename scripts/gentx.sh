@@ -7,12 +7,12 @@ pushd "$LIKE_HOME" > /dev/null
 LIKE_HOME=$(pwd)
 popd > /dev/null
 
-COMMISSION_RATE="0.2"
-COMMISSION_RATE_MAX="0.5"
+COMMISSION_RATE="0.5"
+COMMISSION_RATE_MAX="1.0"
 COMMISSION_RATE_CHANGE="0.01"
 
 read -p "Enter some description of your node: " DETAILS
-read -p "Enter the amount you want to stake (including the coin name, example: '1000000000000000nanolike'):" AMOUNT
+read -p "Enter the amount you want to stake (including the coin name, example: '1000000000nanolike'):" AMOUNT
 read -p "(Optional) Enter identity of your node (e.g. UPort, Keybase): " IDENTITY
 read -p "(Optional) Enter the website of your site (optional): " WEBSITE
 
