@@ -14,10 +14,10 @@ popd > /dev/null
 CHAIN_ID=$(grep chain_id "$LIKE_HOME/.liked/config/genesis.json" | sed 's/ *"chain_id": *"\(.*\)"/\1/g' | sed 's/,$//g')
 echo "Chain ID: $CHAIN_ID"
 
-ADDRESS=$(docker exec likechain_liked likecli keys show validator -a)
+ADDRESS=$(docker exec likechain_liked likecli --home /likechain/.likecli keys show validator -a)
 echo "Address: $ADDRESS"
 
-VAL_PUBKEY=$(docker exec likechain_liked liked tendermint show-validator)
+VAL_PUBKEY=$(docker exec likechain_liked liked --home /likechain/.liked tendermint show-validator)
 echo "Validator public key: $VAL_PUBKEY"
 
 CONF_MONIKER=$(grep moniker "$LIKE_HOME/.liked/config/config.toml" | sed 's/ *moniker *= *"\(.*\)"/\1/g')
@@ -27,7 +27,7 @@ if [ -z $MONIKER ]; then
 fi
 echo "Moniker: '$MONIKER'"
 
-BALANCE=$(docker exec likechain_liked likecli query account "$ADDRESS" --chain-id $CHAIN_ID | grep "^\s*Coins" | sed 's/ *Coins: *\([0-9][^ ]*\)/\1/g')
+BALANCE=$(docker exec likechain_liked likecli --home /likechain/.likecli query account "$ADDRESS" --chain-id $CHAIN_ID | grep "^\s*Coins" | sed 's/ *Coins: *\([0-9][^ ]*\)/\1/g')
 echo "Your balance: $BALANCE"
 
 read -p "Enter the amount you want to stake (including the coin name, example: '1000000000000000nanolike'), or just leave it empty and press Enter to use all balance:" AMOUNT
@@ -45,7 +45,7 @@ echo ""
 echo "Now the script will generate and send the stake transaction, please confirm and enter your passphrase."
 
 docker exec -it likechain_liked \
-    likecli tx staking create-validator \
+    likecli --home /likechain/.likecli tx staking create-validator \
         --amount "$AMOUNT" \
         --moniker "$MONIKER" \
         --pubkey "$VAL_PUBKEY" \

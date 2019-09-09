@@ -21,7 +21,7 @@ CHAIN_ID=`grep chain_id "$GENESIS_PATH" | sed 's/ *"chain_id": *"\(.*\)"/\1/g' |
 
 if [ ! -f "$LIKE_HOME/.liked/config/genesis.json" ]; then
     mkdir -p "$LIKE_HOME/.liked"
-    docker run --rm --volume "$LIKE_HOME/.liked:/likechain/.liked" likechain/likechain liked init --chain-id "$CHAIN_ID" "$MONIKER"
+    docker run --rm --volume "$LIKE_HOME/.liked:/likechain/.liked" likechain/likechain liked --home /likechain/.liked init --chain-id "$CHAIN_ID" "$MONIKER"
     cp "$GENESIS_PATH" "$LIKE_HOME/.liked/config/genesis.json"
 else
     echo "Warning: .liked already exists, not re-initializing. You may need to replace .liked/config/genesis.json manually."
@@ -35,8 +35,8 @@ fi
 
 mkdir -p "$LIKE_HOME/.likecli"
 
-docker run --rm -it --volume "$LIKE_HOME/.likecli:/likechain/.likecli" likechain/likechain likecli keys add validator
-ADDRESS=$(docker run --rm -it --volume "$LIKE_HOME/.likecli:/likechain/.likecli" likechain/likechain likecli keys show validator -a)
+docker run --rm -it --volume "$LIKE_HOME/.likecli:/likechain/.likecli" likechain/likechain likecli --home /likechain/.likecli keys add validator
+ADDRESS=$(docker run --rm -it --volume "$LIKE_HOME/.likecli:/likechain/.likecli" likechain/likechain likecli --home /likechain/.likecli keys show validator -a)
 echo ""
 echo "--------------------------------------------------------------------------------"
 echo "Key initialized, your address is $ADDRESS"

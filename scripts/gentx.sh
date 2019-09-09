@@ -22,13 +22,13 @@ echo "Now the script will generate the genesis transaction, please confirm and e
 docker run -it --rm \
     --volume "$LIKE_HOME/.liked:/likechain/.liked" \
     --volume "$LIKE_HOME/.likecli:/likechain/.likecli" \
-    likechain/likechain liked add-genesis-account \
+    likechain/likechain liked --home /likechain/.liked add-genesis-account --home-client /likechain/.likecli \
         validator "$AMOUNT"
 
 docker run -it --rm \
     --volume "$LIKE_HOME/.liked:/likechain/.liked" \
     --volume "$LIKE_HOME/.likecli:/likechain/.likecli" \
-    likechain/likechain liked gentx \
+    likechain/likechain liked --home /likechain/.liked gentx --home-client /likechain/.likecli \
         --name validator \
         --identity "$IDENTITY" \
         --details "$DETAILS" \
