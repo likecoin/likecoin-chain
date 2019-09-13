@@ -3,6 +3,9 @@
 COMMISSION_RATE="0.5"
 COMMISSION_RATE_MAX="0.8"
 COMMISSION_RATE_CHANGE="0.10"
+GAS="100000"
+GAS_PRICE="1000"
+FEE=$(expr $GAS "*" $GAS_PRICE)
 
 set -e
 
@@ -27,10 +30,17 @@ if [ -z $MONIKER ]; then
 fi
 echo "Moniker: '$MONIKER'"
 
-BALANCE=$(docker exec likechain_liked likecli --home /likechain/.likecli query account "$ADDRESS" --chain-id $CHAIN_ID | grep "^\s*Coins" | sed 's/ *Coins: *\([0-9][^ ]*\)/\1/g')
+BALANCE=$(docker exec likechain_liked likecli --home /likechain/.likecli query account "$ADDRESS" --trust-node --output json | grep '"amount"' | sed 's/.*"amount":"\([0-9]\+\)".*/\1/g')
+if [ -z $BALANCE ]; then
+    echo "Error: cannot get balance. It could be something wrong during execution, or maybe you don't have any balance."
+    exit 1
+fi
+BALANCE=$(expr $BALANCE - $FEE)
+BALANCE="${BALANCE}nanolike"
+FEE="${FEE}nanolike"
 echo "Your balance: $BALANCE"
 
-read -p "Enter the amount you want to stake (including the coin name, example: '1000000000000000nanolike'), or just leave it empty and press Enter to use all balance:" AMOUNT
+read -p "Enter the amount you want to stake (including the coin name, example: '1000000000nanolike'), or just leave it empty and press Enter to use all balance:" AMOUNT
 if [ -z $AMOUNT ]; then
     AMOUNT="$BALANCE"
 fi
@@ -58,7 +68,9 @@ docker exec -it likechain_liked \
         --min-self-delegation 1 \
         --from validator \
         --chain-id "$CHAIN_ID" \
-        --node tcp://liked:26657
+        --node tcp://liked:26657 \
+        --fees "$FEE" \
+        --gas "$GAS"
 
 echo "Staking transaction sent."
 echo "You can use the transaction hash to query the transaction result on the block explorer."
