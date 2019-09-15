@@ -30,7 +30,7 @@ if [ -z $MONIKER ]; then
 fi
 echo "Moniker: '$MONIKER'"
 
-BALANCE=$(docker exec likechain_liked likecli --home /likechain/.likecli query account "$ADDRESS" --trust-node --output json | grep '"amount"' | sed 's/.*"amount":"\([0-9]\+\)".*/\1/g')
+BALANCE=$(docker exec likechain_liked likecli --home /likechain/.likecli query account "$ADDRESS" --trust-node --output json | grep '"amount"' | sed 's/.*"amount":"\([0-9]*\)".*/\1/g')
 if [ -z $BALANCE ]; then
     echo "Error: cannot get balance. It could be something wrong during execution, or maybe you don't have any balance."
     exit 1
