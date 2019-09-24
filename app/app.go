@@ -29,6 +29,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	govwrap "github.com/likecoin/likechain/x/gov"
 	stakingwrap "github.com/likecoin/likechain/x/staking"
 	"github.com/likecoin/likechain/x/whitelist"
 )
@@ -192,7 +193,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		crisis.NewAppModule(&app.crisisKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
-		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		govwrap.NewAppModule(app.govKeeper, app.supplyKeeper, app.stakingKeeper),
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		stakingwrap.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.whitelistKeeper),
