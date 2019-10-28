@@ -17,7 +17,7 @@ else
         BUILD_UID=$(id -u $USER)
         BUILD_GID=$(id -g $USER)
     fi
-    docker build -f docker/app/Dockerfile -t likechain/likechain \
+    docker build -f docker/app/Dockerfile -t likechain/likechain:sheungwan \
         --build-arg UID=$BUILD_UID --build-arg GID=$BUILD_GID .
 fi
 popd > /dev/null
