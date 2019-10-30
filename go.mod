@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.4.0
 	github.com/tendermint/crypto v0.0.0-20190823183015-45b1026d81ae // indirect
 	github.com/tendermint/go-amino v0.15.0
-	github.com/tendermint/tendermint v0.32.6
+	github.com/tendermint/tendermint v0.32.7
 	github.com/tendermint/tm-db v0.2.0
 	golang.org/x/crypto v0.0.0-20191010185427-af544f31c8ac // indirect
 	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb // indirect
