@@ -1,0 +1,37 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pd-standard
+provisioner: kubernetes.io/gce-pd
+allowVolumeExpansion: true
+parameters:
+  type: pd-standard
+  replication-type: none
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: likecoin-chain-node-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pd-standard
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: likecoin-chain-lcd-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pd-standard
+  resources:
+    requests:
+      storage: 1Gi
