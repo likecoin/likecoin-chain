@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: pd-standard
 provisioner: kubernetes.io/gce-pd
+reclaimPolicy: Retain
 allowVolumeExpansion: true
 parameters:
   type: pd-standard
