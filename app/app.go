@@ -30,6 +30,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
 	govwrap "github.com/likecoin/likechain/x/gov"
+	"github.com/likecoin/likechain/x/iscn"
 	stakingwrap "github.com/likecoin/likechain/x/staking"
 	"github.com/likecoin/likechain/x/whitelist"
 )
@@ -60,6 +61,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		whitelist.AppModuleBasic{},
+		iscn.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -108,6 +110,7 @@ type LikeApp struct {
 	crisisKeeper    crisis.Keeper
 	paramsKeeper    params.Keeper
 	whitelistKeeper whitelist.Keeper
+	iscnKeeper      iscn.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -126,7 +129,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, whitelist.StoreKey,
+		gov.StoreKey, params.StoreKey, whitelist.StoreKey, iscn.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -149,6 +152,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 	whitelistSubspace := app.paramsKeeper.Subspace(whitelist.DefaultParamspace)
+	iscnSubspace := app.paramsKeeper.Subspace(iscn.DefaultParamspace)
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
@@ -166,6 +170,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
 	app.whitelistKeeper = whitelist.NewKeeper(app.cdc, keys[whitelist.StoreKey], whitelistSubspace, whitelist.DefaultCodespace)
+	app.iscnKeeper = iscn.NewKeeper(app.cdc, keys[iscn.StoreKey], app.accountKeeper, app.supplyKeeper, iscnSubspace, iscn.DefaultCodespace)
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -198,6 +203,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		stakingwrap.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.whitelistKeeper),
 		whitelist.NewAppModule(app.whitelistKeeper),
+		iscn.NewAppModule(app.iscnKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -213,6 +219,7 @@ func NewLikeApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		genaccounts.ModuleName, distr.ModuleName, staking.ModuleName, whitelist.ModuleName,
 		auth.ModuleName, bank.ModuleName, slashing.ModuleName, gov.ModuleName,
 		mint.ModuleName, supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
+		iscn.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
