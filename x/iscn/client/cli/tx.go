@@ -26,6 +26,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 
 	iscnTxCmd.AddCommand(client.PostCommands(
 		GetCmdCreateIscn(cdc),
+		GetCmdAddAuthor(cdc),
 	)...)
 
 	return iscnTxCmd
@@ -83,6 +84,37 @@ func GetCmdCreateIscn(cdc *codec.Codec) *cobra.Command {
 			from := cliCtx.GetFromAddress()
 
 			msg := types.NewMsgCreateIscn(from, record)
+			s, err := cdc.MarshalJSONIndent(msg, "", "  ")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(s))
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	cmd.MarkFlagRequired(client.FlagFrom)
+
+	return cmd
+}
+
+func GetCmdAddAuthor(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-author",
+		Short: "add an author",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			// TODO: read from file?
+			author := types.Author{
+				Name:        "Chung",
+				Description: "Dlockchain developer",
+			}
+			from := cliCtx.GetFromAddress()
+
+			msg := types.NewMsgAddAuthor(from, author)
 			s, err := cdc.MarshalJSONIndent(msg, "", "  ")
 			if err != nil {
 				panic(err)

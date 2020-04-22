@@ -5,12 +5,13 @@ import (
 )
 
 const (
-	ModuleName   = types.ModuleName
-	StoreKey     = types.StoreKey
-	QuerierRoute = types.QuerierRoute
-	RouterKey    = types.RouterKey
-	QueryRecord  = types.QueryRecord
-	QueryParams  = types.QueryParams
+	ModuleName      = types.ModuleName
+	StoreKey        = types.StoreKey
+	QuerierRoute    = types.QuerierRoute
+	RouterKey       = types.RouterKey
+	QueryAuthor     = types.QueryAuthor
+	QueryIscnRecord = types.QueryIscnRecord
+	QueryParams     = types.QueryParams
 )
 
 var (
@@ -24,16 +25,26 @@ var (
 	DefaultCodespace            = types.DefaultCodespace
 	ValidateGenesis             = types.ValidateGenesis
 	IscnRecordKey               = types.IscnRecordKey
+	IscnCountKey                = types.IscnCountKey
+	AuthorKey                   = types.AuthorKey
+	RightTermsKey               = types.RightTermsKey
 	GetIscnRecordKey            = types.GetIscnRecordKey
+	GetAuthorKey                = types.GetAuthorKey
+	GetRightTermsKey            = types.GetRightTermsKey
 	EventTypeCreateIscn         = types.EventTypeCreateIscn
-	AttributeKeyIscn            = types.AttributeKeyIscn
+	EventTypeAddAuthor          = types.EventTypeAddAuthor
+	AttributeKeyIscnId          = types.AttributeKeyIscnId
+	AttributeKeyAuthorCid       = types.AttributeKeyAuthorCid
 	AttributeValueCategory      = types.AttributeValueCategory
 	RegisterCodec               = types.RegisterCodec
 )
 
 type (
 	MsgCreateIscn = types.MsgCreateIscn
+	MsgAddAuthor  = types.MsgAddAuthor
 	IscnRecord    = types.IscnRecord
+	Author        = types.Author
+	RightTerms    = types.RightTerms
 	Params        = types.Params
 	GenesisState  = types.GenesisState
 )

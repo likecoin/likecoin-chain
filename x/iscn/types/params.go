@@ -26,7 +26,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 }
 
 func DefaultParams() Params {
-	return Params{}
+	return Params{} // TODO: default param
 }
 
 func (p Params) String() string {

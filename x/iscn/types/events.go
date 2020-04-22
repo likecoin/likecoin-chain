@@ -1,8 +1,11 @@
 package types
 
 var (
-	EventTypeCreateIscn = "create_iscn"
+	EventTypeCreateIscn    = "create_iscn"
+	EventTypeAddAuthor     = "add_author"
+	EventTypeAddRightTerms = "add_right_terms"
 
-	AttributeKeyIscn       = "iscn"
+	AttributeKeyIscnId     = "iscn_id"
+	AttributeKeyAuthorCid  = "author_cid"
 	AttributeValueCategory = ModuleName
 )

@@ -4,6 +4,19 @@ import (
 	"encoding/json"
 )
 
+type Author struct {
+	Name        string `json:"name" yaml:"name"`
+	Description string `json:"description" yaml:"description"`
+}
+
+func (author Author) String() string {
+	bz, err := json.Marshal(author)
+	if err != nil {
+		panic(err)
+	}
+	return string(bz)
+}
+
 type Stakeholder struct {
 	Type  string `json:"type" yaml:"type"`
 	Id    string `json:"id" yaml:"id"`
@@ -13,6 +26,10 @@ type Stakeholder struct {
 type Period struct {
 	From string `json:"from" yaml:"from"`
 	To   string `json:"to" yaml:"to"`
+}
+
+type RightTerms struct {
+	Content string `json:"content" yaml:"content"`
 }
 
 type Right struct {

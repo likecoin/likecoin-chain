@@ -7,13 +7,15 @@ type IscnPair struct {
 
 type GenesisState struct {
 	Params      Params     `json:"params" yaml:"params"`
+	Authors     []Author   `json:"authors" yaml:"authors"`
+	RightTerms  []Right    `json:"rightTerms" yaml:"rightTerms"`
 	IscnRecords []IscnPair `json:"iscnRecords" yaml:"iscnRecords"`
 }
 
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return GenesisState{} // TODO: default param
 }
 
 func ValidateGenesis(data GenesisState) error {
-	return nil
+	return nil // TODO
 }

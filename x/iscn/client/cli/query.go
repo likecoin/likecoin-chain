@@ -25,7 +25,8 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 	iscnQueryCmd.AddCommand(client.GetCommands(
 		GetCmdQueryIscnRecord(queryRoute, cdc),
-		// TODO: params
+		GetCmdQueryParams(queryRoute, cdc),
+		GetCmdQueryAuthor(queryRoute, cdc),
 	)...)
 
 	return iscnQueryCmd
@@ -57,7 +58,7 @@ $ likecli query iscn record xxxxxxx
 				return err
 			}
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryRecord), bz)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryIscnRecord), bz)
 			if err != nil {
 				return err
 			}
@@ -68,6 +69,46 @@ $ likecli query iscn record xxxxxxx
 			}
 
 			return cliCtx.PrintOutput(record)
+		},
+	}
+}
+
+func GetCmdQueryAuthor(storeName string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "author [iscn-id]",
+		Short: "Query an author by CID",
+		Long: strings.TrimSpace(`Query an author CID:
+
+$ likecli query iscn author xxxxxxx
+`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			idStr := args[0]
+			cid, err := base64.URLEncoding.DecodeString(idStr)
+			if err != nil {
+				return err
+			}
+			queryData := types.QueryAuthorParams{
+				Cid: cid,
+			}
+			bz, err := cdc.MarshalJSON(queryData)
+			if err != nil {
+				return err
+			}
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryAuthor), bz)
+			if err != nil {
+				return err
+			}
+
+			author := types.Author{}
+			if len(res) > 0 {
+				cdc.UnmarshalJSON(res, &author)
+			}
+
+			return cliCtx.PrintOutput(author)
 		},
 	}
 }

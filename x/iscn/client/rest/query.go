@@ -23,6 +23,11 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		"/iscn/records/{iscnId}",
 		recordHandlerFn(cliCtx),
 	).Methods("GET")
+
+	r.HandleFunc(
+		"/iscn/authors/{authorCid}",
+		authorHandlerFn(cliCtx),
+	).Methods("GET")
 }
 
 func paramsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -66,7 +71,43 @@ func recordHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryRecord)
+		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryIscnRecord)
+
+		res, height, err := cliCtx.QueryWithData(endpoint, bz)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func authorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		authorCidStr := vars["authorCid"]
+		authorCid, err := base64.URLEncoding.DecodeString(authorCidStr)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		params := types.QueryAuthorParams{
+			Cid: authorCid,
+		}
+		bz, err := cliCtx.Codec.MarshalJSON(params)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryAuthor)
 
 		res, height, err := cliCtx.QueryWithData(endpoint, bz)
 		if err != nil {
