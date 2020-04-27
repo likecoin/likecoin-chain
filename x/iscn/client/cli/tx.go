@@ -26,7 +26,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 
 	iscnTxCmd.AddCommand(client.PostCommands(
 		GetCmdCreateIscn(cdc),
-		GetCmdAddAuthor(cdc),
+		GetCmdAddEntity(cdc),
 	)...)
 
 	return iscnTxCmd
@@ -41,54 +41,19 @@ func GetCmdCreateIscn(cdc *codec.Codec) *cobra.Command {
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			// TODO: read record from file?
-			// record := types.IscnRecord{}
-			record := types.IscnRecord{
-				Version: 1,
-				Stakeholders: []types.Stakeholder{
-					{
-						Type:  "author",
-						Id:    "testing-author-asdf",
-						Stake: 1337,
-					},
-					{
-						Type:  "whoever",
-						Id:    "testing-whoever-asdf",
-						Stake: 2345,
-					},
-				},
-				Timestamp: 1234567890,
-				Parent:    "cid-parent",
-				Right: []types.Right{
-					{
-						Holder: "Chung",
-						Type:   "license",
-						Terms:  "cc-by-sa-4.0",
-						Period: types.Period{
-							To: "2030-01-01 12:34:56Z",
-						},
-						Territory: "Hong Kong",
-					},
-				},
-				Content: types.IscnContent{
-					Type:        "article",
-					Source:      "https://nnkken.github.io/about",
-					Fingerprint: "hash://sha256/3de89366df13254ee59a3a4ff1ab1471cd5372d7004eeb72718ab8e72e9168fa",
-					Feature:     "",
-					Edition:     "3",
-					Title:       "About nnkken",
-					Description: "About page of nnkken's blog",
-					Tags:        []string{"about", "nnkken"},
-				},
-			}
+			// TODO: read from file?
+			kernelBz := []byte{} // TODO
 			from := cliCtx.GetFromAddress()
 
-			msg := types.NewMsgCreateIscn(from, record)
+			msg := types.NewMsgCreateIscn(from, kernelBz)
+
+			/* vvv debug vvv */
 			s, err := cdc.MarshalJSONIndent(msg, "", "  ")
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println(string(s))
+			/* ^^^ debug ^^^ */
 
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
@@ -99,22 +64,19 @@ func GetCmdCreateIscn(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func GetCmdAddAuthor(cdc *codec.Codec) *cobra.Command {
+func GetCmdAddEntity(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-author",
-		Short: "add an author",
+		Use:   "add-entity",
+		Short: "add an entity",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			// TODO: read from file?
-			author := types.Author{
-				Name:        "Chung",
-				Description: "Dlockchain developer",
-			}
+			entityBz := []byte{}
 			from := cliCtx.GetFromAddress()
 
-			msg := types.NewMsgAddAuthor(from, author)
+			msg := types.NewMsgAddEntity(from, entityBz)
 			s, err := cdc.MarshalJSONIndent(msg, "", "  ")
 			if err != nil {
 				panic(err)

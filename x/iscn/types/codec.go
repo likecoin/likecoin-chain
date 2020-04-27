@@ -6,7 +6,7 @@ import (
 
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgCreateIscn{}, "likechain/MsgCreateISCN", nil)
-	cdc.RegisterConcrete(MsgAddAuthor{}, "likechain/MsgAddAuthor", nil)
+	cdc.RegisterConcrete(MsgAddEntity{}, "likechain/MsgAddEntity", nil)
 }
 
 var ModuleCdc *codec.Codec

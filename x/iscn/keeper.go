@@ -1,9 +1,8 @@
 package iscn
 
 import (
-	"encoding/base64"
 	"encoding/binary"
-	"strings"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,13 +10,18 @@ import (
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/crypto/tmhash"
+
+	gocid "github.com/ipfs/go-cid"
+	cbornode "github.com/ipfs/go-ipld-cbor"
+	mh "github.com/multiformats/go-multihash"
+
+	iscnblock "github.com/likecoin/iscn-ipld/plugin/block"
 )
 
 const (
 	DefaultParamspace = ModuleName
 )
 
-// TODO: move to individual file
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) auth.Account
 }
@@ -46,8 +50,8 @@ func NewKeeper(
 	}
 }
 
-func (keeper Keeper) Codespace() sdk.CodespaceType {
-	return keeper.codespace
+func (k Keeper) Codespace() sdk.CodespaceType {
+	return k.codespace
 }
 
 func ParamKeyTable() params.KeyTable {
@@ -69,24 +73,207 @@ func (k Keeper) SetParams(ctx sdk.Context, params Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) SetAuthor(ctx sdk.Context, author *Author) (authorCid []byte) {
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(author) // TODO: cbor?
-	authorCid = tmhash.Sum(bz)                          // TODO: cid
-	key := GetAuthorKey(authorCid)
-	ctx.KVStore(k.storeKey).Set(key, bz)
-	return authorCid
+func (k Keeper) GetCidBlock(ctx sdk.Context, cid CID) []byte {
+	key := GetCidBlockKey(cid.Bytes())
+	return ctx.KVStore(k.storeKey).Get(key)
 }
 
-func (k Keeper) GetAuthor(ctx sdk.Context, authorCid []byte) *Author {
-	key := GetAuthorKey(authorCid)
-	bz := ctx.KVStore(k.storeKey).Get(key)
+func (k Keeper) HasCidBlock(ctx sdk.Context, cid CID) bool {
+	key := GetCidBlockKey(cid.Bytes())
+	return ctx.KVStore(k.storeKey).Has(key)
+}
+
+func (k Keeper) SetCidBlock(ctx sdk.Context, cid CID, bz []byte) {
+	key := GetCidBlockKey(cid.Bytes())
+	ctx.KVStore(k.storeKey).Set(key, bz)
+}
+
+func (k Keeper) GetCidIscnObject(ctx sdk.Context, cid CID) iscnblock.IscnObject {
+	bz := k.GetCidBlock(ctx, cid)
 	if bz == nil {
 		return nil
 	}
-	author := Author{}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &author)
-	return &author
+	// IscnObject flow
+	obj, err := iscnblock.Decode(bz, cid)
+	if err != nil {
+		return nil
+	}
+	return obj
 }
+
+func (k Keeper) GetCidIscnData(ctx sdk.Context, cid CID) *IscnData {
+	bz := k.GetCidBlock(ctx, cid)
+	if bz == nil {
+		return nil
+	}
+	// TODO: everything go for IscnObject flow
+	// old flow
+	data := IscnData{}
+	// TODO: deserialize by IPFS block
+	err := cbornode.DecodeInto(bz, &data)
+	if err != nil {
+		return nil
+	}
+	return &data
+}
+
+func (k Keeper) SetCidIscnObject(
+	ctx sdk.Context, data IscnData,
+	codec uint64, schemaVersion uint64,
+) (*CID, error) {
+	obj, err := iscnblock.Encode(codec, schemaVersion, data)
+	if err != nil {
+		return nil, err
+	}
+	bz := obj.RawData()
+	cid := obj.Cid()
+
+	k.SetCidBlock(ctx, cid, bz)
+	return &cid, nil
+}
+
+func (k Keeper) SetCidIscnData(ctx sdk.Context, data interface{}, codec uint64) (*CID, error) {
+	// TODO: serialize by IPFS block
+	bz, err := cbornode.DumpObject(data)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: compute CID by IPFS block
+	cid, err := gocid.V1Builder{
+		Codec:  codec,
+		MhType: mh.SHA2_256,
+	}.Sum(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	k.SetCidBlock(ctx, cid, bz)
+	return &cid, nil
+}
+
+func (k Keeper) checkCodecAndGetIscnObject(ctx sdk.Context, cid CID, codec uint64) iscnblock.IscnObject {
+	if cid.Prefix().GetCodec() != codec {
+		return nil
+	}
+	return k.GetCidIscnObject(ctx, cid)
+}
+
+func (k Keeper) setIscnObjectAndEmitEvent(
+	ctx sdk.Context, data IscnData, codec uint64, schemaVersion uint64,
+	eventType string, attr string,
+) (*CID, error) {
+	cid, err := k.SetCidIscnObject(ctx, data, codec, schemaVersion)
+	if err != nil {
+		return nil, err
+	}
+	cidStr, err := cid.StringOfBase(CidMbaseEncoder.Encoding())
+	if err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			eventType,
+			sdk.NewAttribute(attr, cidStr),
+		),
+	)
+	return cid, nil
+}
+
+func (k Keeper) GetEntity(ctx sdk.Context, cid CID) iscnblock.IscnObject {
+	return k.checkCodecAndGetIscnObject(ctx, cid, EntityCodecType)
+}
+
+func (k Keeper) SetEntity(ctx sdk.Context, entity IscnData) (*CID, error) {
+	// TODO: schemaVersion base on input context field
+	schemaVersion := uint64(1)
+	return k.setIscnObjectAndEmitEvent(
+		ctx, entity, EntityCodecType, schemaVersion, EventTypeAddEntity, AttributeKeyEntityCid,
+	)
+}
+
+func (k Keeper) GetRightTerms(ctx sdk.Context, cid CID) *string {
+	bz := k.GetCidBlock(ctx, cid)
+	if bz == nil {
+		return nil
+	}
+	terms := string(bz)
+	return &terms
+}
+
+func (k Keeper) SetRightTerms(ctx sdk.Context, terms string) (*CID, error) {
+	bz := []byte(terms)
+	cid, err := gocid.V1Builder{
+		Codec:  RightTermsCodecType,
+		MhType: mh.SHA2_256,
+	}.Sum(bz)
+	if err != nil {
+		return nil, err
+	}
+	k.SetCidBlock(ctx, cid, bz)
+	cidStr, err := cid.StringOfBase(CidMbaseEncoder.Encoding())
+	if err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeAddRightTerms,
+			sdk.NewAttribute(AttributeKeyRightTermsCid, cidStr),
+		),
+	)
+	return &cid, nil
+}
+
+func (k Keeper) GetIscnContent(ctx sdk.Context, cid CID) iscnblock.IscnObject {
+	return k.checkCodecAndGetIscnObject(ctx, cid, IscnContentCodecType)
+}
+
+func (k Keeper) SetIscnContent(ctx sdk.Context, content IscnData) (*CID, error) {
+	// TODO: schemaVersion base on input context field
+	schemaVersion := uint64(1)
+	return k.setIscnObjectAndEmitEvent(
+		ctx, content, IscnContentCodecType, schemaVersion, EventTypeAddIscnContent, AttributeKeyIscnContentCid,
+	)
+}
+
+func (k Keeper) GetIscnKernelByCID(ctx sdk.Context, cid CID) iscnblock.IscnObject {
+	if cid.Prefix().GetCodec() != IscnKernelCodecType {
+		return nil
+	}
+	return k.GetCidIscnObject(ctx, cid)
+}
+
+func (k Keeper) GetIscnKernelCIDByIscnID(ctx sdk.Context, iscnID IscnID) *CID {
+	key := GetIscnKernelKey(iscnID)
+	cidBytes := ctx.KVStore(k.storeKey).Get(key)
+	if cidBytes == nil {
+		return nil
+	}
+	_, cid, err := gocid.CidFromBytes(cidBytes)
+	if err != nil {
+		// TODO: should panic or at least log
+		return nil
+	}
+	return &cid
+}
+
+func (k Keeper) SetIscnKernel(ctx sdk.Context, iscnID IscnID, kernel IscnData) (*CID, error) {
+	// TODO: schemaVersion base on input context field
+	schemaVersion := uint64(1)
+	kernel.Set("id", []byte(iscnID))
+	cid, err := k.setIscnObjectAndEmitEvent(
+		ctx, kernel, IscnKernelCodecType, schemaVersion, EventTypeAddIscnKernel, AttributeKeyIscnKernelCid,
+	)
+	if err != nil {
+		return nil, err
+	}
+	cidBytes := cid.Bytes()
+	key := GetIscnKernelKey(iscnID)
+	ctx.KVStore(k.storeKey).Set(key, cidBytes)
+	key = GetCidToIscnIDKey(cidBytes)
+	ctx.KVStore(k.storeKey).Set(key, iscnID)
+	return cid, err
+}
+
 func (k Keeper) SetIscnCount(ctx sdk.Context, count uint64) {
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 	ctx.KVStore(k.storeKey).Set(IscnCountKey, bz)
@@ -101,115 +288,38 @@ func (k Keeper) GetIscnCount(ctx sdk.Context) uint64 {
 	return count
 }
 
-func (k Keeper) IterateAuthors(ctx sdk.Context, f func(authorCid []byte, author *Author) bool) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, AuthorKey)
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		authorCid := iterator.Key()[len(AuthorKey):]
-		author := Author{}
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &author)
-		stop := f(authorCid, &author)
-		if stop {
-			break
-		}
-	}
-}
-
-func (k Keeper) SetIscnRecord(ctx sdk.Context, iscnId []byte, record *IscnRecord) {
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(record) // TODO: cbor?
-	key := GetIscnRecordKey(iscnId)
-	ctx.KVStore(k.storeKey).Set(key, bz)
-}
-
-func (k Keeper) GetIscnRecord(ctx sdk.Context, iscnId []byte) *IscnRecord {
-	key := GetIscnRecordKey(iscnId)
-	bz := ctx.KVStore(k.storeKey).Get(key)
-	if bz == nil {
-		return nil
-	}
-	record := IscnRecord{}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &record)
-	return &record
-}
-
-func (k Keeper) IterateIscnRecords(ctx sdk.Context, f func(iscnId []byte, iscnRecord *IscnRecord) bool) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, IscnRecordKey)
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		id := iterator.Key()[len(IscnRecordKey):]
-		record := IscnRecord{}
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &record)
-		stop := f(id, &record)
-		if stop {
-			break
-		}
-	}
-}
-
-var allowedStakeholderTypes = map[string]bool{
-	"author": true,
-	// TODO: more types
-}
-
-func (k Keeper) AddIscnRecord(ctx sdk.Context, feePayer sdk.AccAddress, record *IscnRecord) (iscnId []byte, err sdk.Error) {
+func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, tx []byte) error {
 	acc := k.accountKeeper.GetAccount(ctx, feePayer)
 	if acc == nil {
-		return nil, sdk.NewError(DefaultCodespace, 1, "No account") // TODO: proper error
+		return fmt.Errorf("No account") // TODO: proper error
 	}
-	// TODO: checkings (in handler?)
-	// 1. len(stakeholder) > 0?
-	// 2. one author only?
 	feePerByte := k.GetParams(ctx).FeePerByte
-	feeAmount := feePerByte.Amount.MulInt64(int64(len(ctx.TxBytes())))
+	feeAmount := feePerByte.Amount.MulInt64(int64(len(tx)))
 	fees := sdk.NewCoins(sdk.NewCoin(feePerByte.Denom, feeAmount.Ceil().RoundInt()))
 	result := auth.DeductFees(k.supplyKeeper, ctx, acc, fees)
 	if !result.IsOK() {
 		// TODO: proper error
-		return nil, sdk.NewError(DefaultCodespace, 2, "Not enough fee, %s %s needed", feeAmount.String(), feePerByte.Denom)
+		return fmt.Errorf("Not enough fee, %s %s needed", feeAmount.String(), feePerByte.Denom)
 	}
-	for i := range record.Stakeholders {
-		stakeholder := &record.Stakeholders[i]
-		_, ok := allowedStakeholderTypes[stakeholder.Type]
-		if !ok {
-			// TODO: proper error
-			return nil, sdk.NewError(DefaultCodespace, 3, "Unknown stakeholder type: %s", stakeholder.Type)
-		}
-		if stakeholder.Type == "author" {
-			authorPrefix := "likecoin-chain://authors/" // TODO: better format
-			if strings.HasPrefix(stakeholder.Id, authorPrefix) {
-				cidStr := stakeholder.Id[len(authorPrefix):]
-				cid, err := base64.URLEncoding.DecodeString(cidStr)
-				if err != nil {
-					// TODO: proper error
-					return nil, sdk.NewError(DefaultCodespace, 4, "Invalid author string: %s", err.Error())
-				}
-				if k.GetAuthor(ctx, cid) == nil {
-					// TODO: proper error
-					return nil, sdk.NewError(DefaultCodespace, 5, "Unknown author: %s", cidStr)
-				}
-				stakeholder.Id = cidStr
-			} else {
-				author := Author{}
-				err := k.cdc.UnmarshalJSON([]byte(stakeholder.Id), &author)
-				if err != nil {
-					// TODO: proper error
-					return nil, sdk.NewError(DefaultCodespace, 5, "Cannot decode author: %s", err.Error())
-				}
-				cid := k.SetAuthor(ctx, &author)
-				cidStr := base64.URLEncoding.EncodeToString(cid)
-				stakeholder.Id = cidStr
-				// TODO: return author CID for tx event, or return event
-			}
-		}
-	}
+	return nil
+}
+
+func (k Keeper) AddIscnKernel(ctx sdk.Context, kernel IscnData) (iscnID IscnID, err error) {
 	hasher := tmhash.New()
 	hasher.Write(ctx.BlockHeader().LastBlockId.Hash)
 	iscnCount := k.GetIscnCount(ctx)
 	k.SetIscnCount(ctx, iscnCount+1)
 	binary.Write(hasher, binary.BigEndian, iscnCount)
-	id := hasher.Sum(nil)
-	k.SetIscnRecord(ctx, id, record)
-	return id, nil
+	iscnID = hasher.Sum(nil)
+	_, err = k.SetIscnKernel(ctx, iscnID, kernel)
+	if err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeCreateIscn,
+			sdk.NewAttribute(AttributeKeyIscnID, iscnID.String()),
+		),
+	)
+	return iscnID, nil
 }

@@ -8,20 +8,20 @@ const (
 )
 
 var (
-	IscnRecordKey = []byte{0x01}
-	IscnCountKey  = []byte{0x02}
-	AuthorKey     = []byte{0x03}
-	RightTermsKey = []byte{0x04}
+	CidBlockKey    = []byte{0x01}
+	IscnKernelKey  = []byte{0x02}
+	IscnCountKey   = []byte{0x03}
+	CidToIscnIDKey = []byte{0x04}
 )
 
-func GetIscnRecordKey(iscnId []byte) []byte {
-	return append(IscnRecordKey, iscnId...)
+func GetIscnKernelKey(iscnID []byte) []byte {
+	return append(IscnKernelKey, iscnID...)
 }
 
-func GetAuthorKey(authorCid []byte) []byte {
-	return append(AuthorKey, authorCid...)
+func GetCidBlockKey(cid []byte) []byte {
+	return append(CidBlockKey, cid...)
 }
 
-func GetRightTermsKey(rightTermsHash []byte) []byte {
-	return append(RightTermsKey, rightTermsHash...)
+func GetCidToIscnIDKey(cid []byte) []byte {
+	return append(CidToIscnIDKey, cid...)
 }

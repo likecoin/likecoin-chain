@@ -1,16 +1,17 @@
 package rest
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	gocid "github.com/ipfs/go-cid"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
 	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/multiformats/go-multibase"
 )
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
@@ -20,13 +21,13 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	).Methods("GET")
 
 	r.HandleFunc(
-		"/iscn/records/{iscnId}",
-		recordHandlerFn(cliCtx),
+		"/iscn/kernels/{iscnID}",
+		kernelHandlerFn(cliCtx),
 	).Methods("GET")
 
 	r.HandleFunc(
-		"/iscn/authors/{authorCid}",
-		authorHandlerFn(cliCtx),
+		"/iscn/cids/{cid}",
+		cidHandlerFn(cliCtx),
 	).Methods("GET")
 }
 
@@ -48,66 +49,61 @@ func paramsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func recordHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func kernelHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		iscnIdStr := vars["iscnId"]
-		iscnId, err := base64.URLEncoding.DecodeString(iscnIdStr)
+		iscnIDStr := vars["iscnID"]
+		// TODO: proper decode by ISCN ID format
+		_, iscnID, err := multibase.Decode(iscnIDStr)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		params := types.QueryRecordParams{
-			Id: iscnId,
-		}
-		bz, err := cliCtx.Codec.MarshalJSON(params)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
-		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryIscnRecord)
+		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryIscnKernel)
 
-		res, height, err := cliCtx.QueryWithData(endpoint, bz)
+		res, height, err := cliCtx.QueryWithData(endpoint, iscnID)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		_, cid, err := gocid.CidFromBytes(res)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		bz, err := cliCtx.Codec.MarshalJSONIndent(cid, "", "  ")
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		rest.PostProcessResponse(w, cliCtx, bz)
 	}
 }
 
-func authorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func cidHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		authorCidStr := vars["authorCid"]
-		authorCid, err := base64.URLEncoding.DecodeString(authorCidStr)
+		cidStr := vars["cid"]
+		cid, err := gocid.Decode(cidStr)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		params := types.QueryAuthorParams{
-			Cid: authorCid,
-		}
-		bz, err := cliCtx.Codec.MarshalJSON(params)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+		bz := cid.Bytes()
 
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
-		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryAuthor)
+		endpoint := fmt.Sprintf("custom/%s/%s", types.ModuleName, types.QueryCID)
 
 		res, height, err := cliCtx.QueryWithData(endpoint, bz)
 		if err != nil {

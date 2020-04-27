@@ -1,18 +1,45 @@
 package cli
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strings"
 
+	gocid "github.com/ipfs/go-cid"
+	"github.com/polydawn/refmt/json"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/multiformats/go-multibase"
 )
+
+type printableIscnMap types.RawIscnMap
+
+func (m printableIscnMap) String() string {
+	bz, err := json.Marshal(m)
+	if err != nil {
+		return ""
+	}
+	return string(bz)
+}
+
+type printableCID types.CID
+
+func (cid printableCID) String() string {
+	s, err := types.CID(cid).StringOfBase(types.CidMbaseEncoder.Encoding())
+	if err != nil {
+		return ""
+	}
+	return s
+}
+
+type printableString string
+
+func (s printableString) String() string {
+	return string(s)
+}
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
@@ -24,91 +51,73 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	iscnQueryCmd.AddCommand(client.GetCommands(
-		GetCmdQueryIscnRecord(queryRoute, cdc),
+		GetCmdQueryIscnKernel(queryRoute, cdc),
 		GetCmdQueryParams(queryRoute, cdc),
-		GetCmdQueryAuthor(queryRoute, cdc),
+		GetCmdQueryCID(queryRoute, cdc),
 	)...)
 
 	return iscnQueryCmd
 
 }
 
-func GetCmdQueryIscnRecord(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryIscnKernel(storeName string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "record [iscn-id]",
-		Short: "Query an ISCN record by ID",
-		Long: strings.TrimSpace(`Query an ISCN record by ID:
+		Use:   "kernel [iscn-id]",
+		Short: "Query an ISCN kernel by ID",
+		Long: strings.TrimSpace(`Query an ISCN kernel by ID:
 
-$ likecli query iscn record xxxxxxx
+$ likecli query iscn kernel xxxxxxx
 `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			idStr := args[0]
-			id, err := base64.URLEncoding.DecodeString(idStr)
+			// TODO: parse by ISCN ID format: 1/xxxxx...
+			_, id, err := multibase.Decode(idStr)
 			if err != nil {
 				return err
 			}
-			queryData := types.QueryRecordParams{
-				Id: id,
-			}
-			bz, err := cdc.MarshalJSON(queryData)
-			if err != nil {
-				return err
-			}
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryIscnRecord), bz)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryIscnKernel), id)
 			if err != nil {
 				return err
 			}
 
-			record := types.IscnRecord{}
-			if len(res) > 0 {
-				cdc.UnmarshalJSON(res, &record)
+			_, kernelCID, err := gocid.CidFromBytes(res)
+			if err != nil {
+				return err
 			}
 
-			return cliCtx.PrintOutput(record)
+			return cliCtx.PrintOutput(printableCID(kernelCID))
 		},
 	}
 }
 
-func GetCmdQueryAuthor(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryCID(storeName string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "author [iscn-id]",
-		Short: "Query an author by CID",
-		Long: strings.TrimSpace(`Query an author CID:
+		Use:   "cid [cid]",
+		Short: "Query a CID",
+		Long: strings.TrimSpace(`Query a CID:
 
-$ likecli query iscn author xxxxxxx
+$ likecli query iscn cid xxxxxxx
 `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			idStr := args[0]
-			cid, err := base64.URLEncoding.DecodeString(idStr)
+			cidStr := args[0]
+			cid, err := gocid.Decode(cidStr)
 			if err != nil {
 				return err
 			}
-			queryData := types.QueryAuthorParams{
-				Cid: cid,
-			}
-			bz, err := cdc.MarshalJSON(queryData)
+			bz, err := cdc.MarshalJSON(cid.Bytes())
 			if err != nil {
 				return err
 			}
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryAuthor), bz)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", storeName, types.QueryCidBlockGet), bz)
 			if err != nil {
 				return err
 			}
-
-			author := types.Author{}
-			if len(res) > 0 {
-				cdc.UnmarshalJSON(res, &author)
-			}
-
-			return cliCtx.PrintOutput(author)
+			return cliCtx.PrintOutput(printableString(res))
 		},
 	}
 }
@@ -130,12 +139,12 @@ $ likecli query iscn params
 				return err
 			}
 
-			approver := sdk.AccAddress{}
+			params := types.Params{}
 			if len(res) > 0 {
-				cdc.UnmarshalJSON(res, &approver)
+				cdc.UnmarshalJSON(res, &params)
 			}
 
-			return cliCtx.PrintOutput(approver)
+			return cliCtx.PrintOutput(params)
 		},
 	}
 }

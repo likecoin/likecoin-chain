@@ -25,7 +25,7 @@ func queryApprover(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, sd
 
 	res, err := codec.MarshalJSONIndent(ModuleCdc, approver)
 	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to JSON marshal result: %s", err.Error()))
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to JSON marshal result", err.Error()))
 	}
 
 	return res, nil
@@ -36,7 +36,7 @@ func queryWhitelist(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, s
 
 	res, err := codec.MarshalJSONIndent(ModuleCdc, whitelist)
 	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to JSON marshal result: %s", err.Error()))
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to JSON marshal result", err.Error()))
 	}
 
 	return res, nil
