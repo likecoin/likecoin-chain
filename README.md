@@ -15,6 +15,14 @@ Some configs in `genesis.json`:
 
  - app_state.iscn.params.feePerByte: the Coin object representing the fee for uploading records
 
+## CIDs
+
+In the ISCN module, we utilize the concept of [CID](https://docs.ipfs.io/guides/concepts/cid/) from IPFS.
+
+Each records and sub-records will be assigned a CID, which is generated according to the records hash and type.
+
+In this way, querying these records from IPFS using the [IPLD](https://ipld.io/) model become possible.
+
 ## Transactions
 
 There are mainly 2 kinds of transactions:
