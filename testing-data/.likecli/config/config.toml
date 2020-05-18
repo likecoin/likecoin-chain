@@ -1,0 +1,2 @@
+chain-id = "local-test-chain"
+node = "tcp://localhost:26667"

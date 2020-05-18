@@ -1,0 +1,23 @@
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "likechain/MsgAddEntity",
+        "value": {
+          "from": "cosmos13sh5wnu006fgmsrsn4uycyx487jfjykvum4rr5",
+          "entity": {
+            "id": "cosmos13sh5wnu006fgmsrsn4uycyx487jfjykvum4rr5",
+            "name": "Chung",
+            "description": "Blockchain developer"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "memo": ""
+  }
+}

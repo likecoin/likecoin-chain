@@ -1,0 +1,21 @@
+version: "3.6"
+services:
+    liked_dev:
+        image: likechain/likechain:latest
+        volumes:
+            - ./.liked:/likechain/.liked
+            - ./.likecli:/likechain/.likecli
+        ports:
+            - 26656:26656
+            - 26657:26657
+        restart: always
+        command: ["liked", "--home", "/likechain/.liked", "start", "--rpc.laddr", "tcp://0.0.0.0:26657"]
+    lcd_dev:
+        image: likechain/likechain:latest
+        volumes:
+            - ./.liked:/likechain/.liked
+            - ./.likecli:/likechain/.likecli
+        ports:
+            - 1317:1317
+        restart: always
+        command: ["likecli", "--home", "/likechain/.likecli", "rest-server", "--node", "tcp://liked_dev:26657", "--chain-id", "local-test-chain", "--laddr", "tcp://0.0.0.0:1317"]

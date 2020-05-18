@@ -1,0 +1,32 @@
+{
+  "mode": "block",
+  "tx": {
+    "msg": [
+      {
+        "type": "likechain/MsgAddEntity",
+        "value": {
+          "from": "cosmos13sh5wnu006fgmsrsn4uycyx487jfjykvum4rr5",
+          "entity": {
+            "description": "Blockchain developer",
+            "id": "cosmos13sh5wnu006fgmsrsn4uycyx487jfjykvum4rr5",
+            "name": "Chung"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A1kIfwSa9vrIoMqK/Sh7YxEnNHftdaqrj0+r9Ih5adfg"
+        },
+        "signature": "jlneo778qHA2eGpE/PrSBb3WVN5xagxaoctpEEXt2kBbRsKwwCEDkcvOgtYZI8S4gTlsqScfxMyxX1+UguZqWw=="
+      }
+    ],
+    "memo": ""
+  }
+}

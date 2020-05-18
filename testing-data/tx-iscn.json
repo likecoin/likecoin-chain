@@ -1,0 +1,69 @@
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "likechain/MsgCreateISCN",
+        "value": {
+          "from": "cosmos13sh5wnu006fgmsrsn4uycyx487jfjykvum4rr5",
+          "iscnKernel": {
+            "content": {
+              "fingerprint": "hash://sha256/0baa914a7ad24ba17e9ee470d0b732bf04d9e92afdc76f6a0fd6f9cd2e29e95a",
+              "tags": [
+                "blog",
+                "blockchain"
+              ],
+              "title": "My Blog",
+              "type": "article",
+              "version": 1
+            },
+            "parent": null,
+            "rights": {
+              "rights": [
+                {
+                  "holder": {
+                    "/": "z4hviFYYMHNnCnVNTMfazjVFkxTUKB3Qp3XGQf3DtwYpdMfp5AY"
+                  },
+                  "period": {
+                    "from": "2020-01-23T12:34:56Z"
+                  },
+                  "terms": {
+                    "/": "QmZhRNkZaSnhDr6gBC22zwhTjsGyUx39tm8gjFYnTr2SjN"
+                  },
+                  "type": "License"
+                }
+              ]
+            },
+            "stakeholders": {
+              "stakeholders": [
+                {
+                  "sharing": 123,
+                  "stakeholder": {
+                    "/": "z4hviFYYMHNnCnVNTMfazjVFkxTUKB3Qp3XGQf3DtwYpdMfp5AY"
+                  },
+                  "type": "Creator"
+                },
+                {
+                  "sharing": 123,
+                  "stakeholder": {
+                    "description": "GitHub's static page host",
+                    "id": "https://pages.github.com",
+                    "name": "GitHub Page"
+                  },
+                  "type": "Publisher"
+                }
+              ]
+            },
+            "timestamp": "2020-01-23T12:34:56Z",
+            "version": 1
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "memo": ""
+  }
+}
