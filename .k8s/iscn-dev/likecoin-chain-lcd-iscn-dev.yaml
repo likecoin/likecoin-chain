@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: likecoin-chain-lcd-iscn-dev
+  namespace: default
+  labels:
+    app: likecoin-chain-lcd-iscn-dev
+spec:
+  ports:
+    - name: lcd
+      port: 1317
+  selector:
+    app: likecoin-chain-lcd-iscn-dev
+
+---
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: likecoin-chain-lcd-iscn-dev
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: likecoin-chain-lcd-iscn-dev
+    spec:
+      containers:
+        - image: us.gcr.io/likecoin-develop/likecoin-chain:iscn-dev
+          name: likecoin-chain-lcd
+          readinessProbe:
+            httpGet:
+              path: /node_info
+              port: 1317
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          command: [
+            "likecli",
+            "--home",
+            "/likechain/.likecli",
+            "rest-server",
+            "--chain-id",
+            "local-test-chain",
+            "--node",
+            "tcp://likecoin-chain-node-iscn-dev:26657",
+            "--laddr",
+            "tcp://0.0.0.0:1317",
+          ]
+          ports:
+            - containerPort: 1317
+              name: lcd
+          resources:
+            requests:
+              cpu: "0.01"
+          volumeMounts:
+            - name: likecoin-chain-lcd-data
+              mountPath: /likechain/.liked/data
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: likecoin-chain-lcd-data
+          persistentVolumeClaim:
+            claimName: likecoin-chain-lcd-data-pvc
