@@ -2,7 +2,6 @@ package keeper
 
 import (
 	context "context"
-	"fmt"
 
 	gocid "github.com/ipfs/go-cid"
 
@@ -13,64 +12,60 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func queryIscnRecord(ctx sdk.Context, k Keeper, iscnId IscnId) (*types.Record, error) {
+func (k Keeper) queryIscnRecordsByIscnId(ctx sdk.Context, iscnId IscnId) (*types.QueryIscnRecordsResponse, error) {
 	latestVersion := k.GetIscnIdVersion(ctx, iscnId)
-	if latestVersion == 0 {
+	if latestVersion == 0 || iscnId.Version > latestVersion {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
 	}
 	if iscnId.Version == 0 {
 		iscnId.Version = latestVersion
 	}
-	cid := k.GetIscnIdCid(ctx, iscnId)
-	if cid == nil {
-		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
-	}
 	owner := k.GetIscnIdOwner(ctx, iscnId)
+	cid := k.GetIscnIdCid(ctx, iscnId)
 	record := k.GetCidBlock(ctx, *cid)
-	return &types.Record{
+	records := []types.Record{{
 		IscnId:              iscnId.String(),
 		Owner:               owner.String(),
 		Ipld:                cid.String(),
 		LatestRecordVersion: latestVersion,
 		Record:              types.IscnInput(record),
-	}, nil
+	}}
+	return &types.QueryIscnRecordsResponse{Records: records}, nil
+}
+
+func (k Keeper) queryIscnRecordsByFingerprint(ctx sdk.Context, fingerprint string) (*types.QueryIscnRecordsResponse, error) {
+	records := []types.Record{}
+	// TODO: pagination?
+	k.IterateFingerprintCids(ctx, fingerprint, func(cid CID) bool {
+		iscnId := *k.GetCidIscnId(ctx, cid)
+		owner := k.GetIscnIdOwner(ctx, iscnId)
+		latestVersion := k.GetIscnIdVersion(ctx, iscnId)
+		record := k.GetCidBlock(ctx, cid)
+		records = append(records, types.Record{
+			IscnId:              iscnId.String(),
+			Owner:               owner.String(),
+			Ipld:                cid.String(),
+			LatestRecordVersion: latestVersion,
+			Record:              types.IscnInput(record),
+		})
+		return false
+	})
+	return &types.QueryIscnRecordsResponse{Records: records}, nil
 }
 
 func (k Keeper) IscnRecords(ctx context.Context, req *types.QueryIscnRecordsRequest) (*types.QueryIscnRecordsResponse, error) {
-	// TODO: REMOVE debug fmt
-	fmt.Printf("GETTING IscnRecords: '%s', '%s'\n", req.IscnId, req.Fingerprint)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if len(req.IscnId) > 0 {
 		if len(req.Fingerprint) > 0 {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "only one of iscn_id and fingerprint can exist in query parameters")
 		}
-		id, err := types.ParseIscnID(req.IscnId)
+		iscnId, err := types.ParseIscnID(req.IscnId)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 		}
-		record, err := queryIscnRecord(sdkCtx, k, id)
-		if err != nil {
-			return nil, err
-		}
-		return &types.QueryIscnRecordsResponse{Records: []types.Record{*record}}, nil
+		return k.queryIscnRecordsByIscnId(sdkCtx, iscnId)
 	} else if len(req.Fingerprint) > 0 {
-		records := []types.Record{}
-		k.IterateFingerprintCids(sdkCtx, req.Fingerprint, func(cid CID) bool {
-			// TODO: pagination?
-			iscnId := k.GetCidIscnId(sdkCtx, cid)
-			if iscnId == nil {
-				// TODO: ???
-				return false
-			}
-			result, err := queryIscnRecord(sdkCtx, k, *iscnId)
-			if err != nil {
-				// TODO: ???
-				return false
-			}
-			records = append(records, *result)
-			return false
-		})
-		return &types.QueryIscnRecordsResponse{Records: records}, nil
+		return k.queryIscnRecordsByFingerprint(sdkCtx, req.Fingerprint)
 	} else {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "one of iscn_id and fingerprint must exist in query parameters")
 	}
