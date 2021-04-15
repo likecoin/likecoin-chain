@@ -1,0 +1,81 @@
+syntax = "proto3";
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "iscn/params.proto";
+
+option go_package = "github.com/likecoin/likechain/x/iscn/types";
+
+service Query {
+  rpc IscnRecords(QueryIscnRecordsRequest) returns (QueryIscnRecordsResponse) {
+    option (google.api.http).get = "/iscn/records";
+  }
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/iscn/parameters";
+  }
+
+  rpc GetCid(QueryGetCidRequest) returns (QueryGetCidResponse) {
+    option (google.api.http).get = "/iscn/get_cid/{cid}";
+  }
+
+  rpc HasCid(QueryHasCidRequest) returns (QueryHasCidResponse) {
+    option (google.api.http).get = "/iscn/has_cid/{cid}";
+  }
+
+  rpc GetCidSize(QueryGetCidSizeRequest) returns (QueryGetCidSizeResponse) {
+    option (google.api.http).get = "/iscn/get_cid_size/{cid}";
+  }
+}
+
+message Record {
+  string iscn_id = 1;
+  string owner = 2;
+  string ipld = 3;
+  uint64 latest_record_version = 4;
+  bytes record = 5 [
+    (gogoproto.customtype) = "IscnInput",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryIscnRecordsRequest {
+  string iscn_id = 1;
+  string fingerprint = 2;
+}
+
+message QueryIscnRecordsResponse  {
+  repeated Record records = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryParamsRequest {
+}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetCidRequest {
+  string cid = 1;
+}
+
+message QueryGetCidResponse {
+  bytes data = 1;
+}
+
+message QueryGetCidSizeRequest {
+  string cid = 1;
+}
+
+message QueryGetCidSizeResponse {
+  uint64 size = 1;
+}
+
+message QueryHasCidRequest {
+  string cid = 1;
+}
+
+message QueryHasCidResponse {
+  bool exist = 1;
+}

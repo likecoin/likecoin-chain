@@ -1,0 +1,63 @@
+syntax = "proto3";
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likechain/x/iscn/types";
+
+// Msg defines the bank Msg service.
+service Msg {
+  // CreateIscnRecord defines a method to create ISCN metadata
+  rpc CreateIscnRecord(MsgCreateIscnRecord) returns (MsgCreateIscnRecordResponse);
+  // UpdateIscnRecord defines a method to update existing ISCN metadata
+  rpc UpdateIscnRecord(MsgUpdateIscnRecord) returns (MsgUpdateIscnRecordResponse);
+  // ChangeIscnRecordOwnership defines a method to update the ownership of existing ISCN metadata
+  rpc ChangeIscnRecordOwnership(MsgChangeIscnRecordOwnership) returns (MsgChangeIscnRecordOwnershipResponse);
+}
+
+message IscnRecord {
+  // Using camelCases to make the record JSON in tx more like general JSON documents
+  string recordNotes = 1;
+  repeated string contentFingerprints = 2;
+  repeated bytes stakeholders = 3 [
+    (gogoproto.customtype) = "IscnInput"
+  ];
+  bytes contentMetadata = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "IscnInput"
+  ];
+}
+
+message MsgCreateIscnRecord {
+  string from = 1;
+  IscnRecord record = 2 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgCreateIscnRecordResponse {
+  string iscn_id = 1;
+  string record_ipld = 2;
+}
+
+message MsgUpdateIscnRecord {
+  string from = 1;
+  string iscn_id = 2;
+  IscnRecord record = 3 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgUpdateIscnRecordResponse {
+  string iscn_id = 1;
+  string record_ipld = 2;
+}
+
+message MsgChangeIscnRecordOwnership {
+  string from = 1;
+  string iscn_id = 2;
+  string new_owner = 3;
+}
+
+message MsgChangeIscnRecordOwnershipResponse {
+}

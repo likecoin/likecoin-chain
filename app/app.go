@@ -80,14 +80,15 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	"github.com/likecoin/likechain/x/iscn"
+	iscnkeeper "github.com/likecoin/likechain/x/iscn/keeper"
+	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 )
 
 const appName = "LikeApp"
 
 var (
-	// default home directories for likecli
-	DefaultCLIHome = os.ExpandEnv("$HOME/.likecli")
-
 	// default home directories for liked
 	DefaultNodeHome = os.ExpandEnv("$HOME/.liked")
 
@@ -115,6 +116,7 @@ var (
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
+		iscn.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -186,6 +188,7 @@ type LikeApp struct {
 	ibcKeeper        *ibckeeper.Keeper
 	evidenceKeeper   evidencekeeper.Keeper
 	transferKeeper   ibctransferkeeper.Keeper
+	iscnKeeper       iscnkeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -212,6 +215,7 @@ func NewLikeApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		iscntypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -242,6 +246,7 @@ func NewLikeApp(
 	crisisSubspace := app.paramsKeeper.Subspace(crisistypes.ModuleName)
 	ibcTransferSubspace := app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	ibcHostSubspace := app.paramsKeeper.Subspace(ibchost.ModuleName)
+	iscnSubspace := app.paramsKeeper.Subspace(iscntypes.ModuleName)
 
 	bApp.SetParamStore(
 		app.paramsKeeper.Subspace(baseapp.Paramspace).
@@ -278,6 +283,7 @@ func NewLikeApp(
 		crisisSubspace, invCheckPeriod, app.bankKeeper, authtypes.FeeCollectorName,
 	)
 	app.upgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath)
+	app.iscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.accountKeeper, app.bankKeeper, iscnSubspace)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -348,6 +354,7 @@ func NewLikeApp(
 		ibc.NewAppModule(app.ibcKeeper),
 		transferModule,
 		params.NewAppModule(app.paramsKeeper),
+		iscn.NewAppModule(app.iscnKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -367,7 +374,7 @@ func NewLikeApp(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName,
+		ibctransfertypes.ModuleName, iscntypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

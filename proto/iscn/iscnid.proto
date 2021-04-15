@@ -1,0 +1,17 @@
+syntax = "proto3";
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likechain/x/iscn/types";
+
+message IscnId {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer)         = false;
+  option (gogoproto.goproto_getters)  = false;
+
+  string registry_id = 1;
+  bytes tracing_id = 2;
+  uint64 version = 3;
+}
