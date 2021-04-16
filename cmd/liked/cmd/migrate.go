@@ -32,8 +32,10 @@ import (
 )
 
 const flagGenesisTime = "genesis-time"
+const flagIscnRegistryId = "iscn-registry-id"
+const flagIscnFeePerByte = "iscn-fee-per-byte"
 
-func migrateState(initialState types.AppMap, ctx client.Context) types.AppMap {
+func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscntypes.Params) types.AppMap {
 	state := initialState
 	state = v038.Migrate(state, ctx)
 	state = v039.Migrate(state, ctx)
@@ -55,8 +57,7 @@ func migrateState(initialState types.AppMap, ctx client.Context) types.AppMap {
 	ibcCoreGenesis.ClientGenesis.Params.AllowedClients = []string{exported.Tendermint}
 	stakingGenesis.Params.HistoricalEntries = 10000
 
-	iscnGenesis := iscntypes.DefaultGenesisState()
-	// TODO: iscn params
+	iscnGenesis := iscntypes.NewGenesisState(iscnParams, []iscntypes.GenesisIscnEntry{})
 
 	// TODO: investigate v0.41 changes
 	// TODO: params module, upgrade module, vesting module (is it needed?)
@@ -77,7 +78,7 @@ func MigrateGenesisCmd() *cobra.Command {
 		Long: (`Migrate the source genesis into the target version and print to STDOUT.
 
 Example:
-$ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-time=2021-12-31T04:00:00Z
+$ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-time=2021-12-31T04:00:00Z --iscn-fee-per-byte=1234.560000000000000000nanolike
 `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -103,8 +104,17 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 			newGenDoc.Validators = oldGenDoc.Validators
 
 			// TODO: custom  block height?
-			// TODO: flags for params for ISCN module
-			newGenState := migrateState(initialState, clientCtx)
+			iscnRegistryId, _ := cmd.Flags().GetString(flagIscnRegistryId)
+			iscnFeePerByteStr, _ := cmd.Flags().GetString(flagIscnFeePerByte)
+			iscnFeePerByte, err := sdk.ParseDecCoin(iscnFeePerByteStr)
+			if err != nil {
+				return errors.Wrap(err, "failed to parse ISCN fee per byte parameter")
+			}
+			iscnParam := iscntypes.Params{
+				RegistryId: iscnRegistryId,
+				FeePerByte: iscnFeePerByte,
+			}
+			newGenState := migrateState(initialState, clientCtx, iscnParam)
 
 			newGenDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {
@@ -149,6 +159,8 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
+	cmd.Flags().String(flagIscnRegistryId, iscntypes.DefaultRegistryId, "ISCN registry ID parameter in the migrated genesis state")
+	cmd.Flags().String(flagIscnFeePerByte, iscntypes.DefaultFeePerByte.String(), "ISCN fee per byte parameter in the migrated genesis state")
 
 	return cmd
 }
