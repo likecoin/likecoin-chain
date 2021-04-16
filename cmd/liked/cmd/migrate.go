@@ -15,7 +15,11 @@ import (
 	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
 	"github.com/cosmos/cosmos-sdk/x/ibc/core/exported"
 	ibccoretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
+	"github.com/cosmos/cosmos-sdk/x/params"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -43,8 +47,8 @@ func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscn
 	delete(state, "whitelist")
 
 	var stakingGenesis stakingtypes.GenesisState
-
 	ctx.JSONMarshaler.MustUnmarshalJSON(state[stakingtypes.ModuleName], &stakingGenesis)
+	stakingGenesis.Params.HistoricalEntries = 10000
 
 	ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
 	ibcCoreGenesis := ibccoretypes.DefaultGenesisState()
@@ -55,12 +59,8 @@ func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscn
 	ibcTransferGenesis.Params.SendEnabled = false
 
 	ibcCoreGenesis.ClientGenesis.Params.AllowedClients = []string{exported.Tendermint}
-	stakingGenesis.Params.HistoricalEntries = 10000
 
 	iscnGenesis := iscntypes.NewGenesisState(iscnParams, []iscntypes.GenesisIscnEntry{})
-
-	// TODO: investigate v0.41 changes
-	// TODO: params module, upgrade module, vesting module (is it needed?)
 
 	state[ibcxfertypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
 	state[host.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)
@@ -68,6 +68,8 @@ func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscn
 	state[evtypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(evGenesis)
 	state[stakingtypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(&stakingGenesis)
 	state[iscntypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(iscnGenesis)
+	state[paramstypes.ModuleName] = params.AppModuleBasic{}.DefaultGenesis(ctx.JSONMarshaler)
+	state[upgradetypes.ModuleName] = upgrade.AppModuleBasic{}.DefaultGenesis(ctx.JSONMarshaler)
 	return state
 }
 
