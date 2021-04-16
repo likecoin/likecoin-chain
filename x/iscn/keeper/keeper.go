@@ -10,8 +10,6 @@ import (
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramTypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	gocid "github.com/ipfs/go-cid"
-
 	"github.com/likecoin/likechain/x/iscn/types"
 )
 
@@ -84,11 +82,8 @@ func (k Keeper) IterateCidBlocks(ctx sdk.Context, f func(cid CID, bz []byte) boo
 	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), CidBlockKey)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
-		_, cid, err := gocid.CidFromBytes(it.Key()[len(CidBlockKey):])
-		if err != nil {
-			// TODO: ???
-			continue
-		}
+		cidBytes := it.Key()[len(CidBlockKey):]
+		cid := types.MustCidFromBytes(cidBytes)
 		if f(cid, it.Value()) {
 			break
 		}
@@ -118,11 +113,7 @@ func (k Keeper) GetIscnIdCid(ctx sdk.Context, iscnId IscnId) *CID {
 	if bz == nil {
 		return nil
 	}
-	_, cid, err := gocid.CidFromBytes(bz)
-	if err != nil {
-		// TODO: ???
-		return nil
-	}
+	cid := types.MustCidFromBytes(bz)
 	return &cid
 }
 
@@ -138,11 +129,7 @@ func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, cid CID) b
 		iscnId := IscnId{}
 		iscnIdBytes := it.Key()[len(IscnIdToCidKey):]
 		k.cdc.MustUnmarshalBinaryBare(iscnIdBytes, &iscnId)
-		_, cid, err := gocid.CidFromBytes(it.Value())
-		if err != nil {
-			// TODO: ???
-			continue
-		}
+		cid := types.MustCidFromBytes(it.Value())
 		if f(iscnId, cid) {
 			break
 		}
@@ -160,11 +147,7 @@ func (k Keeper) IterateFingerprintCids(ctx sdk.Context, fingerprint string, f fu
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
 		cidBytes := it.Key()[len(prefix):]
-		_, cid, err := gocid.CidFromBytes(cidBytes)
-		if err != nil {
-			// TODO: ???
-			continue
-		}
+		cid := types.MustCidFromBytes(cidBytes)
 		if f(cid) {
 			break
 		}

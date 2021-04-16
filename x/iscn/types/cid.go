@@ -17,3 +17,11 @@ func ComputeRecordCid(record []byte) CID {
 	}
 	return gocid.NewCidV1(CidCodecType, mhash)
 }
+
+func MustCidFromBytes(bz []byte) CID {
+	_, cid, err := gocid.CidFromBytes(bz)
+	if err != nil {
+		panic(err)
+	}
+	return cid
+}
