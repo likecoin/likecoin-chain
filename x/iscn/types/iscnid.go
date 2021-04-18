@@ -11,20 +11,24 @@ import (
 )
 
 const TracingIdLength = tmhash.Size
-const IscnIdRegexpPattern = "iscn://([-_.:a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)(?:/([0-9]+))?$"
+const IscnIdRegexpPattern = "iscn://([-_.:=+,a-zA-Z0-9]+)/([-_.:=+,a-zA-Z0-9]+)(?:/([0-9]+))?$"
 
-var IscnIdRegexp *regexp.Regexp
+var IscnIdRegexp *regexp.Regexp = regexp.MustCompile(IscnIdRegexpPattern)
 
-func Base64ToTracingId(s string) ([]byte, error) {
-	return base64.RawURLEncoding.DecodeString(s)
-}
-
-func (iscnId IscnId) TracingIdString() string {
-	return base64.RawURLEncoding.EncodeToString(iscnId.TracingId)
+func (iscnId IscnId) Prefix() string {
+	return fmt.Sprintf("%s/%s", iscnId.RegistryId, iscnId.TracingId)
 }
 
 func (iscnId IscnId) String() string {
-	return fmt.Sprintf("iscn://%s/%s/%d", iscnId.RegistryId, iscnId.TracingIdString(), iscnId.Version)
+	return fmt.Sprintf("iscn://%s/%s/%d", iscnId.RegistryId, iscnId.TracingId, iscnId.Version)
+}
+
+func (iscnId *IscnId) PrefixEqual(iscnId2 *IscnId) bool {
+	return iscnId.RegistryId == iscnId2.RegistryId && iscnId.TracingId == iscnId2.TracingId
+}
+
+func (iscnId *IscnId) Equal(iscnId2 *IscnId) bool {
+	return iscnId.PrefixEqual(iscnId2) && iscnId.Version == iscnId2.Version
 }
 
 func ParseIscnID(s string) (IscnId, error) {
@@ -34,13 +38,7 @@ func ParseIscnID(s string) (IscnId, error) {
 		return id, fmt.Errorf("invalid ISCN ID format")
 	}
 	id.RegistryId = matches[1]
-	tracingId, err := base64.RawURLEncoding.DecodeString(matches[2])
-	if err != nil {
-		return id, err
-	}
-	if len(tracingId) == 0 {
-		return id, fmt.Errorf("empty tracing ID")
-	}
+	tracingId := matches[2]
 	id.TracingId = tracingId
 	if len(matches) > 3 && len(matches[3]) > 0 {
 		version, err := strconv.ParseUint(matches[3], 10, 64)
@@ -76,14 +74,11 @@ func GenerateNewIscnIdWithSeed(registryId string, seed []byte) IscnId {
 	hasher := tmhash.New()
 	hasher.Write([]byte(registryId))
 	hasher.Write(seed)
-	tracingId := hasher.Sum(nil)
+	tracingIdBytes := hasher.Sum(nil)
+	tracingId := base64.RawURLEncoding.EncodeToString(tracingIdBytes)
 	return IscnId{
 		RegistryId: registryId,
 		TracingId:  tracingId,
 		Version:    1,
 	}
-}
-
-func init() {
-	IscnIdRegexp = regexp.MustCompile(IscnIdRegexpPattern)
 }

@@ -140,7 +140,7 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 		sdk.NewEvent(
 			types.EventTypeIscnRecord,
 			sdk.NewAttribute(types.AttributeKeyIscnId, id.String()),
-			sdk.NewAttribute(types.AttributeKeyIscnTracingId, id.TracingIdString()),
+			sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, id.Prefix()),
 			sdk.NewAttribute(types.AttributeKeyIscnOwner, newOwner.String()),
 		),
 	)

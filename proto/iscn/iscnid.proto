@@ -12,6 +12,6 @@ message IscnId {
   option (gogoproto.goproto_getters)  = false;
 
   string registry_id = 1;
-  bytes tracing_id = 2;
+  string tracing_id = 2;
   uint64 version = 3;
 }

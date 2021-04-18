@@ -220,7 +220,7 @@ func (k Keeper) AddIscnRecord(
 	event := sdk.NewEvent(
 		types.EventTypeIscnRecord,
 		sdk.NewAttribute(types.AttributeKeyIscnId, id.String()),
-		sdk.NewAttribute(types.AttributeKeyIscnTracingId, id.TracingIdString()),
+		sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, id.Prefix()),
 		sdk.NewAttribute(types.AttributeKeyIscnOwner, owner.String()),
 		sdk.NewAttribute(types.AttributeKeyIscnRecordIpld, cid.String()),
 	)
