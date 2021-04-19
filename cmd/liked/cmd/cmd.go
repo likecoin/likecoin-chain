@@ -50,7 +50,6 @@ import (
 )
 
 // liked custom flags
-const flagInvCheckPeriod = "inv-check-period"
 const flagGetIP = "get-ip"
 
 var shouldGetIP bool
