@@ -35,6 +35,7 @@ import (
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
@@ -82,6 +83,15 @@ func addGetIpFlag(startCmd *cobra.Command) {
 		}
 		return originalPreRunE(cmd, args)
 	}
+}
+
+func addCrisisFlag(startCmd *cobra.Command) {
+	crisis.AddModuleInitFlags(startCmd)
+}
+
+func addStartFlags(startCmd *cobra.Command) {
+	addCrisisFlag(startCmd)
+	addGetIpFlag(startCmd)
 }
 
 func queryCommand() *cobra.Command {
@@ -176,8 +186,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		debug.Cmd(),
 	)
 
-	// TODO: crisis?
-	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, exportAppState, addGetIpFlag)
+	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, exportAppState, addStartFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -238,6 +247,7 @@ func newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		app.MakeEncodingConfig(),
+		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
@@ -256,17 +266,16 @@ func newApp(
 	)
 }
 
-// TODO: see if need to use AppOptions
 func exportAppState(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool,
-	jailAllowedAddrs []string, _ servertypes.AppOptions,
+	jailAllowedAddrs []string, appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	encodingConfig := app.MakeEncodingConfig()
 	encodingConfig.Marshaler = codec.NewProtoCodec(encodingConfig.InterfaceRegistry)
 	var likeApp *app.LikeApp
 	if height != -1 {
 		likeApp = app.NewLikeApp(
-			logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encodingConfig,
+			logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encodingConfig, appOpts,
 		)
 		err := likeApp.LoadHeight(height)
 		if err != nil {
@@ -274,7 +283,7 @@ func exportAppState(
 		}
 	} else {
 		likeApp = app.NewLikeApp(
-			logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encodingConfig,
+			logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encodingConfig, appOpts,
 		)
 	}
 	return likeApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)

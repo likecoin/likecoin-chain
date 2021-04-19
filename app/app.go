@@ -199,7 +199,7 @@ func NewLikeApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	skipUpgradeHeights map[int64]bool, homePath string,
 	invCheckPeriod uint, encodingConfig EncodingConfig,
-	baseAppOptions ...func(*baseapp.BaseApp),
+	appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *LikeApp {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
@@ -328,7 +328,11 @@ func NewLikeApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.evidenceKeeper = *evidenceKeeper
 
-	// TODO: skipGenesisInvariants?
+	var skipGenesisInvariants = false
+	opt := appOpts.Get(crisis.FlagSkipGenesisInvariants)
+	if opt, ok := opt.(bool); ok {
+		skipGenesisInvariants = opt
+	}
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -339,7 +343,7 @@ func NewLikeApp(
 		auth.NewAppModule(appCodec, app.accountKeeper, nil),
 		bank.NewAppModule(appCodec, app.bankKeeper, app.accountKeeper),
 		capability.NewAppModule(appCodec, *app.capabilityKeeper),
-		crisis.NewAppModule(&app.crisisKeeper, true),
+		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants),
 		gov.NewAppModule(appCodec, app.govKeeper, app.accountKeeper, app.bankKeeper),
 		mint.NewAppModule(appCodec, app.mintKeeper, app.accountKeeper),
 		slashing.NewAppModule(
