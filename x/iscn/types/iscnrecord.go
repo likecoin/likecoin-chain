@@ -78,7 +78,7 @@ func (record *IscnRecord) ToJsonLd(info *IscnRecordJsonLdInfo) ([]byte, error) {
 		"contentMetadata":     normalizedContentMetadata,
 	}
 	if info.ParentIpld != nil {
-		recordMap["recordParentIpld"] = map[string]string{
+		recordMap["recordParentIPLD"] = map[string]string{
 			"/": info.ParentIpld.String(),
 		}
 	}
