@@ -23,8 +23,6 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		problemCount := uint64(0)
 		msgBuf := strings.Builder{}
-		seenId := map[string]string{}
-		cidUsedByIscnId := map[string]string{}
 
 		logProblem := func(msg string) {
 			msgBuf.WriteString(" - ")
@@ -158,11 +156,12 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 			checkRecordTimestamp(id, recordMap)
 		}
 
+		prevId := IscnId{}
 		k.IterateIscnIds(ctx, func(id IscnId, cid CID) bool {
-			_, ok := seenId[id.String()]
-			if ok {
+			if prevId.PrefixEqual(&id) {
 				return false
 			}
+			prevId = id
 			latestVersion := k.GetIscnIdVersion(ctx, id)
 			if latestVersion == 0 {
 				logProblem(fmt.Sprintf("ISCN ID %s has no latest version record", id.String()))
@@ -177,8 +176,6 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 					continue
 				}
 				cidStr := cid.String()
-				seenId[idStr] = cidStr
-				cidUsedByIscnId[cidStr] = idStr
 				cidReverseIscnId := k.GetCidIscnId(ctx, *cid)
 				if cidReverseIscnId == nil || !cidReverseIscnId.Equal(&id) {
 					logProblem(fmt.Sprintf("ISCN ID %s has CID record %s, but CID record of %s points to %s", idStr, cidStr, cidStr, cidReverseIscnId.String()))
@@ -200,11 +197,17 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 
 		k.IterateCidBlocks(ctx, func(cid CID, bz []byte) bool {
 			cidStr := cid.String()
-			_, ok := cidUsedByIscnId[cidStr]
-			if ok {
-				return false
+			iscnId := k.GetCidIscnId(ctx, cid)
+			if iscnId == nil {
+				logProblem(fmt.Sprintf("dangling CID record %s", cidStr))
+			} else {
+				iscnIdReverseCid := k.GetIscnIdCid(ctx, *iscnId)
+				if iscnIdReverseCid == nil || !iscnIdReverseCid.Equals(cid) {
+					logProblem(fmt.Sprintf("CID %s has ISCN ID record %s, but ISCN ID record of %s points to %s", cidStr, iscnId.String(), iscnId.String(), iscnIdReverseCid.String()))
+				} else {
+					return false
+				}
 			}
-			logProblem(fmt.Sprintf("dangling CID record %s", cidStr))
 			computedCid := types.ComputeRecordCid(bz)
 			if !cid.Equals(computedCid) {
 				logProblem(fmt.Sprintf("dangling CID record %s has computed CID %s", cidStr, computedCid.String()))
