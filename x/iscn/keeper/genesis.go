@@ -33,7 +33,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 			k.SetIscnIdOwner(ctx, id, owner)
 			fingerprints := recordMap["contentFingerprints"].([]string)
 			for _, fingerprint := range fingerprints {
-				k.AddFingerPrintCid(ctx, fingerprint, cid)
+				k.AddFingerprintCid(ctx, fingerprint, cid)
 			}
 		}
 	}

@@ -136,9 +136,31 @@ func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, cid CID) b
 	}
 }
 
-func (k Keeper) AddFingerPrintCid(ctx sdk.Context, fingerprint string, cid CID) {
+func (k Keeper) AddFingerprintCid(ctx sdk.Context, fingerprint string, cid CID) {
 	key := GetFingerprintCidRecordKey(fingerprint, cid)
 	ctx.KVStore(k.storeKey).Set(key, []byte{0x01})
+}
+
+func (k Keeper) HasFingerprintCid(ctx sdk.Context, fingerprint string, cid CID) bool {
+	key := GetFingerprintCidRecordKey(fingerprint, cid)
+	return ctx.KVStore(k.storeKey).Has(key)
+}
+
+func (k Keeper) IterateFingerprints(ctx sdk.Context, f func(fingerprint string, cid CID) bool) {
+	prefix := types.FingerprintToCidKey
+	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		key := it.Key()
+		fingerprintLenBytes := key[len(prefix) : len(prefix)+4]
+		fingerprintLen := binary.BigEndian.Uint32(fingerprintLenBytes)
+		fingerprint := string(key[len(prefix)+4 : len(prefix)+4+int(fingerprintLen)])
+		cidBytes := key[len(prefix)+4+int(fingerprintLen):]
+		cid := types.MustCidFromBytes(cidBytes)
+		if f(fingerprint, cid) {
+			break
+		}
+	}
 }
 
 func (k Keeper) IterateFingerprintCids(ctx sdk.Context, fingerprint string, f func(cid CID) bool) {
@@ -225,7 +247,7 @@ func (k Keeper) AddIscnRecord(
 		sdk.NewAttribute(types.AttributeKeyIscnRecordIpld, cid.String()),
 	)
 	for _, fingerprint := range fingerprints {
-		k.AddFingerPrintCid(ctx, fingerprint, cid)
+		k.AddFingerprintCid(ctx, fingerprint, cid)
 		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyIscnContentFingerprint, fingerprint))
 	}
 	ctx.EventManager().EmitEvent(event)
