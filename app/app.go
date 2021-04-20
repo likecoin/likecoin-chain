@@ -174,21 +174,21 @@ type LikeApp struct {
 	memKeys map[string]*sdk.MemoryStoreKey
 
 	// keepers
-	accountKeeper    authkeeper.AccountKeeper
-	bankKeeper       bankkeeper.Keeper
-	capabilityKeeper *capabilitykeeper.Keeper
-	stakingKeeper    stakingkeeper.Keeper
-	slashingKeeper   slashingkeeper.Keeper
-	mintKeeper       mintkeeper.Keeper
-	distrKeeper      distrkeeper.Keeper
-	govKeeper        govkeeper.Keeper
-	crisisKeeper     crisiskeeper.Keeper
-	paramsKeeper     paramskeeper.Keeper
-	upgradeKeeper    upgradekeeper.Keeper
-	ibcKeeper        *ibckeeper.Keeper
-	evidenceKeeper   evidencekeeper.Keeper
-	transferKeeper   ibctransferkeeper.Keeper
-	iscnKeeper       iscnkeeper.Keeper
+	AccountKeeper    authkeeper.AccountKeeper
+	BankKeeper       bankkeeper.Keeper
+	CapabilityKeeper *capabilitykeeper.Keeper
+	StakingKeeper    stakingkeeper.Keeper
+	SlashingKeeper   slashingkeeper.Keeper
+	MintKeeper       mintkeeper.Keeper
+	DistrKeeper      distrkeeper.Keeper
+	GovKeeper        govkeeper.Keeper
+	CrisisKeeper     crisiskeeper.Keeper
+	ParamsKeeper     paramskeeper.Keeper
+	UpgradeKeeper    upgradekeeper.Keeper
+	IbcKeeper        *ibckeeper.Keeper
+	EvidenceKeeper   evidencekeeper.Keeper
+	TransferKeeper   ibctransferkeeper.Keeper
+	IscnKeeper       iscnkeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -232,101 +232,101 @@ func NewLikeApp(
 	}
 
 	// init params keeper and subspaces
-	app.paramsKeeper = paramskeeper.NewKeeper(
+	app.ParamsKeeper = paramskeeper.NewKeeper(
 		appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey],
 	)
-	authSubspace := app.paramsKeeper.Subspace(authtypes.ModuleName)
-	bankSubspace := app.paramsKeeper.Subspace(banktypes.ModuleName)
-	stakingSubspace := app.paramsKeeper.Subspace(stakingtypes.ModuleName)
-	mintSubspace := app.paramsKeeper.Subspace(minttypes.ModuleName)
-	distrSubspace := app.paramsKeeper.Subspace(distrtypes.ModuleName)
-	slashingSubspace := app.paramsKeeper.Subspace(slashingtypes.ModuleName)
-	govSubspace := app.paramsKeeper.Subspace(govtypes.ModuleName).
+	authSubspace := app.ParamsKeeper.Subspace(authtypes.ModuleName)
+	bankSubspace := app.ParamsKeeper.Subspace(banktypes.ModuleName)
+	stakingSubspace := app.ParamsKeeper.Subspace(stakingtypes.ModuleName)
+	mintSubspace := app.ParamsKeeper.Subspace(minttypes.ModuleName)
+	distrSubspace := app.ParamsKeeper.Subspace(distrtypes.ModuleName)
+	slashingSubspace := app.ParamsKeeper.Subspace(slashingtypes.ModuleName)
+	govSubspace := app.ParamsKeeper.Subspace(govtypes.ModuleName).
 		WithKeyTable(govtypes.ParamKeyTable())
-	crisisSubspace := app.paramsKeeper.Subspace(crisistypes.ModuleName)
-	ibcTransferSubspace := app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	ibcHostSubspace := app.paramsKeeper.Subspace(ibchost.ModuleName)
-	iscnSubspace := app.paramsKeeper.Subspace(iscntypes.ModuleName)
+	crisisSubspace := app.ParamsKeeper.Subspace(crisistypes.ModuleName)
+	ibcTransferSubspace := app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
+	ibcHostSubspace := app.ParamsKeeper.Subspace(ibchost.ModuleName)
+	iscnSubspace := app.ParamsKeeper.Subspace(iscntypes.ModuleName)
 
 	bApp.SetParamStore(
-		app.paramsKeeper.Subspace(baseapp.Paramspace).
+		app.ParamsKeeper.Subspace(baseapp.Paramspace).
 			WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
 	)
 
 	// add capability keeper and ScopeToModule for ibc module
-	app.capabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
-	scopedIBCKeeper := app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	scopedTransferKeeper := app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 
 	// add keepers
-	app.accountKeeper = authkeeper.NewAccountKeeper(
+	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec, keys[authtypes.StoreKey], authSubspace, authtypes.ProtoBaseAccount, maccPerms,
 	)
-	app.bankKeeper = bankkeeper.NewBaseKeeper(
-		appCodec, keys[banktypes.StoreKey], app.accountKeeper, bankSubspace, app.ModuleAccountAddrs(),
+	app.BankKeeper = bankkeeper.NewBaseKeeper(
+		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, bankSubspace, app.ModuleAccountAddrs(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
-		appCodec, keys[stakingtypes.StoreKey], app.accountKeeper, app.bankKeeper, stakingSubspace,
+		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, stakingSubspace,
 	)
-	app.mintKeeper = mintkeeper.NewKeeper(
+	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec, keys[minttypes.StoreKey], mintSubspace, &stakingKeeper,
-		app.accountKeeper, app.bankKeeper, authtypes.FeeCollectorName,
+		app.AccountKeeper, app.BankKeeper, authtypes.FeeCollectorName,
 	)
-	app.distrKeeper = distrkeeper.NewKeeper(
-		appCodec, keys[distrtypes.StoreKey], distrSubspace, app.accountKeeper, app.bankKeeper,
+	app.DistrKeeper = distrkeeper.NewKeeper(
+		appCodec, keys[distrtypes.StoreKey], distrSubspace, app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
-	app.slashingKeeper = slashingkeeper.NewKeeper(
+	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, slashingSubspace,
 	)
-	app.crisisKeeper = crisiskeeper.NewKeeper(
-		crisisSubspace, invCheckPeriod, app.bankKeeper, authtypes.FeeCollectorName,
+	app.CrisisKeeper = crisiskeeper.NewKeeper(
+		crisisSubspace, invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
-	app.upgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath)
-	app.iscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.accountKeeper, app.bankKeeper, iscnSubspace)
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath)
+	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.stakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
+	app.StakingKeeper = *stakingKeeper.SetHooks(
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
 	// Create IBC Keeper
-	app.ibcKeeper = ibckeeper.NewKeeper(
-		appCodec, keys[ibchost.StoreKey], ibcHostSubspace, app.stakingKeeper, scopedIBCKeeper,
+	app.IbcKeeper = ibckeeper.NewKeeper(
+		appCodec, keys[ibchost.StoreKey], ibcHostSubspace, app.StakingKeeper, scopedIBCKeeper,
 	)
 
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.ibcKeeper.ClientKeeper))
-	app.govKeeper = govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], govSubspace, app.accountKeeper, app.bankKeeper,
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.IbcKeeper.ClientKeeper))
+	app.GovKeeper = govkeeper.NewKeeper(
+		appCodec, keys[govtypes.StoreKey], govSubspace, app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
 	)
 
 	// Create Transfer Keepers
-	app.transferKeeper = ibctransferkeeper.NewKeeper(
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec, keys[ibctransfertypes.StoreKey], ibcTransferSubspace,
-		app.ibcKeeper.ChannelKeeper, &app.ibcKeeper.PortKeeper,
-		app.accountKeeper, app.bankKeeper, scopedTransferKeeper,
+		app.IbcKeeper.ChannelKeeper, &app.IbcKeeper.PortKeeper,
+		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
-	transferModule := transfer.NewAppModule(app.transferKeeper)
+	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	app.ibcKeeper.SetRouter(ibcRouter)
+	app.IbcKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(
-		appCodec, keys[evidencetypes.StoreKey], &app.stakingKeeper, app.slashingKeeper,
+		appCodec, keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
-	app.evidenceKeeper = *evidenceKeeper
+	app.EvidenceKeeper = *evidenceKeeper
 
 	var skipGenesisInvariants = false
 	opt := appOpts.Get(crisis.FlagSkipGenesisInvariants)
@@ -338,27 +338,27 @@ func NewLikeApp(
 	// must be passed by reference here.
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
-			app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig,
+			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig,
 		),
-		auth.NewAppModule(appCodec, app.accountKeeper, nil),
-		bank.NewAppModule(appCodec, app.bankKeeper, app.accountKeeper),
-		capability.NewAppModule(appCodec, *app.capabilityKeeper),
-		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants),
-		gov.NewAppModule(appCodec, app.govKeeper, app.accountKeeper, app.bankKeeper),
-		mint.NewAppModule(appCodec, app.mintKeeper, app.accountKeeper),
+		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
+		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		slashing.NewAppModule(
-			appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper,
+			appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		),
 		distr.NewAppModule(
-			appCodec, app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper,
+			appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		),
-		staking.NewAppModule(appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
-		upgrade.NewAppModule(app.upgradeKeeper),
-		evidence.NewAppModule(app.evidenceKeeper),
-		ibc.NewAppModule(app.ibcKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		upgrade.NewAppModule(app.UpgradeKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
+		ibc.NewAppModule(app.IbcKeeper),
 		transferModule,
-		params.NewAppModule(app.paramsKeeper),
-		iscn.NewAppModule(app.iscnKeeper),
+		params.NewAppModule(app.ParamsKeeper),
+		iscn.NewAppModule(app.IscnKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -381,7 +381,7 @@ func NewLikeApp(
 		ibctransfertypes.ModuleName, iscntypes.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.crisisKeeper)
+	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), cdc)
 	cfg := module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(cfg)
@@ -396,7 +396,7 @@ func NewLikeApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(
 		ante.NewAnteHandler(
-			app.accountKeeper, app.bankKeeper, ante.DefaultSigVerificationGasConsumer,
+			app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
 			encodingConfig.TxConfig.SignModeHandler(),
 		),
 	)
@@ -443,6 +443,10 @@ func (app *LikeApp) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return modAccAddrs
+}
+
+func (app *LikeApp) AppCodec() codec.Marshaler {
+	return app.appCodec
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided

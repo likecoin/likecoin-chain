@@ -31,7 +31,7 @@ func (iscnId *IscnId) Equal(iscnId2 *IscnId) bool {
 	return iscnId.PrefixEqual(iscnId2) && iscnId.Version == iscnId2.Version
 }
 
-func ParseIscnID(s string) (IscnId, error) {
+func ParseIscnId(s string) (IscnId, error) {
 	id := IscnId{}
 	matches := IscnIdRegexp.FindStringSubmatch(s)
 	if matches == nil {
@@ -62,7 +62,7 @@ func (iscnId *IscnId) UnmarshalJSON(bz []byte) error {
 	if err != nil {
 		return err
 	}
-	parsed, err := ParseIscnID(s)
+	parsed, err := ParseIscnId(s)
 	if err != nil {
 		return err
 	}

@@ -50,7 +50,7 @@ Example:
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			iscnId, err := types.ParseIscnID(args[0])
+			iscnId, err := types.ParseIscnId(args[0])
 			if err != nil {
 				return err
 			}

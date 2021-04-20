@@ -59,7 +59,7 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 // UpdateIscnRecord defines a method to update existing ISCN record
 func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRecord) (*MsgUpdateIscnRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	parentId, err := types.ParseIscnID(msg.IscnId)
+	parentId, err := types.ParseIscnId(msg.IscnId)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
@@ -120,7 +120,7 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid new owner address: %s", err.Error())
 	}
-	id, err := types.ParseIscnID(msg.IscnId)
+	id, err := types.ParseIscnId(msg.IscnId)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}

@@ -21,7 +21,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 				panic(err)
 			}
 			idStr := recordMap["@id"].(string)
-			id, err := types.ParseIscnID(idStr)
+			id, err := types.ParseIscnId(idStr)
 			if err != nil {
 				panic(err)
 			}

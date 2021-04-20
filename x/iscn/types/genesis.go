@@ -26,7 +26,7 @@ func (genesis GenesisState) Validate() error {
 			return fmt.Errorf("repeated ISCN ID: %s", entry.IscnId)
 		}
 		usedIscnIds[entry.IscnId] = struct{}{}
-		id, err := ParseIscnID(entry.IscnId)
+		id, err := ParseIscnId(entry.IscnId)
 		if err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ func (genesis GenesisState) Validate() error {
 			if !ok {
 				return fmt.Errorf("invalid \"@id\" field type")
 			}
-			recordId, err := ParseIscnID(idStr)
+			recordId, err := ParseIscnId(idStr)
 			if err != nil {
 				return err
 			}

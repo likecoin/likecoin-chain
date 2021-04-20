@@ -140,7 +140,7 @@ Where:
 			if err != nil {
 				return err
 			}
-			iscnId, err := types.ParseIscnID(args[0])
+			iscnId, err := types.ParseIscnId(args[0])
 			if err != nil {
 				return err
 			}
@@ -177,7 +177,7 @@ The ISCN ID needs to be a URL representing the newest version of the record to b
 			if err != nil {
 				return err
 			}
-			iscnId, err := types.ParseIscnID(args[0])
+			iscnId, err := types.ParseIscnId(args[0])
 			if err != nil {
 				return err
 			}

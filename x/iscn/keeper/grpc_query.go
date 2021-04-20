@@ -59,7 +59,7 @@ func (k Keeper) IscnRecords(ctx context.Context, req *types.QueryIscnRecordsRequ
 		if len(req.Fingerprint) > 0 {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "only one of iscn_id and fingerprint can exist in query parameters")
 		}
-		iscnId, err := types.ParseIscnID(req.IscnId)
+		iscnId, err := types.ParseIscnId(req.IscnId)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 		}

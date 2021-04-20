@@ -75,7 +75,7 @@ func (msg MsgUpdateIscnRecord) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err)
 	}
-	id, err := ParseIscnID(msg.IscnId)
+	id, err := ParseIscnId(msg.IscnId)
 	if err != nil {
 		return sdkerrors.Wrapf(ErrInvalidIscnId, "%s", err.Error())
 	}
@@ -120,7 +120,7 @@ func (msg MsgChangeIscnRecordOwnership) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid new owner address: %s", err.Error())
 	}
-	_, err = ParseIscnID(msg.IscnId)
+	_, err = ParseIscnId(msg.IscnId)
 	if err != nil {
 		return sdkerrors.Wrapf(ErrInvalidIscnId, "%s", err.Error())
 	}

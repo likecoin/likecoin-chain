@@ -5,8 +5,8 @@ var (
 
 	AttributeKeyIscnId                 = "iscn_id"
 	AttributeKeyIscnIdPrefix           = "iscn_id_prefix"
-	AttributeKeyIscnOwner              = "iscn_owner"
-	AttributeKeyIscnRecordIpld         = "iscn_record_ipld"
-	AttributeKeyIscnContentFingerprint = "iscn_content_fingerprint"
+	AttributeKeyIscnOwner              = "owner"
+	AttributeKeyIscnRecordIpld         = "ipld"
+	AttributeKeyIscnContentFingerprint = "content_fingerprint"
 	AttributeValueCategory             = ModuleName
 )
