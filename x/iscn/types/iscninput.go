@@ -52,3 +52,40 @@ func (input IscnInput) Validate() error {
 	var v interface{}
 	return json.Unmarshal(input, &v)
 }
+
+// for testing
+func (input IscnInput) GetPath(path ...interface{}) (interface{}, bool) {
+	var v interface{}
+	err := json.Unmarshal(input, &v)
+	if err != nil {
+		return nil, false
+	}
+
+	for _, subpath := range path {
+		switch subpath.(type) {
+		case string:
+			m, ok := v.(map[string]interface{})
+			if !ok {
+				return nil, false
+			}
+			v, ok = m[subpath.(string)]
+			if !ok {
+				return nil, false
+			}
+		case int:
+			arr, ok := v.([]interface{})
+			if !ok {
+				return nil, false
+			}
+			index := subpath.(int)
+			if index < 0 || index >= len(arr) {
+				return nil, false
+			}
+			v = arr[index]
+		default:
+			panic("invalid subpath type")
+		}
+	}
+
+	return v, true
+}

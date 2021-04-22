@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -145,7 +146,10 @@ func TestMsgCreateIscn(t *testing.T) {
 		ContentMetadata:     contentMetadata1,
 	}
 	msg1 := types.NewMsgCreateIscnRecord(addr1, &record)
-	header = tmproto.Header{Height: app.LastBlockHeight() + 1}
+	header = tmproto.Header{
+		Time:   time.Unix(1234567890, 0),
+		Height: app.LastBlockHeight() + 1,
+	}
 	accNumber := authAcc.GetAccountNumber()
 	_, result, err := simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{msg1}, "", []uint64{accNumber}, []uint64{initialSeq}, true, true, priv1)
 	require.NoError(t, err)
@@ -166,13 +170,32 @@ func TestMsgCreateIscn(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, queryRes.Records, 1)
 	queryRecord := queryRes.Records[0]
-	require.Equal(t, queryRecord.IscnId, iscnId.String())
-	require.Equal(t, queryRecord.Ipld, string(ipldStrBytes))
-	require.Equal(t, queryRecord.LatestRecordVersion, uint64(1))
-	require.Equal(t, queryRecord.Owner, addr1.String())
+	require.Equal(t, iscnId.String(), queryRecord.IscnId)
+	require.Equal(t, string(ipldStrBytes), queryRecord.Ipld)
+	require.Equal(t, uint64(1), queryRecord.LatestRecordVersion)
+	require.Equal(t, addr1.String(), queryRecord.Owner)
+	v, ok := queryRecord.Record.GetPath("@id")
+	require.True(t, ok)
+	require.Equal(t, iscnId.String(), v)
+	timestamp, ok := queryRecord.Record.GetPath("recordTimestamp")
+	require.True(t, ok)
+	require.Equal(t, "2009-02-13T23:31:30+00:00", timestamp)
+	recordFingerprint1, ok := queryRecord.Record.GetPath("contentFingerprints", 0)
+	require.True(t, ok)
+	require.Equal(t, fingerprint1, recordFingerprint1)
+	_, ok = queryRecord.Record.GetPath("recordParentIPLD")
+	require.False(t, ok)
+	recordContentMetadataMap, ok := queryRecord.Record.GetPath("contentMetadata")
+	require.True(t, ok)
+	recordContentMetadataJson, err := json.Marshal(recordContentMetadataMap)
+	require.NoError(t, err)
+	require.Equal(t, sdk.MustSortJSON(contentMetadata1), recordContentMetadataJson)
 
 	msg2 := crisistypes.NewMsgVerifyInvariant(addr1, "iscn", "iscn-records")
-	header = tmproto.Header{Height: app.LastBlockHeight() + 1}
+	header = tmproto.Header{
+		Time:   header.Time.Add(6 * time.Second),
+		Height: app.LastBlockHeight() + 1,
+	}
 	_, _, err = simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{msg2}, "", []uint64{accNumber}, []uint64{initialSeq + 1}, true, true, priv1)
 	require.NoError(t, err)
 }
