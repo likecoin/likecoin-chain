@@ -1,11 +1,12 @@
 package keeper
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	prefixstore "github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramTypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -63,153 +64,148 @@ func (k Keeper) SetParams(ctx sdk.Context, params Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) GetCidBlock(ctx sdk.Context, cid CID) []byte {
-	key := GetCidBlockKey(cid)
-	return ctx.KVStore(k.storeKey).Get(key)
+func (k Keeper) prefixStore(ctx sdk.Context, prefix []byte) prefixstore.Store {
+	return prefixstore.NewStore(ctx.KVStore(k.storeKey), prefix)
 }
 
-func (k Keeper) HasCidBlock(ctx sdk.Context, cid CID) bool {
-	key := GetCidBlockKey(cid)
-	return ctx.KVStore(k.storeKey).Has(key)
+func (k Keeper) GetSequenceCount(ctx sdk.Context) uint64 {
+	bz := ctx.KVStore(k.storeKey).Get(SequenceCountKey)
+	return types.DecodeUint64(bz)
 }
 
-func (k Keeper) SetCidBlock(ctx sdk.Context, cid CID, bz []byte) {
-	key := GetCidBlockKey(cid)
-	ctx.KVStore(k.storeKey).Set(key, bz)
+func (k Keeper) setSequenceCount(ctx sdk.Context, seq uint64) {
+	bz := types.EncodeUint64(seq)
+	ctx.KVStore(k.storeKey).Set(SequenceCountKey, bz)
 }
 
-func (k Keeper) IterateCidBlocks(ctx sdk.Context, f func(cid CID, bz []byte) bool) {
-	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), CidBlockKey)
+func (k Keeper) GetStoreRecord(ctx sdk.Context, seq uint64) *StoreRecord {
+	seqBytes := types.EncodeUint64(seq)
+	recordBytes := k.prefixStore(ctx, SequenceToStoreRecordPrefix).Get(seqBytes)
+	if recordBytes == nil {
+		return nil
+	}
+	record := k.MustUnmarshalStoreRecord(recordBytes)
+	return &record
+}
+
+func (k Keeper) AddStoreRecord(ctx sdk.Context, record StoreRecord) (seq uint64) {
+	seq = k.GetSequenceCount(ctx)
+	seq += 1
+	k.setSequenceCount(ctx, seq)
+	seqBytes := types.EncodeUint64(seq)
+	recordBytes := k.MustMarshalStoreRecord(&record)
+	k.prefixStore(ctx, SequenceToStoreRecordPrefix).Set(seqBytes, recordBytes)
+	iscnIdBytes := k.MustMarshalIscnId(record.IscnId)
+	k.prefixStore(ctx, IscnIdToSequencePrefix).Set(iscnIdBytes, seqBytes)
+	k.prefixStore(ctx, CidToSequencePrefix).Set(record.CidBytes, seqBytes)
+	return seq
+}
+
+func (k Keeper) IterateStoreRecords(ctx sdk.Context, f func(seq uint64, record StoreRecord) bool) {
+	it := k.prefixStore(ctx, SequenceToStoreRecordPrefix).Iterator(nil, nil)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
-		cidBytes := it.Key()[len(CidBlockKey):]
-		cid := types.MustCidFromBytes(cidBytes)
-		if f(cid, it.Value()) {
+		seq := types.DecodeUint64(it.Key())
+		record := k.MustUnmarshalStoreRecord(it.Value())
+		if f(seq, record) {
 			break
 		}
 	}
 }
 
-func (k Keeper) GetCidIscnId(ctx sdk.Context, cid CID) *IscnId {
-	key := GetCidToIscnIdKey(cid)
-	bz := ctx.KVStore(k.storeKey).Get(key)
+func (k Keeper) GetIscnIdSequence(ctx sdk.Context, iscnId IscnId) uint64 {
+	iscnIdBytes := k.MustMarshalIscnId(iscnId)
+	seqBytes := k.prefixStore(ctx, IscnIdToSequencePrefix).Get(iscnIdBytes)
+	return types.DecodeUint64(seqBytes)
+}
+
+func (k Keeper) GetCidSequence(ctx sdk.Context, cid CID) uint64 {
+	seqBytes := k.prefixStore(ctx, CidToSequencePrefix).Get(cid.Bytes())
+	return types.DecodeUint64(seqBytes)
+}
+
+func (k Keeper) AddFingerprintSequence(ctx sdk.Context, fingerprint string, seq uint64) {
+	key := types.GetFingerprintSequenceKey(fingerprint, seq)
+	k.prefixStore(ctx, FingerprintSequencePrefix).Set(key, []byte{0x01})
+}
+
+func (k Keeper) IterateAllFingerprints(ctx sdk.Context, f func(fingerprint string, seq uint64) bool) {
+	it := k.prefixStore(ctx, FingerprintSequencePrefix).Iterator(nil, nil)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		fingerprint, seq := types.ParseFingerprintSequenceBytes(it.Key())
+		if f(fingerprint, seq) {
+			break
+		}
+	}
+}
+
+func (k Keeper) IterateFingerprintSequencesWithStartingSequence(ctx sdk.Context, fingerprint string, seq uint64, f func(seq uint64) bool) {
+	prefix := types.GetFingerprintPrefix(fingerprint)
+	fromKey := types.EncodeUint64(seq)
+	it := k.prefixStore(ctx, prefix).Iterator(fromKey, nil)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		seq := types.DecodeUint64(it.Key())
+		if f(seq) {
+			break
+		}
+	}
+}
+
+func (k Keeper) IterateFingerprintSequences(ctx sdk.Context, fingerprint string, f func(seq uint64) bool) {
+	k.IterateFingerprintSequencesWithStartingSequence(ctx, fingerprint, 0, f)
+}
+
+func (k Keeper) HasFingerprintSequence(ctx sdk.Context, fingerprint string, seq uint64) bool {
+	key := types.GetFingerprintSequenceKey(fingerprint, seq)
+	return k.prefixStore(ctx, FingerprintSequencePrefix).Has(key)
+}
+
+func (k Keeper) GetTracingIdRecord(ctx sdk.Context, iscnId IscnId) *TracingIdRecord {
+	key := k.MustMarshalTracingId(iscnId)
+	bz := k.prefixStore(ctx, TracingIdRecordPrefix).Get(key)
 	if bz == nil {
 		return nil
 	}
-	iscnId := IscnId{}
-	k.cdc.MustUnmarshalBinaryBare(bz, &iscnId)
-	return &iscnId
+	record := k.MustUnmarshalTracingIdRecord(bz)
+	return &record
 }
 
-func (k Keeper) SetCidIscnId(ctx sdk.Context, cid CID, iscnId IscnId) {
-	key := GetCidToIscnIdKey(cid)
-	bz := k.cdc.MustMarshalBinaryBare(&iscnId)
-	ctx.KVStore(k.storeKey).Set(key, bz)
+func (k Keeper) SetTracingIdRecord(ctx sdk.Context, iscnId IscnId, record *TracingIdRecord) {
+	key := k.MustMarshalTracingId(iscnId)
+	recordBytes := k.MustMarshalTracingIdRecord(record)
+	k.prefixStore(ctx, TracingIdRecordPrefix).Set(key, recordBytes)
 }
 
-func (k Keeper) GetIscnIdCid(ctx sdk.Context, iscnId IscnId) *CID {
-	key := GetIscnIdToCidKey(k.cdc, iscnId)
-	bz := ctx.KVStore(k.storeKey).Get(key)
-	if bz == nil {
-		return nil
-	}
-	cid := types.MustCidFromBytes(bz)
-	return &cid
-}
-
-func (k Keeper) SetIscnIdCid(ctx sdk.Context, iscnId IscnId, cid CID) {
-	key := GetIscnIdToCidKey(k.cdc, iscnId)
-	ctx.KVStore(k.storeKey).Set(key, cid.Bytes())
-}
-
-func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, cid CID) bool) {
-	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), IscnIdToCidKey)
+func (k Keeper) IterateTracingIdRecords(ctx sdk.Context, f func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool) {
+	it := k.prefixStore(ctx, TracingIdRecordPrefix).Iterator(nil, nil)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
-		iscnId := IscnId{}
-		iscnIdBytes := it.Key()[len(IscnIdToCidKey):]
-		k.cdc.MustUnmarshalBinaryBare(iscnIdBytes, &iscnId)
-		cid := types.MustCidFromBytes(it.Value())
-		if f(iscnId, cid) {
+		tracingId := k.MustUnmarshalIscnId(it.Key())
+		record := k.MustUnmarshalTracingIdRecord(it.Value())
+		if f(tracingId, record) {
 			break
 		}
 	}
 }
 
-func (k Keeper) AddFingerprintCid(ctx sdk.Context, fingerprint string, cid CID) {
-	key := GetFingerprintCidRecordKey(fingerprint, cid)
-	ctx.KVStore(k.storeKey).Set(key, []byte{0x01})
-}
-
-func (k Keeper) HasFingerprintCid(ctx sdk.Context, fingerprint string, cid CID) bool {
-	key := GetFingerprintCidRecordKey(fingerprint, cid)
-	return ctx.KVStore(k.storeKey).Has(key)
-}
-
-func (k Keeper) IterateFingerprints(ctx sdk.Context, f func(fingerprint string, cid CID) bool) {
-	prefix := types.FingerprintToCidKey
-	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
-	defer it.Close()
-	for ; it.Valid(); it.Next() {
-		key := it.Key()
-		fingerprintLenBytes := key[len(prefix) : len(prefix)+4]
-		fingerprintLen := binary.BigEndian.Uint32(fingerprintLenBytes)
-		fingerprint := string(key[len(prefix)+4 : len(prefix)+4+int(fingerprintLen)])
-		cidBytes := key[len(prefix)+4+int(fingerprintLen):]
-		cid := types.MustCidFromBytes(cidBytes)
-		if f(fingerprint, cid) {
-			break
+func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool) {
+	k.IterateTracingIdRecords(ctx, func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool {
+		for version := uint64(1); version <= tracingIdRecord.LatestVersion; version++ {
+			iscnId.Version = version
+			if f(iscnId, tracingIdRecord) {
+				return true
+			}
 		}
-	}
-}
-
-func (k Keeper) IterateFingerprintCids(ctx sdk.Context, fingerprint string, f func(cid CID) bool) {
-	prefix := GetFingerprintToCidKey(fingerprint)
-	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
-	defer it.Close()
-	for ; it.Valid(); it.Next() {
-		cidBytes := it.Key()[len(prefix):]
-		cid := types.MustCidFromBytes(cidBytes)
-		if f(cid) {
-			break
-		}
-	}
-}
-
-func (k Keeper) GetIscnIdVersion(ctx sdk.Context, iscnId IscnId) uint64 {
-	key := GetIscnIdVersionKey(k.cdc, iscnId)
-	bz := ctx.KVStore(k.storeKey).Get(key)
-	if bz == nil {
-		return 0
-	}
-	return binary.BigEndian.Uint64(bz)
-}
-
-func (k Keeper) SetIscnIdVersion(ctx sdk.Context, iscnId IscnId, count uint64) {
-	key := GetIscnIdVersionKey(k.cdc, iscnId)
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-	ctx.KVStore(k.storeKey).Set(key, bz)
-}
-
-func (k Keeper) SetIscnIdOwner(ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress) {
-	key := GetIscnIdOwnerKey(k.cdc, iscnId)
-	ctx.KVStore(k.storeKey).Set(key, []byte(owner))
-}
-
-func (k Keeper) GetIscnIdOwner(ctx sdk.Context, iscnId IscnId) sdk.AccAddress {
-	key := GetIscnIdOwnerKey(k.cdc, iscnId)
-	bz := ctx.KVStore(k.storeKey).Get(key)
-	if bz == nil {
-		return nil
-	}
-	return sdk.AccAddress(bz)
+		return false
+	})
 }
 
 func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, data []byte) error {
 	acc := k.accountKeeper.GetAccount(ctx, feePayer)
 	if acc == nil {
-		return fmt.Errorf("account %s for deducting fee", feePayer.String())
+		return fmt.Errorf("cannot find account %s for deducting fee", feePayer.String())
 	}
 	feePerByte := k.GetParams(ctx).FeePerByte
 	feeAmount := feePerByte.Amount.MulInt64(int64(len(data)))
@@ -224,30 +220,52 @@ func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, data 
 }
 
 func (k Keeper) AddIscnRecord(
-	ctx sdk.Context, id IscnId, owner sdk.AccAddress, record []byte, fingerprints []string,
+	ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress, data []byte, fingerprints []string,
 ) (*CID, error) {
-	cid := types.ComputeRecordCid(record)
-	if k.GetCidBlock(ctx, cid) != nil {
-		return nil, fmt.Errorf("CID %s already exists", cid.String())
+	if k.GetIscnIdSequence(ctx, iscnId) != 0 {
+		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s", iscnId.String())
 	}
-	err := k.DeductFeeForIscn(ctx, owner, record)
+	cid := types.ComputeDataCid(data)
+	if k.GetCidSequence(ctx, cid) != 0 {
+		return nil, sdkerrors.Wrapf(types.ErrCidAlreadyExist, "%s", cid.String())
+	}
+	tracingIdRecord := k.GetTracingIdRecord(ctx, iscnId)
+	if tracingIdRecord == nil {
+		if iscnId.Version != 1 {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: 1")
+		}
+	} else {
+		if iscnId.Version != tracingIdRecord.LatestVersion+1 {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", tracingIdRecord.LatestVersion+1)
+		}
+		expectedOwner := tracingIdRecord.OwnerAddress()
+		if !expectedOwner.Equals(owner) {
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "expected owner: %s", owner.String())
+		}
+	}
+	err := k.DeductFeeForIscn(ctx, owner, data)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrapf(types.ErrDeductIscnFee, "%s", err.Error())
 	}
-	k.SetCidBlock(ctx, cid, record)
-	k.SetCidIscnId(ctx, cid, id)
-	k.SetIscnIdCid(ctx, id, cid)
-	k.SetIscnIdVersion(ctx, id, id.Version)
-	k.SetIscnIdOwner(ctx, id, owner)
+	record := StoreRecord{
+		IscnId:   iscnId,
+		CidBytes: cid.Bytes(),
+		Data:     data,
+	}
+	seq := k.AddStoreRecord(ctx, record)
+	k.SetTracingIdRecord(ctx, iscnId, &TracingIdRecord{
+		OwnerAddressBytes: owner.Bytes(),
+		LatestVersion:     iscnId.Version,
+	})
 	event := sdk.NewEvent(
 		types.EventTypeIscnRecord,
-		sdk.NewAttribute(types.AttributeKeyIscnId, id.String()),
-		sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, id.Prefix()),
+		sdk.NewAttribute(types.AttributeKeyIscnId, iscnId.String()),
+		sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, iscnId.Prefix()),
 		sdk.NewAttribute(types.AttributeKeyIscnOwner, owner.String()),
 		sdk.NewAttribute(types.AttributeKeyIscnRecordIpld, cid.String()),
 	)
 	for _, fingerprint := range fingerprints {
-		k.AddFingerprintCid(ctx, fingerprint, cid)
+		k.AddFingerprintSequence(ctx, fingerprint, seq)
 		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyIscnContentFingerprint, fingerprint))
 	}
 	ctx.EventManager().EmitEvent(event)

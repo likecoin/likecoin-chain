@@ -28,9 +28,6 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 	}
 	registryId := k.RegistryId(ctx)
 	id := types.GenerateNewIscnIdWithSeed(registryId, ctx.TxBytes())
-	if k.GetIscnIdVersion(ctx, id) != 0 {
-		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s", id.String())
-	}
 	recordJsonLd, err := msg.Record.ToJsonLd(&types.IscnRecordJsonLdInfo{
 		Id:         id,
 		Timestamp:  ctx.BlockTime(),
@@ -63,22 +60,16 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
-	currentVersion := k.GetIscnIdVersion(ctx, parentId)
-	if parentId.Version != currentVersion {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d, got: %d", currentVersion, parentId.Version)
-	}
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err.Error())
 	}
-	owner := k.GetIscnIdOwner(ctx, parentId)
-	if !from.Equals(owner) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender not ISCN record owner, expect %s, got %s", from.String(), owner.String())
-	}
-	parentCid := k.GetIscnIdCid(ctx, parentId)
-	if parentCid == nil {
+	parentSeq := k.GetIscnIdSequence(ctx, parentId)
+	if parentSeq == 0 {
 		return nil, sdkerrors.Wrapf(types.ErrCidNotFound, "%s", parentId.String())
 	}
+	parentStoreRecord := k.GetStoreRecord(ctx, parentSeq)
+	parentCid := parentStoreRecord.Cid()
 	id := IscnId{
 		RegistryId: parentId.RegistryId,
 		TracingId:  parentId.TracingId,
@@ -87,7 +78,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	recordJsonLd, err := msg.Record.ToJsonLd(&types.IscnRecordJsonLdInfo{
 		Id:         id,
 		Timestamp:  ctx.BlockTime(),
-		ParentIpld: parentCid,
+		ParentIpld: &parentCid,
 	})
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrEncodingJsonLd, "%s", err.Error())
@@ -124,18 +115,19 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
-	currentVersion := k.GetIscnIdVersion(ctx, id)
-	if id.Version != currentVersion {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d, got: %d", currentVersion, id.Version)
+	tracingIdRecord := k.GetTracingIdRecord(ctx, id)
+	if tracingIdRecord == nil {
+		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", id.String())
 	}
-	owner := k.GetIscnIdOwner(ctx, id)
-	if !from.Equals(owner) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender not ISCN record owner, expect %s, got %s", from.String(), owner.String())
+	if id.Version != tracingIdRecord.LatestVersion {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", tracingIdRecord.LatestVersion)
 	}
-	if k.GetIscnIdCid(ctx, id) == nil {
-		return nil, sdkerrors.Wrapf(types.ErrCidNotFound, "%s", id.String())
+	prevOwner := tracingIdRecord.OwnerAddress()
+	if !from.Equals(prevOwner) {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender not ISCN record owner, expect %s", prevOwner.String())
 	}
-	k.SetIscnIdOwner(ctx, id, newOwner)
+	tracingIdRecord.OwnerAddressBytes = newOwner.Bytes()
+	k.SetTracingIdRecord(ctx, id, tracingIdRecord)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeIscnRecord,

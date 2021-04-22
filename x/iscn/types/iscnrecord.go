@@ -2,20 +2,34 @@ package types
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/url"
 	"time"
 )
 
-func (record *IscnRecord) Validate() error {
-	for _, fingerprint := range record.ContentFingerprints {
+func ValidateFingerprints(fingerprints []string) error {
+	usedFingerprint := map[string]struct{}{}
+	for _, fingerprint := range fingerprints {
+		_, ok := usedFingerprint[fingerprint]
+		if ok {
+			return fmt.Errorf("repeated fingerprint entry")
+		}
+		usedFingerprint[fingerprint] = struct{}{}
 		u, err := url.ParseRequestURI(fingerprint)
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid fingerprint URL %s: %w", fingerprint, err)
 		}
 		if u.Scheme == "" {
-			return errors.New("empty fingerprint URL scheme")
+			return fmt.Errorf("empty fingerprint URL scheme in fingerprint %s", fingerprint)
 		}
+	}
+	return nil
+}
+
+func (record *IscnRecord) Validate() error {
+	err := ValidateFingerprints(record.ContentFingerprints)
+	if err != nil {
+		return fmt.Errorf("invalid content fingerprints: %w", err)
 	}
 	for _, stakeholder := range record.Stakeholders {
 		err := stakeholder.Validate()
@@ -23,7 +37,7 @@ func (record *IscnRecord) Validate() error {
 			return err
 		}
 	}
-	err := record.ContentMetadata.Validate()
+	err = record.ContentMetadata.Validate()
 	if err != nil {
 		return err
 	}

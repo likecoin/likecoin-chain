@@ -1,0 +1,23 @@
+syntax = "proto3";
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+import "iscn/iscnid.proto";
+
+option go_package = "github.com/likecoin/likechain/x/iscn/types";
+
+message StoreRecord {
+  IscnId iscn_id = 1 [
+    (gogoproto.nullable) = false
+  ];
+  bytes cid_bytes = 2;
+  bytes data = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "IscnInput"
+  ];
+}
+
+message TracingIdRecord {
+  bytes owner_address_bytes = 1;
+  uint64 latest_version = 2;
+}

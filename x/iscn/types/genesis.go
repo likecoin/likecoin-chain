@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,85 +11,91 @@ import (
 func (genesis GenesisState) Validate() error {
 	err := genesis.Params.Validate()
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid ISCN parameters: %w", err)
 	}
-	usedIscnIds := map[string]struct{}{}
-	usedIplds := map[string]struct{}{}
-	for _, entry := range genesis.RecordEntries {
-		_, err := sdk.AccAddressFromBech32(entry.Owner)
+	iscnVersionMap := map[string]uint64{}
+	usedIpld := map[string]struct{}{}
+	for i, record := range genesis.IscnRecords {
+		recordMap := map[string]interface{}{}
+		err := json.Unmarshal(record, &recordMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("cannot unmarshal record at index %d as JSON: %v", i, err)
 		}
-		_, ok := usedIscnIds[entry.IscnId]
-		if ok {
-			return fmt.Errorf("repeated ISCN ID: %s", entry.IscnId)
+		idAny, ok := recordMap["@id"]
+		if !ok {
+			return fmt.Errorf("record at index %d has no \"@id\" field", i)
 		}
-		usedIscnIds[entry.IscnId] = struct{}{}
-		id, err := ParseIscnId(entry.IscnId)
+		idStr, ok := idAny.(string)
+		if !ok {
+			return fmt.Errorf("record at index %d has invalid \"@id\" type", i)
+		}
+		iscnId, err := ParseIscnId(idStr)
 		if err != nil {
-			return err
+			return fmt.Errorf("record at index %d has invalid ISCN ID: %w", i, err)
 		}
-		if id.Version != 0 {
-			return fmt.Errorf("invalid ISCN ID version: %s", entry.IscnId)
+		if iscnId.Version == 0 {
+			return fmt.Errorf("record at index %d has 0 as ISCN ID version", i)
 		}
-		for i, record := range entry.Records {
-			recordMap := map[string]interface{}{}
-			err = json.Unmarshal(record, &recordMap)
-			if err != nil {
-				return err
-			}
-			idAny, ok := recordMap["@id"]
-			if !ok {
-				return fmt.Errorf("entry has no \"@id\" field")
-			}
-			idStr, ok := idAny.(string)
-			if !ok {
-				return fmt.Errorf("invalid \"@id\" field type")
-			}
-			recordId, err := ParseIscnId(idStr)
-			if err != nil {
-				return err
-			}
-			expectedVersion := i + 1
-			if recordId.Version != uint64(expectedVersion) {
-				return fmt.Errorf("invalid ISCN ID version")
-			}
-			cid := ComputeRecordCid(record)
-			_, cidExist := usedIplds[cid.String()]
-			if cidExist {
-				return fmt.Errorf("CID repeated: %s", cid.String())
-			}
-			fingerprintsAny, ok := recordMap["contentFingerprints"]
-			if !ok {
-				return fmt.Errorf("entry has no \"contentFingerprints\" field")
-			}
-			fingerprints, ok := fingerprintsAny.([]string)
-			if !ok {
-				return fmt.Errorf("invalid \"contentFingerprints\" field type")
-			}
-			for _, fingerprint := range fingerprints {
-				u, err := url.ParseRequestURI(fingerprint)
-				if err != nil {
-					return err
-				}
-				if u.Scheme == "" {
-					return fmt.Errorf("empty fingerprint URL scheme")
-				}
-			}
+		iscnPrefix := iscnId.Prefix()
+		prevVersion := iscnVersionMap[iscnPrefix]
+		if iscnId.Version != prevVersion+1 {
+			return fmt.Errorf("record at index %d (ISCN ID %s) has non-contiguous version (previous version %d, current version %d)", i, iscnId.String(), prevVersion, iscnId.Version)
 		}
+		iscnVersionMap[iscnPrefix] = iscnId.Version
+		cidStr := ComputeDataCid(record).String()
+		_, ipldExist := usedIpld[cidStr]
+		if ipldExist {
+			return fmt.Errorf("record at index %d (ISCN ID %s) has repeated IPLD %s", i, iscnId.String(), cidStr)
+		}
+		usedIpld[cidStr] = struct{}{}
+		fingerprintsAny, ok := recordMap["contentFingerprints"]
+		if !ok {
+			return fmt.Errorf("record at index %d (ISCN ID %s) has no \"contentFingerprints\" field", i, iscnId.String())
+		}
+		fingerprints, ok := fingerprintsAny.([]string)
+		if !ok {
+			return fmt.Errorf("record at index %d (ISCN ID %s) has invalid \"contentFingerprints\" field type", i, iscnId.String())
+		}
+		err = ValidateFingerprints(fingerprints)
+		if err != nil {
+			return fmt.Errorf("record at index %d (ISCN ID %s) has \"contentFingerprints\" entries: %w", i, iscnId.String(), err)
+		}
+	}
+	for _, tracingIdRecord := range genesis.TracingIdRecords {
+		_, err := sdk.AccAddressFromBech32(tracingIdRecord.Owner)
+		if err != nil {
+			return fmt.Errorf("invalid owner address %s in tracingIdRecord entries: %w", tracingIdRecord.Owner, err)
+		}
+		iscnId, err := ParseIscnId(tracingIdRecord.IscnId)
+		if err != nil {
+			return fmt.Errorf("cannot parse ISCN ID %s in tracingIdRecord entries: %w", tracingIdRecord.IscnId, err)
+		}
+		if iscnId.Version != 0 {
+			return fmt.Errorf("invalid version in ISCN ID %s in tracingIdRecord entries, expect version 0", iscnId.String())
+		}
+		idPrefixStr := iscnId.Prefix()
+		if iscnVersionMap[idPrefixStr] != tracingIdRecord.LatestVersion {
+			return fmt.Errorf("ISCN ID prefix %s latest version does not match the tracingIdRecord entry", iscnId.String())
+		}
+		delete(iscnVersionMap, idPrefixStr)
+		iscnVersionMap[idPrefixStr] = 0
+	}
+	for prefixStr := range iscnVersionMap {
+		return fmt.Errorf("ISCN ID prefix %s has related ISCN record but no tracingIdRecord", prefixStr)
 	}
 	return nil
 }
 
-func NewGenesisState(params Params, recordEntries []GenesisIscnEntry) *GenesisState {
+func NewGenesisState(params Params, tracingIdRecords []GenesisState_TracingIdRecord, iscnRecords []IscnInput) *GenesisState {
 	return &GenesisState{
-		Params:        params,
-		RecordEntries: recordEntries,
+		Params:           params,
+		TracingIdRecords: tracingIdRecords,
+		IscnRecords:      iscnRecords,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(DefaultParams(), []GenesisIscnEntry{})
+	return NewGenesisState(DefaultParams(), nil, nil)
 }
 
 func GetGenesisStateFromAppState(cdc codec.JSONMarshaler, appState map[string]json.RawMessage) *GenesisState {

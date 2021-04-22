@@ -2,8 +2,6 @@ package types
 
 import (
 	"encoding/binary"
-
-	"github.com/cosmos/cosmos-sdk/codec"
 )
 
 const (
@@ -14,62 +12,43 @@ const (
 )
 
 var (
-	CidBlockKey         = []byte{0x01}
-	IscnIdToCidKey      = []byte{0x02}
-	IscnCountKey        = []byte{0x03}
-	CidToIscnIdKey      = []byte{0x04}
-	FingerprintToCidKey = []byte{0x05}
-	IscnIdOwnerKey      = []byte{0x06}
-	IscnIdVersionKey    = []byte{0x07}
+	SequenceCountKey            = []byte{0x01}
+	SequenceToStoreRecordPrefix = []byte{0x02}
+	CidToSequencePrefix         = []byte{0x03}
+	IscnIdToSequencePrefix      = []byte{0x04}
+	TracingIdRecordPrefix       = []byte{0x05}
+	FingerprintSequencePrefix   = []byte{0x06}
 )
 
-func GetIscnIdToCidKey(cdc codec.BinaryMarshaler, iscnId IscnId) []byte {
-	iscnIdBytes := cdc.MustMarshalBinaryBare(&iscnId)
-	return append(IscnIdToCidKey, iscnIdBytes...)
-}
-
-func GetCidBlockKey(cid CID) []byte {
-	bz := cid.Bytes()
-	return append(CidBlockKey, bz...)
-}
-
-func GetCidToIscnIdKey(cid CID) []byte {
-	bz := cid.Bytes()
-	return append(CidToIscnIdKey, bz...)
-}
-
-func GetIscnIdVersionKey(cdc codec.BinaryMarshaler, iscnId IscnId) []byte {
-	iscnId.Version = 0
-	iscnIdBytes := cdc.MustMarshalBinaryBare(&iscnId)
-	return append(IscnIdVersionKey, iscnIdBytes...)
-}
-
-func GetIscnIdOwnerKey(cdc codec.BinaryMarshaler, iscnId IscnId) []byte {
-	iscnId.Version = 0
-	iscnIdBytes := cdc.MustMarshalBinaryBare(&iscnId)
-	return append(IscnIdOwnerKey, iscnIdBytes...)
-}
-
-func GetFingerprintToCidKey(fingerprint string) []byte {
-	lenBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(lenBytes, uint32(len(fingerprint)))
-	fingerprintBytes := []byte(fingerprint)
-	output := make([]byte, len(FingerprintToCidKey)+4+len(fingerprintBytes))
-	copy(output, FingerprintToCidKey)
-	copy(output[len(FingerprintToCidKey):], lenBytes)
-	copy(output[len(FingerprintToCidKey)+4:], fingerprintBytes)
+// one fingerprint points to many sequence
+// key structure:
+//  - 4 bytes fingerprint length
+//  - fpLen bytes fingerprint
+//  - 8 bytes index
+func GetFingerprintPrefix(fingerprint string) []byte {
+	fpBytes := []byte(fingerprint)
+	fpLen := len(fpBytes)
+	output := make([]byte, len(FingerprintSequencePrefix)+4+fpLen)
+	copy(output, FingerprintSequencePrefix)
+	binary.BigEndian.PutUint32(output[len(FingerprintSequencePrefix):], uint32(fpLen))
+	copy(output[len(FingerprintSequencePrefix)+4:], fpBytes)
 	return output
 }
 
-func GetFingerprintCidRecordKey(fingerprint string, cid CID) []byte {
-	lenBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(lenBytes, uint32(len(fingerprint)))
-	fingerprintBytes := []byte(fingerprint)
-	cidBytes := cid.Bytes()
-	output := make([]byte, len(FingerprintToCidKey)+4+len(fingerprintBytes)+len(cidBytes))
-	copy(output, FingerprintToCidKey)
-	copy(output[len(FingerprintToCidKey):], lenBytes)
-	copy(output[len(FingerprintToCidKey)+4:], fingerprintBytes)
-	copy(output[len(FingerprintToCidKey)+4+len(fingerprintBytes):], cidBytes)
+func GetFingerprintSequenceKey(fingerprint string, seq uint64) []byte {
+	fpBytes := []byte(fingerprint)
+	fpLen := len(fpBytes)
+	output := make([]byte, 4+fpLen+8)
+	binary.BigEndian.PutUint32(output, uint32(fpLen))
+	copy(output[4:], fpBytes)
+	binary.BigEndian.PutUint64(output[4+fpLen:], seq)
 	return output
+}
+
+func ParseFingerprintSequenceBytes(key []byte) (fingerprint string, index uint64) {
+	fpLen := binary.BigEndian.Uint32(key[:4])
+	fpBytes := key[4 : 4+fpLen]
+	fingerprint = string(fpBytes)
+	index = binary.BigEndian.Uint64(key[4+fpLen:])
+	return fingerprint, index
 }

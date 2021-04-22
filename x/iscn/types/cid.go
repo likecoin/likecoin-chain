@@ -9,7 +9,7 @@ type CID = gocid.Cid
 
 const CidCodecType = 0x0129 // DAG-JSON
 
-func ComputeRecordCid(record []byte) CID {
+func ComputeDataCid(record []byte) CID {
 	mhash, err := multihash.Sum(record, multihash.SHA2_256, -1)
 	if err != nil {
 		// should never happen

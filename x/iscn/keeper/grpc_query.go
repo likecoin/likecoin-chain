@@ -2,6 +2,7 @@ package keeper
 
 import (
 	context "context"
+	"fmt"
 
 	gocid "github.com/ipfs/go-cid"
 
@@ -13,22 +14,21 @@ import (
 var _ types.QueryServer = Keeper{}
 
 func (k Keeper) queryIscnRecordsByIscnId(ctx sdk.Context, iscnId IscnId) (*types.QueryIscnRecordsResponse, error) {
-	latestVersion := k.GetIscnIdVersion(ctx, iscnId)
-	if latestVersion == 0 || iscnId.Version > latestVersion {
+	tracingIdRecord := k.GetTracingIdRecord(ctx, iscnId)
+	if tracingIdRecord == nil || iscnId.Version > tracingIdRecord.LatestVersion {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
 	}
 	if iscnId.Version == 0 {
-		iscnId.Version = latestVersion
+		iscnId.Version = tracingIdRecord.LatestVersion
 	}
-	owner := k.GetIscnIdOwner(ctx, iscnId)
-	cid := k.GetIscnIdCid(ctx, iscnId)
-	record := k.GetCidBlock(ctx, *cid)
+	seq := k.GetIscnIdSequence(ctx, iscnId)
+	storeRecord := k.GetStoreRecord(ctx, seq)
 	records := []types.Record{{
 		IscnId:              iscnId.String(),
-		Owner:               owner.String(),
-		Ipld:                cid.String(),
-		LatestRecordVersion: latestVersion,
-		Record:              types.IscnInput(record),
+		Owner:               tracingIdRecord.OwnerAddress().String(),
+		Ipld:                storeRecord.Cid().String(),
+		LatestRecordVersion: tracingIdRecord.LatestVersion,
+		Record:              storeRecord.Data,
 	}}
 	return &types.QueryIscnRecordsResponse{Records: records}, nil
 }
@@ -36,17 +36,15 @@ func (k Keeper) queryIscnRecordsByIscnId(ctx sdk.Context, iscnId IscnId) (*types
 func (k Keeper) queryIscnRecordsByFingerprint(ctx sdk.Context, fingerprint string) (*types.QueryIscnRecordsResponse, error) {
 	records := []types.Record{}
 	// TODO: pagination?
-	k.IterateFingerprintCids(ctx, fingerprint, func(cid CID) bool {
-		iscnId := *k.GetCidIscnId(ctx, cid)
-		owner := k.GetIscnIdOwner(ctx, iscnId)
-		latestVersion := k.GetIscnIdVersion(ctx, iscnId)
-		record := k.GetCidBlock(ctx, cid)
+	k.IterateFingerprintSequences(ctx, fingerprint, func(seq uint64) bool {
+		storeRecord := k.GetStoreRecord(ctx, seq)
+		tracingIdRecord := k.GetTracingIdRecord(ctx, storeRecord.IscnId)
 		records = append(records, types.Record{
-			IscnId:              iscnId.String(),
-			Owner:               owner.String(),
-			Ipld:                cid.String(),
-			LatestRecordVersion: latestVersion,
-			Record:              types.IscnInput(record),
+			IscnId:              storeRecord.String(),
+			Owner:               tracingIdRecord.OwnerAddress().String(),
+			Ipld:                storeRecord.Cid().String(),
+			LatestRecordVersion: tracingIdRecord.LatestVersion,
+			Record:              storeRecord.Data,
 		})
 		return false
 	})
@@ -84,8 +82,13 @@ func (k Keeper) GetCid(ctx context.Context, req *types.QueryGetCidRequest) (*typ
 		return nil, err
 	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	record := k.GetCidBlock(sdkCtx, cid)
-	return &types.QueryGetCidResponse{Data: record}, nil
+	seq := k.GetCidSequence(sdkCtx, cid)
+	var data []byte
+	if seq != 0 {
+		storeRecord := k.GetStoreRecord(sdkCtx, seq)
+		data = storeRecord.Data
+	}
+	return &types.QueryGetCidResponse{Data: data}, nil
 }
 
 func (k Keeper) HasCid(ctx context.Context, req *types.QueryHasCidRequest) (*types.QueryHasCidResponse, error) {
@@ -94,7 +97,8 @@ func (k Keeper) HasCid(ctx context.Context, req *types.QueryHasCidRequest) (*typ
 		return nil, err
 	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	exist := k.HasCidBlock(sdkCtx, cid)
+	seq := k.GetCidSequence(sdkCtx, cid)
+	exist := seq != 0
 	return &types.QueryHasCidResponse{Exist: exist}, nil
 }
 
@@ -104,6 +108,14 @@ func (k Keeper) GetCidSize(ctx context.Context, req *types.QueryGetCidSizeReques
 		return nil, err
 	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	record := k.GetCidBlock(sdkCtx, cid)
-	return &types.QueryGetCidSizeResponse{Size_: uint64(len(record))}, nil
+	seq := k.GetCidSequence(sdkCtx, cid)
+	if seq == 0 {
+		return nil, fmt.Errorf("CID %s not found", cid.String())
+	}
+	size := uint64(0)
+	storeRecord := k.GetStoreRecord(sdkCtx, seq)
+	if storeRecord != nil {
+		size = uint64(len(storeRecord.Data))
+	}
+	return &types.QueryGetCidSizeResponse{Size_: size}, nil
 }

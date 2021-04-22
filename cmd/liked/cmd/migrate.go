@@ -60,7 +60,7 @@ func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscn
 
 	ibcCoreGenesis.ClientGenesis.Params.AllowedClients = []string{exported.Tendermint}
 
-	iscnGenesis := iscntypes.NewGenesisState(iscnParams, []iscntypes.GenesisIscnEntry{})
+	iscnGenesis := iscntypes.NewGenesisState(iscnParams, nil, nil)
 
 	state[ibcxfertypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
 	state[host.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)

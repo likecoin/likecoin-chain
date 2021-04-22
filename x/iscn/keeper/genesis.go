@@ -9,62 +9,60 @@ import (
 
 func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 	k.SetParams(ctx, genesis.Params)
-	for _, entry := range genesis.RecordEntries {
-		owner, err := sdk.AccAddressFromBech32(entry.Owner)
+	for _, iscnRecord := range genesis.IscnRecords {
+		iscnRecordMap := map[string]interface{}{}
+		err := json.Unmarshal(iscnRecord, &iscnRecordMap)
 		if err != nil {
 			panic(err)
 		}
-		for _, record := range entry.Records {
-			recordMap := map[string]interface{}{}
-			err = json.Unmarshal(record, &recordMap)
-			if err != nil {
-				panic(err)
-			}
-			idStr := recordMap["@id"].(string)
-			id, err := types.ParseIscnId(idStr)
-			if err != nil {
-				panic(err)
-			}
-			cid := types.ComputeRecordCid(record)
-			k.SetCidBlock(ctx, cid, record)
-			k.SetCidIscnId(ctx, cid, id)
-			k.SetIscnIdCid(ctx, id, cid)
-			k.SetIscnIdVersion(ctx, id, id.Version)
-			k.SetIscnIdOwner(ctx, id, owner)
-			fingerprints := recordMap["contentFingerprints"].([]string)
-			for _, fingerprint := range fingerprints {
-				k.AddFingerprintCid(ctx, fingerprint, cid)
-			}
+		idStr := iscnRecordMap["@id"].(string)
+		id, err := types.ParseIscnId(idStr)
+		if err != nil {
+			panic(err)
 		}
+		cid := types.ComputeDataCid(iscnRecord)
+		seq := k.AddStoreRecord(ctx, StoreRecord{
+			IscnId:   id,
+			CidBytes: cid.Bytes(),
+			Data:     iscnRecord,
+		})
+		fingerprints := iscnRecordMap["contentFingerprints"].([]string)
+		for _, fingerprint := range fingerprints {
+			k.AddFingerprintSequence(ctx, fingerprint, seq)
+		}
+	}
+	for _, tracingIdRecord := range genesis.TracingIdRecords {
+		iscnId, err := types.ParseIscnId(tracingIdRecord.IscnId)
+		if err != nil {
+			panic(err)
+		}
+		owner, err := sdk.AccAddressFromBech32(tracingIdRecord.Owner)
+		if err != nil {
+			panic(err)
+		}
+		k.SetTracingIdRecord(ctx, iscnId, &TracingIdRecord{
+			OwnerAddressBytes: owner.Bytes(),
+			LatestVersion:     tracingIdRecord.LatestVersion,
+		})
 	}
 }
 
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-	entries := []types.GenesisIscnEntry{}
-	usedIscnIds := map[string]struct{}{}
-	k.IterateIscnIds(ctx, func(iscnId IscnId, cid CID) bool {
+	params := k.GetParams(ctx)
+	tracingIdRecords := []types.GenesisState_TracingIdRecord{}
+	k.IterateTracingIdRecords(ctx, func(iscnId types.IscnId, tracingIdRecord types.TracingIdRecord) bool {
 		iscnId.Version = 0
-		iscnIdStr := iscnId.String()
-		_, used := usedIscnIds[iscnIdStr]
-		if used {
-			return false
-		}
-		owner := k.GetIscnIdOwner(ctx, iscnId)
-		entry := types.GenesisIscnEntry{
-			IscnId: iscnId.String(),
-			Owner:  owner.String(),
-		}
-		maxVersion := k.GetIscnIdVersion(ctx, iscnId)
-		records := make([][]byte, maxVersion)
-		for version := uint64(1); version <= maxVersion; version++ {
-			iscnId.Version = version
-			cid := k.GetIscnIdCid(ctx, iscnId)
-			record := k.GetCidBlock(ctx, *cid)
-			records = append(records, record)
-		}
-		entry.Records = records
-		entries = append(entries, entry)
+		tracingIdRecords = append(tracingIdRecords, types.GenesisState_TracingIdRecord{
+			IscnId:        iscnId.String(),
+			Owner:         tracingIdRecord.OwnerAddress().String(),
+			LatestVersion: tracingIdRecord.LatestVersion,
+		})
 		return false
 	})
-	return types.NewGenesisState(k.GetParams(ctx), entries)
+	iscnRecords := []types.IscnInput{}
+	k.IterateStoreRecords(ctx, func(_ uint64, record StoreRecord) bool {
+		iscnRecords = append(iscnRecords, record.Data)
+		return false
+	})
+	return types.NewGenesisState(params, tracingIdRecords, iscnRecords)
 }

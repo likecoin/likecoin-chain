@@ -16,6 +16,7 @@ import (
 
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "iscn-records", IscnRecordsInvariant(k))
+	ir.RegisterRoute(types.ModuleName, "iscn-records", IscnRecordsInvariant(k))
 	ir.RegisterRoute(types.ModuleName, "iscn-fingerprints", IscnFingerprintsInvariant(k))
 }
 
@@ -107,11 +108,17 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 				logProblem(fmt.Sprintf("record for ISCN ID %s has invalid CID for reocrdParentIPLD field", id.String()))
 				return
 			}
-			parentIscnId := k.GetCidIscnId(ctx, cid)
-			if parentIscnId == nil {
+			parentSeq := k.GetCidSequence(ctx, cid)
+			if parentSeq == 0 {
 				logProblem(fmt.Sprintf("no record for parent CID %s for ISCN ID %s", cid.String(), id.String()))
 				return
 			}
+			parentStoreRecord := k.GetStoreRecord(ctx, parentSeq)
+			if parentStoreRecord == nil {
+				logProblem(fmt.Sprintf("no store record for parent CID %s for ISCN ID %s", cid.String(), id.String()))
+				return
+			}
+			parentIscnId := parentStoreRecord.IscnId
 			if !parentIscnId.PrefixEqual(&id) || parentIscnId.Version != id.Version-1 {
 				logProblem(fmt.Sprintf("record for parent CID %s for ISCN ID %s has ISCN ID %s, which is not the ID of the parent version", cid.String(), id.String(), parentIscnId.String()))
 				return
@@ -156,64 +163,91 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 			checkRecordTimestamp(id, recordMap)
 		}
 
-		prevId := IscnId{}
-		k.IterateIscnIds(ctx, func(id IscnId, cid CID) bool {
-			if prevId.PrefixEqual(&id) {
+		// 1. check all records are valid
+		// 2. check every tracing ID record has the corresponding ISCN ID records
+		k.IterateTracingIdRecords(ctx, func(tracingId IscnId, tracingIdRecord TracingIdRecord) bool {
+			if tracingIdRecord.LatestVersion == 0 {
+				logProblem(fmt.Sprintf("tracing ID %s has 0 as latest version record", tracingIdRecord.String()))
 				return false
 			}
-			prevId = id
-			latestVersion := k.GetIscnIdVersion(ctx, id)
-			if latestVersion == 0 {
-				logProblem(fmt.Sprintf("ISCN ID %s has no latest version record", id.String()))
-				return false
-			}
-			for version := uint64(1); version <= latestVersion; version++ {
+			for version := uint64(1); version <= tracingIdRecord.LatestVersion; version++ {
+				id := tracingId
 				id.Version = version
 				idStr := id.String()
-				cid := k.GetIscnIdCid(ctx, id)
-				if cid == nil {
-					logProblem(fmt.Sprintf("ISCN ID %s has latest version %d, but CID record does not exist", idStr, latestVersion))
+				seq := k.GetIscnIdSequence(ctx, id)
+				if seq == 0 {
+					logProblem(fmt.Sprintf("ISCN ID %s has latest version %d, but sequence returns 0", idStr, tracingIdRecord.LatestVersion))
 					continue
 				}
+				storeRecord := k.GetStoreRecord(ctx, seq)
+				if storeRecord == nil {
+					logProblem(fmt.Sprintf("ISCN ID %s has sequence record %d, but store record not found", idStr, seq))
+					continue
+				}
+				if !storeRecord.IscnId.Equal(&id) {
+					logProblem(fmt.Sprintf("ISCN ID %s has sequence record %d, but store record for sequence %d has another ISCN ID %s", idStr, seq, seq, storeRecord.IscnId.String()))
+				}
+				cid := storeRecord.Cid()
 				cidStr := cid.String()
-				cidReverseIscnId := k.GetCidIscnId(ctx, *cid)
-				if cidReverseIscnId == nil || !cidReverseIscnId.Equal(&id) {
-					logProblem(fmt.Sprintf("ISCN ID %s has CID record %s, but CID record of %s points to %s", idStr, cidStr, cidStr, cidReverseIscnId.String()))
-				}
-				record := k.GetCidBlock(ctx, *cid)
-				if record == nil {
-					logProblem(fmt.Sprintf("ISCN ID %s has CID record %s, but CID block does not exist", idStr, cidStr))
-					continue
-				}
-				computedCid := types.ComputeRecordCid(record)
+				computedCid := types.ComputeDataCid(storeRecord.Data)
 				if !cid.Equals(computedCid) {
 					logProblem(fmt.Sprintf("ISCN ID has CID record %s, but the computed CID for the record is %s", cidStr, computedCid.String()))
-					// we can still check other fields, so go on instead of skipping the remaining parts of the loop
 				}
-				checkRecord(id, record)
+				checkRecord(id, storeRecord.Data)
 			}
 			return false
 		})
 
-		k.IterateCidBlocks(ctx, func(cid CID, bz []byte) bool {
-			cidStr := cid.String()
-			iscnId := k.GetCidIscnId(ctx, cid)
-			if iscnId == nil {
-				logProblem(fmt.Sprintf("dangling CID record %s", cidStr))
-			} else {
-				iscnIdReverseCid := k.GetIscnIdCid(ctx, *iscnId)
-				if iscnIdReverseCid == nil || !iscnIdReverseCid.Equals(cid) {
-					logProblem(fmt.Sprintf("CID %s has ISCN ID record %s, but ISCN ID record of %s points to %s", cidStr, iscnId.String(), iscnId.String(), iscnIdReverseCid.String()))
-				} else {
-					return false
-				}
+		// 3. check all ISCN ID has tracing ID record
+		// 4. check all ISCN ID and CID can reverse lookup sequence
+		// 5. check contiguous sequence
+		prevSeq := uint64(0)
+		k.IterateStoreRecords(ctx, func(seq uint64, storeRecord StoreRecord) bool {
+			if seq != prevSeq+1 {
+				logProblem(fmt.Sprintf("discontiguous sequence (%d to %d)", prevSeq, seq))
 			}
-			computedCid := types.ComputeRecordCid(bz)
-			if !cid.Equals(computedCid) {
-				logProblem(fmt.Sprintf("dangling CID record %s has computed CID %s", cidStr, computedCid.String()))
+			prevSeq = seq
+			tracingIdRecord := k.GetTracingIdRecord(ctx, storeRecord.IscnId)
+			if tracingIdRecord == nil {
+				logProblem(fmt.Sprintf("store record sequence %d has ISCN ID %s, but the tracing ID record does not exist", seq, storeRecord.IscnId.String()))
+			} else if tracingIdRecord.LatestVersion < storeRecord.IscnId.Version {
+				logProblem(fmt.Sprintf("ISCN ID %s has tracing ID record with smaller latest version %d", storeRecord.IscnId.String(), tracingIdRecord.LatestVersion))
+			}
+			iscnIdSeq := k.GetIscnIdSequence(ctx, storeRecord.IscnId)
+			if iscnIdSeq != seq {
+				logProblem(fmt.Sprintf("store record sequence %d has ISCN ID %s, but reverse lookup record points to sequence %d", seq, storeRecord.IscnId.String(), iscnIdSeq))
+			}
+			cidSeq := k.GetCidSequence(ctx, storeRecord.Cid())
+			if cidSeq != seq {
+				logProblem(fmt.Sprintf("store record sequence %d has CID %s, but reverse lookup record points to sequence %d", seq, storeRecord.Cid().String(), cidSeq))
 			}
 			return false
 		})
+		seqCount := k.GetSequenceCount(ctx)
+		if prevSeq != seqCount {
+			logProblem(fmt.Sprintf("max sequence (%d) does not equal to sequence count (%d)", prevSeq, seqCount))
+		}
+
+		// 5. check all ISCN ID and CID reverse lookup sequence actually exist
+		cidIter := k.prefixStore(ctx, CidToSequencePrefix).Iterator(nil, nil)
+		defer cidIter.Close()
+		for ; cidIter.Valid(); cidIter.Next() {
+			seq := types.DecodeUint64(cidIter.Value())
+			if seq == 0 || seq > seqCount {
+				cid := types.MustCidFromBytes(cidIter.Key())
+				logProblem(fmt.Sprintf("CID %s has CID-sequence reverse lookup (sequence %d)", cid.String(), seq))
+			}
+		}
+
+		iscnIdIter := k.prefixStore(ctx, IscnIdToSequencePrefix).Iterator(nil, nil)
+		defer iscnIdIter.Close()
+		for ; iscnIdIter.Valid(); iscnIdIter.Next() {
+			seq := types.DecodeUint64(iscnIdIter.Value())
+			if seq == 0 || seq > seqCount {
+				iscnId := k.MustUnmarshalIscnId(iscnIdIter.Key())
+				logProblem(fmt.Sprintf("ISCN ID %s has ISCN-ID-sequence reverse lookup (sequence %d)", iscnId.String(), seq))
+			}
+		}
 
 		broken := problemCount > 0
 		msg := sdk.FormatInvariant(
@@ -239,16 +273,16 @@ func IscnFingerprintsInvariant(k Keeper) sdk.Invariant {
 		}
 
 		// 1. to check each fingerprint record actually points to a record with that fingerprint
-		k.IterateFingerprints(ctx, func(fingerprint string, cid CID) bool {
-			record := k.GetCidBlock(ctx, cid)
-			if record == nil {
-				logProblem(fmt.Sprintf("fingerprint %s has CID record %s, but CID block does not exist", fingerprint, cid.String()))
+		k.IterateAllFingerprints(ctx, func(fingerprint string, seq uint64) bool {
+			storeRecord := k.GetStoreRecord(ctx, seq)
+			if storeRecord == nil {
+				logProblem(fmt.Sprintf("fingerprint %s has sequence record %d, but store record does not exist", fingerprint, seq))
 				return false
 			}
 			recordMap := map[string]interface{}{}
-			err := json.Unmarshal(record, &recordMap)
+			err := json.Unmarshal(storeRecord.Data, &recordMap)
 			if err != nil {
-				logProblem(fmt.Sprintf("cannot unmarshal record for fingerprint %s (CID %s) as JSON", fingerprint, cid.String()))
+				logProblem(fmt.Sprintf("cannot unmarshal record for fingerprint %s (sequence %d) as JSON", fingerprint, seq))
 				return false
 			}
 			field, ok := recordMap["contentFingerprints"]
@@ -280,36 +314,31 @@ func IscnFingerprintsInvariant(k Keeper) sdk.Invariant {
 		})
 
 		// 2. to check each record actually has a fingerprint record points to that record
-		k.IterateCidBlocks(ctx, func(cid CID, bz []byte) bool {
-			record := k.GetCidBlock(ctx, cid)
-			if record == nil {
-				logProblem(fmt.Sprintf("block for CID %s does not exist", cid.String()))
-				return false
-			}
+		k.IterateStoreRecords(ctx, func(seq uint64, storeRecord StoreRecord) bool {
 			recordMap := map[string]interface{}{}
-			err := json.Unmarshal(record, &recordMap)
+			err := json.Unmarshal(storeRecord.Data, &recordMap)
 			if err != nil {
-				logProblem(fmt.Sprintf("cannot unmarshal record for CID %s as JSON", cid.String()))
+				logProblem(fmt.Sprintf("cannot unmarshal record for store record sequence %d as JSON", seq))
 				return false
 			}
 			field, ok := recordMap["contentFingerprints"]
 			if !ok {
-				logProblem(fmt.Sprintf("record for CID %s has no contentFingerprints field", cid.String()))
+				logProblem(fmt.Sprintf("record for store record sequence %d has no contentFingerprints field", seq))
 				return false
 			}
 			arr, ok := field.([]interface{})
 			if !ok {
-				logProblem(fmt.Sprintf("record for CID %s has wrong type for contentFingerprints field", cid.String()))
+				logProblem(fmt.Sprintf("record for store record sequence %d has wrong type for contentFingerprints field", seq))
 				return false
 			}
 			for _, v := range arr {
 				fingerprint, ok := v.(string)
 				if !ok {
-					logProblem(fmt.Sprintf("record for CID %s has value with wrong type in contentFingerprints field", cid.String()))
+					logProblem(fmt.Sprintf("record for store record sequence %d has value with wrong type in contentFingerprints field", seq))
 					return false
 				}
-				if !k.HasFingerprintCid(ctx, fingerprint, cid) {
-					logProblem(fmt.Sprintf("dangling fingerprint value %s in CID %s", fingerprint, cid.String()))
+				if !k.HasFingerprintSequence(ctx, fingerprint, seq) {
+					logProblem(fmt.Sprintf("dangling fingerprint value %s in sequence %d", fingerprint, seq))
 					return false
 				}
 			}
