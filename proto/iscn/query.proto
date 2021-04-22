@@ -8,8 +8,12 @@ import "iscn/params.proto";
 option go_package = "github.com/likecoin/likechain/x/iscn/types";
 
 service Query {
-  rpc IscnRecords(QueryIscnRecordsRequest) returns (QueryIscnRecordsResponse) {
-    option (google.api.http).get = "/iscn/records";
+  rpc RecordsById(QueryRecordsByIdRequest) returns (QueryRecordsByIdResponse) {
+    option (google.api.http).get = "/iscn/records/id";
+  }
+
+  rpc RecordsByFingerprint(QueryRecordsByFingerprintRequest) returns (QueryRecordsByFingerprintResponse) {
+    option (google.api.http).get = "/iscn/records/fingerprint";
   }
 
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -29,24 +33,34 @@ service Query {
   }
 }
 
-message Record {
-  string iscn_id = 1;
-  string owner = 2;
-  string ipld = 3;
-  uint64 latest_record_version = 4;
-  bytes record = 5 [
+message QueryResponseRecord {
+  string ipld = 1;
+  bytes data = 2 [
     (gogoproto.customtype) = "IscnInput",
     (gogoproto.nullable) = false
   ];
 }
 
-message QueryIscnRecordsRequest {
+message QueryRecordsByIdRequest {
   string iscn_id = 1;
-  string fingerprint = 2;
+  uint64 from_version = 2;
+  uint64 to_version = 3;
 }
 
-message QueryIscnRecordsResponse  {
-  repeated Record records = 1 [(gogoproto.nullable) = false];
+message QueryRecordsByIdResponse  {
+  string owner = 1;
+  uint64 latest_version = 2;
+  repeated QueryResponseRecord records = 3 [(gogoproto.nullable) = false];
+}
+
+message QueryRecordsByFingerprintRequest {
+  string fingerprint = 1;
+  uint64 from_sequence = 2;
+}
+
+message QueryRecordsByFingerprintResponse  {
+  repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
+  uint64 next_sequence = 2;
 }
 
 message QueryParamsRequest {

@@ -11,62 +11,78 @@ import (
 	"github.com/likecoin/likechain/x/iscn/types"
 )
 
+const maxLimit = 100
+
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) queryIscnRecordsByIscnId(ctx sdk.Context, iscnId IscnId) (*types.QueryIscnRecordsResponse, error) {
-	tracingIdRecord := k.GetTracingIdRecord(ctx, iscnId)
-	if tracingIdRecord == nil || iscnId.Version > tracingIdRecord.LatestVersion {
+func (k Keeper) RecordsById(ctx context.Context, req *types.QueryRecordsByIdRequest) (*types.QueryRecordsByIdResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	fromVersion := req.FromVersion
+	toVersion := req.ToVersion
+	if toVersion != 0 && toVersion < fromVersion {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid version range")
+	}
+	iscnId, err := types.ParseIscnId(req.IscnId)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
+	}
+	if iscnId.Version != 0 {
+		fromVersion = iscnId.Version
+		toVersion = iscnId.Version
+	}
+	tracingIdRecord := k.GetTracingIdRecord(sdkCtx, iscnId)
+	if tracingIdRecord == nil {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
 	}
-	if iscnId.Version == 0 {
-		iscnId.Version = tracingIdRecord.LatestVersion
+	latestVersion := tracingIdRecord.LatestVersion
+	if fromVersion == 0 {
+		fromVersion = latestVersion
 	}
-	seq := k.GetIscnIdSequence(ctx, iscnId)
-	storeRecord := k.GetStoreRecord(ctx, seq)
-	records := []types.Record{{
-		IscnId:              iscnId.String(),
-		Owner:               tracingIdRecord.OwnerAddress().String(),
-		Ipld:                storeRecord.Cid().String(),
-		LatestRecordVersion: tracingIdRecord.LatestVersion,
-		Record:              storeRecord.Data,
-	}}
-	return &types.QueryIscnRecordsResponse{Records: records}, nil
+	if toVersion == 0 {
+		toVersion = latestVersion
+	}
+	if fromVersion > latestVersion || toVersion > latestVersion {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "version range exceed current maximum version")
+	}
+	records := make([]types.QueryResponseRecord, 0, toVersion-fromVersion+1)
+	for version := fromVersion; version <= toVersion; version++ {
+		iscnId.Version = version
+		seq := k.GetIscnIdSequence(sdkCtx, iscnId)
+		storeRecord := k.GetStoreRecord(sdkCtx, seq)
+		records = append(records, types.QueryResponseRecord{
+			Ipld: storeRecord.Cid().String(),
+			Data: storeRecord.Data,
+		})
+	}
+	return &types.QueryRecordsByIdResponse{
+		Owner:         tracingIdRecord.OwnerAddress().String(),
+		LatestVersion: latestVersion,
+		Records:       records,
+	}, nil
 }
 
-func (k Keeper) queryIscnRecordsByFingerprint(ctx sdk.Context, fingerprint string) (*types.QueryIscnRecordsResponse, error) {
-	records := []types.Record{}
-	// TODO: pagination?
-	k.IterateFingerprintSequences(ctx, fingerprint, func(seq uint64) bool {
-		storeRecord := k.GetStoreRecord(ctx, seq)
-		tracingIdRecord := k.GetTracingIdRecord(ctx, storeRecord.IscnId)
-		records = append(records, types.Record{
-			IscnId:              storeRecord.String(),
-			Owner:               tracingIdRecord.OwnerAddress().String(),
-			Ipld:                storeRecord.Cid().String(),
-			LatestRecordVersion: tracingIdRecord.LatestVersion,
-			Record:              storeRecord.Data,
+func (k Keeper) RecordsByFingerprint(ctx context.Context, req *types.QueryRecordsByFingerprintRequest) (*types.QueryRecordsByFingerprintResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	records := []types.QueryResponseRecord{}
+	nextSeq := uint64(0)
+	count := 0
+	k.IterateFingerprintSequencesWithStartingSequence(sdkCtx, req.Fingerprint, req.FromSequence, func(seq uint64) bool {
+		if count >= maxLimit {
+			nextSeq = seq
+			return true
+		}
+		count++
+		storeRecord := k.GetStoreRecord(sdkCtx, seq)
+		records = append(records, types.QueryResponseRecord{
+			Ipld: storeRecord.Cid().String(),
+			Data: storeRecord.Data,
 		})
 		return false
 	})
-	return &types.QueryIscnRecordsResponse{Records: records}, nil
-}
-
-func (k Keeper) IscnRecords(ctx context.Context, req *types.QueryIscnRecordsRequest) (*types.QueryIscnRecordsResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	if len(req.IscnId) > 0 {
-		if len(req.Fingerprint) > 0 {
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "only one of iscn_id and fingerprint can exist in query parameters")
-		}
-		iscnId, err := types.ParseIscnId(req.IscnId)
-		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
-		}
-		return k.queryIscnRecordsByIscnId(sdkCtx, iscnId)
-	} else if len(req.Fingerprint) > 0 {
-		return k.queryIscnRecordsByFingerprint(sdkCtx, req.Fingerprint)
-	} else {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "one of iscn_id and fingerprint must exist in query parameters")
-	}
+	return &types.QueryRecordsByFingerprintResponse{
+		Records:      records,
+		NextSequence: nextSeq,
+	}, nil
 }
 
 func (k Keeper) Params(ctx context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {

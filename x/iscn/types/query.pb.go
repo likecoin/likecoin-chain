@@ -29,26 +29,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Record struct {
-	IscnId              string    `protobuf:"bytes,1,opt,name=iscn_id,json=iscnId,proto3" json:"iscn_id,omitempty"`
-	Owner               string    `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Ipld                string    `protobuf:"bytes,3,opt,name=ipld,proto3" json:"ipld,omitempty"`
-	LatestRecordVersion uint64    `protobuf:"varint,4,opt,name=latest_record_version,json=latestRecordVersion,proto3" json:"latest_record_version,omitempty"`
-	Record              IscnInput `protobuf:"bytes,5,opt,name=record,proto3,customtype=IscnInput" json:"record"`
+type QueryResponseRecord struct {
+	Ipld string    `protobuf:"bytes,1,opt,name=ipld,proto3" json:"ipld,omitempty"`
+	Data IscnInput `protobuf:"bytes,2,opt,name=data,proto3,customtype=IscnInput" json:"data"`
 }
 
-func (m *Record) Reset()         { *m = Record{} }
-func (m *Record) String() string { return proto.CompactTextString(m) }
-func (*Record) ProtoMessage()    {}
-func (*Record) Descriptor() ([]byte, []int) {
+func (m *QueryResponseRecord) Reset()         { *m = QueryResponseRecord{} }
+func (m *QueryResponseRecord) String() string { return proto.CompactTextString(m) }
+func (*QueryResponseRecord) ProtoMessage()    {}
+func (*QueryResponseRecord) Descriptor() ([]byte, []int) {
 	return fileDescriptor_06598f8bde0adb8a, []int{0}
 }
-func (m *Record) XXX_Unmarshal(b []byte) error {
+func (m *QueryResponseRecord) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Record) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryResponseRecord) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Record.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryResponseRecord.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -58,63 +55,43 @@ func (m *Record) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Record) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Record.Merge(m, src)
+func (m *QueryResponseRecord) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryResponseRecord.Merge(m, src)
 }
-func (m *Record) XXX_Size() int {
+func (m *QueryResponseRecord) XXX_Size() int {
 	return m.Size()
 }
-func (m *Record) XXX_DiscardUnknown() {
-	xxx_messageInfo_Record.DiscardUnknown(m)
+func (m *QueryResponseRecord) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryResponseRecord.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Record proto.InternalMessageInfo
+var xxx_messageInfo_QueryResponseRecord proto.InternalMessageInfo
 
-func (m *Record) GetIscnId() string {
-	if m != nil {
-		return m.IscnId
-	}
-	return ""
-}
-
-func (m *Record) GetOwner() string {
-	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-func (m *Record) GetIpld() string {
+func (m *QueryResponseRecord) GetIpld() string {
 	if m != nil {
 		return m.Ipld
 	}
 	return ""
 }
 
-func (m *Record) GetLatestRecordVersion() uint64 {
-	if m != nil {
-		return m.LatestRecordVersion
-	}
-	return 0
-}
-
-type QueryIscnRecordsRequest struct {
+type QueryRecordsByIdRequest struct {
 	IscnId      string `protobuf:"bytes,1,opt,name=iscn_id,json=iscnId,proto3" json:"iscn_id,omitempty"`
-	Fingerprint string `protobuf:"bytes,2,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
+	FromVersion uint64 `protobuf:"varint,2,opt,name=from_version,json=fromVersion,proto3" json:"from_version,omitempty"`
+	ToVersion   uint64 `protobuf:"varint,3,opt,name=to_version,json=toVersion,proto3" json:"to_version,omitempty"`
 }
 
-func (m *QueryIscnRecordsRequest) Reset()         { *m = QueryIscnRecordsRequest{} }
-func (m *QueryIscnRecordsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryIscnRecordsRequest) ProtoMessage()    {}
-func (*QueryIscnRecordsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryRecordsByIdRequest) Reset()         { *m = QueryRecordsByIdRequest{} }
+func (m *QueryRecordsByIdRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryRecordsByIdRequest) ProtoMessage()    {}
+func (*QueryRecordsByIdRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_06598f8bde0adb8a, []int{1}
 }
-func (m *QueryIscnRecordsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryRecordsByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryIscnRecordsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryRecordsByIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryIscnRecordsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryRecordsByIdRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -124,48 +101,57 @@ func (m *QueryIscnRecordsRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *QueryIscnRecordsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryIscnRecordsRequest.Merge(m, src)
+func (m *QueryRecordsByIdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRecordsByIdRequest.Merge(m, src)
 }
-func (m *QueryIscnRecordsRequest) XXX_Size() int {
+func (m *QueryRecordsByIdRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryIscnRecordsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryIscnRecordsRequest.DiscardUnknown(m)
+func (m *QueryRecordsByIdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRecordsByIdRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryIscnRecordsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryRecordsByIdRequest proto.InternalMessageInfo
 
-func (m *QueryIscnRecordsRequest) GetIscnId() string {
+func (m *QueryRecordsByIdRequest) GetIscnId() string {
 	if m != nil {
 		return m.IscnId
 	}
 	return ""
 }
 
-func (m *QueryIscnRecordsRequest) GetFingerprint() string {
+func (m *QueryRecordsByIdRequest) GetFromVersion() uint64 {
 	if m != nil {
-		return m.Fingerprint
+		return m.FromVersion
 	}
-	return ""
+	return 0
 }
 
-type QueryIscnRecordsResponse struct {
-	Records []Record `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
+func (m *QueryRecordsByIdRequest) GetToVersion() uint64 {
+	if m != nil {
+		return m.ToVersion
+	}
+	return 0
 }
 
-func (m *QueryIscnRecordsResponse) Reset()         { *m = QueryIscnRecordsResponse{} }
-func (m *QueryIscnRecordsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryIscnRecordsResponse) ProtoMessage()    {}
-func (*QueryIscnRecordsResponse) Descriptor() ([]byte, []int) {
+type QueryRecordsByIdResponse struct {
+	Owner         string                `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	LatestVersion uint64                `protobuf:"varint,2,opt,name=latest_version,json=latestVersion,proto3" json:"latest_version,omitempty"`
+	Records       []QueryResponseRecord `protobuf:"bytes,3,rep,name=records,proto3" json:"records"`
+}
+
+func (m *QueryRecordsByIdResponse) Reset()         { *m = QueryRecordsByIdResponse{} }
+func (m *QueryRecordsByIdResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryRecordsByIdResponse) ProtoMessage()    {}
+func (*QueryRecordsByIdResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_06598f8bde0adb8a, []int{2}
 }
-func (m *QueryIscnRecordsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryRecordsByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryIscnRecordsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryRecordsByIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryIscnRecordsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryRecordsByIdResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -175,23 +161,141 @@ func (m *QueryIscnRecordsResponse) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *QueryIscnRecordsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryIscnRecordsResponse.Merge(m, src)
+func (m *QueryRecordsByIdResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRecordsByIdResponse.Merge(m, src)
 }
-func (m *QueryIscnRecordsResponse) XXX_Size() int {
+func (m *QueryRecordsByIdResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryIscnRecordsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryIscnRecordsResponse.DiscardUnknown(m)
+func (m *QueryRecordsByIdResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRecordsByIdResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryIscnRecordsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryRecordsByIdResponse proto.InternalMessageInfo
 
-func (m *QueryIscnRecordsResponse) GetRecords() []Record {
+func (m *QueryRecordsByIdResponse) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *QueryRecordsByIdResponse) GetLatestVersion() uint64 {
+	if m != nil {
+		return m.LatestVersion
+	}
+	return 0
+}
+
+func (m *QueryRecordsByIdResponse) GetRecords() []QueryResponseRecord {
 	if m != nil {
 		return m.Records
 	}
 	return nil
+}
+
+type QueryRecordsByFingerprintRequest struct {
+	Fingerprint  string `protobuf:"bytes,1,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
+	FromSequence uint64 `protobuf:"varint,2,opt,name=from_sequence,json=fromSequence,proto3" json:"from_sequence,omitempty"`
+}
+
+func (m *QueryRecordsByFingerprintRequest) Reset()         { *m = QueryRecordsByFingerprintRequest{} }
+func (m *QueryRecordsByFingerprintRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryRecordsByFingerprintRequest) ProtoMessage()    {}
+func (*QueryRecordsByFingerprintRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_06598f8bde0adb8a, []int{3}
+}
+func (m *QueryRecordsByFingerprintRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryRecordsByFingerprintRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryRecordsByFingerprintRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryRecordsByFingerprintRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRecordsByFingerprintRequest.Merge(m, src)
+}
+func (m *QueryRecordsByFingerprintRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryRecordsByFingerprintRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRecordsByFingerprintRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryRecordsByFingerprintRequest proto.InternalMessageInfo
+
+func (m *QueryRecordsByFingerprintRequest) GetFingerprint() string {
+	if m != nil {
+		return m.Fingerprint
+	}
+	return ""
+}
+
+func (m *QueryRecordsByFingerprintRequest) GetFromSequence() uint64 {
+	if m != nil {
+		return m.FromSequence
+	}
+	return 0
+}
+
+type QueryRecordsByFingerprintResponse struct {
+	Records      []QueryResponseRecord `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
+	NextSequence uint64                `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
+}
+
+func (m *QueryRecordsByFingerprintResponse) Reset()         { *m = QueryRecordsByFingerprintResponse{} }
+func (m *QueryRecordsByFingerprintResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryRecordsByFingerprintResponse) ProtoMessage()    {}
+func (*QueryRecordsByFingerprintResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_06598f8bde0adb8a, []int{4}
+}
+func (m *QueryRecordsByFingerprintResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryRecordsByFingerprintResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryRecordsByFingerprintResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryRecordsByFingerprintResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRecordsByFingerprintResponse.Merge(m, src)
+}
+func (m *QueryRecordsByFingerprintResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryRecordsByFingerprintResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRecordsByFingerprintResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryRecordsByFingerprintResponse proto.InternalMessageInfo
+
+func (m *QueryRecordsByFingerprintResponse) GetRecords() []QueryResponseRecord {
+	if m != nil {
+		return m.Records
+	}
+	return nil
+}
+
+func (m *QueryRecordsByFingerprintResponse) GetNextSequence() uint64 {
+	if m != nil {
+		return m.NextSequence
+	}
+	return 0
 }
 
 type QueryParamsRequest struct {
@@ -201,7 +305,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{3}
+	return fileDescriptor_06598f8bde0adb8a, []int{5}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -238,7 +342,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{4}
+	return fileDescriptor_06598f8bde0adb8a, []int{6}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -282,7 +386,7 @@ func (m *QueryGetCidRequest) Reset()         { *m = QueryGetCidRequest{} }
 func (m *QueryGetCidRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetCidRequest) ProtoMessage()    {}
 func (*QueryGetCidRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{5}
+	return fileDescriptor_06598f8bde0adb8a, []int{7}
 }
 func (m *QueryGetCidRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -326,7 +430,7 @@ func (m *QueryGetCidResponse) Reset()         { *m = QueryGetCidResponse{} }
 func (m *QueryGetCidResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetCidResponse) ProtoMessage()    {}
 func (*QueryGetCidResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{6}
+	return fileDescriptor_06598f8bde0adb8a, []int{8}
 }
 func (m *QueryGetCidResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -370,7 +474,7 @@ func (m *QueryGetCidSizeRequest) Reset()         { *m = QueryGetCidSizeRequest{}
 func (m *QueryGetCidSizeRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetCidSizeRequest) ProtoMessage()    {}
 func (*QueryGetCidSizeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{7}
+	return fileDescriptor_06598f8bde0adb8a, []int{9}
 }
 func (m *QueryGetCidSizeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -414,7 +518,7 @@ func (m *QueryGetCidSizeResponse) Reset()         { *m = QueryGetCidSizeResponse
 func (m *QueryGetCidSizeResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetCidSizeResponse) ProtoMessage()    {}
 func (*QueryGetCidSizeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{8}
+	return fileDescriptor_06598f8bde0adb8a, []int{10}
 }
 func (m *QueryGetCidSizeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -458,7 +562,7 @@ func (m *QueryHasCidRequest) Reset()         { *m = QueryHasCidRequest{} }
 func (m *QueryHasCidRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryHasCidRequest) ProtoMessage()    {}
 func (*QueryHasCidRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{9}
+	return fileDescriptor_06598f8bde0adb8a, []int{11}
 }
 func (m *QueryHasCidRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -502,7 +606,7 @@ func (m *QueryHasCidResponse) Reset()         { *m = QueryHasCidResponse{} }
 func (m *QueryHasCidResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryHasCidResponse) ProtoMessage()    {}
 func (*QueryHasCidResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_06598f8bde0adb8a, []int{10}
+	return fileDescriptor_06598f8bde0adb8a, []int{12}
 }
 func (m *QueryHasCidResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -539,9 +643,11 @@ func (m *QueryHasCidResponse) GetExist() bool {
 }
 
 func init() {
-	proto.RegisterType((*Record)(nil), "likechain.iscn.Record")
-	proto.RegisterType((*QueryIscnRecordsRequest)(nil), "likechain.iscn.QueryIscnRecordsRequest")
-	proto.RegisterType((*QueryIscnRecordsResponse)(nil), "likechain.iscn.QueryIscnRecordsResponse")
+	proto.RegisterType((*QueryResponseRecord)(nil), "likechain.iscn.QueryResponseRecord")
+	proto.RegisterType((*QueryRecordsByIdRequest)(nil), "likechain.iscn.QueryRecordsByIdRequest")
+	proto.RegisterType((*QueryRecordsByIdResponse)(nil), "likechain.iscn.QueryRecordsByIdResponse")
+	proto.RegisterType((*QueryRecordsByFingerprintRequest)(nil), "likechain.iscn.QueryRecordsByFingerprintRequest")
+	proto.RegisterType((*QueryRecordsByFingerprintResponse)(nil), "likechain.iscn.QueryRecordsByFingerprintResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "likechain.iscn.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "likechain.iscn.QueryParamsResponse")
 	proto.RegisterType((*QueryGetCidRequest)(nil), "likechain.iscn.QueryGetCidRequest")
@@ -555,47 +661,54 @@ func init() {
 func init() { proto.RegisterFile("iscn/query.proto", fileDescriptor_06598f8bde0adb8a) }
 
 var fileDescriptor_06598f8bde0adb8a = []byte{
-	// 639 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xdf, 0x4e, 0xd4, 0x40,
-	0x14, 0xc6, 0xb7, 0xd0, 0x2d, 0x72, 0x40, 0x85, 0x61, 0x81, 0xa6, 0x9a, 0xd2, 0xd4, 0x04, 0x16,
-	0x8c, 0xdb, 0x04, 0x8d, 0x0f, 0x80, 0x26, 0x4a, 0xbc, 0xd1, 0x6a, 0xbc, 0xf0, 0x66, 0x53, 0xda,
-	0xb1, 0x4c, 0x58, 0x66, 0x4a, 0x67, 0x56, 0xfe, 0x18, 0x63, 0xe2, 0x13, 0x98, 0xf8, 0x16, 0x3e,
-	0x09, 0x57, 0x86, 0xc4, 0x1b, 0xe3, 0x05, 0x31, 0xe0, 0x83, 0x98, 0xce, 0xcc, 0xb2, 0x2d, 0xd2,
-	0xe5, 0x6e, 0x3a, 0xe7, 0xdb, 0xef, 0xf7, 0xf5, 0x9c, 0xd3, 0x85, 0x19, 0xc2, 0x63, 0x1a, 0xec,
-	0xf5, 0x71, 0x7e, 0xd8, 0xc9, 0x72, 0x26, 0x18, 0xba, 0xd5, 0x23, 0x3b, 0x38, 0xde, 0x8e, 0x08,
-	0xed, 0x14, 0x35, 0xa7, 0x95, 0xb2, 0x94, 0xc9, 0x52, 0x50, 0x9c, 0x94, 0xca, 0xb9, 0x9b, 0x32,
-	0x96, 0xf6, 0x70, 0x10, 0x65, 0x24, 0x88, 0x28, 0x65, 0x22, 0x12, 0x84, 0x51, 0xae, 0xab, 0xb3,
-	0xd2, 0x35, 0x8b, 0xf2, 0x68, 0x57, 0x5f, 0xf9, 0xdf, 0x0d, 0xb0, 0x42, 0x1c, 0xb3, 0x3c, 0x41,
-	0x8b, 0x30, 0x51, 0xd4, 0xbb, 0x24, 0xb1, 0x0d, 0xcf, 0x68, 0x4f, 0x86, 0x56, 0xf1, 0xb8, 0x99,
-	0xa0, 0x16, 0x34, 0xd9, 0x3e, 0xc5, 0xb9, 0x3d, 0x26, 0xaf, 0xd5, 0x03, 0x42, 0x60, 0x92, 0xac,
-	0x97, 0xd8, 0xe3, 0xf2, 0x52, 0x9e, 0xd1, 0x3a, 0xcc, 0xf7, 0x22, 0x81, 0xb9, 0xe8, 0xe6, 0xd2,
-	0xb3, 0xfb, 0x01, 0xe7, 0x9c, 0x30, 0x6a, 0x9b, 0x9e, 0xd1, 0x36, 0xc3, 0x39, 0x55, 0x54, 0xbc,
-	0xb7, 0xaa, 0x84, 0x56, 0xc1, 0x52, 0x62, 0xbb, 0xe9, 0x19, 0xed, 0xe9, 0x8d, 0xd9, 0xe3, 0xd3,
-	0xa5, 0xc6, 0xef, 0xd3, 0xa5, 0xc9, 0xcd, 0x82, 0x4e, 0xb3, 0xbe, 0x08, 0xb5, 0xc0, 0x7f, 0x03,
-	0x8b, 0xaf, 0x8a, 0x96, 0x14, 0x15, 0x65, 0xc2, 0x43, 0xbc, 0xd7, 0xc7, 0x5c, 0xd4, 0x87, 0xf7,
-	0x60, 0xea, 0x3d, 0xa1, 0x29, 0xce, 0xb3, 0x9c, 0x50, 0xa1, 0x5f, 0xa1, 0x7c, 0xe5, 0x87, 0x60,
-	0xff, 0xef, 0xca, 0x33, 0x46, 0x39, 0x46, 0x8f, 0x61, 0x42, 0xb1, 0xb9, 0x6d, 0x78, 0xe3, 0xed,
-	0xa9, 0xf5, 0x85, 0x4e, 0x75, 0x0e, 0x1d, 0xf5, 0x8b, 0x0d, 0xb3, 0x48, 0x1d, 0x0e, 0xc4, 0x7e,
-	0x0b, 0x90, 0xf4, 0x7c, 0x29, 0x7b, 0xad, 0x43, 0xfa, 0x2f, 0x60, 0xae, 0x72, 0xab, 0x21, 0x8f,
-	0xc0, 0x52, 0x33, 0x91, 0xd1, 0xaf, 0x60, 0x28, 0xbd, 0x66, 0x68, 0xad, 0xbf, 0xac, 0x11, 0xcf,
-	0xb0, 0x78, 0x42, 0x92, 0x41, 0x1f, 0x66, 0x60, 0x3c, 0xbe, 0xe8, 0x41, 0x71, 0xf4, 0x57, 0x35,
-	0x74, 0xa0, 0xd3, 0x50, 0x04, 0x66, 0x12, 0x89, 0x48, 0x2a, 0xa7, 0x43, 0x79, 0xf6, 0xd7, 0x60,
-	0xa1, 0x24, 0x7d, 0x4d, 0x8e, 0x70, 0xbd, 0xed, 0x03, 0x3d, 0x8b, 0xb2, 0x76, 0x68, 0xcd, 0xc9,
-	0x11, 0x96, 0x6a, 0x33, 0x94, 0xe7, 0x8b, 0xb4, 0xcf, 0x23, 0x3e, 0x32, 0xed, 0x7d, 0x9d, 0x76,
-	0xa0, 0xd3, 0x96, 0x2d, 0x68, 0xe2, 0x03, 0xc2, 0x85, 0x94, 0xde, 0x08, 0xd5, 0xc3, 0xfa, 0x0f,
-	0x13, 0x9a, 0x52, 0x8d, 0xf6, 0x61, 0xaa, 0x34, 0x3e, 0xb4, 0x72, 0xb9, 0x83, 0x35, 0x6b, 0xe3,
-	0xb4, 0xaf, 0x17, 0xaa, 0x04, 0xfe, 0xfc, 0x97, 0x9f, 0x7f, 0xbf, 0x8d, 0xdd, 0x46, 0x37, 0x03,
-	0xf9, 0x11, 0xe9, 0x41, 0xa3, 0x1d, 0xb0, 0xd4, 0x74, 0x90, 0x7f, 0xa5, 0x55, 0x65, 0x01, 0x9c,
-	0x7b, 0x23, 0x35, 0x9a, 0x64, 0x4b, 0x12, 0x42, 0x33, 0xc1, 0xf0, 0x73, 0xc5, 0x02, 0xe7, 0x1c,
-	0x51, 0xb0, 0x54, 0xbb, 0x6b, 0x60, 0x95, 0x55, 0xa8, 0x81, 0x55, 0xd7, 0xc0, 0xbf, 0x23, 0x61,
-	0xf3, 0x68, 0x4e, 0xc1, 0x52, 0x2c, 0xba, 0x31, 0x49, 0x82, 0x8f, 0x31, 0x49, 0x3e, 0x15, 0x3c,
-	0x35, 0x87, 0x1a, 0x5e, 0x65, 0x98, 0x35, 0xbc, 0xea, 0x20, 0x2f, 0xf3, 0xb6, 0x23, 0x5e, 0xe2,
-	0x7d, 0x06, 0x18, 0xae, 0x13, 0x5a, 0x1e, 0x91, 0xbf, 0xb4, 0x9b, 0xce, 0xca, 0xb5, 0x3a, 0xcd,
-	0xf6, 0x24, 0xdb, 0x41, 0x76, 0xe5, 0x5d, 0xbb, 0xc5, 0x7e, 0xaa, 0x00, 0x1b, 0x4f, 0x8f, 0xcf,
-	0x5c, 0xe3, 0xe4, 0xcc, 0x35, 0xfe, 0x9c, 0xb9, 0xc6, 0xd7, 0x73, 0xb7, 0x71, 0x72, 0xee, 0x36,
-	0x7e, 0x9d, 0xbb, 0x8d, 0x77, 0x6b, 0x29, 0x11, 0xdb, 0xfd, 0xad, 0x4e, 0xcc, 0x76, 0x03, 0x89,
-	0x63, 0x84, 0x06, 0x17, 0xdc, 0xe0, 0x40, 0x59, 0x8a, 0xc3, 0x0c, 0xf3, 0x2d, 0x4b, 0xfe, 0xb5,
-	0x3e, 0xfc, 0x17, 0x00, 0x00, 0xff, 0xff, 0x39, 0x7d, 0x8a, 0xca, 0xc5, 0x05, 0x00, 0x00,
+	// 741 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x95, 0x4f, 0x4f, 0x13, 0x41,
+	0x18, 0xc6, 0xbb, 0xb4, 0x14, 0x99, 0x02, 0x81, 0xa1, 0x42, 0x5d, 0xb4, 0x94, 0x25, 0x40, 0xc5,
+	0xd8, 0x55, 0xf4, 0x13, 0x14, 0xa3, 0x36, 0x5e, 0x70, 0x49, 0x3c, 0x78, 0x69, 0x96, 0xdd, 0x61,
+	0x99, 0x50, 0x66, 0x96, 0x9d, 0xa9, 0x02, 0xc6, 0x98, 0x78, 0x37, 0x31, 0xf1, 0x6a, 0xfc, 0x3c,
+	0x1c, 0x49, 0xbc, 0x18, 0x0f, 0xc4, 0x80, 0x9f, 0xc0, 0x4f, 0x60, 0xe6, 0xcf, 0xb6, 0xbb, 0xa5,
+	0x2d, 0xd1, 0xdb, 0xec, 0x3b, 0xcf, 0xbe, 0xbf, 0x67, 0xde, 0x7d, 0xa6, 0x05, 0xd3, 0x98, 0x79,
+	0xc4, 0x3e, 0x6c, 0xa3, 0xe8, 0xb8, 0x16, 0x46, 0x94, 0x53, 0x38, 0xd5, 0xc2, 0xfb, 0xc8, 0xdb,
+	0x73, 0x31, 0xa9, 0x89, 0x3d, 0xb3, 0x18, 0xd0, 0x80, 0xca, 0x2d, 0x5b, 0xac, 0x94, 0xca, 0xbc,
+	0x1d, 0x50, 0x1a, 0xb4, 0x90, 0xed, 0x86, 0xd8, 0x76, 0x09, 0xa1, 0xdc, 0xe5, 0x98, 0x12, 0xa6,
+	0x77, 0x67, 0x64, 0xd7, 0xd0, 0x8d, 0xdc, 0x03, 0x5d, 0xb2, 0xb6, 0xc0, 0xec, 0x4b, 0x41, 0x71,
+	0x10, 0x0b, 0x29, 0x61, 0xc8, 0x41, 0x1e, 0x8d, 0x7c, 0x08, 0x41, 0x0e, 0x87, 0x2d, 0xbf, 0x64,
+	0x54, 0x8c, 0xea, 0xb8, 0x23, 0xd7, 0x70, 0x05, 0xe4, 0x7c, 0x97, 0xbb, 0xa5, 0x91, 0x8a, 0x51,
+	0x9d, 0xa8, 0xcf, 0x9c, 0x9e, 0x2f, 0x66, 0x7e, 0x9e, 0x2f, 0x8e, 0x37, 0x98, 0x47, 0x1a, 0x24,
+	0x6c, 0x73, 0x47, 0x6e, 0x5b, 0x1c, 0xcc, 0xeb, 0x8e, 0xa2, 0x13, 0xab, 0x1f, 0x37, 0x7c, 0x07,
+	0x1d, 0xb6, 0x11, 0xe3, 0x70, 0x1e, 0x8c, 0x09, 0x07, 0x4d, 0x1c, 0x37, 0xce, 0x8b, 0xc7, 0x86,
+	0x0f, 0x97, 0xc0, 0xc4, 0x6e, 0x44, 0x0f, 0x9a, 0x6f, 0x50, 0xc4, 0x30, 0x25, 0x12, 0x91, 0x73,
+	0x0a, 0xa2, 0xf6, 0x4a, 0x95, 0xe0, 0x1d, 0x00, 0x38, 0xed, 0x08, 0xb2, 0x52, 0x30, 0xce, 0xa9,
+	0xde, 0xb6, 0xbe, 0x1a, 0xa0, 0x74, 0x15, 0xab, 0xce, 0x04, 0x8b, 0x60, 0x94, 0xbe, 0x25, 0x28,
+	0xd2, 0x54, 0xf5, 0x00, 0x57, 0xc0, 0x54, 0xcb, 0xe5, 0x88, 0xf1, 0x1e, 0xec, 0xa4, 0xaa, 0xc6,
+	0xe0, 0x4d, 0x30, 0x16, 0xa9, 0x9e, 0xa5, 0x6c, 0x25, 0x5b, 0x2d, 0x6c, 0x2c, 0xd7, 0xd2, 0x9f,
+	0xa2, 0xd6, 0x67, 0x80, 0xf5, 0x9c, 0x18, 0x8f, 0x13, 0xbf, 0x69, 0x61, 0x50, 0x49, 0xbb, 0x7b,
+	0x8a, 0x49, 0x80, 0xa2, 0x30, 0xc2, 0x84, 0xc7, 0xd3, 0xa9, 0x80, 0xc2, 0x6e, 0xb7, 0xaa, 0xbd,
+	0x26, 0x4b, 0x70, 0x19, 0x4c, 0xca, 0x31, 0x31, 0xf1, 0x06, 0xf1, 0x90, 0x36, 0x2c, 0x67, 0xb7,
+	0xad, 0x6b, 0xd6, 0x27, 0x03, 0x2c, 0x0d, 0x61, 0xe9, 0x91, 0x24, 0x4e, 0x65, 0xfc, 0xef, 0xa9,
+	0x84, 0x1f, 0x82, 0x8e, 0xf8, 0x15, 0x3f, 0xa2, 0xd8, 0xf1, 0x53, 0x04, 0x50, 0xb6, 0xda, 0x92,
+	0xb1, 0xd3, 0x87, 0xb5, 0x5e, 0xe8, 0xdc, 0xc5, 0x55, 0x6d, 0xeb, 0x31, 0xc8, 0xab, 0x78, 0xca,
+	0xe3, 0x17, 0x36, 0xe6, 0x7a, 0x5d, 0x29, 0xbd, 0x36, 0xa2, 0xb5, 0xd6, 0xaa, 0x46, 0x3c, 0x43,
+	0x7c, 0x13, 0x77, 0xd2, 0x36, 0x0d, 0xb2, 0x5e, 0x27, 0x69, 0x62, 0x69, 0xdd, 0xd5, 0xd0, 0x58,
+	0xa7, 0xa1, 0x50, 0x07, 0x5b, 0x28, 0x27, 0x74, 0x8a, 0xd7, 0xc1, 0x5c, 0x42, 0xba, 0x8d, 0x4f,
+	0xd0, 0xe0, 0xb6, 0xf7, 0x75, 0xe2, 0x93, 0xda, 0x6e, 0x6b, 0x86, 0x4f, 0x90, 0x54, 0xe7, 0x1c,
+	0xb9, 0xee, 0xb8, 0x7d, 0xee, 0xb2, 0xa1, 0x6e, 0xef, 0x69, 0xb7, 0xb1, 0xae, 0x1b, 0x66, 0x74,
+	0x84, 0x99, 0x0a, 0xc8, 0x0d, 0x47, 0x3d, 0x6c, 0xfc, 0x19, 0x05, 0xa3, 0x52, 0x0d, 0x4f, 0x40,
+	0x21, 0x71, 0x07, 0xe0, 0xda, 0x80, 0xef, 0xda, 0x7b, 0x39, 0xcd, 0xea, 0xf5, 0x42, 0xe5, 0xc0,
+	0x2a, 0x7d, 0xfc, 0xfe, 0xfb, 0xcb, 0x08, 0x84, 0xd3, 0xb6, 0xfc, 0x3d, 0xd1, 0x69, 0xb0, 0xb1,
+	0x0f, 0xbf, 0x19, 0xa0, 0xd8, 0x2f, 0x76, 0xf0, 0xc1, 0xf0, 0xe6, 0x57, 0x6f, 0x83, 0xf9, 0xf0,
+	0x1f, 0xde, 0xd0, 0xbe, 0x96, 0xa4, 0xaf, 0x05, 0x78, 0x2b, 0xed, 0x2b, 0x79, 0x83, 0xf6, 0x41,
+	0x5e, 0x25, 0x08, 0x5a, 0x7d, 0xfb, 0xa7, 0x42, 0x6a, 0x2e, 0x0f, 0xd5, 0xf4, 0x9f, 0x86, 0x8c,
+	0x24, 0xe2, 0x28, 0x62, 0x90, 0x80, 0xbc, 0x8a, 0xc4, 0x00, 0x58, 0x2a, 0xae, 0x03, 0x60, 0xe9,
+	0xa8, 0x5a, 0x0b, 0x12, 0x76, 0x13, 0xce, 0x2a, 0x58, 0x80, 0x78, 0xd3, 0xc3, 0xbe, 0xfd, 0xce,
+	0xc3, 0xfe, 0x7b, 0xc1, 0x53, 0x59, 0x19, 0xc0, 0x4b, 0x05, 0x6e, 0x00, 0x2f, 0x1d, 0xb6, 0x5e,
+	0xde, 0x9e, 0xcb, 0x12, 0xbc, 0x0f, 0x00, 0x74, 0x23, 0x0f, 0x57, 0x87, 0xf8, 0x4f, 0xdc, 0x1f,
+	0x73, 0xed, 0x5a, 0x9d, 0x66, 0x57, 0x24, 0xdb, 0x84, 0xa5, 0xd4, 0x59, 0x9b, 0xe2, 0x0e, 0x29,
+	0x03, 0xf5, 0x27, 0xa7, 0x17, 0x65, 0xe3, 0xec, 0xa2, 0x6c, 0xfc, 0xba, 0x28, 0x1b, 0x9f, 0x2f,
+	0xcb, 0x99, 0xb3, 0xcb, 0x72, 0xe6, 0xc7, 0x65, 0x39, 0xf3, 0x7a, 0x3d, 0xc0, 0x7c, 0xaf, 0xbd,
+	0x53, 0xf3, 0xe8, 0x81, 0x2d, 0x71, 0x14, 0x13, 0xbb, 0xc3, 0xb5, 0x8f, 0x54, 0x4b, 0x7e, 0x1c,
+	0x22, 0xb6, 0x93, 0x97, 0xff, 0x84, 0x8f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0xf0, 0x12, 0x6e,
+	0x25, 0x74, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -610,7 +723,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	IscnRecords(ctx context.Context, in *QueryIscnRecordsRequest, opts ...grpc.CallOption) (*QueryIscnRecordsResponse, error)
+	RecordsById(ctx context.Context, in *QueryRecordsByIdRequest, opts ...grpc.CallOption) (*QueryRecordsByIdResponse, error)
+	RecordsByFingerprint(ctx context.Context, in *QueryRecordsByFingerprintRequest, opts ...grpc.CallOption) (*QueryRecordsByFingerprintResponse, error)
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	GetCid(ctx context.Context, in *QueryGetCidRequest, opts ...grpc.CallOption) (*QueryGetCidResponse, error)
 	HasCid(ctx context.Context, in *QueryHasCidRequest, opts ...grpc.CallOption) (*QueryHasCidResponse, error)
@@ -625,9 +739,18 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) IscnRecords(ctx context.Context, in *QueryIscnRecordsRequest, opts ...grpc.CallOption) (*QueryIscnRecordsResponse, error) {
-	out := new(QueryIscnRecordsResponse)
-	err := c.cc.Invoke(ctx, "/likechain.iscn.Query/IscnRecords", in, out, opts...)
+func (c *queryClient) RecordsById(ctx context.Context, in *QueryRecordsByIdRequest, opts ...grpc.CallOption) (*QueryRecordsByIdResponse, error) {
+	out := new(QueryRecordsByIdResponse)
+	err := c.cc.Invoke(ctx, "/likechain.iscn.Query/RecordsById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) RecordsByFingerprint(ctx context.Context, in *QueryRecordsByFingerprintRequest, opts ...grpc.CallOption) (*QueryRecordsByFingerprintResponse, error) {
+	out := new(QueryRecordsByFingerprintResponse)
+	err := c.cc.Invoke(ctx, "/likechain.iscn.Query/RecordsByFingerprint", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -672,7 +795,8 @@ func (c *queryClient) GetCidSize(ctx context.Context, in *QueryGetCidSizeRequest
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	IscnRecords(context.Context, *QueryIscnRecordsRequest) (*QueryIscnRecordsResponse, error)
+	RecordsById(context.Context, *QueryRecordsByIdRequest) (*QueryRecordsByIdResponse, error)
+	RecordsByFingerprint(context.Context, *QueryRecordsByFingerprintRequest) (*QueryRecordsByFingerprintResponse, error)
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	GetCid(context.Context, *QueryGetCidRequest) (*QueryGetCidResponse, error)
 	HasCid(context.Context, *QueryHasCidRequest) (*QueryHasCidResponse, error)
@@ -683,8 +807,11 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) IscnRecords(ctx context.Context, req *QueryIscnRecordsRequest) (*QueryIscnRecordsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IscnRecords not implemented")
+func (*UnimplementedQueryServer) RecordsById(ctx context.Context, req *QueryRecordsByIdRequest) (*QueryRecordsByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecordsById not implemented")
+}
+func (*UnimplementedQueryServer) RecordsByFingerprint(ctx context.Context, req *QueryRecordsByFingerprintRequest) (*QueryRecordsByFingerprintResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecordsByFingerprint not implemented")
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -703,20 +830,38 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_IscnRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryIscnRecordsRequest)
+func _Query_RecordsById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRecordsByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).IscnRecords(ctx, in)
+		return srv.(QueryServer).RecordsById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likechain.iscn.Query/IscnRecords",
+		FullMethod: "/likechain.iscn.Query/RecordsById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).IscnRecords(ctx, req.(*QueryIscnRecordsRequest))
+		return srv.(QueryServer).RecordsById(ctx, req.(*QueryRecordsByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_RecordsByFingerprint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRecordsByFingerprintRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).RecordsByFingerprint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/likechain.iscn.Query/RecordsByFingerprint",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).RecordsByFingerprint(ctx, req.(*QueryRecordsByFingerprintRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -798,8 +943,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "IscnRecords",
-			Handler:    _Query_IscnRecords_Handler,
+			MethodName: "RecordsById",
+			Handler:    _Query_RecordsById_Handler,
+		},
+		{
+			MethodName: "RecordsByFingerprint",
+			Handler:    _Query_RecordsByFingerprint_Handler,
 		},
 		{
 			MethodName: "Params",
@@ -822,7 +971,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "iscn/query.proto",
 }
 
-func (m *Record) Marshal() (dAtA []byte, err error) {
+func (m *QueryResponseRecord) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -832,56 +981,126 @@ func (m *Record) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Record) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryResponseRecord) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Record) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryResponseRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size := m.Record.Size()
+		size := m.Data.Size()
 		i -= size
-		if _, err := m.Record.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.Data.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintQuery(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x2a
-	if m.LatestRecordVersion != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.LatestRecordVersion))
-		i--
-		dAtA[i] = 0x20
-	}
+	dAtA[i] = 0x12
 	if len(m.Ipld) > 0 {
 		i -= len(m.Ipld)
 		copy(dAtA[i:], m.Ipld)
 		i = encodeVarintQuery(dAtA, i, uint64(len(m.Ipld)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryRecordsByIdRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryRecordsByIdRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryRecordsByIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ToVersion != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.ToVersion))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.FromVersion != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.FromVersion))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.IscnId) > 0 {
+		i -= len(m.IscnId)
+		copy(dAtA[i:], m.IscnId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.IscnId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryRecordsByIdResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryRecordsByIdResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryRecordsByIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Records) > 0 {
+		for iNdEx := len(m.Records) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Records[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if m.LatestVersion != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.LatestVersion))
+		i--
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
 		copy(dAtA[i:], m.Owner)
 		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.IscnId) > 0 {
-		i -= len(m.IscnId)
-		copy(dAtA[i:], m.IscnId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.IscnId)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryIscnRecordsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryRecordsByFingerprintRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -891,34 +1110,32 @@ func (m *QueryIscnRecordsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryIscnRecordsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryRecordsByFingerprintRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryIscnRecordsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryRecordsByFingerprintRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.FromSequence != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.FromSequence))
+		i--
+		dAtA[i] = 0x10
+	}
 	if len(m.Fingerprint) > 0 {
 		i -= len(m.Fingerprint)
 		copy(dAtA[i:], m.Fingerprint)
 		i = encodeVarintQuery(dAtA, i, uint64(len(m.Fingerprint)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.IscnId) > 0 {
-		i -= len(m.IscnId)
-		copy(dAtA[i:], m.IscnId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.IscnId)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryIscnRecordsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryRecordsByFingerprintResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -928,16 +1145,21 @@ func (m *QueryIscnRecordsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryIscnRecordsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryRecordsByFingerprintResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryIscnRecordsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryRecordsByFingerprintResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.NextSequence != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.NextSequence))
+		i--
+		dAtA[i] = 0x10
+	}
 	if len(m.Records) > 0 {
 		for iNdEx := len(m.Records) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -1203,33 +1425,22 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Record) Size() (n int) {
+func (m *QueryResponseRecord) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.IscnId)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	l = len(m.Owner)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
 	l = len(m.Ipld)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	if m.LatestRecordVersion != 0 {
-		n += 1 + sovQuery(uint64(m.LatestRecordVersion))
-	}
-	l = m.Record.Size()
+	l = m.Data.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
-func (m *QueryIscnRecordsRequest) Size() (n int) {
+func (m *QueryRecordsByIdRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1239,14 +1450,54 @@ func (m *QueryIscnRecordsRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = len(m.Fingerprint)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
+	if m.FromVersion != 0 {
+		n += 1 + sovQuery(uint64(m.FromVersion))
+	}
+	if m.ToVersion != 0 {
+		n += 1 + sovQuery(uint64(m.ToVersion))
 	}
 	return n
 }
 
-func (m *QueryIscnRecordsResponse) Size() (n int) {
+func (m *QueryRecordsByIdResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.LatestVersion != 0 {
+		n += 1 + sovQuery(uint64(m.LatestVersion))
+	}
+	if len(m.Records) > 0 {
+		for _, e := range m.Records {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryRecordsByFingerprintRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Fingerprint)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.FromSequence != 0 {
+		n += 1 + sovQuery(uint64(m.FromSequence))
+	}
+	return n
+}
+
+func (m *QueryRecordsByFingerprintResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1257,6 +1508,9 @@ func (m *QueryIscnRecordsResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
+	}
+	if m.NextSequence != 0 {
+		n += 1 + sovQuery(uint64(m.NextSequence))
 	}
 	return n
 }
@@ -1363,7 +1617,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Record) Unmarshal(dAtA []byte) error {
+func (m *QueryResponseRecord) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1386,77 +1640,13 @@ func (m *Record) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Record: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryResponseRecord: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Record: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryResponseRecord: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IscnId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.IscnId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Ipld", wireType)
 			}
@@ -1488,28 +1678,9 @@ func (m *Record) Unmarshal(dAtA []byte) error {
 			}
 			m.Ipld = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LatestRecordVersion", wireType)
-			}
-			m.LatestRecordVersion = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.LatestRecordVersion |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Record", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1536,7 +1707,7 @@ func (m *Record) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Record.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Data.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1561,7 +1732,7 @@ func (m *Record) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryIscnRecordsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryRecordsByIdRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1584,10 +1755,10 @@ func (m *QueryIscnRecordsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryIscnRecordsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryRecordsByIdRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryIscnRecordsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryRecordsByIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1623,6 +1794,229 @@ func (m *QueryIscnRecordsRequest) Unmarshal(dAtA []byte) error {
 			m.IscnId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FromVersion", wireType)
+			}
+			m.FromVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.FromVersion |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ToVersion", wireType)
+			}
+			m.ToVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ToVersion |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryRecordsByIdResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryRecordsByIdResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryRecordsByIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LatestVersion", wireType)
+			}
+			m.LatestVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LatestVersion |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Records", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Records = append(m.Records, QueryResponseRecord{})
+			if err := m.Records[len(m.Records)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryRecordsByFingerprintRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryRecordsByFingerprintRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryRecordsByFingerprintRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Fingerprint", wireType)
 			}
@@ -1654,6 +2048,25 @@ func (m *QueryIscnRecordsRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Fingerprint = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FromSequence", wireType)
+			}
+			m.FromSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.FromSequence |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1675,7 +2088,7 @@ func (m *QueryIscnRecordsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryIscnRecordsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryRecordsByFingerprintResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1698,10 +2111,10 @@ func (m *QueryIscnRecordsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryIscnRecordsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryRecordsByFingerprintResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryIscnRecordsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryRecordsByFingerprintResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1733,11 +2146,30 @@ func (m *QueryIscnRecordsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Records = append(m.Records, Record{})
+			m.Records = append(m.Records, QueryResponseRecord{})
 			if err := m.Records[len(m.Records)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NextSequence", wireType)
+			}
+			m.NextSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NextSequence |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

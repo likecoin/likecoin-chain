@@ -1,14 +1,17 @@
 package types
 
-func NewQueryIscnRecordsRequestByIscnId(iscnId IscnId) *QueryIscnRecordsRequest {
-	return &QueryIscnRecordsRequest{
-		IscnId: iscnId.String(),
+func NewQueryRecordsByIdRequest(iscnId IscnId, fromVersion, toVersion uint64) *QueryRecordsByIdRequest {
+	return &QueryRecordsByIdRequest{
+		IscnId:      iscnId.String(),
+		FromVersion: fromVersion,
+		ToVersion:   toVersion,
 	}
 }
 
-func NewQueryIscnRecordsRequestByFingerprint(fingerprint string) *QueryIscnRecordsRequest {
-	return &QueryIscnRecordsRequest{
-		Fingerprint: fingerprint,
+func NewQueryRecordsByFingerprintRequest(fingerprint string, fromSeq uint64) *QueryRecordsByFingerprintRequest {
+	return &QueryRecordsByFingerprintRequest{
+		Fingerprint:  fingerprint,
+		FromSequence: fromSeq,
 	}
 }
 
