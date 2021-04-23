@@ -14,7 +14,6 @@ func (genesis GenesisState) Validate() error {
 		return fmt.Errorf("invalid ISCN parameters: %w", err)
 	}
 	iscnVersionMap := map[string]uint64{}
-	usedIpld := map[string]struct{}{}
 	for i, record := range genesis.IscnRecords {
 		recordMap := map[string]interface{}{}
 		err := json.Unmarshal(record, &recordMap)
@@ -42,12 +41,7 @@ func (genesis GenesisState) Validate() error {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has non-contiguous version (previous version %d, current version %d)", i, iscnId.String(), prevVersion, iscnId.Version)
 		}
 		iscnVersionMap[iscnPrefix] = iscnId.Version
-		cidStr := ComputeDataCid(record).String()
-		_, ipldExist := usedIpld[cidStr]
-		if ipldExist {
-			return fmt.Errorf("record at index %d (ISCN ID %s) has repeated IPLD %s", i, iscnId.String(), cidStr)
-		}
-		usedIpld[cidStr] = struct{}{}
+		// not checking repeated CID, since CID bases from the hash of content, CID repeated -> hash repeated -> content repeated -> "@id" field repeated -> invalid version
 		fingerprintsAny, ok := recordMap["contentFingerprints"]
 		if !ok {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has no \"contentFingerprints\" field", i, iscnId.String())
@@ -58,7 +52,7 @@ func (genesis GenesisState) Validate() error {
 		}
 		err = ValidateFingerprints(fingerprints)
 		if err != nil {
-			return fmt.Errorf("record at index %d (ISCN ID %s) has \"contentFingerprints\" entries: %w", i, iscnId.String(), err)
+			return fmt.Errorf("record at index %d (ISCN ID %s) has invalid \"contentFingerprints\" entries: %w", i, iscnId.String(), err)
 		}
 	}
 	for _, contentIdRecord := range genesis.ContentIdRecords {
