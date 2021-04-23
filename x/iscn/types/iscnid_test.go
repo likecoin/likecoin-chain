@@ -150,9 +150,9 @@ func TestIscnPrefixId(t *testing.T) {
 	id2Str := "iscn://likecoin-chain/AQIDBAUGBwgJAA/2"
 	id2, err := ParseIscnId(id2Str)
 	require.NoError(t, err)
-	require.Equal(t, "likecoin-chain", id.Prefix.RegistryName)
-	require.Equal(t, "AQIDBAUGBwgJAA", id.Prefix.ContentId)
-	require.Equal(t, uint64(2), id.Version)
+	require.Equal(t, "likecoin-chain", id2.Prefix.RegistryName)
+	require.Equal(t, "AQIDBAUGBwgJAA", id2.Prefix.ContentId)
+	require.Equal(t, uint64(2), id2.Version)
 
 	require.True(t, id.PrefixEqual(&id2))
 	require.True(t, id2.PrefixEqual(&id))
