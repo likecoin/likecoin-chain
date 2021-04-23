@@ -46,9 +46,17 @@ func (genesis GenesisState) Validate() error {
 		if !ok {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has no \"contentFingerprints\" field", i, iscnId.String())
 		}
-		fingerprints, ok := fingerprintsAny.([]string)
+		fingerprintsAnyArray, ok := fingerprintsAny.([]interface{})
 		if !ok {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has invalid \"contentFingerprints\" field type", i, iscnId.String())
+		}
+		fingerprints := make([]string, 0, len(fingerprintsAnyArray))
+		for j, fingerprintAny := range fingerprintsAnyArray {
+			fingerprint, ok := fingerprintAny.(string)
+			if !ok {
+				return fmt.Errorf("record at index %d (ISCN ID %s) has invalid fingerprint in \"contentFingerprints\" array (index %d)", i, iscnId.String(), j)
+			}
+			fingerprints = append(fingerprints, fingerprint)
 		}
 		err = ValidateFingerprints(fingerprints)
 		if err != nil {
@@ -72,7 +80,6 @@ func (genesis GenesisState) Validate() error {
 			return fmt.Errorf("ISCN ID prefix %s latest version does not match the content ID record entry", iscnId.String())
 		}
 		delete(iscnVersionMap, idPrefixStr)
-		iscnVersionMap[idPrefixStr] = 0
 	}
 	for prefixStr := range iscnVersionMap {
 		return fmt.Errorf("ISCN ID prefix %s has related ISCN record but no content ID record", prefixStr)

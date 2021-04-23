@@ -51,9 +51,8 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	params := k.GetParams(ctx)
 	contentIdRecords := []types.GenesisState_ContentIdRecord{}
 	k.IterateContentIdRecords(ctx, func(iscnId types.IscnId, contentIdRecord types.ContentIdRecord) bool {
-		iscnId.Version = 0
 		contentIdRecords = append(contentIdRecords, types.GenesisState_ContentIdRecord{
-			IscnId:        iscnId.String(),
+			IscnId:        iscnId.Prefix.String(),
 			Owner:         contentIdRecord.OwnerAddress().String(),
 			LatestVersion: contentIdRecord.LatestVersion,
 		})
