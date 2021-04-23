@@ -63,6 +63,12 @@ func (record *IscnRecord) ToJsonLd(info *IscnRecordJsonLdInfo) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	fingerprints := record.ContentFingerprints
+	if fingerprints == nil {
+		// hack: nil could be used for empty array in Go, but will be converted into `null` instead of `[]` when marshalling to JSON
+		// so we set it back to an empty array before marshalling, so the field will not be `null`
+		fingerprints = []string{}
+	}
 	recordMap := map[string]interface{}{
 		"@context": map[string]interface{}{
 			"@vocab": "http://iscn.io/",
@@ -87,7 +93,7 @@ func (record *IscnRecord) ToJsonLd(info *IscnRecordJsonLdInfo) ([]byte, error) {
 		"recordTimestamp":     info.Timestamp.UTC().Format("2006-01-02T15:04:05-07:00"),
 		"recordVersion":       info.Id.Version,
 		"recordNotes":         record.RecordNotes,
-		"contentFingerprints": record.ContentFingerprints,
+		"contentFingerprints": fingerprints,
 		"stakeholders":        stakeholders,
 		"contentMetadata":     normalizedContentMetadata,
 	}
