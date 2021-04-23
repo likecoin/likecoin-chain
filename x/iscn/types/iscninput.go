@@ -25,14 +25,11 @@ func (input *IscnInput) UnmarshalJSON(bz []byte) error {
 }
 
 func (input IscnInput) Size() int {
-	if input == nil {
-		return 4 // `null`
-	}
 	return len(input)
 }
 
 func (input IscnInput) Marshal() ([]byte, error) {
-	return input.MarshalJSON()
+	return input.Normalize()
 }
 
 func (input *IscnInput) Unmarshal(bz []byte) error {
