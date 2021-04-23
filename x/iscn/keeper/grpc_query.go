@@ -30,11 +30,11 @@ func (k Keeper) RecordsById(ctx context.Context, req *types.QueryRecordsByIdRequ
 		fromVersion = iscnId.Version
 		toVersion = iscnId.Version
 	}
-	tracingIdRecord := k.GetTracingIdRecord(sdkCtx, iscnId)
-	if tracingIdRecord == nil {
+	contentIdRecord := k.GetContentIdRecord(sdkCtx, iscnId)
+	if contentIdRecord == nil {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
 	}
-	latestVersion := tracingIdRecord.LatestVersion
+	latestVersion := contentIdRecord.LatestVersion
 	if fromVersion == 0 {
 		fromVersion = latestVersion
 	}
@@ -55,7 +55,7 @@ func (k Keeper) RecordsById(ctx context.Context, req *types.QueryRecordsByIdRequ
 		})
 	}
 	return &types.QueryRecordsByIdResponse{
-		Owner:         tracingIdRecord.OwnerAddress().String(),
+		Owner:         contentIdRecord.OwnerAddress().String(),
 		LatestVersion: latestVersion,
 		Records:       records,
 	}, nil

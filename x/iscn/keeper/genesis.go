@@ -31,31 +31,31 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 			k.AddFingerprintSequence(ctx, fingerprint, seq)
 		}
 	}
-	for _, tracingIdRecord := range genesis.TracingIdRecords {
-		iscnId, err := types.ParseIscnId(tracingIdRecord.IscnId)
+	for _, contentIdRecord := range genesis.ContentIdRecords {
+		iscnId, err := types.ParseIscnId(contentIdRecord.IscnId)
 		if err != nil {
 			panic(err)
 		}
-		owner, err := sdk.AccAddressFromBech32(tracingIdRecord.Owner)
+		owner, err := sdk.AccAddressFromBech32(contentIdRecord.Owner)
 		if err != nil {
 			panic(err)
 		}
-		k.SetTracingIdRecord(ctx, iscnId, &TracingIdRecord{
+		k.SetContentIdRecord(ctx, iscnId, &ContentIdRecord{
 			OwnerAddressBytes: owner.Bytes(),
-			LatestVersion:     tracingIdRecord.LatestVersion,
+			LatestVersion:     contentIdRecord.LatestVersion,
 		})
 	}
 }
 
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	params := k.GetParams(ctx)
-	tracingIdRecords := []types.GenesisState_TracingIdRecord{}
-	k.IterateTracingIdRecords(ctx, func(iscnId types.IscnId, tracingIdRecord types.TracingIdRecord) bool {
+	contentIdRecords := []types.GenesisState_ContentIdRecord{}
+	k.IterateContentIdRecords(ctx, func(iscnId types.IscnId, contentIdRecord types.ContentIdRecord) bool {
 		iscnId.Version = 0
-		tracingIdRecords = append(tracingIdRecords, types.GenesisState_TracingIdRecord{
+		contentIdRecords = append(contentIdRecords, types.GenesisState_ContentIdRecord{
 			IscnId:        iscnId.String(),
-			Owner:         tracingIdRecord.OwnerAddress().String(),
-			LatestVersion: tracingIdRecord.LatestVersion,
+			Owner:         contentIdRecord.OwnerAddress().String(),
+			LatestVersion: contentIdRecord.LatestVersion,
 		})
 		return false
 	})
@@ -64,5 +64,5 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		iscnRecords = append(iscnRecords, record.Data)
 		return false
 	})
-	return types.NewGenesisState(params, tracingIdRecords, iscnRecords)
+	return types.NewGenesisState(params, contentIdRecords, iscnRecords)
 }

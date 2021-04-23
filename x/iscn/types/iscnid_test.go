@@ -14,60 +14,60 @@ func TestParseIscnID(t *testing.T) {
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
 	require.NoError(t, err)
-	require.Equal(t, id.RegistryId, "likecoin-chain")
-	require.Equal(t, id.TracingId, "AQIDBAUGBwgJAA")
+	require.Equal(t, id.Prefix.RegistryName, "likecoin-chain")
+	require.Equal(t, id.Prefix.ContentId, "AQIDBAUGBwgJAA")
 	require.Equal(t, id.Version, uint64(1))
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA"
 	id, err = ParseIscnId(idStr)
 	require.NoError(t, err, "should accept ISCN ID without version")
-	require.Equal(t, id.RegistryId, "likecoin-chain")
-	require.Equal(t, id.TracingId, "AQIDBAUGBwgJAA")
+	require.Equal(t, id.Prefix.RegistryName, "likecoin-chain")
+	require.Equal(t, id.Prefix.ContentId, "AQIDBAUGBwgJAA")
 	require.Equal(t, id.Version, uint64(0))
 
 	idStr = "iscn://likecoin chain/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with registry ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with registry name with invalid characters")
 
 	idStr = "iscn://likecoin-chain!/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with registry ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with registry name with invalid characters")
 
 	idStr = "iscn://likecoin~chain/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with registry ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with registry name with invalid characters")
 
 	idStr = "iscn://likecoin-chain;/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with registry ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with registry name with invalid characters")
 
 	idStr = "iscn://likecoin-chain?/AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with registry ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with registry name with invalid characters")
 
 	idStr = "iscn://like_coin-chain.is:good,1+1=2/record_id=123-a.b_c,d:e/1"
 	id, err = ParseIscnId(idStr)
-	require.NoError(t, err, "should accept ISCN ID with registry ID and tracing ID with ['.','-','_',',',':','+','=']")
+	require.NoError(t, err, "should accept ISCN ID with registry name and content ID with ['.','-','_',',',':','+','=']")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA /1"
 	_, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with tracing ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with content ID with invalid characters")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA!/1"
 	_, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with tracing ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with content ID with invalid characters")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA~/1"
 	_, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with tracing ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with content ID with invalid characters")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA;/1"
 	_, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with tracing ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with content ID with invalid characters")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA?/1"
 	_, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with tracing ID with invalid characters")
+	require.Error(t, err, "should not accept ISCN ID with content ID with invalid characters")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA/1/2"
 	id, err = ParseIscnId(idStr)
@@ -83,31 +83,31 @@ func TestParseIscnID(t *testing.T) {
 
 	idStr = "iscn:///AQIDBAUGBwgJAA/1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with empty registry ID")
+	require.Error(t, err, "should not accept ISCN ID with empty registry name")
 
 	idStr = "iscn://likecoin-chain//1"
 	id, err = ParseIscnId(idStr)
-	require.Error(t, err, "should not accept ISCN ID with empty tracing ID")
+	require.Error(t, err, "should not accept ISCN ID with empty content ID")
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA/0"
 	id, err = ParseIscnId(idStr)
 	require.NoError(t, err, "should accept 0 version")
-	require.Equal(t, id.RegistryId, "likecoin-chain")
-	require.Equal(t, id.TracingId, "AQIDBAUGBwgJAA")
+	require.Equal(t, id.Prefix.RegistryName, "likecoin-chain")
+	require.Equal(t, id.Prefix.ContentId, "AQIDBAUGBwgJAA")
 	require.Equal(t, id.Version, uint64(0))
 
 	idStr = "iscn://likecoin-chain/AQIDBAUGBwgJAA==/1"
 	id, err = ParseIscnId(idStr)
-	require.NoError(t, err, "should accept padded base64 as tracing ID")
-	require.Equal(t, id.RegistryId, "likecoin-chain")
-	require.Equal(t, id.TracingId, "AQIDBAUGBwgJAA==")
+	require.NoError(t, err, "should accept padded base64 as content ID")
+	require.Equal(t, id.Prefix.RegistryName, "likecoin-chain")
+	require.Equal(t, id.Prefix.ContentId, "AQIDBAUGBwgJAA==")
 	require.Equal(t, id.Version, uint64(1))
 
 	idStr = "iscn://likecoin-chain/++++/1"
 	id, err = ParseIscnId(idStr)
-	require.NoError(t, err, "should accept non-URL base64 as tracing ID")
-	require.Equal(t, id.RegistryId, "likecoin-chain")
-	require.Equal(t, id.TracingId, "++++")
+	require.NoError(t, err, "should accept non-URL base64 as content ID")
+	require.Equal(t, id.Prefix.RegistryName, "likecoin-chain")
+	require.Equal(t, id.Prefix.ContentId, "++++")
 	require.Equal(t, id.Version, uint64(1))
 
 	idStr = "isbn://likecoin-chain/AQIDBAUGBwgJAA/1" // note that the scheme is "isbn://"

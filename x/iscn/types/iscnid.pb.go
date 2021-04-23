@@ -23,16 +23,66 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type IscnIdPrefix struct {
+	RegistryName string `protobuf:"bytes,1,opt,name=registry_name,json=registryName,proto3" json:"registry_name,omitempty"`
+	ContentId    string `protobuf:"bytes,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
+}
+
+func (m *IscnIdPrefix) Reset()      { *m = IscnIdPrefix{} }
+func (*IscnIdPrefix) ProtoMessage() {}
+func (*IscnIdPrefix) Descriptor() ([]byte, []int) {
+	return fileDescriptor_954c94e7d9de942f, []int{0}
+}
+func (m *IscnIdPrefix) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *IscnIdPrefix) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_IscnIdPrefix.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *IscnIdPrefix) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IscnIdPrefix.Merge(m, src)
+}
+func (m *IscnIdPrefix) XXX_Size() int {
+	return m.Size()
+}
+func (m *IscnIdPrefix) XXX_DiscardUnknown() {
+	xxx_messageInfo_IscnIdPrefix.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_IscnIdPrefix proto.InternalMessageInfo
+
+func (m *IscnIdPrefix) GetRegistryName() string {
+	if m != nil {
+		return m.RegistryName
+	}
+	return ""
+}
+
+func (m *IscnIdPrefix) GetContentId() string {
+	if m != nil {
+		return m.ContentId
+	}
+	return ""
+}
+
 type IscnId struct {
-	RegistryId string `protobuf:"bytes,1,opt,name=registry_id,json=registryId,proto3" json:"registry_id,omitempty"`
-	TracingId  string `protobuf:"bytes,2,opt,name=tracing_id,json=tracingId,proto3" json:"tracing_id,omitempty"`
-	Version    uint64 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
+	Prefix  IscnIdPrefix `protobuf:"bytes,1,opt,name=prefix,proto3" json:"prefix"`
+	Version uint64       `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (m *IscnId) Reset()      { *m = IscnId{} }
 func (*IscnId) ProtoMessage() {}
 func (*IscnId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_954c94e7d9de942f, []int{0}
+	return fileDescriptor_954c94e7d9de942f, []int{1}
 }
 func (m *IscnId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -61,29 +111,137 @@ func (m *IscnId) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_IscnId proto.InternalMessageInfo
 
+func (m *IscnId) GetPrefix() IscnIdPrefix {
+	if m != nil {
+		return m.Prefix
+	}
+	return IscnIdPrefix{}
+}
+
+func (m *IscnId) GetVersion() uint64 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
 func init() {
+	proto.RegisterType((*IscnIdPrefix)(nil), "likechain.iscn.IscnIdPrefix")
 	proto.RegisterType((*IscnId)(nil), "likechain.iscn.IscnId")
 }
 
 func init() { proto.RegisterFile("iscn/iscnid.proto", fileDescriptor_954c94e7d9de942f) }
 
 var fileDescriptor_954c94e7d9de942f = []byte{
-	// 228 bytes of a gzipped FileDescriptorProto
+	// 270 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcc, 0x2c, 0x4e, 0xce,
 	0xd3, 0x07, 0x11, 0x99, 0x29, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0x7c, 0x39, 0x99, 0xd9,
 	0xa9, 0xc9, 0x19, 0x89, 0x99, 0x79, 0x7a, 0x20, 0x71, 0x29, 0x91, 0xf4, 0xfc, 0xf4, 0x7c, 0xb0,
-	0x94, 0x3e, 0x88, 0x05, 0x51, 0xa5, 0x54, 0xc2, 0xc5, 0xe6, 0x59, 0x9c, 0x9c, 0xe7, 0x99, 0x22,
-	0x24, 0xcf, 0xc5, 0x5d, 0x94, 0x9a, 0x9e, 0x59, 0x5c, 0x52, 0x54, 0x19, 0x9f, 0x99, 0x22, 0xc1,
-	0xa8, 0xc0, 0xa8, 0xc1, 0x19, 0xc4, 0x05, 0x13, 0xf2, 0x4c, 0x11, 0x92, 0xe5, 0xe2, 0x2a, 0x29,
-	0x4a, 0x4c, 0xce, 0xcc, 0x4b, 0x07, 0xc9, 0x33, 0x81, 0xe5, 0x39, 0xa1, 0x22, 0x9e, 0x29, 0x42,
-	0x12, 0x5c, 0xec, 0x65, 0xa9, 0x45, 0xc5, 0x99, 0xf9, 0x79, 0x12, 0xcc, 0x0a, 0x8c, 0x1a, 0x2c,
-	0x41, 0x30, 0xae, 0x95, 0x40, 0xc7, 0x02, 0x79, 0x86, 0x19, 0x0b, 0xe4, 0x19, 0x5e, 0x2c, 0x90,
-	0x67, 0x68, 0xb8, 0xa3, 0xc0, 0xe0, 0xe4, 0x72, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c,
-	0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72,
-	0x0c, 0x51, 0x5a, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a, 0xc9, 0xf9, 0xb9, 0xfa, 0x60, 0x0f,
-	0xe4, 0x67, 0xe6, 0xe9, 0xc3, 0x7d, 0xa2, 0x5f, 0x01, 0xf6, 0xa3, 0x7e, 0x49, 0x65, 0x41, 0x6a,
-	0x71, 0x12, 0x1b, 0xd8, 0x0b, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x23, 0x0f, 0x51, 0x66,
-	0xfd, 0x00, 0x00, 0x00,
+	0x94, 0x3e, 0x88, 0x05, 0x51, 0xa5, 0x94, 0xc0, 0xc5, 0xe3, 0x59, 0x9c, 0x9c, 0xe7, 0x99, 0x12,
+	0x50, 0x94, 0x9a, 0x96, 0x59, 0x21, 0xa4, 0xcc, 0xc5, 0x5b, 0x94, 0x9a, 0x9e, 0x59, 0x5c, 0x52,
+	0x54, 0x19, 0x9f, 0x97, 0x98, 0x9b, 0x2a, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x19, 0xc4, 0x03, 0x13,
+	0xf4, 0x4b, 0xcc, 0x4d, 0x15, 0x92, 0xe5, 0xe2, 0x4a, 0xce, 0xcf, 0x2b, 0x49, 0xcd, 0x2b, 0x89,
+	0xcf, 0x4c, 0x91, 0x60, 0x02, 0xab, 0xe0, 0x84, 0x8a, 0x78, 0xa6, 0x58, 0xf1, 0xcc, 0x58, 0x20,
+	0xcf, 0xf0, 0x62, 0x81, 0x3c, 0x63, 0xc3, 0x1d, 0x05, 0x06, 0xa5, 0x1c, 0x2e, 0x36, 0x88, 0x0d,
+	0x42, 0x56, 0x5c, 0x6c, 0x05, 0x60, 0x5b, 0xc0, 0x86, 0x72, 0x1b, 0xc9, 0xe8, 0xa1, 0x3a, 0x51,
+	0x0f, 0xd9, 0x25, 0x4e, 0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0x41, 0x75, 0x08, 0x49, 0x70, 0xb1,
+	0x97, 0xa5, 0x16, 0x15, 0x67, 0xe6, 0xe7, 0x81, 0xed, 0x63, 0x09, 0x82, 0x71, 0x51, 0x6d, 0x73,
+	0x72, 0x39, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c,
+	0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xad, 0xf4, 0xcc, 0x92,
+	0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0xb0, 0xbd, 0xf9, 0x99, 0x79, 0xfa, 0x70, 0x07,
+	0xe8, 0x57, 0x80, 0x43, 0x4f, 0xbf, 0xa4, 0xb2, 0x20, 0xb5, 0x38, 0x89, 0x0d, 0x1c, 0x38, 0xc6,
+	0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xfa, 0x32, 0x98, 0x35, 0x57, 0x01, 0x00, 0x00,
+}
+
+func (this *IscnIdPrefix) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*IscnIdPrefix)
+	if !ok {
+		that2, ok := that.(IscnIdPrefix)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.RegistryName != that1.RegistryName {
+		return false
+	}
+	if this.ContentId != that1.ContentId {
+		return false
+	}
+	return true
+}
+func (this *IscnId) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*IscnId)
+	if !ok {
+		that2, ok := that.(IscnId)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Prefix.Equal(&that1.Prefix) {
+		return false
+	}
+	if this.Version != that1.Version {
+		return false
+	}
+	return true
+}
+func (m *IscnIdPrefix) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *IscnIdPrefix) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *IscnIdPrefix) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ContentId) > 0 {
+		i -= len(m.ContentId)
+		copy(dAtA[i:], m.ContentId)
+		i = encodeVarintIscnid(dAtA, i, uint64(len(m.ContentId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.RegistryName) > 0 {
+		i -= len(m.RegistryName)
+		copy(dAtA[i:], m.RegistryName)
+		i = encodeVarintIscnid(dAtA, i, uint64(len(m.RegistryName)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *IscnId) Marshal() (dAtA []byte, err error) {
@@ -109,22 +267,18 @@ func (m *IscnId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.Version != 0 {
 		i = encodeVarintIscnid(dAtA, i, uint64(m.Version))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x10
 	}
-	if len(m.TracingId) > 0 {
-		i -= len(m.TracingId)
-		copy(dAtA[i:], m.TracingId)
-		i = encodeVarintIscnid(dAtA, i, uint64(len(m.TracingId)))
-		i--
-		dAtA[i] = 0x12
+	{
+		size, err := m.Prefix.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintIscnid(dAtA, i, uint64(size))
 	}
-	if len(m.RegistryId) > 0 {
-		i -= len(m.RegistryId)
-		copy(dAtA[i:], m.RegistryId)
-		i = encodeVarintIscnid(dAtA, i, uint64(len(m.RegistryId)))
-		i--
-		dAtA[i] = 0xa
-	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -139,20 +293,31 @@ func encodeVarintIscnid(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *IscnIdPrefix) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RegistryName)
+	if l > 0 {
+		n += 1 + l + sovIscnid(uint64(l))
+	}
+	l = len(m.ContentId)
+	if l > 0 {
+		n += 1 + l + sovIscnid(uint64(l))
+	}
+	return n
+}
+
 func (m *IscnId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.RegistryId)
-	if l > 0 {
-		n += 1 + l + sovIscnid(uint64(l))
-	}
-	l = len(m.TracingId)
-	if l > 0 {
-		n += 1 + l + sovIscnid(uint64(l))
-	}
+	l = m.Prefix.Size()
+	n += 1 + l + sovIscnid(uint64(l))
 	if m.Version != 0 {
 		n += 1 + sovIscnid(uint64(m.Version))
 	}
@@ -164,6 +329,120 @@ func sovIscnid(x uint64) (n int) {
 }
 func sozIscnid(x uint64) (n int) {
 	return sovIscnid(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *IscnIdPrefix) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowIscnid
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: IscnIdPrefix: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: IscnIdPrefix: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RegistryName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowIscnid
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthIscnid
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthIscnid
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RegistryName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowIscnid
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthIscnid
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthIscnid
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContentId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipIscnid(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthIscnid
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *IscnId) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -196,9 +475,9 @@ func (m *IscnId) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RegistryId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Prefix", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowIscnid
@@ -208,57 +487,26 @@ func (m *IscnId) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthIscnid
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthIscnid
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RegistryId = string(dAtA[iNdEx:postIndex])
+			if err := m.Prefix.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TracingId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowIscnid
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthIscnid
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthIscnid
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TracingId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
 			}

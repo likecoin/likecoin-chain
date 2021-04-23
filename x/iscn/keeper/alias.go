@@ -17,22 +17,19 @@ type (
 	CID             = types.CID
 	IscnInput       = types.IscnInput
 	StoreRecord     = types.StoreRecord
-	TracingIdRecord = types.TracingIdRecord
-)
-
-const (
-	TracingIdLength = types.TracingIdLength
-	CidCodecType    = types.CidCodecType
+	ContentIdRecord = types.ContentIdRecord
 )
 
 var (
-	ParamKeyRegistryId = types.ParamKeyRegistryId
-	ParamKeyFeePerByte = types.ParamKeyFeePerByte
+	ParamKeyRegistryName = types.ParamKeyRegistryName
+	ParamKeyFeePerByte   = types.ParamKeyFeePerByte
 
 	SequenceCountKey            = types.SequenceCountKey
 	SequenceToStoreRecordPrefix = types.SequenceToStoreRecordPrefix
 	CidToSequencePrefix         = types.CidToSequencePrefix
 	IscnIdToSequencePrefix      = types.IscnIdToSequencePrefix
-	TracingIdRecordPrefix       = types.TracingIdRecordPrefix
+	ContentIdRecordPrefix       = types.ContentIdRecordPrefix
 	FingerprintSequencePrefix   = types.FingerprintSequencePrefix
+
+	NewIscnId = types.NewIscnId
 )

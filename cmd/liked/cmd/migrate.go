@@ -36,7 +36,7 @@ import (
 )
 
 const flagGenesisTime = "genesis-time"
-const flagIscnRegistryId = "iscn-registry-id"
+const flagIscnRegistryName = "iscn-registry-id"
 const flagIscnFeePerByte = "iscn-fee-per-byte"
 
 func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscntypes.Params) types.AppMap {
@@ -106,15 +106,15 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 			newGenDoc.Validators = oldGenDoc.Validators
 
 			// TODO: custom  block height?
-			iscnRegistryId, _ := cmd.Flags().GetString(flagIscnRegistryId)
+			iscnRegistryName, _ := cmd.Flags().GetString(flagIscnRegistryName)
 			iscnFeePerByteStr, _ := cmd.Flags().GetString(flagIscnFeePerByte)
 			iscnFeePerByte, err := sdk.ParseDecCoin(iscnFeePerByteStr)
 			if err != nil {
 				return errors.Wrap(err, "failed to parse ISCN fee per byte parameter")
 			}
 			iscnParam := iscntypes.Params{
-				RegistryId: iscnRegistryId,
-				FeePerByte: iscnFeePerByte,
+				RegistryName: iscnRegistryName,
+				FeePerByte:   iscnFeePerByte,
 			}
 			newGenState := migrateState(initialState, clientCtx, iscnParam)
 
@@ -161,7 +161,7 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
-	cmd.Flags().String(flagIscnRegistryId, iscntypes.DefaultRegistryId, "ISCN registry ID parameter in the migrated genesis state")
+	cmd.Flags().String(flagIscnRegistryName, iscntypes.DefaultRegistryName, "ISCN registry ID parameter in the migrated genesis state")
 	cmd.Flags().String(flagIscnFeePerByte, iscntypes.DefaultFeePerByte.String(), "ISCN fee per byte parameter in the migrated genesis state")
 
 	return cmd

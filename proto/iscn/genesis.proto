@@ -7,13 +7,13 @@ import "iscn/params.proto";
 option go_package = "github.com/likecoin/likechain/x/iscn/types";
 
 message GenesisState {
-  message TracingIdRecord {
+  message ContentIdRecord {
     string iscn_id = 1;
     string owner = 2;
     uint64 latest_version = 3;
   }
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated TracingIdRecord tracing_id_records = 2 [
+  repeated ContentIdRecord content_id_records = 2 [
     (gogoproto.nullable) = false
   ];
   repeated bytes iscn_records = 3 [

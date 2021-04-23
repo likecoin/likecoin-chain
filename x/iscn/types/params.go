@@ -11,15 +11,15 @@ import (
 var (
 	DefaultFeePerByteDenom        = "nanolike"
 	DefaultFeePerByteAmount int64 = 10000
-	DefaultRegistryId             = "likecoin-chain"
+	DefaultRegistryName           = "likecoin-chain"
 	DefaultFeePerByte             = sdk.NewDecCoin(
 		DefaultFeePerByteDenom, sdk.NewInt(DefaultFeePerByteAmount),
 	)
 )
 
 var (
-	ParamKeyRegistryId = []byte("RegistryId")
-	ParamKeyFeePerByte = []byte("FeePerByte")
+	ParamKeyRegistryName = []byte("RegistryName")
+	ParamKeyFeePerByte   = []byte("FeePerByte")
 )
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -30,12 +30,12 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(ParamKeyRegistryId, &p.RegistryId, validateRegistryId),
+		paramtypes.NewParamSetPair(ParamKeyRegistryName, &p.RegistryName, validateRegistryName),
 		paramtypes.NewParamSetPair(ParamKeyFeePerByte, &p.FeePerByte, validateFeePerByte),
 	}
 }
 
-func validateRegistryId(i interface{}) error {
+func validateRegistryName(i interface{}) error {
 	s, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("ISCN registry ID must be string, got type %T", i)
@@ -66,14 +66,14 @@ func validateFeePerByte(i interface{}) error {
 
 func DefaultParams() Params {
 	return Params{
-		RegistryId: DefaultRegistryId,
-		FeePerByte: DefaultFeePerByte,
+		RegistryName: DefaultRegistryName,
+		FeePerByte:   DefaultFeePerByte,
 	}
 }
 
 func (p Params) Validate() error {
 	var err error
-	err = validateRegistryId(p.RegistryId)
+	err = validateRegistryName(p.RegistryName)
 	if err != nil {
 		return err
 	}
@@ -86,9 +86,9 @@ func (p Params) Validate() error {
 
 func (p Params) String() string {
 	return fmt.Sprintf(`Params:
-  Registry ID: %s,
+  Registry name: %s,
   Fee per byte: %s`,
-		p.RegistryId,
+		p.RegistryName,
 		p.FeePerByte.String(),
 	)
 }

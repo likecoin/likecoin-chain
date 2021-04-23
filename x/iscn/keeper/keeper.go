@@ -43,8 +43,8 @@ func ParamKeyTable() paramTypes.KeyTable {
 	return paramTypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func (k Keeper) RegistryId(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, ParamKeyRegistryId, &res)
+func (k Keeper) RegistryName(ctx sdk.Context) (res string) {
+	k.paramstore.Get(ctx, ParamKeyRegistryName, &res)
 	return
 }
 
@@ -55,8 +55,8 @@ func (k Keeper) FeePerByte(ctx sdk.Context) (res sdk.DecCoin) {
 
 func (k Keeper) GetParams(ctx sdk.Context) Params {
 	return Params{
-		RegistryId: k.RegistryId(ctx),
-		FeePerByte: k.FeePerByte(ctx),
+		RegistryName: k.RegistryName(ctx),
+		FeePerByte:   k.FeePerByte(ctx),
 	}
 }
 
@@ -162,39 +162,39 @@ func (k Keeper) HasFingerprintSequence(ctx sdk.Context, fingerprint string, seq 
 	return k.prefixStore(ctx, FingerprintSequencePrefix).Has(key)
 }
 
-func (k Keeper) GetTracingIdRecord(ctx sdk.Context, iscnId IscnId) *TracingIdRecord {
-	key := k.MustMarshalTracingId(iscnId)
-	bz := k.prefixStore(ctx, TracingIdRecordPrefix).Get(key)
+func (k Keeper) GetContentIdRecord(ctx sdk.Context, iscnId IscnId) *ContentIdRecord {
+	key := k.MustMarshalIscnPrefixId(iscnId)
+	bz := k.prefixStore(ctx, ContentIdRecordPrefix).Get(key)
 	if bz == nil {
 		return nil
 	}
-	record := k.MustUnmarshalTracingIdRecord(bz)
+	record := k.MustUnmarshalContentIdRecord(bz)
 	return &record
 }
 
-func (k Keeper) SetTracingIdRecord(ctx sdk.Context, iscnId IscnId, record *TracingIdRecord) {
-	key := k.MustMarshalTracingId(iscnId)
-	recordBytes := k.MustMarshalTracingIdRecord(record)
-	k.prefixStore(ctx, TracingIdRecordPrefix).Set(key, recordBytes)
+func (k Keeper) SetContentIdRecord(ctx sdk.Context, iscnId IscnId, record *ContentIdRecord) {
+	key := k.MustMarshalIscnPrefixId(iscnId)
+	recordBytes := k.MustMarshalContentIdRecord(record)
+	k.prefixStore(ctx, ContentIdRecordPrefix).Set(key, recordBytes)
 }
 
-func (k Keeper) IterateTracingIdRecords(ctx sdk.Context, f func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool) {
-	it := k.prefixStore(ctx, TracingIdRecordPrefix).Iterator(nil, nil)
+func (k Keeper) IterateContentIdRecords(ctx sdk.Context, f func(iscnId IscnId, contentIdRecord ContentIdRecord) bool) {
+	it := k.prefixStore(ctx, ContentIdRecordPrefix).Iterator(nil, nil)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
-		tracingId := k.MustUnmarshalIscnId(it.Key())
-		record := k.MustUnmarshalTracingIdRecord(it.Value())
-		if f(tracingId, record) {
+		iscnId := k.MustUnmarshalIscnId(it.Key())
+		record := k.MustUnmarshalContentIdRecord(it.Value())
+		if f(iscnId, record) {
 			break
 		}
 	}
 }
 
-func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool) {
-	k.IterateTracingIdRecords(ctx, func(iscnId IscnId, tracingIdRecord TracingIdRecord) bool {
-		for version := uint64(1); version <= tracingIdRecord.LatestVersion; version++ {
+func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, contentIdRecord ContentIdRecord) bool) {
+	k.IterateContentIdRecords(ctx, func(iscnId IscnId, contentIdRecord ContentIdRecord) bool {
+		for version := uint64(1); version <= contentIdRecord.LatestVersion; version++ {
 			iscnId.Version = version
-			if f(iscnId, tracingIdRecord) {
+			if f(iscnId, contentIdRecord) {
 				return true
 			}
 		}
@@ -229,16 +229,16 @@ func (k Keeper) AddIscnRecord(
 	if k.GetCidSequence(ctx, cid) != 0 {
 		return nil, sdkerrors.Wrapf(types.ErrCidAlreadyExist, "%s", cid.String())
 	}
-	tracingIdRecord := k.GetTracingIdRecord(ctx, iscnId)
-	if tracingIdRecord == nil {
+	contentIdRecord := k.GetContentIdRecord(ctx, iscnId)
+	if contentIdRecord == nil {
 		if iscnId.Version != 1 {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: 1")
 		}
 	} else {
-		if iscnId.Version != tracingIdRecord.LatestVersion+1 {
-			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", tracingIdRecord.LatestVersion+1)
+		if iscnId.Version != contentIdRecord.LatestVersion+1 {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", contentIdRecord.LatestVersion+1)
 		}
-		expectedOwner := tracingIdRecord.OwnerAddress()
+		expectedOwner := contentIdRecord.OwnerAddress()
 		if !expectedOwner.Equals(owner) {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "expected owner: %s", owner.String())
 		}
@@ -253,14 +253,14 @@ func (k Keeper) AddIscnRecord(
 		Data:     data,
 	}
 	seq := k.AddStoreRecord(ctx, record)
-	k.SetTracingIdRecord(ctx, iscnId, &TracingIdRecord{
+	k.SetContentIdRecord(ctx, iscnId, &ContentIdRecord{
 		OwnerAddressBytes: owner.Bytes(),
 		LatestVersion:     iscnId.Version,
 	})
 	event := sdk.NewEvent(
 		types.EventTypeIscnRecord,
 		sdk.NewAttribute(types.AttributeKeyIscnId, iscnId.String()),
-		sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, iscnId.Prefix()),
+		sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, iscnId.Prefix.String()),
 		sdk.NewAttribute(types.AttributeKeyIscnOwner, owner.String()),
 		sdk.NewAttribute(types.AttributeKeyIscnRecordIpld, cid.String()),
 	)

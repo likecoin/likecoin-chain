@@ -17,7 +17,7 @@ message StoreRecord {
   ];
 }
 
-message TracingIdRecord {
+message ContentIdRecord {
   bytes owner_address_bytes = 1;
   uint64 latest_version = 2;
 }

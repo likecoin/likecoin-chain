@@ -4,6 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (record TracingIdRecord) OwnerAddress() sdk.AccAddress {
+func (record ContentIdRecord) OwnerAddress() sdk.AccAddress {
 	return sdk.AccAddress(record.OwnerAddressBytes)
 }

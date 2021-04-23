@@ -16,7 +16,7 @@ var (
 	SequenceToStoreRecordPrefix = []byte{0x02}
 	CidToSequencePrefix         = []byte{0x03}
 	IscnIdToSequencePrefix      = []byte{0x04}
-	TracingIdRecordPrefix       = []byte{0x05}
+	ContentIdRecordPrefix       = []byte{0x05}
 	FingerprintSequencePrefix   = []byte{0x06}
 )
 

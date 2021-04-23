@@ -36,7 +36,7 @@ func (genesis GenesisState) Validate() error {
 		if iscnId.Version == 0 {
 			return fmt.Errorf("record at index %d has 0 as ISCN ID version", i)
 		}
-		iscnPrefix := iscnId.Prefix()
+		iscnPrefix := iscnId.Prefix.String()
 		prevVersion := iscnVersionMap[iscnPrefix]
 		if iscnId.Version != prevVersion+1 {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has non-contiguous version (previous version %d, current version %d)", i, iscnId.String(), prevVersion, iscnId.Version)
@@ -61,35 +61,35 @@ func (genesis GenesisState) Validate() error {
 			return fmt.Errorf("record at index %d (ISCN ID %s) has \"contentFingerprints\" entries: %w", i, iscnId.String(), err)
 		}
 	}
-	for _, tracingIdRecord := range genesis.TracingIdRecords {
-		_, err := sdk.AccAddressFromBech32(tracingIdRecord.Owner)
+	for _, contentIdRecord := range genesis.ContentIdRecords {
+		_, err := sdk.AccAddressFromBech32(contentIdRecord.Owner)
 		if err != nil {
-			return fmt.Errorf("invalid owner address %s in tracingIdRecord entries: %w", tracingIdRecord.Owner, err)
+			return fmt.Errorf("invalid owner address %s in content ID record entries: %w", contentIdRecord.Owner, err)
 		}
-		iscnId, err := ParseIscnId(tracingIdRecord.IscnId)
+		iscnId, err := ParseIscnId(contentIdRecord.IscnId)
 		if err != nil {
-			return fmt.Errorf("cannot parse ISCN ID %s in tracingIdRecord entries: %w", tracingIdRecord.IscnId, err)
+			return fmt.Errorf("cannot parse ISCN ID %s in content ID record entries: %w", contentIdRecord.IscnId, err)
 		}
 		if iscnId.Version != 0 {
-			return fmt.Errorf("invalid version in ISCN ID %s in tracingIdRecord entries, expect version 0", iscnId.String())
+			return fmt.Errorf("invalid version in ISCN ID %s in content ID record entries, expect version 0", iscnId.String())
 		}
-		idPrefixStr := iscnId.Prefix()
-		if iscnVersionMap[idPrefixStr] != tracingIdRecord.LatestVersion {
-			return fmt.Errorf("ISCN ID prefix %s latest version does not match the tracingIdRecord entry", iscnId.String())
+		idPrefixStr := iscnId.Prefix.String()
+		if iscnVersionMap[idPrefixStr] != contentIdRecord.LatestVersion {
+			return fmt.Errorf("ISCN ID prefix %s latest version does not match the content ID record entry", iscnId.String())
 		}
 		delete(iscnVersionMap, idPrefixStr)
 		iscnVersionMap[idPrefixStr] = 0
 	}
 	for prefixStr := range iscnVersionMap {
-		return fmt.Errorf("ISCN ID prefix %s has related ISCN record but no tracingIdRecord", prefixStr)
+		return fmt.Errorf("ISCN ID prefix %s has related ISCN record but no content ID record", prefixStr)
 	}
 	return nil
 }
 
-func NewGenesisState(params Params, tracingIdRecords []GenesisState_TracingIdRecord, iscnRecords []IscnInput) *GenesisState {
+func NewGenesisState(params Params, contentIdRecords []GenesisState_ContentIdRecord, iscnRecords []IscnInput) *GenesisState {
 	return &GenesisState{
 		Params:           params,
-		TracingIdRecords: tracingIdRecords,
+		ContentIdRecords: contentIdRecords,
 		IscnRecords:      iscnRecords,
 	}
 }

@@ -26,8 +26,8 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err.Error())
 	}
-	registryId := k.RegistryId(ctx)
-	id := types.GenerateNewIscnIdWithSeed(registryId, ctx.TxBytes())
+	registryName := k.RegistryName(ctx)
+	id := types.GenerateNewIscnIdWithSeed(registryName, ctx.TxBytes())
 	recordJsonLd, err := msg.Record.ToJsonLd(&types.IscnRecordJsonLdInfo{
 		Id:         id,
 		Timestamp:  ctx.BlockTime(),
@@ -70,11 +70,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	}
 	parentStoreRecord := k.GetStoreRecord(ctx, parentSeq)
 	parentCid := parentStoreRecord.Cid()
-	id := IscnId{
-		RegistryId: parentId.RegistryId,
-		TracingId:  parentId.TracingId,
-		Version:    parentId.Version + 1,
-	}
+	id := NewIscnId(parentId.Prefix.RegistryName, parentId.Prefix.ContentId, parentId.Version+1)
 	recordJsonLd, err := msg.Record.ToJsonLd(&types.IscnRecordJsonLdInfo{
 		Id:         id,
 		Timestamp:  ctx.BlockTime(),
@@ -115,24 +111,24 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
-	tracingIdRecord := k.GetTracingIdRecord(ctx, id)
-	if tracingIdRecord == nil {
+	contentIdRecord := k.GetContentIdRecord(ctx, id)
+	if contentIdRecord == nil {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", id.String())
 	}
-	if id.Version != tracingIdRecord.LatestVersion {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", tracingIdRecord.LatestVersion)
+	if id.Version != contentIdRecord.LatestVersion {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: %d", contentIdRecord.LatestVersion)
 	}
-	prevOwner := tracingIdRecord.OwnerAddress()
+	prevOwner := contentIdRecord.OwnerAddress()
 	if !from.Equals(prevOwner) {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender not ISCN record owner, expect %s", prevOwner.String())
 	}
-	tracingIdRecord.OwnerAddressBytes = newOwner.Bytes()
-	k.SetTracingIdRecord(ctx, id, tracingIdRecord)
+	contentIdRecord.OwnerAddressBytes = newOwner.Bytes()
+	k.SetContentIdRecord(ctx, id, contentIdRecord)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeIscnRecord,
 			sdk.NewAttribute(types.AttributeKeyIscnId, id.String()),
-			sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, id.Prefix()),
+			sdk.NewAttribute(types.AttributeKeyIscnIdPrefix, id.Prefix.String()),
 			sdk.NewAttribute(types.AttributeKeyIscnOwner, newOwner.String()),
 		),
 	)

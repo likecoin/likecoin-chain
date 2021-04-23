@@ -164,19 +164,19 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 		}
 
 		// 1. check all records are valid
-		// 2. check every tracing ID record has the corresponding ISCN ID records
-		k.IterateTracingIdRecords(ctx, func(tracingId IscnId, tracingIdRecord TracingIdRecord) bool {
-			if tracingIdRecord.LatestVersion == 0 {
-				logProblem(fmt.Sprintf("tracing ID %s has 0 as latest version record", tracingIdRecord.String()))
+		// 2. check every conntent ID record has the corresponding ISCN ID records
+		k.IterateContentIdRecords(ctx, func(iscnPrefixId IscnId, contentIdRecord ContentIdRecord) bool {
+			if contentIdRecord.LatestVersion == 0 {
+				logProblem(fmt.Sprintf("content ID %s has 0 as latest version record", contentIdRecord.String()))
 				return false
 			}
-			for version := uint64(1); version <= tracingIdRecord.LatestVersion; version++ {
-				id := tracingId
+			for version := uint64(1); version <= contentIdRecord.LatestVersion; version++ {
+				id := iscnPrefixId
 				id.Version = version
 				idStr := id.String()
 				seq := k.GetIscnIdSequence(ctx, id)
 				if seq == 0 {
-					logProblem(fmt.Sprintf("ISCN ID %s has latest version %d, but sequence returns 0", idStr, tracingIdRecord.LatestVersion))
+					logProblem(fmt.Sprintf("ISCN ID %s has latest version %d, but sequence returns 0", idStr, contentIdRecord.LatestVersion))
 					continue
 				}
 				storeRecord := k.GetStoreRecord(ctx, seq)
@@ -198,7 +198,7 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 			return false
 		})
 
-		// 3. check all ISCN ID has tracing ID record
+		// 3. check all ISCN ID has content ID record
 		// 4. check all ISCN ID and CID can reverse lookup sequence
 		// 5. check contiguous sequence
 		prevSeq := uint64(0)
@@ -207,11 +207,11 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 				logProblem(fmt.Sprintf("discontiguous sequence (%d to %d)", prevSeq, seq))
 			}
 			prevSeq = seq
-			tracingIdRecord := k.GetTracingIdRecord(ctx, storeRecord.IscnId)
-			if tracingIdRecord == nil {
-				logProblem(fmt.Sprintf("store record sequence %d has ISCN ID %s, but the tracing ID record does not exist", seq, storeRecord.IscnId.String()))
-			} else if tracingIdRecord.LatestVersion < storeRecord.IscnId.Version {
-				logProblem(fmt.Sprintf("ISCN ID %s has tracing ID record with smaller latest version %d", storeRecord.IscnId.String(), tracingIdRecord.LatestVersion))
+			contentIdRecord := k.GetContentIdRecord(ctx, storeRecord.IscnId)
+			if contentIdRecord == nil {
+				logProblem(fmt.Sprintf("store record sequence %d has ISCN ID %s, but the content ID record does not exist", seq, storeRecord.IscnId.String()))
+			} else if contentIdRecord.LatestVersion < storeRecord.IscnId.Version {
+				logProblem(fmt.Sprintf("ISCN ID %s has content ID record with smaller latest version %d", storeRecord.IscnId.String(), contentIdRecord.LatestVersion))
 			}
 			iscnIdSeq := k.GetIscnIdSequence(ctx, storeRecord.IscnId)
 			if iscnIdSeq != seq {

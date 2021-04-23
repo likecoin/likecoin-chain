@@ -9,7 +9,7 @@ func (k Keeper) MustUnmarshalIscnId(iscnBytes []byte) (iscnId IscnId) {
 	return iscnId
 }
 
-func (k Keeper) MustMarshalTracingId(iscnId IscnId) []byte {
+func (k Keeper) MustMarshalIscnPrefixId(iscnId IscnId) []byte {
 	iscnId.Version = 0
 	return k.MustMarshalIscnId(iscnId)
 }
@@ -23,11 +23,11 @@ func (k Keeper) MustUnmarshalStoreRecord(recordBytes []byte) (record StoreRecord
 	return record
 }
 
-func (k Keeper) MustMarshalTracingIdRecord(record *TracingIdRecord) []byte {
+func (k Keeper) MustMarshalContentIdRecord(record *ContentIdRecord) []byte {
 	return k.cdc.MustMarshalBinaryBare(record)
 }
 
-func (k Keeper) MustUnmarshalTracingIdRecord(recordBytes []byte) (record TracingIdRecord) {
+func (k Keeper) MustUnmarshalContentIdRecord(recordBytes []byte) (record ContentIdRecord) {
 	k.cdc.MustUnmarshalBinaryBare(recordBytes, &record)
 	return record
 }

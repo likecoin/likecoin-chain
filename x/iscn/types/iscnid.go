@@ -10,25 +10,36 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
-const TracingIdLength = tmhash.Size
 const IscnIdRegexpPattern = "iscn://([-_.:=+,a-zA-Z0-9]+)/([-_.:=+,a-zA-Z0-9]+)(?:/([0-9]+))?$"
 
 var IscnIdRegexp *regexp.Regexp = regexp.MustCompile(IscnIdRegexpPattern)
 
-func (iscnId IscnId) Prefix() string {
-	return fmt.Sprintf("%s/%s", iscnId.RegistryId, iscnId.TracingId)
+func (prefix IscnIdPrefix) String() string {
+	return fmt.Sprintf("iscn://%s/%s", prefix.RegistryName, prefix.ContentId)
+}
+
+func NewIscnId(registryName, contentId string, version uint64) IscnId {
+	return IscnId{
+		Prefix: IscnIdPrefix{
+			RegistryName: registryName,
+			ContentId:    contentId,
+		},
+		Version: 1,
+	}
+}
+
+func (iscnId IscnId) PrefixId() IscnId {
+	prefixId := iscnId
+	prefixId.Version = 0
+	return prefixId
 }
 
 func (iscnId IscnId) String() string {
-	return fmt.Sprintf("iscn://%s/%s/%d", iscnId.RegistryId, iscnId.TracingId, iscnId.Version)
+	return fmt.Sprintf("%s/%d", iscnId.Prefix.String(), iscnId.Version)
 }
 
 func (iscnId *IscnId) PrefixEqual(iscnId2 *IscnId) bool {
-	return iscnId.RegistryId == iscnId2.RegistryId && iscnId.TracingId == iscnId2.TracingId
-}
-
-func (iscnId *IscnId) Equal(iscnId2 *IscnId) bool {
-	return iscnId.PrefixEqual(iscnId2) && iscnId.Version == iscnId2.Version
+	return iscnId.Prefix.Equal(iscnId2.Prefix)
 }
 
 func ParseIscnId(s string) (IscnId, error) {
@@ -37,9 +48,9 @@ func ParseIscnId(s string) (IscnId, error) {
 	if matches == nil {
 		return id, fmt.Errorf("invalid ISCN ID format")
 	}
-	id.RegistryId = matches[1]
-	tracingId := matches[2]
-	id.TracingId = tracingId
+	id.Prefix.RegistryName = matches[1]
+	contentId := matches[2]
+	id.Prefix.ContentId = contentId
 	if len(matches) > 3 && len(matches[3]) > 0 {
 		version, err := strconv.ParseUint(matches[3], 10, 64)
 		if err != nil {
@@ -70,15 +81,11 @@ func (iscnId *IscnId) UnmarshalJSON(bz []byte) error {
 	return nil
 }
 
-func GenerateNewIscnIdWithSeed(registryId string, seed []byte) IscnId {
+func GenerateNewIscnIdWithSeed(registryName string, seed []byte) IscnId {
 	hasher := tmhash.New()
-	hasher.Write([]byte(registryId))
+	hasher.Write([]byte(registryName))
 	hasher.Write(seed)
-	tracingIdBytes := hasher.Sum(nil)
-	tracingId := base64.RawURLEncoding.EncodeToString(tracingIdBytes)
-	return IscnId{
-		RegistryId: registryId,
-		TracingId:  tracingId,
-		Version:    1,
-	}
+	contentIdBytes := hasher.Sum(nil)
+	contentId := base64.RawURLEncoding.EncodeToString(contentIdBytes)
+	return NewIscnId(registryName, contentId, 1)
 }

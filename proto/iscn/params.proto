@@ -12,7 +12,7 @@ message Params {
   option (gogoproto.stringer)         = false;
   option (gogoproto.goproto_getters)  = false;
 
-  string registry_id = 1;
+  string registry_name = 1;
   cosmos.base.v1beta1.DecCoin fee_per_byte = 2 [
     (gogoproto.nullable) = false
   ];
