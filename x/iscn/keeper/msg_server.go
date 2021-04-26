@@ -66,7 +66,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	}
 	parentSeq := k.GetIscnIdSequence(ctx, parentId)
 	if parentSeq == 0 {
-		return nil, sdkerrors.Wrapf(types.ErrCidNotFound, "%s", parentId.String())
+		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "parent ISCN ID %s not found", parentId.String())
 	}
 	parentStoreRecord := k.GetStoreRecord(ctx, parentSeq)
 	parentCid := parentStoreRecord.Cid()
@@ -91,7 +91,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 		),
 	)
 	return &types.MsgUpdateIscnRecordResponse{
-		IscnId:     parentId.String(),
+		IscnId:     id.String(),
 		RecordIpld: cid.String(),
 	}, nil
 }

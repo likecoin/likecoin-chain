@@ -24,7 +24,7 @@ func NewIscnId(registryName, contentId string, version uint64) IscnId {
 			RegistryName: registryName,
 			ContentId:    contentId,
 		},
-		Version: 1,
+		Version: version,
 	}
 }
 
