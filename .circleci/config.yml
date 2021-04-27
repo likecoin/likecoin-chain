@@ -6,12 +6,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: likecoin-chain-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+          key: likecoin-chain-{{ checksum "go.mod" }}
       - run:
           name: Dependencies
           command: go mod download
       - save_cache:
-          key: likecoin-chain-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+          key: likecoin-chain-{{ checksum "go.mod" }}
           paths:
             - /go/pkg
       - run:

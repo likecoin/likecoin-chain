@@ -113,7 +113,6 @@ $ %s migrate /path/to/genesis.json --%s=1000000 --%s=likecoin-chain-fotan --%s=2
 			newGenDoc.ConsensusParams.Validator = oldGenDoc.ConsensusParams.Validator
 			newGenDoc.Validators = oldGenDoc.Validators
 
-			// TODO: custom block height?
 			iscnRegistryName, _ := cmd.Flags().GetString(flagIscnRegistryName)
 			iscnFeePerByteStr, _ := cmd.Flags().GetString(flagIscnFeePerByte)
 			iscnFeePerByte, err := sdk.ParseDecCoin(iscnFeePerByteStr)
