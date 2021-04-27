@@ -3,11 +3,13 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	captypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	evtypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -35,9 +37,12 @@ import (
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 )
 
-const flagGenesisTime = "genesis-time"
-const flagIscnRegistryName = "iscn-registry-id"
-const flagIscnFeePerByte = "iscn-fee-per-byte"
+const (
+	flagGenesisTime      = "genesis-time"
+	flagInitialHeight    = "initial-height"
+	flagIscnRegistryName = "iscn-registry-id"
+	flagIscnFeePerByte   = "iscn-fee-per-byte"
+)
 
 func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscntypes.Params) types.AppMap {
 	state := initialState
@@ -77,11 +82,14 @@ func MigrateGenesisCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "migrate [genesis-file-from-sheungwan]",
 		Short: "Migrate genesis from SheungWan to FoTan",
-		Long: (`Migrate the source genesis into the target version and print to STDOUT.
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Migrate the source genesis into the target version and print to STDOUT.
 
 Example:
-$ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-time=2021-12-31T04:00:00Z --iscn-fee-per-byte=1234.560000000000000000nanolike
-`),
+$ %s migrate /path/to/genesis.json --%s=1000000 --%s=likecoin-chain-fotan --%s=2021-12-31T04:00:00Z --%s=likecoin-chain --%s=1234.560000000000000000nanolike
+`,
+				version.AppName, flagInitialHeight, flags.FlagChainID, flagGenesisTime, flagIscnRegistryName, flagIscnFeePerByte)),
+
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -105,7 +113,7 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 			newGenDoc.ConsensusParams.Validator = oldGenDoc.ConsensusParams.Validator
 			newGenDoc.Validators = oldGenDoc.Validators
 
-			// TODO: custom  block height?
+			// TODO: custom block height?
 			iscnRegistryName, _ := cmd.Flags().GetString(flagIscnRegistryName)
 			iscnFeePerByteStr, _ := cmd.Flags().GetString(flagIscnFeePerByte)
 			iscnFeePerByte, err := sdk.ParseDecCoin(iscnFeePerByteStr)
@@ -144,6 +152,9 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 				newGenDoc.ChainID = oldGenDoc.ChainID
 			}
 
+			initialHeight, _ := cmd.Flags().GetUint64(flagInitialHeight)
+			newGenDoc.InitialHeight = int64(initialHeight)
+
 			bz, err := tmjson.Marshal(newGenDoc)
 			if err != nil {
 				return errors.Wrap(err, "failed to marshal genesis doc")
@@ -159,6 +170,7 @@ $ liked migrate /path/to/genesis.json --chain-id=likecoin-chain-fotan --genesis-
 		},
 	}
 
+	cmd.Flags().Uint64(flagInitialHeight, 0, "initial height of the new chain")
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
 	cmd.Flags().String(flagIscnRegistryName, iscntypes.DefaultRegistryName, "ISCN registry ID parameter in the migrated genesis state")
