@@ -222,13 +222,6 @@ func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, data 
 func (k Keeper) AddIscnRecord(
 	ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress, data []byte, fingerprints []string,
 ) (*CID, error) {
-	if k.GetIscnIdSequence(ctx, iscnId) != 0 {
-		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s", iscnId.String())
-	}
-	cid := types.ComputeDataCid(data)
-	if k.GetCidSequence(ctx, cid) != 0 {
-		return nil, sdkerrors.Wrapf(types.ErrCidAlreadyExist, "%s", cid.String())
-	}
 	contentIdRecord := k.GetContentIdRecord(ctx, iscnId)
 	if contentIdRecord == nil {
 		if iscnId.Version != 1 {
@@ -242,6 +235,13 @@ func (k Keeper) AddIscnRecord(
 		if !expectedOwner.Equals(owner) {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "expected owner: %s", owner.String())
 		}
+	}
+	if k.GetIscnIdSequence(ctx, iscnId) != 0 {
+		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s", iscnId.String())
+	}
+	cid := types.ComputeDataCid(data)
+	if k.GetCidSequence(ctx, cid) != 0 {
+		return nil, sdkerrors.Wrapf(types.ErrRecordAlreadyExist, "%s", cid.String())
 	}
 	err := k.DeductFeeForIscn(ctx, owner, data)
 	if err != nil {

@@ -3,6 +3,7 @@ package iscn_test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -20,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -128,7 +130,7 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
 	app.Context = app.BaseApp.NewContext(false, app.Header)
 	chainId := ""
-	addr := sdk.AccAddress(priv1.PubKey().Address())
+	addr := sdk.AccAddress(priv.PubKey().Address())
 	acc := app.AccountKeeper.GetAccount(app.Context, addr)
 	accNum := acc.GetAccountNumber()
 	accSeq := acc.GetSequence()
@@ -177,6 +179,8 @@ var (
 	addr1 = sdk.AccAddress(priv1.PubKey().Address())
 	priv2 = secp256k1.GenPrivKey()
 	addr2 = sdk.AccAddress(priv2.PubKey().Address())
+	priv3 = secp256k1.GenPrivKey()
+	addr3 = sdk.AccAddress(priv3.PubKey().Address())
 
 	fingerprint1 = "hash://sha256/9564b85669d5e96ac969dd0161b8475bbced9e5999c6ec598da718a3045d6f2e"
 	fingerprint2 = "ipfs://QmNrgEMcUygbKzZeZgYFosdd27VE9KnWbyUD73bKZJ3bGi"
@@ -490,7 +494,249 @@ func TestFingerprintQueryPagination(t *testing.T) {
 }
 
 func TestFailureCases(t *testing.T) {
-	// TODO
+	var msg sdk.Msg
+	var record types.IscnRecord
+	app := SetupTestApp([]genesisBalance{
+		{addr1.String(), "1000000000000000000nanolike"},
+		{addr2.String(), "1nanolike"},
+		{addr3.String(), "1000000000000000000nanolike"},
+	})
+
+	goodRecord := func() types.IscnRecord {
+		return types.IscnRecord{
+			ContentFingerprints: []string{fingerprint1},
+			Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+			ContentMetadata:     contentMetadata1,
+		}
+	}
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+
+	// Test for MsgCreateIscnRecord
+
+	// ensure everything works fine when no modification is made
+	record = goodRecord()
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	res := app.DeliverMsgNoError(t, msg, priv1)
+	iscnId, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+	require.NoError(t, err)
+
+	// wrong sender address checksum
+	record = goodRecord()
+	msg = &types.MsgCreateIscnRecord{"cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag", record}
+	_, err, simErr, _ := app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// wrong sender address prefix
+	record = goodRecord()
+	msg = &types.MsgCreateIscnRecord{"iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f", record}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// invalid fingerprint
+	record = goodRecord()
+	record.ContentFingerprints[0] = ""
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// invalid stakeholder
+	record = goodRecord()
+	record.Stakeholders[0] = types.IscnInput(``)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// invalid content metadata
+	record = goodRecord()
+	record.ContentMetadata = types.IscnInput(``)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// balance not enough for ISCN fee
+	record = goodRecord()
+	msg = types.NewMsgCreateIscnRecord(addr2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrDeductIscnFee))
+
+	// Test for MsgUpdateIscnRecord
+
+	// ensure everything works fine when no modification is made
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId, &record)
+	res = app.DeliverMsgNoError(t, msg, priv1)
+	iscnId2, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+	require.NoError(t, err)
+
+	// wrong sender address checksum
+	record = goodRecord()
+	msg = &types.MsgUpdateIscnRecord{"cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag", iscnId2.String(), record}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// wrong sender address prefix
+	record = goodRecord()
+	msg = &types.MsgUpdateIscnRecord{"iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f", iscnId2.String(), record}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// invalid ISCN ID format
+	record = goodRecord()
+	msg = &types.MsgUpdateIscnRecord{addr1.String(), iscnId2.String()[1:], record}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnId))
+
+	// not owner
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr2, iscnId2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrUnauthorized))
+
+	// invalid version
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnVersion))
+
+	// non-existing ISCN ID
+	invalidIscnId, err := types.ParseIscnId("iscn://a/b/1")
+	require.NoError(t, err)
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr1, invalidIscnId, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrRecordNotFound))
+
+	// existing ISCN ID prefix with future version
+	iscnId3 := iscnId
+	iscnId3.Version = 3
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId3, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrRecordNotFound))
+
+	// invalid fingerprint
+	record = goodRecord()
+	record.ContentFingerprints[0] = ""
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// invalid stakeholder
+	record = goodRecord()
+	record.Stakeholders[0] = types.IscnInput(``)
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// invalid content metadata
+	record = goodRecord()
+	record.ContentMetadata = types.IscnInput(``)
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnRecord))
+
+	// balance not enough for ISCN fee
+	// also test for success case for MsgChangeIscnRecordOwnership
+	msg = types.NewMsgChangeIscnRecordOwnership(addr1, iscnId2, addr2)
+	app.DeliverMsgNoError(t, msg, priv1)
+	record = goodRecord()
+	msg = types.NewMsgUpdateIscnRecord(addr2, iscnId2, &record)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrDeductIscnFee))
+
+	// Test for MsgChangeIscnRecordOwnership
+
+	// wrong sender address checksum
+	msg = &types.MsgChangeIscnRecordOwnership{"cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag", iscnId2.String(), addr3.String()}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// wrong sender address prefix
+	msg = &types.MsgChangeIscnRecordOwnership{"iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f", iscnId2.String(), addr3.String()}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// wrong new owner address checksum
+	msg = &types.MsgChangeIscnRecordOwnership{addr2.String(), iscnId2.String(), "cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag"}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// wrong sender address prefix
+	msg = &types.MsgChangeIscnRecordOwnership{addr2.String(), iscnId2.String(), "iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f"}
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrInvalidAddress))
+
+	// non-owner
+	msg = types.NewMsgChangeIscnRecordOwnership(addr1, iscnId2, addr3)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, sdkerrors.ErrUnauthorized))
+
+	// non-existing ISCN ID
+	msg = types.NewMsgChangeIscnRecordOwnership(addr2, invalidIscnId, addr3)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrRecordNotFound))
+
+	// previous version
+	msg = types.NewMsgChangeIscnRecordOwnership(addr2, iscnId, addr3)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnVersion))
+
+	// future version
+	msg = types.NewMsgChangeIscnRecordOwnership(addr2, iscnId3, addr3)
+	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.NoError(t, err)
+	require.Error(t, simErr)
+	require.True(t, errors.Is(simErr, types.ErrInvalidIscnVersion))
 }
 
 func TestUpdateOwnership(t *testing.T) {

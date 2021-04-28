@@ -38,7 +38,7 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 	}
 	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrAddingIscnRecord, "%s", err.Error())
+		return nil, err
 	}
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -56,13 +56,13 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 // UpdateIscnRecord defines a method to update existing ISCN record
 func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRecord) (*MsgUpdateIscnRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	parentId, err := types.ParseIscnId(msg.IscnId)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
-	}
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err.Error())
+	}
+	parentId, err := types.ParseIscnId(msg.IscnId)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
 	parentSeq := k.GetIscnIdSequence(ctx, parentId)
 	if parentSeq == 0 {
@@ -81,7 +81,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	}
 	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrAddingIscnRecord, "%s", err.Error())
+		return nil, err
 	}
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
