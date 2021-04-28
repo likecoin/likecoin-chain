@@ -11,7 +11,7 @@ import (
 	"github.com/likecoin/likechain/x/iscn/types"
 )
 
-const maxLimit = 100
+const FingerprintPageLimit = 100
 
 var _ types.QueryServer = Keeper{}
 
@@ -67,7 +67,7 @@ func (k Keeper) RecordsByFingerprint(ctx context.Context, req *types.QueryRecord
 	nextSeq := uint64(0)
 	count := 0
 	k.IterateFingerprintSequencesWithStartingSequence(sdkCtx, req.Fingerprint, req.FromSequence, func(seq uint64) bool {
-		if count >= maxLimit {
+		if count >= FingerprintPageLimit {
 			nextSeq = seq
 			return true
 		}

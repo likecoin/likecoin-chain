@@ -3,6 +3,7 @@ package iscn_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -13,8 +14,11 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -22,6 +26,7 @@ import (
 
 	likeapp "github.com/likecoin/likechain/app"
 
+	"github.com/likecoin/likechain/x/iscn/keeper"
 	"github.com/likecoin/likechain/x/iscn/types"
 )
 
@@ -29,7 +34,32 @@ import (
 const DefaultNodeHome = "/tmp/.liked-test"
 const invCheckPeriod = 1
 
-func SetupTestApp(genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *likeapp.LikeApp {
+type TestingApp struct {
+	*likeapp.LikeApp
+
+	txCfg   client.TxConfig
+	Header  tmproto.Header
+	Context sdk.Context
+}
+
+type genesisBalance struct {
+	Address string
+	Coin    string
+}
+
+func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
+	genAccs := []authtypes.GenesisAccount{}
+	balances := []banktypes.Balance{}
+	for _, balance := range genesisBalances {
+		addr := balance.Address
+		genAccs = append(genAccs, &authtypes.BaseAccount{Address: addr})
+		coin, err := sdk.ParseCoinNormalized(balance.Coin)
+		if err != nil {
+			panic(err)
+		}
+		balance := banktypes.Balance{Address: addr, Coins: sdk.NewCoins(coin)}
+		balances = append(balances, balance)
+	}
 	db := dbm.NewMemDB()
 	encodingCfg := likeapp.MakeEncodingConfig()
 	logger := log.NewTMLogger(os.Stdout)
@@ -63,14 +93,90 @@ func SetupTestApp(genAccs []authtypes.GenesisAccount, balances ...banktypes.Bala
 	)
 
 	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1}})
 
-	return app
+	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
+	app.BeginBlock(abci.RequestBeginBlock{Header: header})
+
+	return &TestingApp{
+		LikeApp: app,
+		txCfg:   simapp.MakeTestEncodingConfig().TxConfig,
+		Header:  header,
+		Context: app.BaseApp.NewContext(false, header),
+	}
+}
+
+func (app *TestingApp) NextHeader(unixTimestamp int64) {
+	app.Header = tmproto.Header{
+		Time: time.Unix(unixTimestamp, 0),
+	}
+}
+
+func (app *TestingApp) SetForQuery() sdk.Context {
+	app.Header.Height = app.LastBlockHeight() + 1
+	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
+	app.Context = app.BaseApp.NewContext(false, app.Header)
+	return app.Context
+}
+
+func (app *TestingApp) SetForTx() {
+	app.EndBlock(abci.RequestEndBlock{})
+	app.Commit()
+}
+
+func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
+	app.Header.Height = app.LastBlockHeight() + 1
+	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
+	app.Context = app.BaseApp.NewContext(false, app.Header)
+	chainId := ""
+	addr := sdk.AccAddress(priv1.PubKey().Address())
+	acc := app.AccountKeeper.GetAccount(app.Context, addr)
+	accNum := acc.GetAccountNumber()
+	accSeq := acc.GetSequence()
+	txCfg := app.txCfg
+	tx, err := helpers.GenTx(
+		app.txCfg,
+		msgs,
+		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
+		helpers.DefaultGenTxGas,
+		chainId,
+		[]uint64{accNum},
+		[]uint64{accSeq},
+		priv,
+	)
+	if err != nil {
+		return nil, err, nil, nil
+	}
+	txBytes, err := txCfg.TxEncoder()(tx)
+	if err != nil {
+		return nil, err, nil, nil
+	}
+	_, _, simErr = app.Simulate(txBytes)
+	if simErr != nil {
+		return nil, nil, simErr, nil
+	}
+	_, res, deliverErr = app.Deliver(txCfg.TxEncoder(), tx)
+	app.EndBlock(abci.RequestEndBlock{})
+	app.Commit()
+	return res, nil, nil, deliverErr
+}
+
+func (app *TestingApp) DeliverMsg(msg sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
+	return app.DeliverMsgs([]sdk.Msg{msg}, priv)
+}
+
+func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey) *sdk.Result {
+	res, err, simErr, deliverErr := app.DeliverMsgs([]sdk.Msg{msg}, priv)
+	require.NoError(t, err)
+	require.NoError(t, simErr)
+	require.NoError(t, deliverErr)
+	return res
 }
 
 var (
 	priv1 = secp256k1.GenPrivKey()
 	addr1 = sdk.AccAddress(priv1.PubKey().Address())
+	priv2 = secp256k1.GenPrivKey()
+	addr2 = sdk.AccAddress(priv2.PubKey().Address())
 
 	fingerprint1 = "hash://sha256/9564b85669d5e96ac969dd0161b8475bbced9e5999c6ec598da718a3045d6f2e"
 	fingerprint2 = "ipfs://QmNrgEMcUygbKzZeZgYFosdd27VE9KnWbyUD73bKZJ3bGi"
@@ -128,33 +234,12 @@ func getEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
 	return nil
 }
 
-func TestCreateAndUpdate(t *testing.T) {
-	var header tmproto.Header
+func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	var msg sdk.Msg
-	txGen := simapp.MakeTestEncodingConfig().TxConfig
+	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
 
-	acc := &authtypes.BaseAccount{
-		Address: addr1.String(),
-	}
-	genAccs := []authtypes.GenesisAccount{acc}
-	balance := banktypes.Balance{Address: acc.Address, Coins: sdk.NewCoins(sdk.NewInt64Coin("nanolike", 1e18))}
-	app := SetupTestApp(genAccs, balance)
-	ctx := app.BaseApp.NewContext(false, header)
-
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
-
-	getHeader := func(unixTimestamp int64) tmproto.Header {
-		return tmproto.Header{
-			Time:   time.Unix(unixTimestamp, 0),
-			Height: app.LastBlockHeight() + 1,
-		}
-	}
-
-	authAcc := app.AccountKeeper.GetAccount(ctx, addr1)
-	accNumber := authAcc.GetAccountNumber()
-	seq := authAcc.GetSequence()
-
+	app.NextHeader(1234567890)
+	app.SetForTx()
 	record := types.IscnRecord{
 		RecordNotes:         "some update",
 		ContentFingerprints: []string{fingerprint1},
@@ -162,9 +247,7 @@ func TestCreateAndUpdate(t *testing.T) {
 		ContentMetadata:     contentMetadata1,
 	}
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
-	header = getHeader(1234567890)
-	_, result, err := simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{msg}, "", []uint64{accNumber}, []uint64{seq}, true, true, priv1)
-	require.NoError(t, err)
+	result := app.DeliverMsgNoError(t, msg, priv1)
 
 	events := result.GetEvents()
 	iscnIdStrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
@@ -177,9 +260,7 @@ func TestCreateAndUpdate(t *testing.T) {
 	require.NotNil(t, ownerStrBytes)
 	require.Equal(t, string(ownerStrBytes), addr1.String())
 
-	header = getHeader(0)
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-	ctx = app.BaseApp.NewContext(false, header)
+	ctx := app.SetForQuery()
 
 	idQuery := types.NewQueryRecordsByIdRequest(iscnId, 0, 0)
 	idQueryRes, err := app.IscnKeeper.RecordsById(sdk.WrapSDKContext(ctx), idQuery)
@@ -242,8 +323,8 @@ func TestCreateAndUpdate(t *testing.T) {
 	require.Len(t, fpQueryRes.Records, 1)
 	require.Equal(t, queryRecord, fpQueryRes.Records[0])
 
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
+	app.NextHeader(1234567891)
+	app.SetForTx()
 
 	record = types.IscnRecord{
 		RecordNotes:         "new update",
@@ -252,10 +333,8 @@ func TestCreateAndUpdate(t *testing.T) {
 		ContentMetadata:     contentMetadata2,
 	}
 	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId, &record)
-	header = getHeader(1234567891)
-	seq++
-	_, result, err = simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{msg}, "", []uint64{accNumber}, []uint64{seq}, true, true, priv1)
-	require.NoError(t, err)
+	result = app.DeliverMsgNoError(t, msg, priv1)
+
 	events = result.GetEvents()
 	iscnId2StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId2StrBytes)
@@ -269,9 +348,7 @@ func TestCreateAndUpdate(t *testing.T) {
 	require.NotNil(t, owner2StrBytes)
 	require.Equal(t, string(owner2StrBytes), addr1.String())
 
-	header = getHeader(0)
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-	ctx = app.BaseApp.NewContext(false, header)
+	ctx = app.SetForQuery()
 
 	idQuery = types.NewQueryRecordsByIdRequest(iscnId, 0, 0)
 	idQueryRes, err = app.IscnKeeper.RecordsById(sdk.WrapSDKContext(ctx), idQuery)
@@ -281,7 +358,7 @@ func TestCreateAndUpdate(t *testing.T) {
 	require.Len(t, idQueryRes.Records, 1)
 	require.Equal(t, queryRecord, idQueryRes.Records[0])
 
-	idQuery = types.NewQueryRecordsByIdRequest(iscnId.PrefixId(), 1, 2)
+	idQuery = types.NewQueryRecordsByIdRequest(iscnId.PrefixId(), 1, 0)
 	idQueryRes, err = app.IscnKeeper.RecordsById(sdk.WrapSDKContext(ctx), idQuery)
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), idQueryRes.LatestVersion)
@@ -347,12 +424,83 @@ func TestCreateAndUpdate(t *testing.T) {
 	require.Len(t, fpQueryRes.Records, 1)
 	require.Equal(t, queryRecord2, fpQueryRes.Records[0])
 
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
+	app.SetForTx()
+
+	msg = types.NewMsgChangeIscnRecordOwnership(addr1, iscnId2, addr2)
+	app.DeliverMsgNoError(t, msg, priv1)
+
+	ctx = app.SetForQuery()
+
+	idQuery = types.NewQueryRecordsByIdRequest(iscnId.PrefixId(), 1, 0)
+	idQueryRes, err = app.IscnKeeper.RecordsById(sdk.WrapSDKContext(ctx), idQuery)
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), idQueryRes.LatestVersion)
+	require.Equal(t, addr2.String(), idQueryRes.Owner)
+	require.Len(t, idQueryRes.Records, 2)
+	require.Equal(t, queryRecord, idQueryRes.Records[0])
+	require.Equal(t, queryRecord2, idQueryRes.Records[1])
+
+	app.SetForTx()
 
 	msg = crisistypes.NewMsgVerifyInvariant(addr1, "iscn", "iscn-records")
-	header = getHeader(0)
-	seq++
-	_, _, err = simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{msg}, "", []uint64{accNumber}, []uint64{seq}, true, true, priv1)
+	app.DeliverMsgNoError(t, msg, priv1)
+}
+
+func TestFingerprintQueryPagination(t *testing.T) {
+	var msg sdk.Msg
+	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+
+	record := types.IscnRecord{
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+	}
+	for i := 0; i < 2*keeper.FingerprintPageLimit-1; i++ {
+		record.RecordNotes = fmt.Sprintf("record %010d", i)
+		msg = types.NewMsgCreateIscnRecord(addr1, &record)
+		app.DeliverMsgNoError(t, msg, priv1)
+	}
+
+	ctx := app.SetForQuery()
+
+	fpQuery := types.NewQueryRecordsByFingerprintRequest(fingerprint1, 0)
+	fpQueryRes, err := app.IscnKeeper.RecordsByFingerprint(sdk.WrapSDKContext(ctx), fpQuery)
 	require.NoError(t, err)
+	require.Len(t, fpQueryRes.Records, keeper.FingerprintPageLimit)
+	require.NotZero(t, fpQueryRes.NextSequence)
+	for i, queryRecord := range fpQueryRes.Records {
+		notes, ok := queryRecord.Data.GetPath("recordNotes")
+		require.True(t, ok)
+		require.Equal(t, fmt.Sprintf("record %010d", i), notes)
+	}
+
+	fpQuery = types.NewQueryRecordsByFingerprintRequest(fingerprint1, fpQueryRes.NextSequence)
+	fpQueryRes, err = app.IscnKeeper.RecordsByFingerprint(sdk.WrapSDKContext(ctx), fpQuery)
+	require.NoError(t, err)
+	require.Len(t, fpQueryRes.Records, keeper.FingerprintPageLimit-1)
+	require.Zero(t, fpQueryRes.NextSequence)
+	for i, queryRecord := range fpQueryRes.Records {
+		notes, ok := queryRecord.Data.GetPath("recordNotes")
+		require.True(t, ok)
+		require.Equal(t, fmt.Sprintf("record %010d", i+keeper.FingerprintPageLimit), notes)
+	}
+}
+
+func TestFailureCases(t *testing.T) {
+	// TODO
+}
+
+func TestUpdateOwnership(t *testing.T) {
+	// TODO
+}
+
+func TestDeductFund(t *testing.T) {
+	// TODO
+}
+
+func TestExportAndImport(t *testing.T) {
+	// TODO
 }
