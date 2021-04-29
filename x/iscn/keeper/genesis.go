@@ -20,15 +20,19 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 		if err != nil {
 			panic(err)
 		}
-		cid := types.ComputeDataCid(iscnRecord)
+		normalizedRecord, err := iscnRecord.Normalize()
+		if err != nil {
+			panic(err)
+		}
+		cid := types.ComputeDataCid(normalizedRecord)
 		seq := k.AddStoreRecord(ctx, StoreRecord{
 			IscnId:   id,
 			CidBytes: cid.Bytes(),
-			Data:     iscnRecord,
+			Data:     IscnInput(normalizedRecord),
 		})
-		fingerprints := iscnRecordMap["contentFingerprints"].([]string)
+		fingerprints := iscnRecordMap["contentFingerprints"].([]interface{})
 		for _, fingerprint := range fingerprints {
-			k.AddFingerprintSequence(ctx, fingerprint, seq)
+			k.AddFingerprintSequence(ctx, fingerprint.(string), seq)
 		}
 	}
 	for _, contentIdRecord := range genesis.ContentIdRecords {
@@ -60,7 +64,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	})
 	iscnRecords := []types.IscnInput{}
 	k.IterateStoreRecords(ctx, func(_ uint64, record StoreRecord) bool {
-		iscnRecords = append(iscnRecords, record.Data)
+		iscnRecords = append(iscnRecords, IscnInput(record.Data))
 		return false
 	})
 	return types.NewGenesisState(params, contentIdRecords, iscnRecords)

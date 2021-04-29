@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -49,7 +50,7 @@ type genesisBalance struct {
 	Coin    string
 }
 
-func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
+func SetupTestAppWithIscnGenesis(genesisBalances []genesisBalance, iscnGenesisJson json.RawMessage) *TestingApp {
 	genAccs := []authtypes.GenesisAccount{}
 	balances := []banktypes.Balance{}
 	for _, balance := range genesisBalances {
@@ -81,6 +82,10 @@ func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
 	crisisGenesis := crisistypes.NewGenesisState(sdk.NewInt64Coin("nanolike", 1))
 	genesisState[crisistypes.ModuleName] = app.AppCodec().MustMarshalJSON(crisisGenesis)
 
+	if iscnGenesisJson != nil {
+		genesisState[types.ModuleName] = iscnGenesisJson
+	}
+
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
 		panic(err)
@@ -105,6 +110,10 @@ func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
 		Header:  header,
 		Context: app.BaseApp.NewContext(false, header),
 	}
+}
+
+func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
+	return SetupTestAppWithIscnGenesis(genesisBalances, nil)
 }
 
 func (app *TestingApp) NextHeader(unixTimestamp int64) {
@@ -739,14 +748,139 @@ func TestFailureCases(t *testing.T) {
 	require.True(t, errors.Is(simErr, types.ErrInvalidIscnVersion))
 }
 
-func TestUpdateOwnership(t *testing.T) {
-	// TODO
-}
+func TestSimulation(t *testing.T) {
+	const seedCount = 10
+	const txCount = 100
 
-func TestDeductFund(t *testing.T) {
-	// TODO
-}
+	goodRecord := func() types.IscnRecord {
+		return types.IscnRecord{
+			ContentFingerprints: []string{fingerprint1},
+			Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+			ContentMetadata:     contentMetadata1,
+		}
+	}
 
-func TestExportAndImport(t *testing.T) {
-	// TODO
+	testWithRand := func(r *rand.Rand) {
+		prefixArr := []string{}
+		contentIdRecordMap := map[string]types.ContentIdRecord{}
+		notesMap := map[string]string{}
+		keys := []struct {
+			PrivKey cryptotypes.PrivKey
+			Address sdk.AccAddress
+		}{
+			{priv1, addr1},
+			{priv2, addr2},
+			{priv3, addr3},
+		}
+		addrToPrivKey := map[string]cryptotypes.PrivKey{
+			addr1.String(): priv1,
+			addr2.String(): priv2,
+			addr3.String(): priv3,
+		}
+
+		doRandomTx := func(r *rand.Rand, app *TestingApp) {
+			x := r.Intn(100)
+			if x < 50 || len(contentIdRecordMap) == 0 {
+				key := keys[r.Intn(len(keys))]
+				privKey := key.PrivKey
+				addr := key.Address
+				record := goodRecord()
+				notes := fmt.Sprintf("create notes %d", r.Int63())
+				record.RecordNotes = notes
+				msg := types.NewMsgCreateIscnRecord(addr, &record)
+				res := app.DeliverMsgNoError(t, msg, privKey)
+				iscnId, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+				require.NoError(t, err)
+				prefix := iscnId.Prefix.String()
+				prefixArr = append(prefixArr, prefix)
+				contentIdRecordMap[prefix] = types.ContentIdRecord{
+					OwnerAddressBytes: addr.Bytes(),
+					LatestVersion:     1,
+				}
+				notesMap[iscnId.String()] = notes
+			} else {
+				prefix := prefixArr[r.Intn(len(contentIdRecordMap))]
+				iscnId, err := types.ParseIscnId(prefix)
+				require.NoError(t, err)
+				contentIdRecord := contentIdRecordMap[prefix]
+				owner := contentIdRecord.OwnerAddress()
+				privKey := addrToPrivKey[owner.String()]
+				iscnId.Version = contentIdRecord.LatestVersion
+				if x < 80 {
+					record := goodRecord()
+					notes := fmt.Sprintf("update notes %d", r.Int63())
+					record.RecordNotes = notes
+					msg := types.NewMsgUpdateIscnRecord(owner, iscnId, &record)
+					app.DeliverMsgNoError(t, msg, privKey)
+					contentIdRecord.LatestVersion++
+					contentIdRecordMap[prefix] = contentIdRecord
+					iscnId.Version++
+					notesMap[iscnId.String()] = notes
+				} else {
+					newOwner := keys[r.Intn(len(keys))].Address
+					msg := types.NewMsgChangeIscnRecordOwnership(owner, iscnId, newOwner)
+					app.DeliverMsgNoError(t, msg, privKey)
+					contentIdRecord.OwnerAddressBytes = newOwner.Bytes()
+					contentIdRecordMap[prefix] = contentIdRecord
+				}
+			}
+		}
+
+		verifyState := func(app *TestingApp) {
+			ctx := app.Context
+			for prefix, contentIdRecord := range contentIdRecordMap {
+				prefixIscnId, err := types.ParseIscnId(prefix)
+				require.NoError(t, err)
+				query := types.NewQueryRecordsByIdRequest(prefixIscnId.PrefixId(), 1, 0)
+				res, err := app.IscnKeeper.RecordsById(sdk.WrapSDKContext(ctx), query)
+				require.NoError(t, err)
+				require.Equal(t, contentIdRecord.LatestVersion, res.LatestVersion)
+				require.Equal(t, contentIdRecord.OwnerAddress().String(), res.Owner)
+				require.Len(t, res.Records, int(contentIdRecord.LatestVersion))
+				for i, record := range res.Records {
+					iscnIdAny, ok := record.Data.GetPath("@id")
+					require.True(t, ok)
+					iscnIdStr, ok := iscnIdAny.(string)
+					require.True(t, ok)
+					iscnId, err := types.ParseIscnId(string(iscnIdStr))
+					require.NoError(t, err)
+					require.Equal(t, uint64(i+1), iscnId.Version)
+					notes, ok := record.Data.GetPath("recordNotes")
+					require.True(t, ok)
+					require.Equal(t, notesMap[iscnId.String()], notes)
+				}
+			}
+		}
+
+		genesisBalances := []genesisBalance{
+			{addr1.String(), "1000000000000000000nanolike"},
+			{addr2.String(), "1000000000000000000nanolike"},
+			{addr3.String(), "1000000000000000000nanolike"},
+		}
+		app := SetupTestApp(genesisBalances)
+		for i := 0; i < txCount; i++ {
+			doRandomTx(r, app)
+		}
+		ctx := app.SetForQuery()
+		verifyState(app)
+
+		iscnGenesis := app.IscnKeeper.ExportGenesis(ctx)
+		iscnGenesisJson := app.AppCodec().MustMarshalJSON(iscnGenesis)
+		app = SetupTestAppWithIscnGenesis(genesisBalances, iscnGenesisJson)
+		app.SetForQuery()
+		verifyState(app)
+
+		app.SetForTx()
+		for i := 0; i < txCount; i++ {
+			doRandomTx(r, app)
+		}
+
+		app.SetForQuery()
+		verifyState(app)
+	}
+
+	for seed := int64(0); seed < seedCount; seed++ {
+		r := rand.New(rand.NewSource(seed))
+		testWithRand(r)
+	}
 }
