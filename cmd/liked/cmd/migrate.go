@@ -40,7 +40,7 @@ import (
 const (
 	flagGenesisTime      = "genesis-time"
 	flagInitialHeight    = "initial-height"
-	flagIscnRegistryName = "iscn-registry-id"
+	flagIscnRegistryName = "iscn-registry-name"
 	flagIscnFeePerByte   = "iscn-fee-per-byte"
 )
 
