@@ -8,7 +8,7 @@ SYSTEM="$(uname)"
 USER_ID=$(id -u $USER)
 
 if [ $USER_ID == 0 ]; then
-    docker build -f docker/app/Dockerfile-root -t likechain/likechain .
+    docker build -f docker/app/Dockerfile-root -t likechain/likechain:sheungwan .
 else
     if [ $SYSTEM == "Darwin" ] || [ $USER_ID == 0 ]; then
         BUILD_UID=1000
