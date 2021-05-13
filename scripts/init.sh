@@ -27,11 +27,7 @@ else
     echo "Warning: .liked already exists, not re-initializing. You may need to replace .liked/config/genesis.json manually."
 fi
 
-if [ ! -f "$LIKE_HOME/docker-compose.yml" ]; then
-    sed "s/__SEED_NODES__/$SEED_NODES/g" "$LIKE_HOME/docker-compose.template.yml" > "$LIKE_HOME/docker-compose.yml"
-else
-    echo "Warning: docker-compose.yml already exists, not modifying. You may need to modify docker-compose.yml manually to add the seed nodes parameter."
-fi
+echo "LIKECOIN_SEED_NODES=$SEED_NODES" >> "$LIKE_HOME/.env"
 
 mkdir -p "$LIKE_HOME/.likecli"
 
