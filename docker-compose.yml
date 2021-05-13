@@ -1,6 +1,7 @@
 version: "3.6"
 services:
     liked:
+        user: "$LIKECOIN_UID"
         image: likechain/likechain:sheungwan
         container_name: likechain_liked
         volumes:
@@ -8,9 +9,9 @@ services:
             - ./.likecli:/likechain/.likecli
         ports:
             - 26656:26656
-            - 26657:26657
+            - 127.0.0.1:26657:26657
         restart: always
-        command: ["liked", "--home", "/likechain/.liked", "--get-ip", "start", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "__SEED_NODES__"]
+        command: ["liked", "--home", "/likechain/.liked", "--get-ip", "start", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "${LIKECOIN_SEED_NODES}"]
 networks:
     default:
         name: likechain
