@@ -2,11 +2,9 @@ version: "3.6"
 services:
     liked:
         user: "$LIKECOIN_UID"
-        image: likechain/likechain:sheungwan
-        container_name: likechain_liked
+        image: likechain/likechain:fotan-1
         volumes:
             - ./.liked:/likechain/.liked
-            - ./.likecli:/likechain/.likecli
         ports:
             - 26656:26656
             - 127.0.0.1:26657:26657
