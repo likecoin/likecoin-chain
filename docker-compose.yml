@@ -4,7 +4,9 @@ services:
         user: "$LIKECOIN_UID"
         image: likechain/likechain:fotan-1
         volumes:
-            - ./.liked:/likechain/.liked
+        - type: bind
+          source: ./.liked
+          target: /likechain/.liked
         ports:
             - 26656:26656
             - 127.0.0.1:26657:26657
