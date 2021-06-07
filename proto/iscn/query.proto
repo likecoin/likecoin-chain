@@ -16,6 +16,10 @@ service Query {
     option (google.api.http).get = "/iscn/records/fingerprint";
   }
 
+  rpc RecordsByOwner(QueryRecordsByOwnerRequest) returns (QueryRecordsByOwnerResponse) {
+    option (google.api.http).get = "/iscn/records/owner";
+  }
+
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/iscn/parameters";
   }
@@ -59,6 +63,16 @@ message QueryRecordsByFingerprintRequest {
 }
 
 message QueryRecordsByFingerprintResponse  {
+  repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
+  uint64 next_sequence = 2;
+}
+
+message QueryRecordsByOwnerRequest {
+  string owner = 1;
+  uint64 from_sequence = 2;
+}
+
+message QueryRecordsByOwnerResponse  {
   repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
   uint64 next_sequence = 2;
 }

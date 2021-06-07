@@ -11,7 +11,8 @@ import (
 	"github.com/likecoin/likechain/x/iscn/types"
 )
 
-const FingerprintPageLimit = 100
+const FingerprintRecordsPageLimit = 100
+const OwnerRecordsPageLimit = 100
 
 var _ types.QueryServer = Keeper{}
 
@@ -30,7 +31,7 @@ func (k Keeper) RecordsById(ctx context.Context, req *types.QueryRecordsByIdRequ
 		fromVersion = iscnId.Version
 		toVersion = iscnId.Version
 	}
-	contentIdRecord := k.GetContentIdRecord(sdkCtx, iscnId)
+	contentIdRecord := k.GetContentIdRecord(sdkCtx, iscnId.Prefix)
 	if contentIdRecord == nil {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", iscnId.String())
 	}
@@ -67,7 +68,7 @@ func (k Keeper) RecordsByFingerprint(ctx context.Context, req *types.QueryRecord
 	nextSeq := uint64(0)
 	count := 0
 	k.IterateFingerprintSequencesWithStartingSequence(sdkCtx, req.Fingerprint, req.FromSequence, func(seq uint64) bool {
-		if count >= FingerprintPageLimit {
+		if count >= FingerprintRecordsPageLimit {
 			nextSeq = seq
 			return true
 		}
@@ -80,6 +81,40 @@ func (k Keeper) RecordsByFingerprint(ctx context.Context, req *types.QueryRecord
 		return false
 	})
 	return &types.QueryRecordsByFingerprintResponse{
+		Records:      records,
+		NextSequence: nextSeq,
+	}, nil
+}
+
+func (k Keeper) RecordsByOwner(ctx context.Context, req *types.QueryRecordsByOwnerRequest) (*types.QueryRecordsByOwnerResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	owner, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address")
+	}
+	records := []types.QueryResponseRecord{}
+	nextSeq := uint64(0)
+	count := uint64(0)
+	k.IterateOwnerConetntIdRecords(sdkCtx, owner, req.FromSequence, func(startingSeq uint64, iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool {
+		if count+contentIdRecord.LatestVersion >= OwnerRecordsPageLimit {
+			nextSeq = startingSeq
+			return true
+		}
+		count += contentIdRecord.LatestVersion
+		for version := uint64(1); version <= contentIdRecord.LatestVersion; version++ {
+			seq := k.GetIscnIdSequence(sdkCtx, IscnId{
+				Prefix:  iscnIdPrefix,
+				Version: version,
+			})
+			storeRecord := k.GetStoreRecord(sdkCtx, seq)
+			records = append(records, types.QueryResponseRecord{
+				Ipld: storeRecord.Cid().String(),
+				Data: storeRecord.Data,
+			})
+		}
+		return false
+	})
+	return &types.QueryRecordsByOwnerResponse{
 		Records:      records,
 		NextSequence: nextSeq,
 	}, nil

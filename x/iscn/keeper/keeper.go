@@ -141,7 +141,7 @@ func (k Keeper) IterateAllFingerprints(ctx sdk.Context, f func(fingerprint strin
 }
 
 func (k Keeper) IterateFingerprintSequencesWithStartingSequence(ctx sdk.Context, fingerprint string, seq uint64, f func(seq uint64) bool) {
-	prefix := types.GetFingerprintPrefix(fingerprint)
+	prefix := types.GetFingerprintStorePrefix(fingerprint)
 	fromKey := types.EncodeUint64(seq)
 	it := k.prefixStore(ctx, prefix).Iterator(fromKey, nil)
 	defer it.Close()
@@ -162,8 +162,8 @@ func (k Keeper) HasFingerprintSequence(ctx sdk.Context, fingerprint string, seq 
 	return k.prefixStore(ctx, FingerprintSequencePrefix).Has(key)
 }
 
-func (k Keeper) GetContentIdRecord(ctx sdk.Context, iscnId IscnId) *ContentIdRecord {
-	key := k.MustMarshalIscnPrefixId(iscnId)
+func (k Keeper) GetContentIdRecord(ctx sdk.Context, iscnIdPrefix IscnIdPrefix) *ContentIdRecord {
+	key := k.MustMarshalIscnIdPrefix(iscnIdPrefix)
 	bz := k.prefixStore(ctx, ContentIdRecordPrefix).Get(key)
 	if bz == nil {
 		return nil
@@ -172,28 +172,75 @@ func (k Keeper) GetContentIdRecord(ctx sdk.Context, iscnId IscnId) *ContentIdRec
 	return &record
 }
 
-func (k Keeper) SetContentIdRecord(ctx sdk.Context, iscnId IscnId, record *ContentIdRecord) {
-	key := k.MustMarshalIscnPrefixId(iscnId)
+func (k Keeper) SetContentIdRecord(ctx sdk.Context, iscnIdPrefix IscnIdPrefix, record *ContentIdRecord) {
+	oldRecord := k.GetContentIdRecord(ctx, iscnIdPrefix)
+
+	iscnIdPrefixBytes := k.MustMarshalIscnIdPrefix(iscnIdPrefix)
 	recordBytes := k.MustMarshalContentIdRecord(record)
-	k.prefixStore(ctx, ContentIdRecordPrefix).Set(key, recordBytes)
+	k.prefixStore(ctx, ContentIdRecordPrefix).Set(iscnIdPrefixBytes, recordBytes)
+
+	seq := k.GetIscnIdSequence(ctx, IscnId{
+		Prefix:  iscnIdPrefix,
+		Version: 1,
+	})
+	key := types.GetOwnerSequenceKey(record.OwnerAddressBytes, seq)
+	k.prefixStore(ctx, OwnerSequencePrefix).Set(key, []byte{0x01})
+
+	if oldRecord != nil && !sdk.AccAddress(oldRecord.OwnerAddressBytes).Equals(sdk.AccAddress(record.OwnerAddressBytes)) {
+		oldOwnerKey := types.GetOwnerSequenceKey(oldRecord.OwnerAddressBytes, seq)
+		k.prefixStore(ctx, OwnerSequencePrefix).Delete(oldOwnerKey)
+	}
 }
 
-func (k Keeper) IterateContentIdRecords(ctx sdk.Context, f func(iscnId IscnId, contentIdRecord ContentIdRecord) bool) {
+func (k Keeper) IterateContentIdRecords(ctx sdk.Context, f func(iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool) {
 	it := k.prefixStore(ctx, ContentIdRecordPrefix).Iterator(nil, nil)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
-		iscnId := k.MustUnmarshalIscnId(it.Key())
+		iscnIdPrefix := k.MustUnmarshalIscnIdPrefix(it.Key())
 		record := k.MustUnmarshalContentIdRecord(it.Value())
-		if f(iscnId, record) {
+		if f(iscnIdPrefix, record) {
 			break
 		}
 	}
 }
 
+func (k Keeper) IterateOwnerConetntIdRecords(ctx sdk.Context, owner sdk.AccAddress, fromSeq uint64, f func(seq uint64, iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool) {
+	prefix := types.GetOwnerStorePrefix(owner)
+	fromKey := types.EncodeUint64(fromSeq)
+	it := k.prefixStore(ctx, prefix).Iterator(fromKey, nil)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		seq := types.DecodeUint64(it.Key())
+		record := k.GetStoreRecord(ctx, seq)
+		if record == nil {
+			// BUG, should break invariant
+			ctx.Logger().Error("no store record for owner record", "owner", owner.String(), "sequence", seq)
+			continue
+		}
+		contentIdRecord := k.GetContentIdRecord(ctx, record.IscnId.Prefix)
+		if contentIdRecord == nil {
+			// BUG, should break invariant
+			ctx.Logger().Error("no content ID record for store record", "iscn_id_prefix", record.IscnId.Prefix.String(), "sequence", seq)
+			continue
+		}
+		if f(seq, record.IscnId.Prefix, *contentIdRecord) {
+			break
+		}
+	}
+}
+
+func (k Keeper) HasOwnerSequence(ctx sdk.Context, owner sdk.AccAddress, seq uint64) bool {
+	key := types.GetOwnerSequenceKey(owner, seq)
+	return k.prefixStore(ctx, OwnerSequencePrefix).Has(key)
+}
+
 func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, contentIdRecord ContentIdRecord) bool) {
-	k.IterateContentIdRecords(ctx, func(iscnId IscnId, contentIdRecord ContentIdRecord) bool {
+	k.IterateContentIdRecords(ctx, func(iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool {
 		for version := uint64(1); version <= contentIdRecord.LatestVersion; version++ {
-			iscnId.Version = version
+			iscnId := IscnId{
+				Prefix:  iscnIdPrefix,
+				Version: version,
+			}
 			if f(iscnId, contentIdRecord) {
 				return true
 			}
@@ -222,7 +269,7 @@ func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, data 
 func (k Keeper) AddIscnRecord(
 	ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress, data []byte, fingerprints []string,
 ) (*CID, error) {
-	contentIdRecord := k.GetContentIdRecord(ctx, iscnId)
+	contentIdRecord := k.GetContentIdRecord(ctx, iscnId.Prefix)
 	if contentIdRecord == nil {
 		if iscnId.Version != 1 {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidIscnVersion, "expected version: 1")
@@ -253,7 +300,7 @@ func (k Keeper) AddIscnRecord(
 		Data:     data,
 	}
 	seq := k.AddStoreRecord(ctx, record)
-	k.SetContentIdRecord(ctx, iscnId, &ContentIdRecord{
+	k.SetContentIdRecord(ctx, iscnId.Prefix, &ContentIdRecord{
 		OwnerAddressBytes: owner.Bytes(),
 		LatestVersion:     iscnId.Version,
 	})

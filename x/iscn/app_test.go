@@ -336,6 +336,12 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	require.Len(t, fpQueryRes.Records, 1)
 	require.Equal(t, queryRecord, fpQueryRes.Records[0])
 
+	ownerQuery := types.NewQueryRecordsByOwnerRequest(addr1, 0)
+	ownerQueryRes, err := app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, 1)
+	require.Equal(t, queryRecord, ownerQueryRes.Records[0])
+
 	app.NextHeader(1234567891)
 	app.SetForTx()
 
@@ -437,6 +443,13 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	require.Len(t, fpQueryRes.Records, 1)
 	require.Equal(t, queryRecord2, fpQueryRes.Records[0])
 
+	ownerQuery = types.NewQueryRecordsByOwnerRequest(addr1, 0)
+	ownerQueryRes, err = app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, 2)
+	require.Equal(t, queryRecord, ownerQueryRes.Records[0])
+	require.Equal(t, queryRecord2, ownerQueryRes.Records[1])
+
 	app.SetForTx()
 
 	msg = types.NewMsgChangeIscnRecordOwnership(addr1, iscnId2, addr2)
@@ -453,10 +466,111 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	require.Equal(t, queryRecord, idQueryRes.Records[0])
 	require.Equal(t, queryRecord2, idQueryRes.Records[1])
 
+	ownerQuery = types.NewQueryRecordsByOwnerRequest(addr1, 0)
+	ownerQueryRes, err = app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, 0)
+
+	ownerQuery = types.NewQueryRecordsByOwnerRequest(addr2, 0)
+	ownerQueryRes, err = app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, 2)
+	require.Equal(t, queryRecord, ownerQueryRes.Records[0])
+	require.Equal(t, queryRecord2, ownerQueryRes.Records[1])
+
 	app.SetForTx()
 
 	msg = crisistypes.NewMsgVerifyInvariant(addr1, "iscn", "iscn-records")
 	app.DeliverMsgNoError(t, msg, priv1)
+}
+
+func TestOwnerQueryPagination(t *testing.T) {
+	var msg sdk.Msg
+	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+
+	// OwnerRecordsPageLimit-1 records for prefix 1, 2 records for prefix 2, 2 records for prefix 3
+	record := types.IscnRecord{
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+		RecordNotes:         fmt.Sprintf("update record 1 to version %010d", 1),
+	}
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result := app.DeliverMsgNoError(t, msg, priv1)
+	events := result.GetEvents()
+	iscnId1StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnId1StrBytes)
+	iscnId1, err := types.ParseIscnId(string(iscnId1StrBytes))
+	require.NoError(t, err)
+	for i := 1; i < keeper.OwnerRecordsPageLimit-1; i++ {
+		iscnId1.Version = uint64(i)
+		record.RecordNotes = fmt.Sprintf("update record 1 to version %010d", i+1)
+		msg = types.NewMsgUpdateIscnRecord(addr1, iscnId1, &record)
+		app.DeliverMsgNoError(t, msg, priv1)
+	}
+
+	record.RecordNotes = fmt.Sprintf("update record 2 to version %010d", 1)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result = app.DeliverMsgNoError(t, msg, priv1)
+	events = result.GetEvents()
+	iscnId2StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnId2StrBytes)
+	iscnId2, err := types.ParseIscnId(string(iscnId2StrBytes))
+	require.NoError(t, err)
+	record.RecordNotes = fmt.Sprintf("update record 2 to version %010d", 2)
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId2, &record)
+	app.DeliverMsgNoError(t, msg, priv1)
+
+	record.RecordNotes = fmt.Sprintf("update record 3 to version %010d", 1)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result = app.DeliverMsgNoError(t, msg, priv1)
+	events = result.GetEvents()
+	iscnId3StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnId3StrBytes)
+	iscnId3, err := types.ParseIscnId(string(iscnId3StrBytes))
+	require.NoError(t, err)
+	record.RecordNotes = fmt.Sprintf("update record 3 to version %010d", 2)
+	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId3, &record)
+	app.DeliverMsgNoError(t, msg, priv1)
+
+	ctx := app.SetForQuery()
+
+	ownerQuery := types.NewQueryRecordsByOwnerRequest(addr1, 0)
+	ownerQueryRes, err := app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, keeper.OwnerRecordsPageLimit-1)
+	require.NotZero(t, ownerQueryRes.NextSequence)
+	for i, queryRecord := range ownerQueryRes.Records {
+		notes, ok := queryRecord.Data.GetPath("recordNotes")
+		require.True(t, ok)
+		require.Equal(t, fmt.Sprintf("update record 1 to version %010d", i+1), notes)
+	}
+
+	ownerQuery = types.NewQueryRecordsByOwnerRequest(addr1, ownerQueryRes.NextSequence)
+	ownerQueryRes, err = app.IscnKeeper.RecordsByOwner(sdk.WrapSDKContext(ctx), ownerQuery)
+	require.NoError(t, err)
+	require.Len(t, ownerQueryRes.Records, 4)
+	require.Zero(t, ownerQueryRes.NextSequence)
+
+	queryRecord := ownerQueryRes.Records[0]
+	notes, ok := queryRecord.Data.GetPath("recordNotes")
+	require.True(t, ok)
+	require.Equal(t, fmt.Sprintf("update record 2 to version %010d", 1), notes)
+	queryRecord = ownerQueryRes.Records[1]
+	notes, ok = queryRecord.Data.GetPath("recordNotes")
+	require.True(t, ok)
+	require.Equal(t, fmt.Sprintf("update record 2 to version %010d", 2), notes)
+	queryRecord = ownerQueryRes.Records[2]
+	notes, ok = queryRecord.Data.GetPath("recordNotes")
+	require.True(t, ok)
+	require.Equal(t, fmt.Sprintf("update record 3 to version %010d", 1), notes)
+	queryRecord = ownerQueryRes.Records[3]
+	notes, ok = queryRecord.Data.GetPath("recordNotes")
+	require.True(t, ok)
+	require.Equal(t, fmt.Sprintf("update record 3 to version %010d", 2), notes)
 }
 
 func TestFingerprintQueryPagination(t *testing.T) {
@@ -471,7 +585,7 @@ func TestFingerprintQueryPagination(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	for i := 0; i < 2*keeper.FingerprintPageLimit-1; i++ {
+	for i := 0; i < 2*keeper.FingerprintRecordsPageLimit-1; i++ {
 		record.RecordNotes = fmt.Sprintf("record %010d", i)
 		msg = types.NewMsgCreateIscnRecord(addr1, &record)
 		app.DeliverMsgNoError(t, msg, priv1)
@@ -482,7 +596,7 @@ func TestFingerprintQueryPagination(t *testing.T) {
 	fpQuery := types.NewQueryRecordsByFingerprintRequest(fingerprint1, 0)
 	fpQueryRes, err := app.IscnKeeper.RecordsByFingerprint(sdk.WrapSDKContext(ctx), fpQuery)
 	require.NoError(t, err)
-	require.Len(t, fpQueryRes.Records, keeper.FingerprintPageLimit)
+	require.Len(t, fpQueryRes.Records, keeper.FingerprintRecordsPageLimit)
 	require.NotZero(t, fpQueryRes.NextSequence)
 	for i, queryRecord := range fpQueryRes.Records {
 		notes, ok := queryRecord.Data.GetPath("recordNotes")
@@ -493,12 +607,12 @@ func TestFingerprintQueryPagination(t *testing.T) {
 	fpQuery = types.NewQueryRecordsByFingerprintRequest(fingerprint1, fpQueryRes.NextSequence)
 	fpQueryRes, err = app.IscnKeeper.RecordsByFingerprint(sdk.WrapSDKContext(ctx), fpQuery)
 	require.NoError(t, err)
-	require.Len(t, fpQueryRes.Records, keeper.FingerprintPageLimit-1)
+	require.Len(t, fpQueryRes.Records, keeper.FingerprintRecordsPageLimit-1)
 	require.Zero(t, fpQueryRes.NextSequence)
 	for i, queryRecord := range fpQueryRes.Records {
 		notes, ok := queryRecord.Data.GetPath("recordNotes")
 		require.True(t, ok)
-		require.Equal(t, fmt.Sprintf("record %010d", i+keeper.FingerprintPageLimit), notes)
+		require.Equal(t, fmt.Sprintf("record %010d", i+keeper.FingerprintRecordsPageLimit), notes)
 	}
 }
 

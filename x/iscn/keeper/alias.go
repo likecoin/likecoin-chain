@@ -14,6 +14,7 @@ type (
 
 	Params          = types.Params
 	IscnId          = types.IscnId
+	IscnIdPrefix    = types.IscnIdPrefix
 	CID             = types.CID
 	IscnInput       = types.IscnInput
 	StoreRecord     = types.StoreRecord
@@ -30,6 +31,7 @@ var (
 	IscnIdToSequencePrefix      = types.IscnIdToSequencePrefix
 	ContentIdRecordPrefix       = types.ContentIdRecordPrefix
 	FingerprintSequencePrefix   = types.FingerprintSequencePrefix
+	OwnerSequencePrefix         = types.OwnerSequencePrefix
 
 	NewIscnId = types.NewIscnId
 )

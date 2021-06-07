@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	IscnRecordsInvariantName      = "iscn-records"
-	IscnFingerprintsInvariantName = "iscn-fingerprints"
+	IscnRecordsInvariantName       = "iscn-records"
+	IscnFingerprintsInvariantName  = "iscn-fingerprints"
+	IscnOwnerSequenceInvariantName = "iscn-owner-seqeunce"
 )
 
 type ProblemLogger struct {
@@ -58,6 +59,7 @@ func (problemLogger *ProblemLogger) Result() (string, bool) {
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, IscnRecordsInvariantName, IscnRecordsInvariant(k))
 	ir.RegisterRoute(types.ModuleName, IscnFingerprintsInvariantName, IscnFingerprintsInvariant(k))
+	ir.RegisterRoute(types.ModuleName, IscnOwnerSequenceInvariantName, IscnOwnerSequenceInvariant(k))
 }
 
 func IscnRecordsInvariant(k Keeper) sdk.Invariant {
@@ -196,15 +198,18 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 		}
 
 		// 1. check all records are valid
-		// 2. check every conntent ID record has the corresponding ISCN ID records
-		k.IterateContentIdRecords(ctx, func(iscnPrefixId IscnId, contentIdRecord ContentIdRecord) bool {
+		// 2. check every content ID record has the corresponding ISCN ID records
+		// 3. check every content ID record has the corresponding owner-sequence record
+		k.IterateContentIdRecords(ctx, func(iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool {
 			if contentIdRecord.LatestVersion == 0 {
 				problemLogger.Log(fmt.Sprintf("content ID %s has 0 as latest version record", contentIdRecord.String()))
 				return false
 			}
 			for version := uint64(1); version <= contentIdRecord.LatestVersion; version++ {
-				id := iscnPrefixId
-				id.Version = version
+				id := IscnId{
+					Prefix:  iscnIdPrefix,
+					Version: version,
+				}
 				idStr := id.String()
 				seq := k.GetIscnIdSequence(ctx, id)
 				if seq == 0 {
@@ -219,6 +224,11 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 				if !storeRecord.IscnId.Equal(&id) {
 					problemLogger.Log(fmt.Sprintf("ISCN ID %s has sequence record %d, but store record for sequence %d has another ISCN ID %s", idStr, seq, seq, storeRecord.IscnId.String()))
 				}
+				if version == 1 {
+					if !k.HasOwnerSequence(ctx, contentIdRecord.OwnerAddressBytes, seq) {
+						problemLogger.Log(fmt.Sprintf("content ID %s exist, with owner %s and version 1 sequence %d, but corresponding owner-sequence record does not exist", contentIdRecord.String(), sdk.AccAddress(contentIdRecord.OwnerAddressBytes).String(), seq))
+					}
+				}
 				cid := storeRecord.Cid()
 				cidStr := cid.String()
 				computedCid := types.ComputeDataCid(storeRecord.Data)
@@ -230,16 +240,16 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 			return false
 		})
 
-		// 3. check all ISCN ID has content ID record
-		// 4. check all ISCN ID and CID can reverse lookup sequence
-		// 5. check contiguous sequence
+		// 4. check all ISCN ID has content ID record
+		// 5. check all ISCN ID and CID can reverse lookup sequence
+		// 6. check contiguous sequence
 		prevSeq := uint64(0)
 		k.IterateStoreRecords(ctx, func(seq uint64, storeRecord StoreRecord) bool {
 			if seq != prevSeq+1 {
 				problemLogger.Log(fmt.Sprintf("discontiguous sequence (%d to %d)", prevSeq, seq))
 			}
 			prevSeq = seq
-			contentIdRecord := k.GetContentIdRecord(ctx, storeRecord.IscnId)
+			contentIdRecord := k.GetContentIdRecord(ctx, storeRecord.IscnId.Prefix)
 			if contentIdRecord == nil {
 				problemLogger.Log(fmt.Sprintf("store record sequence %d has ISCN ID %s, but the content ID record does not exist", seq, storeRecord.IscnId.String()))
 			} else if contentIdRecord.LatestVersion < storeRecord.IscnId.Version {
@@ -260,7 +270,7 @@ func IscnRecordsInvariant(k Keeper) sdk.Invariant {
 			problemLogger.Log(fmt.Sprintf("max sequence (%d) does not equal to sequence count (%d)", prevSeq, seqCount))
 		}
 
-		// 5. check all ISCN ID and CID reverse lookup sequence actually exist
+		// 7. check all ISCN ID and CID reverse lookup sequence actually exist
 		cidIter := k.prefixStore(ctx, CidToSequencePrefix).Iterator(nil, nil)
 		defer cidIter.Close()
 		for ; cidIter.Valid(); cidIter.Next() {
@@ -358,6 +368,53 @@ func IscnFingerprintsInvariant(k Keeper) sdk.Invariant {
 					problemLogger.Log(fmt.Sprintf("dangling fingerprint value %s in sequence %d", fingerprint, seq))
 					return false
 				}
+			}
+			return false
+		})
+
+		return problemLogger.Result()
+	}
+}
+
+func IscnOwnerSequenceInvariant(k Keeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		problemLogger := NewProblemLogger(ctx, IscnFingerprintsInvariantName)
+
+		// 1. to check each owner-seqeunce record actually points to a content ID record with that owner
+		checkOwnerSequenceToContentId := func() {
+			it := k.prefixStore(ctx, OwnerSequencePrefix).Iterator(nil, nil)
+			defer it.Close()
+			for ; it.Valid(); it.Next() {
+				owner, seq := types.ParseOwnerSequenceBytes(it.Key())
+				record := k.GetStoreRecord(ctx, seq)
+				if record == nil {
+					problemLogger.Log(fmt.Sprintf("no store record for owner-sequence record (owner %s, sequence %d)", owner.String(), seq))
+					continue
+				}
+				if record.IscnId.Version != 1 {
+					problemLogger.Log(fmt.Sprintf("owner-sequence record (owner %s, sequence %d, ISCN ID prefix %s) has ISCN version != 1 (%d)", owner.String(), seq, record.IscnId.Prefix.String(), record.IscnId.Version))
+				}
+				contentIdRecord := k.GetContentIdRecord(ctx, record.IscnId.Prefix)
+				if contentIdRecord == nil {
+					problemLogger.Log(fmt.Sprintf("no content ID record for owner-sequence record (owner %s, sequence %d, ISCN ID prefix %s)", owner.String(), seq, record.IscnId.Prefix.String()))
+					continue
+				}
+				if !sdk.AccAddress(contentIdRecord.OwnerAddressBytes).Equals(owner) {
+					problemLogger.Log(fmt.Sprintf("owner-sequence record (owner %s, sequence %d, ISCN ID prefix %s) points to a content ID record with different owner (%s)", owner.String(), seq, record.IscnId.Prefix.String(), sdk.AccAddress(contentIdRecord.OwnerAddressBytes)))
+				}
+			}
+		}
+		checkOwnerSequenceToContentId()
+
+		// 2. to check each content ID record actually has an owner-sequence record points to that record
+		k.IterateContentIdRecords(ctx, func(iscnIdPrefix IscnIdPrefix, contentIdRecord ContentIdRecord) bool {
+			iscnId := IscnId{
+				Prefix:  iscnIdPrefix,
+				Version: 1,
+			}
+			seq := k.GetIscnIdSequence(ctx, iscnId)
+			if !k.HasOwnerSequence(ctx, contentIdRecord.OwnerAddressBytes, seq) {
+				problemLogger.Log(fmt.Sprintf("content ID %s exist, with owner %s and version 1 sequence %d, but corresponding owner-sequence record does not exist", contentIdRecord.String(), sdk.AccAddress(contentIdRecord.OwnerAddressBytes).String(), seq))
 			}
 			return false
 		})

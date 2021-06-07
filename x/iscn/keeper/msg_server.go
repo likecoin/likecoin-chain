@@ -111,7 +111,7 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidIscnId, "%s", err.Error())
 	}
-	contentIdRecord := k.GetContentIdRecord(ctx, id)
+	contentIdRecord := k.GetContentIdRecord(ctx, id.Prefix)
 	if contentIdRecord == nil {
 		return nil, sdkerrors.Wrapf(types.ErrRecordNotFound, "%s", id.String())
 	}
@@ -123,7 +123,7 @@ func (k msgServer) ChangeIscnRecordOwnership(goCtx context.Context, msg *MsgChan
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender not ISCN record owner, expect %s", prevOwner.String())
 	}
 	contentIdRecord.OwnerAddressBytes = newOwner.Bytes()
-	k.SetContentIdRecord(ctx, id, contentIdRecord)
+	k.SetContentIdRecord(ctx, id.Prefix, contentIdRecord)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeIscnRecord,

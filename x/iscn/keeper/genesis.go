@@ -44,7 +44,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 		if err != nil {
 			panic(err)
 		}
-		k.SetContentIdRecord(ctx, iscnId, &ContentIdRecord{
+		k.SetContentIdRecord(ctx, iscnId.Prefix, &ContentIdRecord{
 			OwnerAddressBytes: owner.Bytes(),
 			LatestVersion:     contentIdRecord.LatestVersion,
 		})
@@ -54,9 +54,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genesis *types.GenesisState) {
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	params := k.GetParams(ctx)
 	contentIdRecords := []types.GenesisState_ContentIdRecord{}
-	k.IterateContentIdRecords(ctx, func(iscnId types.IscnId, contentIdRecord types.ContentIdRecord) bool {
+	k.IterateContentIdRecords(ctx, func(iscnIdPrefix types.IscnIdPrefix, contentIdRecord types.ContentIdRecord) bool {
 		contentIdRecords = append(contentIdRecords, types.GenesisState_ContentIdRecord{
-			IscnId:        iscnId.Prefix.String(),
+			IscnId:        iscnIdPrefix.String(),
 			Owner:         contentIdRecord.OwnerAddress().String(),
 			LatestVersion: contentIdRecord.LatestVersion,
 		})

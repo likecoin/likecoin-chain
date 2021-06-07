@@ -9,9 +9,13 @@ func (k Keeper) MustUnmarshalIscnId(iscnBytes []byte) (iscnId IscnId) {
 	return iscnId
 }
 
-func (k Keeper) MustMarshalIscnPrefixId(iscnId IscnId) []byte {
-	iscnId.Version = 0
-	return k.MustMarshalIscnId(iscnId)
+func (k Keeper) MustMarshalIscnIdPrefix(iscnIdPrefix IscnIdPrefix) []byte {
+	return k.cdc.MustMarshalBinaryBare(&iscnIdPrefix)
+}
+
+func (k Keeper) MustUnmarshalIscnIdPrefix(iscnIdPrefixBytes []byte) (iscnIdPrefix IscnIdPrefix) {
+	k.cdc.MustUnmarshalBinaryBare(iscnIdPrefixBytes, &iscnIdPrefix)
+	return iscnIdPrefix
 }
 
 func (k Keeper) MustMarshalStoreRecord(record *StoreRecord) []byte {
