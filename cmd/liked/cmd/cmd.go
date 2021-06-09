@@ -187,12 +187,12 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, exportAppState, addStartFlags)
 
-	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
+		ShowHeightCommand(),
 	)
 
 	return rootCmd, encodingConfig
