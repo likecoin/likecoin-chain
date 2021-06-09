@@ -11,7 +11,7 @@ services:
             - 26656:26656
             - 127.0.0.1:26657:26657
         restart: always
-        command: ["liked", "--home", "/likechain/.liked", "--get-ip", "start", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "${LIKECOIN_SEED_NODES}"]
+        command: ["liked", "--home", "/likechain/.liked", "start", "--get-ip", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "${LIKECOIN_SEED_NODES}"]
 networks:
     default:
         name: likechain
