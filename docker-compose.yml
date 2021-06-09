@@ -5,11 +5,13 @@ services:
         image: likechain/likechain:fotan-1
         volumes:
         - type: bind
-          source: ./.liked
+          source: "${LIKECOIN_DATA_FOLDER}"
           target: /likechain/.liked
         ports:
             - 26656:26656
             - 127.0.0.1:26657:26657
+            # - 1317:1317 # for RESTful API
+            # - 9090:9090 # for gRPC
         restart: always
         command: ["liked", "--home", "/likechain/.liked", "start", "--get-ip", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "${LIKECOIN_SEED_NODES}"]
 networks:
