@@ -7,10 +7,6 @@ import (
 
 var IPGetters = []IPGetter{
 	{
-		ServiceURL: "https://canihazip.com/s",
-		GetIP:      HTTPGetString,
-	},
-	{
 		ServiceURL: "https://httpbin.org/ip",
 		GetIP: func(url string, ctx context.Context) (string, error) {
 			s, err := HTTPJSONGetField("origin")(url, ctx)
