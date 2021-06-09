@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -20,6 +21,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -92,6 +95,7 @@ func main() {
 		genaccounts.AppModuleBasic{}, app.DefaultNodeHome, app.DefaultCLIHome))
 	rootCmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
 	rootCmd.AddCommand(genaccscli.AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
+	rootCmd.AddCommand(showHeightCommand())
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
@@ -131,4 +135,38 @@ func exportAppStateAndTMValidators(
 	}
 	gApp := app.NewLikeApp(logger, db, traceStore, true, uint(1))
 	return gApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+}
+
+func showHeightCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "show-height",
+		Short: "Show the latest block height in local database for export",
+
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			homeDir, err := cmd.Flags().GetString(flags.FlagHome)
+			if err != nil {
+				return err
+			}
+			dataDir := filepath.Join(homeDir, "data")
+			db, err := sdk.NewLevelDB("application", dataDir)
+			if err != nil {
+				return err
+			}
+			var latest int64
+			latestBytes := db.Get([]byte("s/latest"))
+			if latestBytes == nil {
+				latest = 0
+			} else {
+				cdc := codec.New()
+				err := cdc.UnmarshalBinaryLengthPrefixed(latestBytes, &latest)
+				if err != nil {
+					panic(err)
+				}
+			}
+			fmt.Println(latest)
+			return nil
+		},
+	}
+	return cmd
 }
