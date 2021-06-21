@@ -1,8 +1,8 @@
 #!/bin/bash 
 
 protoc \
-  -I "$GOPATH/pkg/mod/github.com/cosmos/cosmos-sdk@v0.42.5/proto" \
-  -I "$GOPATH/pkg/mod/github.com/cosmos/cosmos-sdk@v0.42.5/third_party/proto" \
+  -I "$GOPATH/pkg/mod/github.com/cosmos/cosmos-sdk@v0.42.6/proto" \
+  -I "$GOPATH/pkg/mod/github.com/cosmos/cosmos-sdk@v0.42.6/third_party/proto" \
   --gocosmos_out=plugins=interfacetype+grpc,Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   --grpc-gateway_out=logtostderr=true:. \
   --proto_path proto \
