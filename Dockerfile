@@ -1,6 +1,5 @@
-FROM golang:1.16-alpine as base
+FROM golang:1.16-buster as base
 
-RUN apk update && apk add --no-cache build-base git bash curl linux-headers ca-certificates
 WORKDIR /
 RUN mkdir -p ./likechain
 COPY ./go.mod ./likechain/go.mod
@@ -27,8 +26,8 @@ RUN go build \
     -o /go/bin/liked cmd/liked/main.go
 
 
-FROM alpine:latest
+FROM debian:buster
 
-RUN apk add ca-certificates
-WORKDIR /bin
+WORKDIR /usr/bin
+RUN apt-get update && apt-get install -y curl
 COPY --from=builder /go/bin/liked .
