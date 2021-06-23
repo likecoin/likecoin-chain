@@ -1,16 +1,97 @@
 version: "3.6"
+x-base: &base
+    user: "${LIKECOIN_UID}"
+    image: ${LIKECOIN_DOCKER_IMAGE}
+x-script-base: &script-base
+    <<: *base
+    profiles: ["scripts"]
+    volumes:
+    - type: bind
+      source: ./
+      target: /host
 services:
-    liked:
-        image: likechain/likechain:sheungwan
-        container_name: likechain_liked
+    liked-service:
+        <<: *base
         volumes:
-            - ./.liked:/likechain/.liked
-            - ./.likecli:/likechain/.likecli
+        - type: bind
+          source: ./.liked
+          target: /likechain/.liked
         ports:
-            - 26656:26656
-            - 127.0.0.1:26657:26657
+        - 26656:26656
+        - 127.0.0.1:26657:26657
         restart: always
-        command: ["liked", "--home", "/likechain/.liked", "--get-ip", "start", "--rpc.laddr", "tcp://0.0.0.0:26657", "--p2p.seeds", "${LIKECOIN_SEED_NODES}"]
+        command: [
+            "liked", "--home", "/likechain/.liked", "start",
+                "--get-ip",
+                "--rpc.laddr", "tcp://0.0.0.0:26657",
+                "--p2p.seeds", "${LIKECOIN_SEED_NODES}",
+                "--halt-time", "${LIKECOIN_HALT_TIME}",
+                "--halt-height", "${LIKECOIN_HALT_HEIGHT}",
+        ]
+    # Uncomment lcd-service section if RESTful API is needed
+    # lcd-service:
+    #     <<: *base
+    #     volumes:
+    #     - type: bind
+    #       source: ./.likecli
+    #       target: /likechain/.likecli
+    #     ports:
+    #     - 1317:1317
+    #     restart: always
+    #     command: [
+    #         "likecli", "--home", "/likechain/.likecli", "rest-server",
+    #             "--chain-id", "${LIKECOIN_CHAIN_ID}",
+    #             "--node", "tcp://liked-service:26657",
+    #             "--laddr", "tcp://0.0.0.0:1317",
+    #             "--read-timeout", "60",
+    #             "--write-timeout", "60",
+    #     ]
+    #
+    # Below are scripts for `docker-compose run` command, not auto-executing services
+    liked-command:
+        <<: *script-base
+        entrypoint: ["liked", "--home", "/host/.liked"]
+    likecli-command:
+        <<: *script-base
+        entrypoint: ["likecli", "--home", "/host/.likecli"]
+    init:
+        <<: *script-base
+        command: ["bash", "/host/init.sh", "${LIKECOIN_MONIKER}", "${LIKECOIN_GENESIS_URL}", "${LIKECOIN_SEED_NODES}"]
+        # 1. create directories
+        # 2. init chain, setup moniker
+        # 3. copy / download genesis.json
+    create-validator:
+        <<: *script-base
+        entrypoint: [
+            "likecli", "--home", "/host/.likecli",
+                "tx", "staking", "create-validator",
+                "--chain-id", "${LIKECOIN_CHAIN_ID}",
+                "--from", "validator",
+                "--node", "tcp://liked-service:26657",
+                "--moniker", "${LIKECOIN_MONIKER}",
+                "--pubkey", "${LIKECOIN_VALIDATOR_PUBKEY}",
+                "--commission-max-rate", "1.0",
+                "--commission-max-change-rate", "1.0",
+                "--min-self-delegation", "1",
+                # to fill in: 
+                # --amount
+                # --details
+                # --commission-rate
+                # --identity (optional)
+                # --website (optional)
+        ]
+    vote:
+        <<: *script-base
+        entrypoint: [
+            "likecli", "--home", "/host/.likecli",
+                "tx", "gov", "vote",
+                "--chain-id", "${LIKECOIN_CHAIN_ID}",
+                "--from", "validator",
+                "--node", "tcp://liked-service:26657",
+                # to fill in:
+                # 1. proposal ID
+                # 2. vote option ("yes" / "no" / "veto" / "abstain")
+        ]
 networks:
     default:
-        name: likechain
+        name: likecoin-chain
