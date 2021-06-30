@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -42,6 +43,7 @@ const (
 	flagInitialHeight    = "initial-height"
 	flagIscnRegistryName = "iscn-registry-name"
 	flagIscnFeePerByte   = "iscn-fee-per-byte"
+	flagOutput           = "output"
 )
 
 func migrateState(initialState types.AppMap, ctx client.Context, iscnParams iscntypes.Params) types.AppMap {
@@ -164,7 +166,13 @@ $ %s migrate /path/to/genesis.json --%s=1000000 --%s=likecoin-chain-fotan --%s=2
 				return errors.Wrap(err, "failed to sort JSON genesis doc")
 			}
 
-			fmt.Println(string(sortedBz))
+			outputPath, _ := cmd.Flags().GetString(flagOutput)
+			err = os.WriteFile(outputPath, sortedBz, 0o644)
+			if err != nil {
+				return errors.Wrap(err, "failed to write JSON genesis doc")
+			}
+
+			fmt.Printf("Genesis doc written to %s.\n", outputPath)
 			return nil
 		},
 	}
@@ -174,6 +182,7 @@ $ %s migrate /path/to/genesis.json --%s=1000000 --%s=likecoin-chain-fotan --%s=2
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
 	cmd.Flags().String(flagIscnRegistryName, iscntypes.DefaultRegistryName, "ISCN registry ID parameter in the migrated genesis state")
 	cmd.Flags().String(flagIscnFeePerByte, iscntypes.DefaultFeePerByte.String(), "ISCN fee per byte parameter in the migrated genesis state")
+	cmd.Flags().String(flagOutput, "genesis.json", "output path")
 
 	return cmd
 }
