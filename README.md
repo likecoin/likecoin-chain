@@ -1,29 +1,32 @@
-LikeChain is a blockchain built on the Cosmos SDK.
+LikeCoin chain is a blockchain built on the Cosmos SDK. Project page: https://like.co/
 
 ## Requirements
 
- - At least 20 GB disk space
+ - At least 40 GB disk space (SSD preferred)
  - Docker
- - Docker Compose
+ - Docker Compose with version >= 1.28
 
-## Building
+## Building Docker image
 
-Run `./scripts/build.sh`.
+Normally you don't need to build the image by yourself, as the image is already hosted on Docker Hub.
 
-## Running testnet node as a validator
+For building the image, run `./build.sh`. This will build and tag the iamge.
 
-1. Initialize keys by running `./scripts/init.sh [moniker] [path-to-genesis.json] [persistent-node]`, where `moniker` is the custom identifier of your node, `path-to-genesis.json` is the path to `genesis.json`, and `persistent-node` is the node ID and IP address of the test node.
+## Setting up a full node
 
-Example: `./scripts/init.sh chung ~/Downloads/genesis-likechain-cosmos-testnet-1.json '7c93876c5ffce59b5bc07a4b4b7891dd0bfe4cea@35.226.174.222:26656'`
+1. Get the URL of the genesis file and other parameters (e.g. seed node) of the network.
+1. Copy `.env.template` to `.env`, and also `docker-compose.yml.template` to `docker-compose.yml`.
+1. Edit `.env` for config on `LIKECOIN_CHAIN_ID`, `LIKECOIN_MONIKER`, `LIKECOIN_GENESIS_URL` and `LIKECOIN_SEED_NODES`. See comments in the file.
+1. Run `docker-compose run --rm init` to setup node data in `.liked` folder.
+1. Run `docker-compose up -d` to start up the node and wait for synchronization.
+1. Then you may check the logs by `docker-compose logs --tail 1000 -f`.
 
-2. After step 1, a Cosmos address for the validator will be initialized. Send the address to us and we will send some token into the account for staking.
+## Setting up a validator node
 
-3. Start the node by running `docker-compose up -d`. Note that the node is still not a validator, you need to stake the token after receiving it from us for becoming a validator.
-
-4. After receiving tokens, you can stake them by running `./scripts/staking.sh`.
-
-## Development
-
- - Setup or reset the one node local testnet by running `./dev/testnet-local.sh`.
- - Use the `docker-compose.yml` in `dev` to run a local server with light client.
- - When code is updated and `go.mod` and `go.sum` are not updated, you can use `./docker/app/build.sh` to quickly rebuild the image.
+1. Setup a full node by following the section above.
+1. Make sure the node is synchronized, by checking `localhost:26657/status` and see if `result.sync_info.catching_up` is `false`.
+1. Setup validator key by `docker-compose run --rm likecli-command keys add validator` and follow the instructions. This will generate a key named `validator` in the keystore.
+1. Get the address and mnemonic words from the output of the command above. Jot down the address (`cosmos1...`) and backup the mnemonic words.
+1. Get some LIKE in the address above. The LIKE tokens are needed for creating validator.
+1. Run `docker-compose run --rm create-validator --amount <AMOUNT> --details <DETAILS> --commission-rate <COMMISSION_RATE>` to create and activate validator. `<AMOUNT>` is the amount for self-delegation (e.g. `100000000000nanolike` for 100 LIKE), `<DETAILS>` is the introduction of the validator, `<COMMISSION_RATE>` is the commission you receive from delegators (e.g. `0.1` for 10%).
+1. After sending the create validator transaction, your node should become a validator.
