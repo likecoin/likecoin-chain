@@ -3,7 +3,7 @@ module github.com/likecoin/likechain
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.42.6
+	github.com/cosmos/cosmos-sdk v0.42.7
 	github.com/cosmos/gaia/v4 v4.2.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
