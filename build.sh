@@ -4,7 +4,7 @@ set -e
 
 pushd "$(dirname "$0")" > /dev/null
 
-VERSION="fotan-1"
+VERSION="fotan-1.1"
 COMMIT=$(git rev-parse HEAD)
 
 echo "Building image for $VERSION using commit $COMMIT"
