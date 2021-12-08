@@ -196,12 +196,16 @@ func (app *TestingApp) DeliverMsg(msg sdk.Msg, priv cryptotypes.PrivKey) (res *s
 	return app.DeliverMsgs([]sdk.Msg{msg}, priv)
 }
 
-func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey) *sdk.Result {
-	res, err, simErr, deliverErr := app.DeliverMsgs([]sdk.Msg{msg}, priv)
+func (app *TestingApp) DeliverMsgsNoError(t *testing.T, msgs []sdk.Msg, priv cryptotypes.PrivKey) *sdk.Result {
+	res, err, simErr, deliverErr := app.DeliverMsgs(msgs, priv)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 	require.NoError(t, deliverErr)
 	return res
+}
+
+func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey) *sdk.Result {
+	return app.DeliverMsgsNoError(t, []sdk.Msg{msg}, priv)
 }
 
 func GetEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
