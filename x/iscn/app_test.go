@@ -309,6 +309,30 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	app.DeliverMsgNoError(t, msg, priv1)
 }
 
+func TestMultipleCreateInOneTx(t *testing.T) {
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+	record1 := types.IscnRecord{
+		RecordNotes:         "some update",
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+	}
+	record2 := types.IscnRecord{
+		RecordNotes:         "another update",
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+	}
+	msgs := []sdk.Msg{
+		types.NewMsgCreateIscnRecord(addr1, &record1),
+		types.NewMsgCreateIscnRecord(addr1, &record2),
+	}
+	app.DeliverMsgsNoError(t, msgs, priv1)
+}
+
 func TestOwnerQueryPagination(t *testing.T) {
 	var msg sdk.Msg
 	app := testutil.SetupTestApp([]testutil.GenesisBalance{{addr1.String(), "1000000000000000000nanolike"}})

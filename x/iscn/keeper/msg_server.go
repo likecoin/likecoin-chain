@@ -27,7 +27,8 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err.Error())
 	}
 	registryName := k.RegistryName(ctx)
-	id := types.GenerateNewIscnIdWithSeed(registryName, ctx.TxBytes())
+	seed := types.EncodeUint64(k.GetSequenceCount(ctx))
+	id := types.GenerateNewIscnIdWithSeed(registryName, seed)
 	recordJsonLd, err := msg.Record.ToJsonLd(&types.IscnRecordJsonLdInfo{
 		Id:         id,
 		Timestamp:  ctx.BlockTime(),
