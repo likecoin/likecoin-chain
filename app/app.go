@@ -87,6 +87,7 @@ import (
 )
 
 const appName = "LikeApp"
+const upgradeName = "AuPuiWan"
 
 var (
 	// default home directories for liked
@@ -401,6 +402,12 @@ func NewLikeApp(
 		),
 	)
 	app.SetEndBlocker(app.EndBlocker)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		upgradeName,
+		func(ctx sdk.Context, _ upgradetypes.Plan) {
+		},
+	)
 
 	if loadLatest {
 		err := app.LoadLatestVersion()
