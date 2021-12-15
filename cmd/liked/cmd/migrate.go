@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -167,7 +167,7 @@ $ %s migrate /path/to/genesis.json --%s=1000000 --%s=likecoin-chain-fotan --%s=2
 			}
 
 			outputPath, _ := cmd.Flags().GetString(flagOutput)
-			err = os.WriteFile(outputPath, sortedBz, 0o644)
+			err = ioutil.WriteFile(outputPath, sortedBz, 0o644)
 			if err != nil {
 				return errors.Wrap(err, "failed to write JSON genesis doc")
 			}

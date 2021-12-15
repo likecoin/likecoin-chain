@@ -75,9 +75,17 @@ func (m *QueryResponseRecord) GetIpld() string {
 }
 
 type QueryRecordsByIdRequest struct {
-	IscnId      string `protobuf:"bytes,1,opt,name=iscn_id,json=iscnId,proto3" json:"iscn_id,omitempty"`
+	// The ISCN ID of the record(s) to be queried.
+	// Format: iscn://REGISTRY_NAME/CONTENT_ID[/VERSION]
+	// If version part omitted, version is default to 0.
+	// if non-zero version exists, then from_version and to_version are ignored.
+	IscnId string `protobuf:"bytes,1,opt,name=iscn_id,json=iscnId,proto3" json:"iscn_id,omitempty"`
+	// The initial version in the resulting records.
+	// If omitted or is 0, then it will be interpreted as the latest version.
 	FromVersion uint64 `protobuf:"varint,2,opt,name=from_version,json=fromVersion,proto3" json:"from_version,omitempty"`
-	ToVersion   uint64 `protobuf:"varint,3,opt,name=to_version,json=toVersion,proto3" json:"to_version,omitempty"`
+	// The final version in the resulting records.
+	// If omitted or is 0, then it will be interpreted as the latest version.
+	ToVersion uint64 `protobuf:"varint,3,opt,name=to_version,json=toVersion,proto3" json:"to_version,omitempty"`
 }
 
 func (m *QueryRecordsByIdRequest) Reset()         { *m = QueryRecordsByIdRequest{} }
@@ -195,7 +203,12 @@ func (m *QueryRecordsByIdResponse) GetRecords() []QueryResponseRecord {
 }
 
 type QueryRecordsByFingerprintRequest struct {
-	Fingerprint  string `protobuf:"bytes,1,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
+	// The fingerprint of the record(s) to be queried.
+	// All fingerprints in records should be URIs.
+	Fingerprint string `protobuf:"bytes,1,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
+	// For pagination.
+	// For the first query, fill in 0 or just omit this field.
+	// For continuous queries, fill in the `next_sequence` field in the previous response.
 	FromSequence uint64 `protobuf:"varint,2,opt,name=from_sequence,json=fromSequence,proto3" json:"from_sequence,omitempty"`
 }
 
@@ -247,8 +260,9 @@ func (m *QueryRecordsByFingerprintRequest) GetFromSequence() uint64 {
 }
 
 type QueryRecordsByFingerprintResponse struct {
-	Records      []QueryResponseRecord `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
-	NextSequence uint64                `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
+	Records []QueryResponseRecord `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
+	// For pagination.
+	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
 func (m *QueryRecordsByFingerprintResponse) Reset()         { *m = QueryRecordsByFingerprintResponse{} }
@@ -299,7 +313,11 @@ func (m *QueryRecordsByFingerprintResponse) GetNextSequence() uint64 {
 }
 
 type QueryRecordsByOwnerRequest struct {
-	Owner        string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// Owner address of the record(s) to be queried.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// For pagination.
+	// For the first query, fill in 0 or just omit this field.
+	// For continuous queries, fill in the `next_sequence` field in the previous response.
 	FromSequence uint64 `protobuf:"varint,2,opt,name=from_sequence,json=fromSequence,proto3" json:"from_sequence,omitempty"`
 }
 

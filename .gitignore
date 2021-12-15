@@ -4,3 +4,7 @@
 .likecli
 docker-compose.yml
 .env
+.ar
+
+artifacts
+build

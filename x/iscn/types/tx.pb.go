@@ -30,10 +30,11 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type IscnRecord struct {
 	// Using camelCases to make the record JSON in tx more like general JSON documents
-	RecordNotes         string      `protobuf:"bytes,1,opt,name=recordNotes,proto3" json:"recordNotes,omitempty"`
-	ContentFingerprints []string    `protobuf:"bytes,2,rep,name=contentFingerprints,proto3" json:"contentFingerprints,omitempty"`
-	Stakeholders        []IscnInput `protobuf:"bytes,3,rep,name=stakeholders,proto3,customtype=IscnInput" json:"stakeholders,omitempty"`
-	ContentMetadata     IscnInput   `protobuf:"bytes,4,opt,name=contentMetadata,proto3,customtype=IscnInput" json:"contentMetadata"`
+	RecordNotes         string   `protobuf:"bytes,1,opt,name=recordNotes,proto3" json:"recordNotes,omitempty"`
+	ContentFingerprints []string `protobuf:"bytes,2,rep,name=contentFingerprints,proto3" json:"contentFingerprints,omitempty"`
+	// Here, `IscnInput` is JSON encoded bytes
+	Stakeholders    []IscnInput `protobuf:"bytes,3,rep,name=stakeholders,proto3,customtype=IscnInput" json:"stakeholders,omitempty"`
+	ContentMetadata IscnInput   `protobuf:"bytes,4,opt,name=contentMetadata,proto3,customtype=IscnInput" json:"contentMetadata"`
 }
 
 func (m *IscnRecord) Reset()         { *m = IscnRecord{} }
