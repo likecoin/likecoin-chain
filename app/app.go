@@ -11,6 +11,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -414,6 +415,8 @@ func NewLikeApp(
 		if err != nil {
 			tmos.Exit(err.Error())
 		}
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		app.CapabilityKeeper.InitializeAndSeal(ctx)
 	}
 
 	return app
