@@ -3,9 +3,10 @@
 NAME := likecoin-chain
 APP := liked
 VERSION := $(shell git describe --tags)
-COMMIT=$(shell git rev-parse HEAD)
+COMMIT := $(shell git rev-parse HEAD)
 LEDGER_ENABLED ?= true
 DOCKER := $(shell which docker)
+IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
 BUILDDIR ?= $(CURDIR)/build
 
 export GO111MODULE = on
@@ -94,6 +95,14 @@ build-reproducible: go.sum
         --name latest-build likecoin/rbuilder:latest
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
+build-docker: go.sum
+	echo "Building image for $(VERSION) using commit $(COMMIT)"
+	$(DOCKER) build \
+        --build-arg VERSION=$(VERSION) \
+        --build-arg COMMIT=$(COMMIT) \
+        --tag $(IMAGE_TAG) \
+				.
+
 build: go.sum $(BUILDDIR)/
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./...
 
@@ -101,9 +110,9 @@ install: go.sum $(BUILDDIR)/
 	go install -mod=readonly $(BUILD_FLAGS) ./...
 
 test:
-	go test -v ./x/...
+	go test -v ./...
 
 clean:
 	rm -rf $(BUILDDIR)/ artifacts/
 
-.PHONY: go-mod-cache build-reproducible build install test clean
+.PHONY: go-mod-cache build-reproducible build-docker build install test clean
