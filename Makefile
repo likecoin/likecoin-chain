@@ -8,6 +8,8 @@ LEDGER_ENABLED ?= true
 DOCKER := $(shell which docker)
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
 BUILDDIR ?= $(CURDIR)/build
+SWAGGER_OUT := swagger-gen
+COSMOS_SDK_VERSION := $(shell grep "github.com/cosmos/cosmos-sdk" go.mod | head -n 1 | sed 's/.*github.com\/cosmos\/cosmos-sdk \(.*\)/\1/g')
 
 export GO111MODULE = on
 
@@ -84,6 +86,19 @@ go.sum: go.mod
 	echo "--> Ensure dependencies have not been modified"
 	go mod verify
 
+gen-proto: x/iscn
+	mkdir -p ${SWAGGER_OUT}
+	protoc \
+		-I "${GOPATH}/pkg/mod/github.com/cosmos/cosmos-sdk@${COSMOS_SDK_VERSION}/proto" \
+		-I "${GOPATH}/pkg/mod/github.com/cosmos/cosmos-sdk@${COSMOS_SDK_VERSION}/third_party/proto" \
+		--gocosmos_out=plugins=interfacetype+grpc,Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
+		--grpc-gateway_out=logtostderr=true:. \
+		--proto_path proto \
+		./proto/iscn/* \
+		--swagger_out ${SWAGGER_OUT} \
+		--swagger_opt logtostderr=true --swagger_opt fqn_for_swagger_name=true --swagger_opt simple_operation_ids=true
+	mv github.com/likecoin/likechain/x/iscn/types/* x/iscn/types/
+
 build-reproducible: go.sum
 	$(DOCKER) rm latest-build || true
 	$(DOCKER) run --volume=$(CURDIR):/sources:ro \
@@ -115,4 +130,4 @@ test:
 clean:
 	rm -rf $(BUILDDIR)/ artifacts/
 
-.PHONY: go-mod-cache build-reproducible build-docker build install test clean
+.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean
