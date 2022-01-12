@@ -7,6 +7,7 @@ COMMIT := $(shell git rev-parse HEAD)
 LEDGER_ENABLED ?= true
 DOCKER := $(shell which docker)
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
+RBUILDER_IMAGE_TAG = cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb
 BUILDDIR ?= $(CURDIR)/build
 
 export GO111MODULE = on
@@ -95,7 +96,7 @@ build-reproducible: go.sum
         --env VERSION=$(VERSION) \
         --env COMMIT=$(COMMIT) \
         --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-        --name latest-build likecoin/rbuilder:latest
+        --name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 build-docker: go.sum

@@ -1,4 +1,4 @@
-FROM likecoin/rbuilder:latest as builder
+FROM likecoin/rbuilder:cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb as builder
 
 COPY . /sources
 ARG VERSION
