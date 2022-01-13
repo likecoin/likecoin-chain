@@ -102,10 +102,10 @@ build-reproducible: go.sum
 build-docker: go.sum
 	echo "Building image for $(VERSION) using commit $(COMMIT)"
 	$(DOCKER) build \
-        --build-arg VERSION=$(VERSION) \
-        --build-arg COMMIT=$(COMMIT) \
+        --build-arg LIKED_VERSION=$(VERSION) \
+        --build-arg LIKED_COMMIT=$(COMMIT) \
         --tag $(IMAGE_TAG) \
-				.
+		.
 
 build: go.sum $(BUILDDIR)/
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./...
