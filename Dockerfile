@@ -14,4 +14,4 @@ FROM debian:buster
 
 WORKDIR /usr/bin
 RUN apt-get update && apt-get install -y curl
-COPY --from=builder /sources/artifacts/liked-*-linux-amd64 /usr/bin/liked
+COPY --from=builder ./home/builder/artifacts/liked-*-linux-amd64 /usr/bin/liked
