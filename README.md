@@ -10,7 +10,7 @@ LikeCoin chain is a blockchain built on the Cosmos SDK. Project page: https://li
 
 Normally you don't need to build the image by yourself, as the image is already hosted on Docker Hub.
 
-For building the image, run `./build.sh`. This will build and tag the iamge.
+For building the image, run `./build.sh`. This will build and tag the image.
 
 ## Setting up a full node
 
