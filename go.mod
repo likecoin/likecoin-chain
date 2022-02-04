@@ -121,7 +121,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.42.11-write-upgrade-info
+	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.42.11-dual-prefix
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.17.3
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14

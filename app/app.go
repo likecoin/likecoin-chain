@@ -19,7 +19,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -87,8 +86,6 @@ import (
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 )
 
-const appName = "LikeApp"
-
 var (
 	// default home directories for liked
 	DefaultNodeHome = os.ExpandEnv("$HOME/.liked")
@@ -131,32 +128,6 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 	}
 )
-
-// TODO: move to other places
-type EncodingConfig struct {
-	InterfaceRegistry types.InterfaceRegistry
-	Marshaler         codec.Marshaler
-	TxConfig          client.TxConfig
-	Amino             *codec.LegacyAmino
-}
-
-// MakeEncodingConfig creates an EncodingConfig for testing
-func MakeEncodingConfig() EncodingConfig {
-	cdc := codec.NewLegacyAmino()
-	interfaceRegistry := types.NewInterfaceRegistry()
-	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	std.RegisterLegacyAminoCodec(cdc)
-	std.RegisterInterfaces(interfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(cdc)
-	ModuleBasics.RegisterInterfaces(interfaceRegistry)
-
-	return EncodingConfig{
-		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          authtx.NewTxConfig(marshaler, authtx.DefaultSignModes),
-		Amino:             cdc,
-	}
-}
 
 var _ servertypes.Application = (*LikeApp)(nil)
 
