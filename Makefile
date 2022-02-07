@@ -119,4 +119,13 @@ test:
 clean:
 	rm -rf $(BUILDDIR)/ artifacts/
 
-.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean
+lint:
+	golangci-lint run --disable-all -E errcheck --timeout 10m
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
+
+format:
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs gofmt -w -s
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs misspell -w
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
+
+.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format
