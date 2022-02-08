@@ -8,3 +8,4 @@ docker-compose.yml
 
 artifacts
 build
+release
