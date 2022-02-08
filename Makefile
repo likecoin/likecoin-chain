@@ -9,6 +9,9 @@ DOCKER := $(shell which docker)
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
 RBUILDER_IMAGE_TAG = cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb
 BUILDDIR ?= $(CURDIR)/build
+GOPATH ?= '$(HOME)/go'
+GOLANG_VERSION        ?= 1.17.2
+GOLANG_CROSS_VERSION  := v$(GOLANG_VERSION)
 
 export GO111MODULE = on
 
@@ -113,9 +116,6 @@ build-docker: go.sum
 build: go.sum $(BUILDDIR)/
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./...
 
-build-release: go.sum $(BUILDDIR)/
-	goreleaser build --skip-validate --snapshot --skip-post-hooks --rm-dist
-
 install: go.sum $(BUILDDIR)/
 	go install -mod=readonly $(BUILD_FLAGS) ./...
 
@@ -134,4 +134,20 @@ format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs misspell -w
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
 
-.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor
+release:
+	@if [ ! -f ".release-env" ]; then \
+		echo "\033[91m.release-env is required for release\033[0m";\
+		exit 1;\
+	fi
+	docker run \
+		--rm \
+		--privileged \
+		-e CGO_ENABLED=1 \
+		--env-file .release-env \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/$(NAME) \
+		-w /go/src/$(NAME) \
+		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
+		release --rm-dist --skip-validate
+
+.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor release-dry-run release
