@@ -77,12 +77,15 @@ all: install test
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
-go-mod-cache: go.sum
-	echo "--> Download go modules to local cache"
+vendor: go.sum
+	@echo "--> Download go modules to local cache"
 	go mod download
 
+go-mod-cache: vendor
+
+
 go.sum: go.mod
-	echo "--> Ensure dependencies have not been modified"
+	@echo "--> Ensure dependencies have not been modified"
 	go mod verify
 
 gen-proto: x/
@@ -100,7 +103,7 @@ build-reproducible: go.sum
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 build-docker: go.sum
-	echo "Building image for $(VERSION) using commit $(COMMIT)"
+	@echo "Building image for $(VERSION) using commit $(COMMIT)"
 	$(DOCKER) build \
         --build-arg LIKED_VERSION=$(VERSION) \
         --build-arg LIKED_COMMIT=$(COMMIT) \
@@ -109,6 +112,9 @@ build-docker: go.sum
 
 build: go.sum $(BUILDDIR)/
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./...
+
+build-release: go.sum $(BUILDDIR)/
+	goreleaser build --skip-validate --snapshot --skip-post-hooks --rm-dist
 
 install: go.sum $(BUILDDIR)/
 	go install -mod=readonly $(BUILD_FLAGS) ./...
@@ -128,4 +134,4 @@ format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs misspell -w
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
 
-.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format
+.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor
