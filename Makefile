@@ -6,12 +6,18 @@ VERSION := $(shell git describe --tags)
 COMMIT := $(shell git rev-parse HEAD)
 LEDGER_ENABLED ?= true
 DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
 RBUILDER_IMAGE_TAG = cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb
 BUILDDIR ?= $(CURDIR)/build
 GOPATH ?= '$(HOME)/go'
 GOLANG_VERSION        ?= 1.17.2
 GOLANG_CROSS_VERSION  := v$(GOLANG_VERSION)
+GOGO_PROTO_URL      = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
+COSMOS_SDK_URL      = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.43.0
+COSMOS_PROTO_URL    = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
+GOGO_PROTO_TYPES    = proto/gogoproto
+COSMOS_PROTO_TYPES  = proto/cosmos_proto
 
 export GO111MODULE = on
 
@@ -81,18 +87,19 @@ $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
 vendor: go.sum
+	@echo "--> Download go modules to work directory"
+	go mod vendor
+
+download: go.sum
 	@echo "--> Download go modules to local cache"
 	go mod download
 
-go-mod-cache: vendor
+go-mod-cache: download
 
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	go mod verify
-
-gen-proto: x/
-	./gen_proto.sh
 
 build-reproducible: go.sum
 	$(DOCKER) rm latest-build || true
@@ -159,5 +166,29 @@ release:
 		-w /go/src/$(NAME) \
 		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist --skip-validate
-
+	
 .PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor release-dry-run release docker-build
+
+proto-all: proto-format proto-lint
+
+gen-proto: x/
+	./gen_proto.sh
+
+proto-format:
+	@echo "Formatting Protobuf files"
+	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
+
+proto-lint:
+	@$(DOCKER_BUF) lint --error-format=json
+
+proto-check-breaking:
+	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=master
+
+proto-update-deps:
+	@mkdir -p $(GOGO_PROTO_TYPES)
+	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
+
+	@mkdir -p $(COSMOS_PROTO_TYPES)
+	@curl -sSL $(COSMOS_PROTO_URL)/cosmos.proto > $(COSMOS_PROTO_TYPES)/cosmos.proto
+
+.PHONY: proto-all proto-format proto-lint proto-check-breaking
