@@ -105,13 +105,23 @@ build-reproducible: go.sum
         --name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
-build-docker: go.sum
+docker-login:
+	@echo "Logging in to docker hub"
+
+
+docker-build: go.sum
 	@echo "Building image for $(VERSION) using commit $(COMMIT)"
 	$(DOCKER) build \
         --build-arg LIKED_VERSION=$(VERSION) \
         --build-arg LIKED_COMMIT=$(COMMIT) \
         --tag $(IMAGE_TAG) \
 		.
+
+build-docker: docker-build
+
+docker-push:
+	@echo "Pushing image $(IMAGE_TAG) to registry"
+	$(DOCKER) push $(IMAGE_TAG)
 
 build: go.sum $(BUILDDIR)/
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./...
@@ -150,4 +160,4 @@ release:
 		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist --skip-validate
 
-.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor release-dry-run release
+.PHONY: go-mod-cache gen-proto build-reproducible build-docker build install test clean lint format vendor release-dry-run release docker-build
