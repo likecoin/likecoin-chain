@@ -32,7 +32,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -44,7 +43,7 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
 
-	gaiacmd "github.com/cosmos/gaia/v4/cmd/gaiad/cmd"
+	gaiacmd "github.com/cosmos/gaia/v6/cmd/gaiad/cmd"
 
 	"github.com/likecoin/likechain/ip"
 )
@@ -142,7 +141,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
 	initClientCtx := client.Context{}.
-		WithJSONMarshaler(encodingConfig.Marshaler).
+		WithJSONCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
@@ -159,11 +158,9 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd)
+			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
 		},
 	}
-
-	authclient.Codec = encodingConfig.Marshaler
 
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
@@ -269,7 +266,7 @@ func exportAppState(
 	jailAllowedAddrs []string, appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	encodingConfig := app.MakeEncodingConfig()
-	encodingConfig.Marshaler = codec.NewProtoCodec(encodingConfig.InterfaceRegistry)
+	encodingConfig.Codec = codec.NewProtoCodec(encodingConfig.InterfaceRegistry)
 	var likeApp *app.LikeApp
 	if height != -1 {
 		likeApp = app.NewLikeApp(
