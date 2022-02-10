@@ -1,0 +1,32 @@
+accounts:
+  - name: alice
+    coins: ["100000000000nanolike"]
+  - name: bob
+    coins: ["100000000000nanolike"]
+validator:
+  name: alice
+  staked: "10000000000nanolike"
+faucet:
+  name: bob
+  coins: ["100000000000nanolike"]
+build:
+  binary: "liked"
+init:
+  home: "$HOME/.liked"
+genesis:
+  chain_id: "likecoin-local-1"
+  app_state:
+    staking:
+      params:
+        bond_denom: "nanolike"
+    mint:
+      params:
+        mint_denom: "nanolike"
+    crisis:
+      constant_fee:
+        denom: "nanolike"
+    gov:
+      deposit_params:
+        min_deposit:
+          - amount: "1000000000"
+            denom: "nanolike"
