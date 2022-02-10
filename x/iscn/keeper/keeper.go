@@ -20,14 +20,14 @@ type AccountKeeper interface {
 
 type Keeper struct {
 	storeKey      sdk.StoreKey
-	cdc           codec.BinaryMarshaler
+	cdc           codec.BinaryCodec
 	paramstore    paramTypes.Subspace
 	accountKeeper AccountKeeper
 	bankKeeper    authTypes.BankKeeper
 }
 
 func NewKeeper(
-	cdc codec.BinaryMarshaler, key sdk.StoreKey, accountKeeper AccountKeeper,
+	cdc codec.BinaryCodec, key sdk.StoreKey, accountKeeper AccountKeeper,
 	bankKeeper authTypes.BankKeeper, paramstore paramTypes.Subspace,
 ) Keeper {
 	return Keeper{
