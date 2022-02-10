@@ -1,5 +1,10 @@
 name: Test
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
 jobs:
   test:
     name: Run test

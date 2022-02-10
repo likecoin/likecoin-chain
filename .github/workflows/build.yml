@@ -1,6 +1,10 @@
 name: Build Binaries
-on: [pull_request, push]
-      
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -9,7 +13,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
     if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'"
-  
+
   build:
     runs-on: ubuntu-latest
     steps:
