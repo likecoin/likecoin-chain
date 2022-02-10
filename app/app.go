@@ -452,6 +452,7 @@ func (app *LikeApp) registerUpgradeHandlers() {
 			"ibc":          1,
 			"genutil":      1,
 			"transfer":     1,
+			"iscn":         1,
 		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
