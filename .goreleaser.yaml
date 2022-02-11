@@ -17,7 +17,12 @@ builds:
     flags:
       - -tags=cgo
     ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain -X github.com/cosmos/cosmos-sdk/version.AppName=liked -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=liked
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
   - id: "liked-darwin-arm64"
     main: ./cmd/liked
     binary: bin/liked
@@ -32,7 +37,12 @@ builds:
     flags:
       - -tags=cgo
     ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain -X github.com/cosmos/cosmos-sdk/version.AppName=liked -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=liked
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
   - id: "liked-linux"
     main: ./cmd/liked
     binary: bin/liked
@@ -47,7 +57,12 @@ builds:
     flags:
       - -tags=cgo
     ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain -X github.com/cosmos/cosmos-sdk/version.AppName=liked -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=liked
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
   - id: "liked-linux-arm64"
     main: ./cmd/liked
     binary: bin/liked
@@ -62,7 +77,12 @@ builds:
     flags:
       - -tags=cgo
     ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain -X github.com/cosmos/cosmos-sdk/version.AppName=liked -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=liked
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
   - id: "liked-windows"
     main: ./cmd/liked
     binary: bin/liked
@@ -78,7 +98,12 @@ builds:
       - -tags=cgo
       - -buildmode=exe
     ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain -X github.com/cosmos/cosmos-sdk/version.AppName=liked -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=likecoin-chain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=liked
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
 
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
