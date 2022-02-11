@@ -142,7 +142,7 @@ release:
 proto-all: proto-format proto-lint gen-proto
 
 gen-proto: x/
-	./gen_proto.sh
+	./scripts//gen_proto.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
