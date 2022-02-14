@@ -2,9 +2,11 @@
 .gaiacli
 .liked
 .likecli
+starport
 docker-compose.yml
 .env
 .ar
 
 artifacts
 build
+release
