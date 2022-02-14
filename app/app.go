@@ -97,6 +97,10 @@ import (
 	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
 	nftkeeper "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft/keeper"
 	nftmodule "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft/module"
+
+	"github.com/likecoin/likechain/x/likenft"
+	likenftkeeper "github.com/likecoin/likechain/x/likenft/keeper"
+	likenfttypes "github.com/likecoin/likechain/x/likenft/types"
 )
 
 var (
@@ -138,6 +142,7 @@ var (
 
 		// LikeCoin
 		iscn.AppModuleBasic{},
+		likenft.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -150,6 +155,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		nft.ModuleName:                 nil,
+		likenfttypes.ModuleName:        nil,
 	}
 )
 
@@ -188,6 +194,7 @@ type LikeApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	IscnKeeper       iscnkeeper.Keeper
 	NftKeeper        nftkeeper.Keeper
+	LikeNftKeeper    likenftkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -234,9 +241,10 @@ func NewLikeApp(
 		authzkeeper.StoreKey,
 		iscntypes.StoreKey,
 		nftkeeper.StoreKey,
+		likenfttypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
-	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, likenfttypes.MemStoreKey)
 
 	app := &LikeApp{
 		BaseApp:           bApp,
@@ -265,6 +273,7 @@ func NewLikeApp(
 	ibcTransferSubspace := app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
 	ibcHostSubspace := app.ParamsKeeper.Subspace(ibchost.ModuleName)
 	iscnSubspace := app.ParamsKeeper.Subspace(iscntypes.ModuleName)
+	likeNftSubspace := app.ParamsKeeper.Subspace(likenfttypes.ModuleName)
 
 	bApp.SetParamStore(
 		app.ParamsKeeper.Subspace(baseapp.Paramspace).
@@ -316,6 +325,7 @@ func NewLikeApp(
 	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
 
 	app.NftKeeper = nftkeeper.NewKeeper(keys[nftkeeper.StoreKey], appCodec, app.AccountKeeper, app.BankKeeper)
+	app.LikeNftKeeper = *likenftkeeper.NewKeeper(app.appCodec, keys[likenfttypes.StoreKey], app.memKeys[likenfttypes.MemStoreKey], likeNftSubspace, app.AccountKeeper, app.BankKeeper, app.IscnKeeper, app.NftKeeper)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -394,6 +404,7 @@ func NewLikeApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		iscn.NewAppModule(app.IscnKeeper),
 		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		likenft.NewAppModule(appCodec, app.LikeNftKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -422,6 +433,7 @@ func NewLikeApp(
 		paramstypes.ModuleName,
 		iscntypes.ModuleName,
 		nft.ModuleName,
+		likenfttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -444,6 +456,7 @@ func NewLikeApp(
 		upgradetypes.ModuleName,
 		iscntypes.ModuleName,
 		nft.ModuleName,
+		likenfttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -471,6 +484,7 @@ func NewLikeApp(
 		upgradetypes.ModuleName,
 		iscntypes.ModuleName,
 		nft.ModuleName,
+		likenfttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -557,7 +571,7 @@ func (app *LikeApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == "v3.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{nft.StoreKey},
+			Added: []string{nft.StoreKey, likenfttypes.StoreKey},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
