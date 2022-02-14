@@ -4,7 +4,6 @@ set -e
 
 LIKECOIN_ROOT="$(dirname "$0")"
 LIKECOIN_LIKED_HOME="$LIKECOIN_ROOT/.liked"
-LIKECOIN_LIKECLI_HOME="$LIKECOIN_ROOT/.likecli"
 
 MONIKER="$1"
 GENESIS_PATH="$2"
@@ -20,7 +19,7 @@ if [ -z $MONIKER ] || [ -z $GENESIS_PATH ]; then
 fi
 
 if [ ! -f "$LIKECOIN_LIKED_HOME/config/genesis.json" ]; then
-    mkdir -p "$LIKECOIN_LIKED_HOME" "$LIKECOIN_LIKECLI_HOME"
+    mkdir -p "$LIKECOIN_LIKED_HOME/config" "$LIKECOIN_LIKED_HOME/data"
     liked --home "$LIKECOIN_LIKED_HOME" init "$MONIKER" > /dev/null 2>&1
     echo "Initialized ./.liked folder as node data folder."
 

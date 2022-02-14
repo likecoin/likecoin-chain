@@ -25,8 +25,8 @@ ENV DAEMON_NAME liked
 ENV DAEMON_HOME /likechain/.liked
 ENV DAEMON_ALLOW_DOWNLOAD_BINARIES true
 ENV DAEMON_RESTART_AFTER_UPGRADE true
-RUN mkdir -p /likechain/.liked/cosmovisor
+RUN mkdir -p /likechain/.liked/cosmovisor/genesis/bin /likechain/.liked/data /likechain/.liked/config
 RUN apt-get update && apt-get install -y curl
 COPY --from=builder /cosmovisor/cosmovisor /usr/bin/cosmovisor
 COPY --from=builder ./home/builder/artifacts/liked-*-linux-amd64 /usr/bin/liked
-RUN cp /usr/bin/liked /likechain/.liked/genesis/bin/liked
+RUN cp /usr/bin/liked /likechain/.liked/cosmovisor/genesis/bin/liked
