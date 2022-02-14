@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "likenft/params.proto";
+import "likenft/classes_by_iscn.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
@@ -15,7 +16,17 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/likecoin/likechain/likenft/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a ClassesByISCN by index.
+	rpc ClassesByISCN(QueryGetClassesByISCNRequest) returns (QueryGetClassesByISCNResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn/{iscnIdPrefix}";
+	}
+
+	// Queries a list of ClassesByISCN items.
+	rpc ClassesByISCNAll(QueryAllClassesByISCNRequest) returns (QueryAllClassesByISCNResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +36,24 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetClassesByISCNRequest {
+	  string iscnIdPrefix = 1;
+
+}
+
+message QueryGetClassesByISCNResponse {
+	ClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllClassesByISCNRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClassesByISCNResponse {
+	repeated ClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
