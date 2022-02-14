@@ -1,0 +1,14 @@
+syntax = "proto3";
+package likecoin.likechain.likenft;
+
+import "gogoproto/gogo.proto";
+import "likenft/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+// GenesisState defines the likenft module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
