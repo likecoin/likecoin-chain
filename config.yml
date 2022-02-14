@@ -12,6 +12,8 @@ faucet:
 build:
   binary: "liked"
   main: cmd/liked
+  proto:
+    third_party_paths: ["third_party/proto", "proto_vendor", "backport/cosmos-sdk/v0.46.0-rc1/proto"]
 init:
   home: "$HOME/.liked"
   app:
