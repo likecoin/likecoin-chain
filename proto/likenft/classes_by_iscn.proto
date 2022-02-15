@@ -1,6 +1,8 @@
 syntax = "proto3";
 package likecoin.likechain.likenft;
 
+import "cosmos/nft/v1beta1/nft.proto";
+
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message ClassesByISCN {
@@ -9,3 +11,7 @@ message ClassesByISCN {
   
 }
 
+message ConcreteClassesByISCN {
+  string iscnIdPrefix = 1;
+  repeated cosmos.nft.v1beta1.Class classes = 2; 
+}

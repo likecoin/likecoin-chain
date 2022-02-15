@@ -44,7 +44,7 @@ message QueryGetClassesByISCNRequest {
 }
 
 message QueryGetClassesByISCNResponse {
-	ClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
+	ConcreteClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllClassesByISCNRequest {
@@ -52,7 +52,7 @@ message QueryAllClassesByISCNRequest {
 }
 
 message QueryAllClassesByISCNResponse {
-	repeated ClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
+	repeated ConcreteClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
