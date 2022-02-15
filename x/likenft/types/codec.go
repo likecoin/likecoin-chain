@@ -5,11 +5,13 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	"github.com/gogo/protobuf/proto"
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgNewClass{}, "likenft/NewClass", nil)
 	// this line is used by starport scaffolding # 2
+	cdc.RegisterConcrete(&ClassData{}, "likenft/ClassData", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -17,6 +19,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgNewClass{},
 	)
 	// this line is used by starport scaffolding # 3
+	registry.RegisterImplementations((*proto.Message)(nil), &ClassData{})
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
