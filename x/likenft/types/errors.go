@@ -8,5 +8,8 @@ import (
 
 // x/likenft module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrInvalidIscnId       = sdkerrors.Register(ModuleName, 1, "invalid ISCN ID")
+	ErrIscnRecordNotFound  = sdkerrors.Register(ModuleName, 2, "ISCN record not found")
+	ErrFailedToSaveClass   = sdkerrors.Register(ModuleName, 3, "Failed to save class")
+	ErrFailedToMarshalData = sdkerrors.Register(ModuleName, 4, "Failed to marshal data")
 )
