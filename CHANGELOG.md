@@ -5,6 +5,7 @@
 ## [fotan-1.2](https://github.com/likecoin/likecoin-chain/releases/fotan-1.2)
 - Upgrade to Cosmos SDK v0.42.11
 - Improve chain node performance thanks to [Enforcement of version consistency](https://github.com/likecoin/likecoin-chain/pull/39)
+- Cherry pick upgrade module update in cosmos-sdk, support Cosmosvisor 1.x auto download
 
 ## [fotan-1.1](https://github.com/likecoin/likecoin-chain/releases/fotan-1.1)
 - Upgrade to Cosmos SDK v0.42.9
