@@ -15,6 +15,7 @@ type IscnKeeper interface {
 type NftKeeper interface {
 	// Methods imported from nft should be defined here
 	SaveClass(ctx sdk.Context, class nft.Class) error
+	GetClass(ctx sdk.Context, classID string) (nft.Class, bool)
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)

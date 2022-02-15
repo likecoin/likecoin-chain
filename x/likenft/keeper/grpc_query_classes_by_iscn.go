@@ -6,17 +6,36 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func (k Keeper) concretizeClassesByISCN(ctx sdk.Context, val types.ClassesByISCN) types.ConcreteClassesByISCN {
+
+	classes := make([]*nft.Class, len(val.ClassIds))
+	for i, classId := range val.ClassIds {
+		class, found := k.nftKeeper.GetClass(ctx, classId)
+		if found {
+			classes[i] = &class
+		} else {
+			classes[i] = nil
+		}
+	}
+
+	return types.ConcreteClassesByISCN{
+		IscnIdPrefix: val.IscnIdPrefix,
+		Classes:      classes,
+	}
+}
 
 func (k Keeper) ClassesByISCNAll(c context.Context, req *types.QueryAllClassesByISCNRequest) (*types.QueryAllClassesByISCNResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var classesByISCNs []types.ClassesByISCN
+	var concreteClassesByISCNs []types.ConcreteClassesByISCN
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
@@ -28,7 +47,9 @@ func (k Keeper) ClassesByISCNAll(c context.Context, req *types.QueryAllClassesBy
 			return err
 		}
 
-		classesByISCNs = append(classesByISCNs, classesByISCN)
+		concretized := k.concretizeClassesByISCN(ctx, classesByISCN)
+
+		concreteClassesByISCNs = append(concreteClassesByISCNs, concretized)
 		return nil
 	})
 
@@ -36,7 +57,7 @@ func (k Keeper) ClassesByISCNAll(c context.Context, req *types.QueryAllClassesBy
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllClassesByISCNResponse{ClassesByISCN: classesByISCNs, Pagination: pageRes}, nil
+	return &types.QueryAllClassesByISCNResponse{ClassesByISCN: concreteClassesByISCNs, Pagination: pageRes}, nil
 }
 
 func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryGetClassesByISCNRequest) (*types.QueryGetClassesByISCNResponse, error) {
@@ -53,5 +74,7 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryGetClassesByISC
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryGetClassesByISCNResponse{ClassesByISCN: val}, nil
+	concretized := k.concretizeClassesByISCN(ctx, val)
+
+	return &types.QueryGetClassesByISCNResponse{ClassesByISCN: concretized}, nil
 }
