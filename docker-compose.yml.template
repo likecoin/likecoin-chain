@@ -1,6 +1,6 @@
 version: "3.6"
 x-base: &base
-    user: "${LIKECOIN_UID}"
+    user: "${LIKECOIN_UID}:1000"
     image: ${LIKECOIN_DOCKER_IMAGE}
 x-script-base: &script-base
     <<: *base
@@ -81,7 +81,7 @@ services:
                 "--commission-max-rate", "1.0",
                 "--commission-max-change-rate", "1.0",
                 "--min-self-delegation", "1",
-                # to fill in: 
+                # to fill in:
                 # --amount
                 # --details
                 # --commission-rate
