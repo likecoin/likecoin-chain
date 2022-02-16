@@ -28,6 +28,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgNewClass int = 100
 
+	opWeightMsgUpdateClass = "op_weight_msg_create_chain"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateClass int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -70,6 +74,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgNewClass,
 		likenftsimulation.SimulateMsgNewClass(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateClass int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateClass, &weightMsgUpdateClass, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateClass = defaultWeightMsgUpdateClass
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateClass,
+		likenftsimulation.SimulateMsgUpdateClass(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
