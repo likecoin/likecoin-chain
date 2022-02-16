@@ -8,6 +8,8 @@ import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 // this line is used by starport scaffolding # 1
 
+import "iscn/query.proto";
+
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 // Query defines the gRPC querier service.
@@ -24,6 +26,11 @@ service Query {
 	// Queries a list of ClassesByISCN items.
 	rpc ClassesByISCNAll(QueryAllClassesByISCNRequest) returns (QueryAllClassesByISCNResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn";
+	}
+
+// Queries a list of ISCNByClass items.
+	rpc ISCNByClass(QueryISCNByClassRequest) returns (QueryISCNByClassResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/iscn_by_class/{classId}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -54,6 +61,17 @@ message QueryAllClassesByISCNRequest {
 message QueryAllClassesByISCNResponse {
 	repeated ConcreteClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryISCNByClassRequest {
+  string classId = 1;
+}
+
+message QueryISCNByClassResponse {
+  string iscnIdPrefix = 1;
+  string owner = 2;
+  uint64 latestVersion = 3;
+  .likechain.iscn.QueryResponseRecord latestRecord = 4 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3
