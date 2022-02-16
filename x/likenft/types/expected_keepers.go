@@ -18,6 +18,8 @@ type NftKeeper interface {
 	// Methods imported from nft should be defined here
 	SaveClass(ctx sdk.Context, class nft.Class) error
 	GetClass(ctx sdk.Context, classID string) (nft.Class, bool)
+	GetTotalSupply(ctx sdk.Context, classID string) uint64
+	UpdateClass(ctx sdk.Context, class nft.Class) error
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
