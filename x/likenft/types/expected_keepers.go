@@ -10,6 +10,8 @@ import (
 type IscnKeeper interface {
 	// Methods imported from iscn should be defined here
 	GetContentIdRecord(ctx sdk.Context, iscnIdPrefix iscntypes.IscnIdPrefix) *iscntypes.ContentIdRecord
+	GetIscnIdSequence(ctx sdk.Context, iscnId iscntypes.IscnId) uint64
+	GetStoreRecord(ctx sdk.Context, seq uint64) *iscntypes.StoreRecord
 }
 
 type NftKeeper interface {
