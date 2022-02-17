@@ -1,0 +1,14 @@
+syntax = "proto3";
+package likecoin.likechain.likenft;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message NFTData {
+  bytes metadata = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "JsonInput"
+  ];
+  string iscnIdPrefix = 2; 
+}
