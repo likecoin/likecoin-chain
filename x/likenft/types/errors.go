@@ -18,4 +18,6 @@ var (
 	ErrFailedToQueryIscnRecord           = sdkerrors.Register(ModuleName, 8, "Failed to query iscn record")
 	ErrCannotUpdateClassWithMintedTokens = sdkerrors.Register(ModuleName, 9, "Cannot update class with minted tokens")
 	ErrFailedToUpdateClass               = sdkerrors.Register(ModuleName, 10, "Failed to update class")
+	ErrFailedToMintNFT                   = sdkerrors.Register(ModuleName, 11, "Failed to mint NFT")
+	ErrInvalidTokenId                    = sdkerrors.Register(ModuleName, 12, "Invalid Token ID")
 )
