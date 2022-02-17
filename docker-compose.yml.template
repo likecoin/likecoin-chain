@@ -43,7 +43,9 @@ services:
         - type: bind
           source: ./.liked/data
           target: /likechain/.liked/data
-        - upgrades-volume:/likechain/.liked/cosmovisor/upgrades
+        - type: bind
+          source: ./.liked/cosmovisor/upgrades
+          target: /likechain/.liked/cosmovisor/upgrades
         ports:
         - 26656:26656
         - 127.0.0.1:26657:26657
