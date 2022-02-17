@@ -12,6 +12,7 @@ option go_package = "github.com/likecoin/likechain/x/likenft/types";
 service Msg {
   rpc NewClass(MsgNewClass) returns (MsgNewClassResponse);
   rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
+  rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -49,6 +50,22 @@ message MsgUpdateClass {
 
 message MsgUpdateClassResponse {
   cosmos.nft.v1beta1.Class class = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgMintNFT {
+  string creator = 1;
+  string classId = 2;
+  string id = 3;
+  string uri = 4;
+  string uriHash = 5;
+  bytes metadata = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "JsonInput"
+  ];
+}
+
+message MsgMintNFTResponse {
+  cosmos.nft.v1beta1.NFT nft = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # proto/tx/message
