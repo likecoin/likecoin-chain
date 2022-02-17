@@ -1,0 +1,4 @@
+name: node-deployment
+runtime: go
+main: cmd/azure # TODO: Add support aws and gcp deployment
+description: azure-node-deployment
