@@ -14,9 +14,9 @@ var _ = strconv.Itoa(0)
 
 func CmdUpdateClass() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-class [class-id] [name] [symbol] [description] [uri] [uri-hash] [metadata]",
+		Use:   "update-class [class-id] [name] [symbol] [description] [uri] [uri-hash] [metadata] [burnable]",
 		Short: "Broadcast message UpdateClass",
-		Args:  cobra.ExactArgs(7),
+		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argName := args[1]
@@ -25,6 +25,11 @@ func CmdUpdateClass() *cobra.Command {
 			argUri := args[4]
 			argUriHash := args[5]
 			argMetadata := args[6]
+			argBurnable := args[7]
+			burnable, err := strconv.ParseBool(argBurnable)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -40,6 +45,7 @@ func CmdUpdateClass() *cobra.Command {
 				argUri,
 				argUriHash,
 				types.JsonInput(argMetadata),
+				burnable,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
