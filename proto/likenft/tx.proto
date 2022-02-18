@@ -28,6 +28,7 @@ message MsgNewClass {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
   ];
+  bool burnable = 9;
 }
 
 message MsgNewClassResponse {
@@ -46,6 +47,7 @@ message MsgUpdateClass {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
   ];
+  bool burnable = 9;
 }
 
 message MsgUpdateClassResponse {

@@ -48,6 +48,9 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	classData := types.ClassData{
 		Metadata:     msg.Metadata,
 		IscnIdPrefix: iscnId.Prefix.String(),
+		Config: types.ClassConfig{
+			Burnable: msg.Burnable,
+		},
 	}
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {

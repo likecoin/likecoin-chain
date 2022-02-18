@@ -9,7 +9,7 @@ const TypeMsgUpdateClass = "update_class"
 
 var _ sdk.Msg = &MsgUpdateClass{}
 
-func NewMsgUpdateClass(creator string, classId string, name string, symbol string, description string, uri string, uriHash string, metadata JsonInput) *MsgUpdateClass {
+func NewMsgUpdateClass(creator string, classId string, name string, symbol string, description string, uri string, uriHash string, metadata JsonInput, burnable bool) *MsgUpdateClass {
 	return &MsgUpdateClass{
 		Creator:     creator,
 		ClassId:     classId,
@@ -19,6 +19,7 @@ func NewMsgUpdateClass(creator string, classId string, name string, symbol strin
 		Uri:         uri,
 		UriHash:     uriHash,
 		Metadata:    metadata,
+		Burnable:    burnable,
 	}
 }
 
