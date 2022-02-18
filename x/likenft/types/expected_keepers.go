@@ -21,6 +21,9 @@ type NftKeeper interface {
 	GetTotalSupply(ctx sdk.Context, classID string) uint64
 	UpdateClass(ctx sdk.Context, class nft.Class) error
 	Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error
+	HasNFT(ctx sdk.Context, classID, id string) bool
+	GetOwner(ctx sdk.Context, classID string, nftID string) sdk.AccAddress
+	Burn(ctx sdk.Context, classID string, nftID string) error
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)

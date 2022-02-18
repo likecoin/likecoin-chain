@@ -20,4 +20,7 @@ var (
 	ErrFailedToUpdateClass               = sdkerrors.Register(ModuleName, 10, "Failed to update class")
 	ErrFailedToMintNFT                   = sdkerrors.Register(ModuleName, 11, "Failed to mint NFT")
 	ErrInvalidTokenId                    = sdkerrors.Register(ModuleName, 12, "Invalid Token ID")
+	ErrNftNotFound                       = sdkerrors.Register(ModuleName, 13, "NFT not found")
+	ErrNftNotBurnable                    = sdkerrors.Register(ModuleName, 14, "NFT not burnable")
+	ErrFailedToBurnNFT                   = sdkerrors.Register(ModuleName, 15, "Failed to burn NFT")
 )
