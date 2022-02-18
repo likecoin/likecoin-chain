@@ -80,10 +80,6 @@ build-reproducible: go.sum
 		--name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
-docker-login:
-	@echo "Logging in to docker hub"
-
-
 docker-build: go.sum
 	@echo "Building image for $(VERSION) using commit $(COMMIT)"
 	$(DOCKER) build \
