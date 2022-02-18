@@ -13,6 +13,7 @@ service Msg {
   rpc NewClass(MsgNewClass) returns (MsgNewClassResponse);
   rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
   rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
+  rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -68,6 +69,15 @@ message MsgMintNFT {
 
 message MsgMintNFTResponse {
   cosmos.nft.v1beta1.NFT nft = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgBurnNFT {
+  string creator = 1;
+  string classID = 2;
+  string nftID = 3;
+}
+
+message MsgBurnNFTResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
