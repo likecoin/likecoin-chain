@@ -56,7 +56,7 @@ else
 fi
 
 echo "Create cosmovisor directories"
-mkdir "$LIKECOIN_LIKED_HOME/cosmovisor/upgrades"
+mkdir -p "$LIKECOIN_LIKED_HOME/cosmovisor/upgrades"
 
 echo ""
 echo "Genesis file installed into .liked/config folder."
