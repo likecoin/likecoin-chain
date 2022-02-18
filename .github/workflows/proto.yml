@@ -1,6 +1,11 @@
 name: Protobuf
 on:
   pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - "feat/**"
 
 jobs:
   lint:

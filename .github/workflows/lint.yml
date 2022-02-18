@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - develop
+      - "feat/**"
 jobs:
   lint:
     name: Check lint
