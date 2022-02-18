@@ -1,10 +1,12 @@
 #!/bin/bash 
 
 # get protoc executions
+go install google.golang.org/protobuf/cmd/protoc-gen-go
+go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos
 export PATH="$PATH:$(go env GOPATH)/bin"
 
-pushd $(dirname $0) > /dev/null 2>&1
+pushd "$(dirname $0)/.." > /dev/null 2>&1
 
 SWAGGER_DIR="swagger-gen"
 COSMOS_SDK_DIR=$(go list -f '{{ .Dir }}' -m github.com/cosmos/cosmos-sdk)
@@ -15,7 +17,7 @@ popd > /dev/null 2>&1
 
 mkdir -p ${SWAGGER_DIR}
 
-for module in "${MODULES[@]}"; do
+for module in "${MODULES[@]}"; do   
     protoc \
       -I "$COSMOS_SDK_DIR/proto" \
       -I "$COSMOS_SDK_DIR/third_party/proto" \
