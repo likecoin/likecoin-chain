@@ -10,5 +10,10 @@ message ClassData {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
   ];
-  string iscnIdPrefix = 2; 
+  string iscnIdPrefix = 2;
+  ClassConfig config = 3 [(gogoproto.nullable) = false];
+}
+
+message ClassConfig {
+  bool burnable = 1;
 }
