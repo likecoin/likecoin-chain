@@ -12,16 +12,16 @@ IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
 RBUILDER_IMAGE_TAG = cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb
 BUILDDIR ?= $(CURDIR)/build
 GOPATH ?= '$(HOME)/go'
-GOLANG_VERSION        ?= 1.17.2
-GOLANG_CROSS_VERSION  := v$(GOLANG_VERSION)
-GOGO_PROTO_URL      = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-COSMOS_SDK_URL      = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.43.0
-COSMOS_PROTO_URL    = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-GOGO_PROTO_TYPES    = proto/gogoproto
-COSMOS_PROTO_TYPES  = proto/cosmos_proto
+GOLANG_VERSION ?= 1.17.2
+GOLANG_CROSS_VERSION := v$(GOLANG_VERSION)
+GOGO_PROTO_URL = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
+COSMOS_SDK_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.43.0
+COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
+GOGO_PROTO_TYPES = proto/gogoproto
+COSMOS_PROTO_TYPES = proto/cosmos_proto
 
 ###############################################################################
-###                          	Development  	                                ###
+###                            Development                                  ###
 ###############################################################################
 
 all: install test
@@ -66,18 +66,18 @@ format:
 .PHONY: all vendor download install test clean lint format
 
 ###############################################################################
-###                          		Build  	                           		###
+###                               Build                                     ###
 ###############################################################################
 
 build-reproducible: go.sum
 	$(DOCKER) rm latest-build || true
 	$(DOCKER) run --volume=$(CURDIR):/sources:ro \
-        --env TARGET_PLATFORMS='linux/amd64 darwin/amd64 darwin/arm64 linux/arm64 windows/amd64' \
-        --env APP=$(APP) \
-        --env VERSION=$(VERSION) \
-        --env COMMIT=$(COMMIT) \
-        --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-        --name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
+		--env TARGET_PLATFORMS='linux/amd64 darwin/amd64 darwin/arm64 linux/arm64 windows/amd64' \
+		--env APP=$(APP) \
+		--env VERSION=$(VERSION) \
+		--env COMMIT=$(COMMIT) \
+		--env LEDGER_ENABLED=$(LEDGER_ENABLED) \
+		--name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 docker-login:
@@ -87,9 +87,9 @@ docker-login:
 docker-build: go.sum
 	@echo "Building image for $(VERSION) using commit $(COMMIT)"
 	$(DOCKER) build \
-        --build-arg LIKED_VERSION=$(VERSION) \
-        --build-arg LIKED_COMMIT=$(COMMIT) \
-        --tag $(IMAGE_TAG) \
+		--build-arg LIKED_VERSION=$(VERSION) \
+		--build-arg LIKED_COMMIT=$(COMMIT) \
+		--tag $(IMAGE_TAG) \
 		.
 
 docker-push:
@@ -106,13 +106,13 @@ build: go.sum $(BUILDDIR)/
 			-X \"github.com/cosmos/cosmos-sdk/version.Version=${VERSION}\" \
 			-X \"github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT}\" \
 		" \
-    -tags "netgo,ledger" \
-    -o $(BUILDDIR)/ ./...
+	-tags "netgo,ledger" \
+	-o $(BUILDDIR)/ ./...
 
 .PHONY: build-reproducible docker-login docker-build docker-push build
 
 ###############################################################################
-###                          		Release  	                           	###
+###                               Release                                   ###
 ###############################################################################
 
 
@@ -135,7 +135,7 @@ release:
 .PHONY: release
 
 ###############################################################################
-###                          		Protobuf  	                           	###
+###                              Protobuf                                   ###
 ###############################################################################
 
 proto-all: proto-format proto-lint gen-proto
