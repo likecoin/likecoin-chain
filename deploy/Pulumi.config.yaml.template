@@ -1,0 +1,10 @@
+config:
+  node-deployment:node-genesis:
+  node-deployment:node-moniker: likecoin
+  node-deployment:node-seeds: 
+  node-deployment:resource-group-name: likecoin
+  node-deployment:vm-password:
+  node-deployment:vm-private-key:
+  node-deployment:vm-public-key:
+  node-deployment:vm-ssh-allow-list:
+  node-deployment:vm-username: likecoin
