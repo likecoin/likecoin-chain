@@ -1,0 +1,20 @@
+name: Test
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - "feat/**"
+jobs:
+  test:
+    name: Run test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.2
+      - name: Run go test
+        run: make test

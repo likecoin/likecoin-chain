@@ -1,0 +1,21 @@
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - gocyclo
+    - golint
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - staticcheck
+    - errcheck
+    - gosimple
+    - varcheck
+
+linters-settings:
+  gofmt:
+    simplify: false
+
+run:
+  timeout: 5m
