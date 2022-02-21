@@ -448,7 +448,6 @@ func (app *LikeApp) registerUpgradeHandlers() {
 			"slashing":     1,
 			"staking":      1,
 			"upgrade":      1,
-			"vesting":      1,
 			"ibc":          1,
 			"genutil":      1,
 			"transfer":     1,
@@ -465,7 +464,7 @@ func (app *LikeApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == "v2.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant"},
+			// No added, renamed or removed stores
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
