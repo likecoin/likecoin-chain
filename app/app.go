@@ -488,6 +488,8 @@ func (app *LikeApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	var genesisState map[string]json.RawMessage
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
+
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
