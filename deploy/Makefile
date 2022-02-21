@@ -1,10 +1,3 @@
-COSMOVISOR_VERSION ?= "1.1.0"
-MONIKER ?= ""
-GENESIS_URL ?= ""
-
-LIKED_WORKDIR ?= $(HOME)
-LIKED_HOME ?= "$(LIKED_WORKDIR)/.liked"
-LIKED_USER ?= "$(USER)"
 STACK ?= validator
 
 .PHONY: setup-pulumi
