@@ -1,2 +1,3 @@
 .vscode
 Pulumi.*.yaml
+id_rsa*

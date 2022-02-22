@@ -1,5 +1,7 @@
 # Setting up likecoin node on cloud services using Pulumi
 
+This document describe how to use Pulumi to set up devnet that support development work. Although it may use at production environment, it is not recommended.
+
 # Prerequisites
 
 - [Pulumi](https://www.pulumi.com/docs/get-started/install/)
@@ -8,73 +10,73 @@
 
 # Setup
 
-## Azure
+## Account setup
 
 Login to Azure CLI and Pulumi CLI with the following commands
 
 ```
 az login
-
 pulumi login
 ```
 
-or if you wish to use Pulumi without an account in which you will need to enter a passphrase for secret storing
+Alternatively you can explore local setup via , `pulumi login --local`. However, we are not going to cover in this document.
+
+Pulumi will use the currently logged in session of `az` command to perform following action. Please use `az account --set` to correctly set the default account.
+
+## Environment and secret preparation
+
+Prepare the variable for ease of setup, we may want to change according to the current cloud/testnet situation.
 
 ```
-az login
-
-pulumi login --local
-export PULUMI_CONFIG_PASSPHRASE=<passphrase>
+export RESOURCE_GROUP=likecoin-skynet
+export REGION=southeastasia
+export PASSWORD=$(openssl rand -hex 10)
+export STACK=validator
+echo $PASSWORD
 ```
 
 Create a resource group on Azure with the following command
 
 ```
-az group create --location <your location> --resource-group <your resource group name>
+az group create --location $REGION --resource-group $RESOURCE_GROUP
 ```
-
-Pulumi should be able to capture your login session and perform deployments on your behalf.
 
 Run the following command to setup a pulumi stack.
 
 ```
-PULUMI_STACK=<stack name> make setup-pulumi
+make setup-pulumi STACK=$STACK
 ```
 
-This creates a config file `Pulumi.<stack name>.yaml` for your stack in which you will have to modify for the deployment to work.
+This creates a file `Pulumi.$STACK.yaml` for our stack in which we will modify for configuring the deployment to work.
 
-First, you can create a SSH keypair with the following command, we will be using RSA as per instructions provided by [Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ssh-from-windows#create-an-ssh-key-pair).
+We will create a SSH keypair with the following command, we will be using RSA as per instructions provided by [Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ssh-from-windows#create-an-ssh-key-pair).
 
 **Note: Azure Pulumi does not seem to work with keys that has a passphrase due to the prompt being missed out during deployment hence we will be using one with empty passphrase.**
 
-```
-ssh-keygen -t rsa -f rsa -m PEM
-```
-
-Run the following commands to setup configurations for your stack
+Create deployment SSH key and inflate the respective value in `Pulmi.$STACK.yaml`
 
 ```
-pulumi config set node-deployment:resource-group-name <your resource group name>
-pulumi config set node-deployment:vm-password --secret <your vm password>
-
-cat rsa.pub | pulumi config set node-deployment:vm-public-key --
-cat rsa | pulumi config set node-deployment:vm-private-key --secret --
+make ssh-key
 ```
 
-You should now see the values being assigned in `Pulumi.<stack name>.yaml`
+We should now see the values being assigned in `Pulumi.$STACK.yaml`
 
-You may now run the following command to execute the deployment
+## Provision of resources
+
+After Run the following command to execute the deployment
 
 ```
 make deploy
 ```
 
-Pulumi will execute a dry-run deployment to validate the deployment script, You may select `Yes` to confirm the deployment.
+Pulumi will execute a dry-run deployment to validate the deployment script, review and confirm the deployment.
 
-After a successful deployment, connect to the virtual machine via SSH to the IP address output displayed on screen
+After a successful deployment, the public ID of the deploy vm should be printed on console.
+
+We can connect to the virtual machine via SSH as follow.
 
 ```
-ssh -i rsa <vm username>@<vm ip address>
+ssh -i id_rsa likecoin@<vm ip address>
 ```
 
 Simply run the following command to start the service
@@ -89,12 +91,12 @@ Pulumi stack configurations that is used by the deployment script
 
 | Configuration                       | Description                                  | Mandatory |
 | ----------------------------------- | -------------------------------------------- | --------- |
-| node-deployment:node-genesis        | URL to the genesis.json file                 | ❌        |
-| node-deployment:node-moniker        | Moniker identifier of the node               | ✅        |
-| node-deployment:node-seeds          | Comma separated P2P Seed nodes               | ❌        |
-| node-deployment:resource-group-name | Resource group name for Azure                | ✅        |
-| node-deployment:vm-username         | Admin username to the Virtual Machine        | ✅        |
-| node-deployment:vm-password         | Admin password to the Virtual Machine        | ✅        |
-| node-deployment:vm-private-key      | SSH private key to the Virtual Machine       | ✅        |
-| node-deployment:vm-public-key       | SSH public key to the Virtual Machine        | ✅        |
-| node-deployment:vm-ssh-allow-list   | Comma separated CIDR list for SSH white list | ❌        |
+| likecoin-skynet:node-genesis        | URL to the genesis.json file                 | ❌        |
+| likecoin-skynet:node-moniker        | Moniker identifier of the node               | ✅        |
+| likecoin-skynet:node-seeds          | Comma separated P2P Seed nodes               | ❌        |
+| likecoin-skynet:resource-group-name | Resource group name for Azure                | ✅        |
+| likecoin-skynet:vm-username         | Admin username to the Virtual Machine        | ✅        |
+| likecoin-skynet:vm-password         | Admin password to the Virtual Machine        | ✅        |
+| likecoin-skynet:vm-private-key      | SSH private key to the Virtual Machine       | ✅        |
+| likecoin-skynet:vm-public-key       | SSH public key to the Virtual Machine        | ✅        |
+| likecoin-skynet:vm-ssh-allow-list   | Comma separated CIDR list for SSH white list | ❌        |
