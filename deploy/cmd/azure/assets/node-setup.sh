@@ -16,6 +16,10 @@ if [ -z $MONIKER ]; then
 	exit 1
 fi
 
+if [ -z $LIKED_REPO_SOURCE ]; then
+	LIKED_REPO_SOURCE="likecoin"
+fi
+
 if [ -z $LIKED_VERSION ]; then
 	LIKED_VERSION="2.0.0-alpha"
 fi
@@ -54,7 +58,7 @@ if [ ! -f "$LIKED_WORKDIR/liked" ]; then
 	echo "Downloading the latest liked binary..."
 	mkdir -p liked_temp
 	cd liked_temp
-	curl -sL "https://github.com/likecoin/likecoin-chain/releases/download/v${LIKED_VERSION}/likecoin-chain_${LIKED_VERSION}_$(uname -s)_$(uname -m).tar.gz" | tar xz
+	curl -sL "https://github.com/${LIKED_REPO_SOURCE}/likecoin-chain/releases/download/v${LIKED_VERSION}/likecoin-chain_${LIKED_VERSION}_$(uname -s)_$(uname -m).tar.gz" | tar xz
 	cp bin/liked $LIKED_WORKDIR/liked
 	cd ..
 	rm -r liked_temp
