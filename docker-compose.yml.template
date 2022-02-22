@@ -102,8 +102,6 @@ services:
                 # 1. proposal ID
                 # 2. vote option ("yes" / "no" / "veto" / "abstain")
         ]
-volumes:
-    upgrades-volume:
 networks:
     default:
         name: likecoin-chain
