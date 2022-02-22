@@ -1,3 +1,4 @@
+//go:generate mockgen -source=$GOFILE -destination=../testutil/generated_mock_keepers.go -package=testutil
 package types
 
 import (
