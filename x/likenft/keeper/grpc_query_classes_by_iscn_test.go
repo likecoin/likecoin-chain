@@ -12,6 +12,7 @@ import (
 
 	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
+	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -21,7 +22,8 @@ var _ = strconv.IntSize
 func TestClassesByISCNQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClassesByISCN(keeper, ctx, 2)
+	_msgs := createNClassesByISCN(keeper, ctx, 2)
+	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetClassesByISCNRequest
@@ -72,7 +74,8 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 func TestClassesByISCNQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClassesByISCN(keeper, ctx, 5)
+	_msgs := createNClassesByISCN(keeper, ctx, 5)
+	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllClassesByISCNRequest {
 		return &types.QueryAllClassesByISCNRequest{

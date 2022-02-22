@@ -15,6 +15,7 @@ import (
 	"github.com/likecoin/likechain/testutil/network"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/client/cli"
+	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -41,7 +42,8 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 }
 
 func TestShowClassesByISCN(t *testing.T) {
-	net, objs := networkWithClassesByISCNObjects(t, 2)
+	net, _objs := networkWithClassesByISCNObjects(t, 2)
+	objs := testutil.BatchDummyConcretizeClassesByISCN(_objs)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -53,7 +55,7 @@ func TestShowClassesByISCN(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.ClassesByISCN
+		obj  types.ConcreteClassesByISCN
 	}{
 		{
 			desc:           "found",
@@ -96,7 +98,8 @@ func TestShowClassesByISCN(t *testing.T) {
 }
 
 func TestListClassesByISCN(t *testing.T) {
-	net, objs := networkWithClassesByISCNObjects(t, 5)
+	net, _objs := networkWithClassesByISCNObjects(t, 5)
+	objs := testutil.BatchDummyConcretizeClassesByISCN(_objs)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
