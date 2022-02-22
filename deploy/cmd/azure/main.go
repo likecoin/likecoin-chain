@@ -22,6 +22,12 @@ func main() {
 		privateKey := cfg.RequireSecret("vm-private-key")
 		sshAllowList := cfg.Require("vm-ssh-allow-list")
 
+		vmHardware := cfg.Require("vm-hardware")
+		vmDiskSize := cfg.GetInt("vm-disk-size")
+		if vmDiskSize == 0 {
+			vmDiskSize = int(50)
+		}
+
 		genesisUrl := cfg.Require("node-genesis")
 		seeds := cfg.Require("node-seeds")
 		moniker := cfg.Require("node-moniker")
@@ -169,7 +175,7 @@ func main() {
 				},
 			},
 			HardwareProfile: &compute.HardwareProfileArgs{
-				VmSize: pulumi.String("Standard_B2s"),
+				VmSize: pulumi.String(vmHardware),
 			},
 			Location: pulumi.String(resourceGroup.Location),
 			OsProfile: &compute.OSProfileArgs{
@@ -203,8 +209,9 @@ func main() {
 					Caching:      compute.CachingTypesReadWrite,
 					CreateOption: pulumi.String(compute.DiskCreateOptionFromImage),
 					ManagedDisk: &compute.ManagedDiskParametersArgs{
-						StorageAccountType: pulumi.String(compute.StorageAccountType_Premium_LRS),
+						StorageAccountType: pulumi.String(compute.StorageAccountTypes_StandardSSD_LRS),
 					},
+					DiskSizeGB:   pulumi.Int(vmDiskSize),
 					Name:         pulumi.Sprintf("node-vm-os-disk-%s", stackName),
 					DeleteOption: pulumi.String(compute.DeleteOptionsDelete),
 				},
