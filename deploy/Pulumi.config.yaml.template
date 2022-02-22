@@ -1,12 +1,18 @@
 config:
-  likecoin-skynet:node-genesis:
+  likecoin-skynet:cloud-provider: azure
+  likecoin-skynet:network-region: asia-southeast1
+  likecoin-skynet:node-genesis: 
   likecoin-skynet:node-moniker: likecoin
-  likecoin-skynet:node-seeds: 
+  likecoin-skynet:node-seeds:
+  likecoin-skynet:project-id: likecoin-devnet
   likecoin-skynet:resource-group-name: likecoin
   likecoin-skynet:vm-password:
+  likecoin-skynet:vm-disk-size: "50"
+  likecoin-skynet:vm-hardware: e2-medium
   likecoin-skynet:vm-private-key:
   likecoin-skynet:vm-public-key:
-  likecoin-skynet:vm-ssh-allow-list:
+  likecoin-skynet:vm-ssh-allow-list: ""
   likecoin-skynet:vm-username: likecoin
   likecoin-skynet:vm-hardware: Standard_B2s
   likecoin-skynet:vm-disk-size: 50
+  likecoin-skynet:vm-zone: asia-southeast1-b

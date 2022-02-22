@@ -89,16 +89,32 @@ make start-node
 
 Pulumi stack configurations that is used by the deployment script
 
-| Configuration                       | Description                                       | Default      | Mandatory |
-| ----------------------------------- | ------------------------------------------------- | ------------ | --------- |
-| likecoin-skynet:node-genesis        | URL to the genesis.json file                      |              | ❌        |
-| likecoin-skynet:node-moniker        | Moniker identifier of the node                    | likecoin     | ✅        |
-| likecoin-skynet:node-seeds          | Comma separated P2P Seed nodes                    |              | ❌        |
-| likecoin-skynet:resource-group-name | Resource group name for Azure                     |              | ✅        |
-| likecoin-skynet:vm-username         | Admin username to the Virtual Machine             | likecoin     | ✅        |
-| likecoin-skynet:vm-password         | Admin password to the Virtual Machine             |              | ✅        |
-| likecoin-skynet:vm-private-key      | SSH private key to the Virtual Machine            |              | ✅        |
-| likecoin-skynet:vm-public-key       | SSH public key to the Virtual Machine             |              | ✅        |
-| likecoin-skynet:vm-hardware         | Hardware model identifier for the Virtual Machine | Standard_B2s | ✅        |
-| likecoin-skynet:vm-disk-size        | Disk Size for the Virtual Machine                 | 50           | ✅        |
-| likecoin-skynet:vm-ssh-allow-list   | Comma separated CIDR list for SSH white list      |              | ❌        |
+### Common
+
+| Configuration                     | Description                                  | Mandatory |
+| --------------------------------- | -------------------------------------------- | --------- |
+| likecoin-skynet:cloud-provider    | Cloud provider (azure, gcp)                  | ✅        |
+| likecoin-skynet:node-genesis      | URL to the genesis.json file                 | ❌        |
+| likecoin-skynet:node-moniker      | Moniker identifier of the node               | ✅        |
+| likecoin-skynet:node-seeds        | Comma separated P2P Seed nodes               | ❌        |
+| likecoin-skynet:vm-username       | Admin username to the Virtual Machine        | ✅        |
+| likecoin-skynet:vm-private-key    | SSH private key to the Virtual Machine       | ✅        |
+| likecoin-skynet:vm-public-key     | SSH public key to the Virtual Machine        | ✅        |
+| likecoin-skynet:vm-ssh-allow-list | Comma separated CIDR list for SSH white list | ❌        |
+| likecoin-skynet:vm-disk-size      | Disk size for the Virtual Machine            | ✅        |
+| likecoin-skynet:vm-hardware       | Hardware type for the Virtual Machine        | ✅        |
+
+### Azure Specific
+
+| Configuration                       | Description                           | Mandatory |
+| ----------------------------------- | ------------------------------------- | --------- |
+| likecoin-skynet:resource-group-name | Resource group name for Azure         | ✅        |
+| likecoin-skynet:vm-password         | Admin password to the Virtual Machine | ✅        |
+
+### GCP Specific
+
+| Configuration                  | Description                          | Mandatory |
+| ------------------------------ | ------------------------------------ | --------- |
+| likecoin-skynet:project-id     | Project ID for GCP                   | ✅        |
+| likecoin-skynet:vm-zone        | Zone for Virtual Machine             | ✅        |
+| likecoin-skynet:network-region | Region for Network related resources | ✅        |
