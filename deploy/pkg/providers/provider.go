@@ -2,6 +2,7 @@ package providers
 
 import (
 	AzureProvider "deploy/pkg/providers/azure"
+	GCPProvider "deploy/pkg/providers/gcp"
 	"errors"
 
 	"github.com/pulumi/pulumi-command/sdk/go/command/remote"
@@ -22,7 +23,8 @@ func (provider Provider) GetVMBuilder() (func(deploymentId string, ctx *pulumi.C
 	switch provider.Name {
 	case Azure:
 		return AzureProvider.CreateNodeVM, nil
+	case GCP:
+		return GCPProvider.CreateNodeVM, nil
 	}
-
 	return nil, errors.New("unknown provider")
 }
