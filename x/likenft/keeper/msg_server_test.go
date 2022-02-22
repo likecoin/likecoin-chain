@@ -10,7 +10,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
-	k, ctx := keepertest.LikenftKeeper(t)
+func setupMsgServer(t testing.TB, dependedKeepers keepertest.LikenftDependedKeepers) (types.MsgServer, context.Context) {
+	k, ctx := keepertest.LikenftKeeperOverrideDependedKeepers(t, dependedKeepers)
 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 }
