@@ -248,14 +248,14 @@ func main() {
 			PrivateKey: privateKey,
 		}
 
-		scriptChange, err := hashUtils.GetFileHash("../../node-setup.sh")
+		scriptChange, err := hashUtils.GetFileHash("./assets/node-setup.sh")
 		if err != nil {
 			return err
 		}
 
 		cpScript, err := remote.NewCopyFile(ctx, "Copy deployment script to VM", &remote.CopyFileArgs{
 			Connection: connection,
-			LocalPath:  pulumi.String("../../node-setup.sh"),
+			LocalPath:  pulumi.String("./assets/node-setup.sh"),
 			RemotePath: pulumi.Sprintf("/home/%s/node-setup.sh", vmUsername),
 			Triggers: pulumi.Array{
 				pulumi.String(scriptChange),
@@ -281,14 +281,14 @@ func main() {
 			return err
 		}
 
-		serviceTemplateChange, err := hashUtils.GetFileHash("../../liked.service.template")
+		serviceTemplateChange, err := hashUtils.GetFileHash("./assets/liked.service.template")
 		if err != nil {
 			return err
 		}
 
 		cpService, err := remote.NewCopyFile(ctx, "Copy node service template to VM", &remote.CopyFileArgs{
 			Connection: connection,
-			LocalPath:  pulumi.String("../../liked.service.template"),
+			LocalPath:  pulumi.String("./assets/liked.service.template"),
 			RemotePath: pulumi.Sprintf("/home/%s/liked.service.template", vmUsername),
 			Triggers: pulumi.Array{
 				pulumi.String(serviceTemplateChange),
@@ -301,14 +301,14 @@ func main() {
 			return err
 		}
 
-		makeFileChange, err := hashUtils.GetFileHash("../../Makefile")
+		makeFileChange, err := hashUtils.GetFileHash("./assets/Makefile")
 		if err != nil {
 			return err
 		}
 
 		cpMakefile, err := remote.NewCopyFile(ctx, "Copy Makefile to VM", &remote.CopyFileArgs{
 			Connection: connection,
-			LocalPath:  pulumi.String("../../Makefile"),
+			LocalPath:  pulumi.String("./assets/Makefile"),
 			RemotePath: pulumi.Sprintf("/home/%s/Makefile", vmUsername),
 			Triggers: pulumi.Array{
 				pulumi.String(makeFileChange),
