@@ -1,4 +1,4 @@
 name: likecoin-skynet
 runtime: go
-main: cmd/azure # TODO: Add support aws and gcp deployment
+main: cmd/deploy
 description: likecoin-skynet-deployment
