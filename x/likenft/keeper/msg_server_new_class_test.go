@@ -20,7 +20,7 @@ func TestNewClassNormal(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
@@ -105,7 +105,7 @@ func TestNewClassInvalidIscn(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
@@ -164,7 +164,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
@@ -229,7 +229,7 @@ func TestNewClassInvalidUserAddress(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
@@ -296,7 +296,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
