@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=<USER>
 WorkingDirectory=<WORKDIR>
-ExecStart=<WORKDIR>/cosmovisor run --home <WORKDIR>/.liked start --rpc.laddr tcp://0.0.0.0:26657 --halt-time 0 --halt-height 0
+ExecStart=<WORKDIR>/cosmovisor run --home <WORKDIR>/.liked start --rpc.laddr tcp://0.0.0.0:26657 --p2p.seeds "<SEED_NODES>" --halt-time 0 --halt-height 0
 Restart=always
 RuntimeMaxSec=86400
 Environment="DAEMON_NAME=liked"

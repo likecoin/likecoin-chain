@@ -7,12 +7,17 @@ GENESIS_URL="$2"
 LIKED_WORKDIR="$3"
 LIKED_HOME="$4"
 LIKED_USER="$5"
+LIKED_SEED_NODES="$6"
 
 if [ -z $MONIKER ]; then
 	echo "Usage: $0 NODE_NAME <url to genesis.json>"
 	echo "Example: $0 likecoin-test"
 	echo "Example: $0 likecoin-test https://example.com/genesis.json"
 	exit 1
+fi
+
+if [ -z $LIKED_REPO_SOURCE ]; then
+	LIKED_REPO_SOURCE="likecoin"
 fi
 
 if [ -z $LIKED_VERSION ]; then
@@ -35,6 +40,10 @@ if [ -z $LIKED_HOME ]; then
 	LIKED_HOME="${HOME}/.liked"
 fi 
 
+if [ ! -f "$LIKED_WORKDIR" ]; then
+	mkdir -p "$LIKED_WORKDIR"
+fi
+
 if [ ! -f "$LIKED_WORKDIR/cosmovisor" ]; then
 	echo "Downloading the latest cosmovisor binary..."
 	mkdir -p cosmovisor_temp
@@ -49,8 +58,8 @@ if [ ! -f "$LIKED_WORKDIR/liked" ]; then
 	echo "Downloading the latest liked binary..."
 	mkdir -p liked_temp
 	cd liked_temp
-	curl -sL "https://github.com/likecoin/likecoin-chain/releases/download/v${LIKED_VERSION}/likecoin-chain_${LIKED_VERSION}_$(uname -s)_$(uname -m).tar.gz" | tar xz
-	cp bin/liked $LIKED_WORKDIR
+	curl -sL "https://github.com/${LIKED_REPO_SOURCE}/likecoin-chain/releases/download/v${LIKED_VERSION}/likecoin-chain_${LIKED_VERSION}_$(uname -s)_$(uname -m).tar.gz" | tar xz
+	cp bin/liked $LIKED_WORKDIR/liked
 	cd ..
 	rm -r liked_temp
 fi 
@@ -63,7 +72,7 @@ fi
 
 if [ ! -z $GENESIS_URL ]; then
 	mkdir -p "$LIKED_HOME/config/"
-	curl -OL "$GENESIS_URL"
+	curl -o genesis.json -OL "$GENESIS_URL"
 	mv -f "genesis.json" "$LIKED_HOME/config/genesis.json"
 	CHAIN_ID=`grep chain_id "$LIKED_HOME/config/genesis.json" | sed 's/ *"chain_id": *"\(.*\)"/\1/g' | sed 's/,$//g'`
 else
@@ -78,5 +87,5 @@ fi
 
 chown -R $LIKED_USER $LIKED_HOME
 
-sed "s|<USER>|$LIKED_USER|g; s|<WORKDIR>|$LIKED_WORKDIR|g;" ./liked.service.template > ./liked.service
+sed "s|<USER>|$LIKED_USER|g; s|<WORKDIR>|$LIKED_WORKDIR|g; s|<SEED_NODES>|$LIKED_SEED_NODES|g;" ./liked.service.template > ./liked.service
 echo "Setup complete, Please setup DAEMON_NAME and DAEMON_HOME environment variable and run 'cosmovisor run start' to start a node locally." 

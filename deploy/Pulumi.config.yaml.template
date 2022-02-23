@@ -1,0 +1,12 @@
+config:
+  likecoin-skynet:node-genesis:
+  likecoin-skynet:node-moniker: likecoin
+  likecoin-skynet:node-seeds: 
+  likecoin-skynet:resource-group-name: likecoin
+  likecoin-skynet:vm-password:
+  likecoin-skynet:vm-private-key:
+  likecoin-skynet:vm-public-key:
+  likecoin-skynet:vm-ssh-allow-list:
+  likecoin-skynet:vm-username: likecoin
+  likecoin-skynet:vm-hardware: Standard_B2s
+  likecoin-skynet:vm-disk-size: 50
