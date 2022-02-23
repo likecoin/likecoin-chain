@@ -6,7 +6,7 @@ The developer team maintains 3 way on running the node software, they are:
 
 1. `systemd` based.
 2. `docker` and `docker-compose` based.
-3.  Run at shell.
+3. Run at shell.
 
 It depends on the situation which one is better. Since the development resource is limiting, we are planning to drop maintaining `docker-compose` way. So if you are new to the ecosystem, I recommend to check out the `systemd` way.
 
@@ -30,7 +30,7 @@ make -C deploy initialize-systemctl
 make -C deploy start-node
 ```
 
-Above command is warp around `systemctl`. For checking logs, you can run 
+Above command is warp around `systemctl`. For checking logs, you can run
 
 ```
 journalctl -u liked.service -f
@@ -54,7 +54,6 @@ By default, the [node-setup.sh](../deploy/scripts/node-setup.sh) script would do
 | LIKED_WORKDIR      | Working directory, binaries will be downloaded here                                 | $HOME                                |
 | LIKED_HOME         | Home directory for the like node, chain data and configurations will be stored here | $HOME/.liked                         |
 | LIKED_USER         | User used for 'liked.service' to run on behalf of                                   | $USER                                |
-
 
 ## Docker based
 
@@ -111,6 +110,44 @@ $HOME/.liked/cosmovisor/upgrades/<upgrade_name>/bin
 ```
 
 Once the upgrade block is reached, cosmovisor should be able to link the `current` folder to the destinated upgrade folder and automatically restart itself to continue the block syncing process with the latest binary. An extra `upgrade-info.json` file will be generated to indicate the metadata for the upgrade.
+
+## Upgrade Proposal
+
+To submit an auto upgrade proposal, execute the following command
+
+```
+./liked tx gov submit-proposal software-upgrade $UPGRADED_VERSION \
+    --title "$TITLE" \
+    --description "$DESCRIPTION" \
+    --from $ACCOUNT \
+    --upgrade-height $UPGRADE_HEIGHT \
+    --upgrade-info '{"binaries":{"linux/amd64":"$BINARY_URL","darwin/amd64":"$BINARY_URL"}}' \
+    --deposit 10000000nanolike \
+    --chain-id $CHAIN_ID \
+    -y
+```
+
+Query the proposal to ensure its existance
+
+```
+./liked query gov proposal $PROPOSAL_ID
+```
+
+Deposite a certain amount of `LIKE` to the proposal
+
+```
+./liked tx gov deposit $PROPOSAL_ID 10000000nanolike --from $ACCOUNT --yes
+```
+
+Proceed to submit a `Yes` vote for the proposal
+
+```
+./liked tx gov vote $PROPOSAL_ID yes --from $ACCOUNT --chain-id $CHAIN_ID -y
+```
+
+To submit a manual uprade proposal, remove `--upgrade-info` from the proposal submission command above.
+Note that this will require the new binary to be placed in `/.liked/cosmovisor/upgrades/$UPGRADED_VERSION/bin` for the
+upgrade to be executed successfully.
 
 # Dependencies
 
