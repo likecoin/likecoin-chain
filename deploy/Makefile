@@ -1,6 +1,8 @@
 STACK ?= validator
 CLOUD ?= azure
 
+include ./cmd/deploy/assets/Makefile
+
 .PHONY: setup-pulumi
 setup-pulumi:
 	pulumi stack init $(STACK)
