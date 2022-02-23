@@ -1,9 +1,10 @@
 STACK ?= validator
+CLOUD ?= azure
 
 .PHONY: setup-pulumi
 setup-pulumi:
 	pulumi stack init $(STACK)
-	cp ./Pulumi.config.yaml.template "./Pulumi.$(STACK).yaml"
+	cp ./Pulumi.$(CLOUD).yaml.template "./Pulumi.$(STACK).yaml"
 
 .PHONY: ssh-key
 ssh-key: 

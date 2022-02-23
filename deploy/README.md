@@ -6,16 +6,22 @@ This document describe how to use Pulumi to set up devnet that support developme
 
 - [Pulumi](https://www.pulumi.com/docs/get-started/install/)
 - Go 1.17+
-- Azure CLI (for azure nodes)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos) (for azure nodes)
+- [Gcloud CLI](https://cloud.google.com/sdk/docs/install-sdk) (for gcp nodes)
 
 # Setup
 
 ## Account setup
 
-Login to Azure CLI and Pulumi CLI with the following commands
+Login to Azure CLI/ GCloud CLI and Pulumi CLI with the following commands
 
 ```
+# For Azure
 az login
+# For GCP
+gcloud auth application-default login
+gcloud config set project $GCP_PROJECT_ID
+
 pulumi login
 ```
 
@@ -28,9 +34,16 @@ Pulumi will use the currently logged in session of `az` command to perform follo
 Prepare the variable for ease of setup, we may want to change according to the current cloud/testnet situation.
 
 ```
+# For Azure
 export RESOURCE_GROUP=likecoin-skynet
 export REGION=southeastasia
-export PASSWORD=$(openssl rand -hex 10)
+export CLOUD=azure
+
+# For GCP
+export PROJECT_ID=likecoin-skynet
+export CLOUD=gcp
+
+export PASSWORD=$(openssl rand -base64 48 | sed -e 's/[\/|=|+]//g')
 export STACK=validator
 echo $PASSWORD
 ```
@@ -38,13 +51,14 @@ echo $PASSWORD
 Create a resource group on Azure with the following command
 
 ```
+# For Azure
 az group create --location $REGION --resource-group $RESOURCE_GROUP
 ```
 
 Run the following command to setup a pulumi stack.
 
 ```
-make setup-pulumi STACK=$STACK
+make setup-pulumi STACK=$STACK CLOUD=$CLOUD
 ```
 
 This creates a file `Pulumi.$STACK.yaml` for our stack in which we will modify for configuring the deployment to work.
@@ -94,9 +108,9 @@ Pulumi stack configurations that is used by the deployment script
 | Configuration                     | Description                                  | Mandatory |
 | --------------------------------- | -------------------------------------------- | --------- |
 | likecoin-skynet:cloud-provider    | Cloud provider (azure, gcp)                  | ✅        |
-| likecoin-skynet:node-genesis      | URL to the genesis.json file                 | ❌        |
+| likecoin-skynet:node-genesis      | URL to the genesis.json file                 | ✅        |
 | likecoin-skynet:node-moniker      | Moniker identifier of the node               | ✅        |
-| likecoin-skynet:node-seeds        | Comma separated P2P Seed nodes               | ❌        |
+| likecoin-skynet:node-seeds        | Comma separated P2P Seed nodes               | ✅        |
 | likecoin-skynet:vm-username       | Admin username to the Virtual Machine        | ✅        |
 | likecoin-skynet:vm-private-key    | SSH private key to the Virtual Machine       | ✅        |
 | likecoin-skynet:vm-public-key     | SSH public key to the Virtual Machine        | ✅        |
