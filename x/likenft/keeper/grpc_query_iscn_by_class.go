@@ -51,7 +51,7 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 	}
 	contentIdRecord := k.iscnKeeper.GetContentIdRecord(ctx, iscnId.Prefix)
 	if contentIdRecord == nil {
-		return nil, types.ErrFailedToQueryIscnRecord.Wrapf(err.Error())
+		return nil, types.ErrFailedToQueryIscnRecord
 	}
 	latestVersion := contentIdRecord.LatestVersion
 	iscnId.Version = latestVersion
