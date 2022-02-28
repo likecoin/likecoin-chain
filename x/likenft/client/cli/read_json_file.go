@@ -17,3 +17,16 @@ func readCmdNewClassInput(path string) (*CmdNewClassInput, error) {
 	}
 	return &input, nil
 }
+
+func readCmdUpdateClassInput(path string) (*CmdUpdateClassInput, error) {
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	input := CmdUpdateClassInput{}
+	err = json.Unmarshal(file, &input)
+	if err != nil {
+		return nil, err
+	}
+	return &input, nil
+}
