@@ -30,3 +30,16 @@ func readCmdUpdateClassInput(path string) (*CmdUpdateClassInput, error) {
 	}
 	return &input, nil
 }
+
+func readCmdMintNFTInput(path string) (*CmdMintNFTInput, error) {
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	input := CmdMintNFTInput{}
+	err = json.Unmarshal(file, &input)
+	if err != nil {
+		return nil, err
+	}
+	return &input, nil
+}
