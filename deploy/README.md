@@ -43,6 +43,9 @@ export CLOUD=azure
 export PROJECT_ID=likecoin-skynet
 export CLOUD=gcp
 
+# source cidr/ip addresses for ssh access, comma separated, default current ip address
+export SSH_WHITELIST=$(curl checkip.amazonaws.com)
+
 export PASSWORD=$(openssl rand -base64 48 | sed -e 's/[\/|=|+]//g')
 export STACK=validator
 echo $PASSWORD
@@ -74,6 +77,8 @@ make ssh-key
 ```
 
 We should now see the values being assigned in `Pulumi.$STACK.yaml`
+
+**NOTE: It is highly recommended to set a value for the config `vm-ssh-allow-list` to prevent global ssh access to the virtual machine. If any assigned ip address is dynamically allocated by the ISP, newly rotated ip address shall be updated on Azure Portal/Google Cloud Platform to maintain said ssh access.**
 
 ## Provision of resources
 
