@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdUpdateClass() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class [class-id] [name] [symbol] [description] [uri] [uri-hash] [metadata] [burnable]",
-		Short: "Broadcast message UpdateClass",
+		Short: "Update existing nft class. Only allowed when there is no token minted",
 		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]

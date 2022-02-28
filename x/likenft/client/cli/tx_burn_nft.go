@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdBurnNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "burn-nft [class-id] [nft-id]",
-		Short: "Broadcast message BurnNFT",
+		Short: "Burn a NFT. Only allowed when the class is configured to be burnable",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassID := args[0]

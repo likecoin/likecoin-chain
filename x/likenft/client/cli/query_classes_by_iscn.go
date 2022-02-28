@@ -11,8 +11,8 @@ import (
 
 func CmdListClassesByISCN() *cobra.Command {
 	cmd := &cobra.Command{
-		Short: "list all ISCN to NFT Class relations",
 		Use:   "index",
+		Short: "Enumerate all ISCN to NFT classes relation records",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -44,8 +44,8 @@ func CmdListClassesByISCN() *cobra.Command {
 
 func CmdShowClassesByISCN() *cobra.Command {
 	cmd := &cobra.Command{
-		Short: "list NFT classes related to an ISCN",
 		Use:   "classes [iscn-id-prefix]",
+		Short: "Query NFT classes related to an ISCN",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)

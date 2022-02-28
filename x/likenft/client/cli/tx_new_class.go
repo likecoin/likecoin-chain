@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdNewClass() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "new-class [iscn-id-prefix] [name] [symbol] [description] [uri] [uri-hash] [metadata] [burnable]",
-		Short: "Broadcast message NewClass",
+		Short: "Create new NFT class related to an ISCN record",
 		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argIscnIdPrefix := args[0]

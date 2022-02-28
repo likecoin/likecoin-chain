@@ -13,8 +13,8 @@ var _ = strconv.Itoa(0)
 
 func CmdISCNByClass() *cobra.Command {
 	cmd := &cobra.Command{
-		Short: "Get latest ISCN record related to a NFT Class",
 		Use:   "iscn [class-id]",
+		Short: "Query latest ISCN record related to a NFT class",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqClassId := args[0]
