@@ -8,9 +8,14 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	nft "github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	nftcli "github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft/client/cli"
 	"github.com/likecoin/likechain/testutil/network"
 	iscncli "github.com/likecoin/likechain/x/iscn/client/cli"
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+
+	cli "github.com/likecoin/likechain/x/likenft/client/cli"
+	types "github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -173,4 +178,151 @@ FindIscnIdPrefix:
 		}
 	}
 	require.NotEmpty(t, iscnIdPrefix)
+
+	// Create class
+	_, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdNewClass(),
+		append([]string{iscnIdPrefix, newClassFile.Name()}, txArgs...),
+	)
+	require.NoError(t, err)
+
+	// TODO: get exact class id created from events after oursky/likecoin-chain#84
+
+	// Query class
+	out, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdShowClassesByISCN(),
+		append([]string{iscnIdPrefix}, queryArgs...),
+	)
+	require.NoError(t, err)
+
+	// Unmarshal and check class data
+	classesRes := types.QueryGetClassesByISCNResponse{}
+	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &classesRes)
+
+	require.Len(t, classesRes.ClassesByISCN.Classes, 1)
+	class := classesRes.ClassesByISCN.Classes[0]
+	require.Equal(t, "New Class", class.Name)
+	require.Equal(t, "CLS", class.Symbol)
+	require.Equal(t, "Testing New Class", class.Description)
+	require.Equal(t, "ipfs://aabbcc", class.Uri)
+	require.Equal(t, "aabbcc", class.UriHash)
+	classData := types.ClassData{}
+	err = classData.Unmarshal(class.Data.Value)
+	require.NoError(t, err)
+	expectedMetadata, err := types.JsonInput(`{
+	"abc": "def"
+}`).Normalize()
+	require.NoError(t, err)
+	actualMetadata, err := classData.Metadata.Normalize()
+	require.NoError(t, err)
+	require.Equal(t, expectedMetadata, actualMetadata)
+	require.Equal(t, false, classData.Config.Burnable)
+	require.Equal(t, iscnIdPrefix, classData.IscnIdPrefix)
+
+	// Update class
+	_, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdUpdateClass(),
+		append([]string{class.Id, updateClassFile.Name()}, txArgs...),
+	)
+	require.NoError(t, err)
+
+	// TODO: check events after oursky/likecoin-chain#84
+
+	// Query updated class
+	out, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdShowClassesByISCN(),
+		append([]string{iscnIdPrefix}, queryArgs...),
+	)
+	require.NoError(t, err)
+
+	// Unmarshal and check updated class data
+	updatedClassesRes := types.QueryGetClassesByISCNResponse{}
+	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedClassesRes)
+
+	require.Len(t, updatedClassesRes.ClassesByISCN.Classes, 1)
+	updatedClass := updatedClassesRes.ClassesByISCN.Classes[0]
+	require.Equal(t, "Oursky Cat Photos", updatedClass.Name)
+	require.Equal(t, "Meowgear", updatedClass.Symbol)
+	require.Equal(t, "Photos of our beloved bosses.", updatedClass.Description)
+	require.Equal(t, "https://www.facebook.com/chima.fasang", updatedClass.Uri)
+	require.Equal(t, "", updatedClass.UriHash)
+	updatedClassData := types.ClassData{}
+	err = updatedClassData.Unmarshal(updatedClass.Data.Value)
+	require.NoError(t, err)
+	expectedUpdatedMetadata, err := types.JsonInput(`{
+	"name": "Oursky Cat Photos",
+	"description": "Photos of our beloved bosses.",
+	"image": "ipfs://QmZu3v5qFaTrrkSJC4mz8nLoDbR5kJx1QwMUy9CZhFZjT3",
+	"external_link": "https://www.facebook.com/chima.fasang"
+}`).Normalize()
+	require.NoError(t, err)
+	actualUpdatedMetadata, err := updatedClassData.Metadata.Normalize()
+	require.NoError(t, err)
+	require.Equal(t, expectedUpdatedMetadata, actualUpdatedMetadata)
+	require.Equal(t, true, updatedClassData.Config.Burnable)
+	require.Equal(t, iscnIdPrefix, updatedClassData.IscnIdPrefix)
+
+	// Mint NFT
+	_, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdMintNFT(),
+		append([]string{class.Id, "token1", mintNftFile.Name()}, txArgs...),
+	)
+	require.NoError(t, err)
+
+	// TODO: check events after oursky/likecoin-chain#84
+
+	// Query NFT
+	out, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		nftcli.GetCmdQueryNFT(),
+		append([]string{class.Id, "token1"}, queryArgs...),
+	)
+	require.NoError(t, err)
+
+	// Unmarshal and check nft data
+	nftRes := nft.QueryNFTResponse{}
+	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &nftRes)
+
+	require.Equal(t, class.Id, nftRes.Nft.ClassId)
+	require.Equal(t, "token1", nftRes.Nft.Id)
+	require.Equal(t, "ipfs://QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw", nftRes.Nft.Uri)
+	require.Equal(t, "QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw", nftRes.Nft.UriHash)
+	nftData := types.NFTData{}
+	err = nftData.Unmarshal(nftRes.Nft.Data.Value)
+	require.NoError(t, err)
+	require.Equal(t, iscnIdPrefix, nftData.IscnIdPrefix)
+	expectedNftMetadata, err := types.JsonInput(`{
+	"name": "Sleepy Coffee #1",
+	"description": "Coffee is very sleepy", 
+	"image": "ipfs://QmVhp6V2JdpYftT6LnDPELWCDMkk2aHwQZ1qbWf15KRbaZ",
+	"external_url": "ipfs://QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw"
+}`).Normalize()
+	require.NoError(t, err)
+	actualNftMetadata, err := nftData.Metadata.Normalize()
+	require.NoError(t, err)
+	require.Equal(t, expectedNftMetadata, actualNftMetadata)
+
+	// Burn NFT
+	_, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		cli.CmdBurnNFT(),
+		append([]string{class.Id, "token1"}, txArgs...),
+	)
+	require.NoError(t, err)
+
+	// TODO: check events after oursky/likecoin-chain#84
+
+	// Check NFT is burnt
+	_, err = clitestutil.ExecTestCLICmd(
+		ctx,
+		nftcli.GetCmdQueryNFT(),
+		append([]string{class.Id, "token1"}, queryArgs...),
+	)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
 }
