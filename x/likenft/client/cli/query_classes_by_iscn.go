@@ -23,11 +23,11 @@ func CmdListClassesByISCN() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClassesByISCNRequest{
+			params := &types.QueryClassesByISCNIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClassesByISCNAll(context.Background(), params)
+			res, err := queryClient.ClassesByISCNIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -54,7 +54,7 @@ func CmdShowClassesByISCN() *cobra.Command {
 
 			argIscnIdPrefix := args[0]
 
-			params := &types.QueryGetClassesByISCNRequest{
+			params := &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: argIscnIdPrefix,
 			}
 

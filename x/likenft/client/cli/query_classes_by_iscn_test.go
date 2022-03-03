@@ -85,7 +85,7 @@ func TestShowClassesByISCN(t *testing.T) {
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetClassesByISCNResponse
+				var resp types.QueryClassesByISCNResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.ClassesByISCN)
 				require.Equal(t,
@@ -123,7 +123,7 @@ func TestListClassesByISCN(t *testing.T) {
 			args := request(nil, uint64(i), uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByISCN(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClassesByISCNResponse
+			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
 			require.Subset(t,
@@ -139,7 +139,7 @@ func TestListClassesByISCN(t *testing.T) {
 			args := request(next, 0, uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByISCN(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClassesByISCNResponse
+			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
 			require.Subset(t,
@@ -153,7 +153,7 @@ func TestListClassesByISCN(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
 		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByISCN(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllClassesByISCNResponse
+		var resp types.QueryClassesByISCNIndexResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))

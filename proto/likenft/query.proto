@@ -19,12 +19,12 @@ service Query {
     option (google.api.http).get = "/likecoin/likechain/likenft/params";
   }
   // Queries a ClassesByISCN by index.
-	rpc ClassesByISCN(QueryGetClassesByISCNRequest) returns (QueryGetClassesByISCNResponse) {
+	rpc ClassesByISCN(QueryClassesByISCNRequest) returns (QueryClassesByISCNResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn/{iscnIdPrefix}";
 	}
 
 	// Queries a list of ClassesByISCN items.
-	rpc ClassesByISCNAll(QueryAllClassesByISCNRequest) returns (QueryAllClassesByISCNResponse) {
+	rpc ClassesByISCNIndex(QueryClassesByISCNIndexRequest) returns (QueryClassesByISCNIndexResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn";
 	}
 
@@ -45,20 +45,20 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetClassesByISCNRequest {
+message QueryClassesByISCNRequest {
 	  string iscnIdPrefix = 1;
 
 }
 
-message QueryGetClassesByISCNResponse {
+message QueryClassesByISCNResponse {
 	ConcreteClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllClassesByISCNRequest {
+message QueryClassesByISCNIndexRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllClassesByISCNResponse {
+message QueryClassesByISCNIndexResponse {
 	repeated ConcreteClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

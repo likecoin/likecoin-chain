@@ -26,27 +26,27 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetClassesByISCNRequest
-		response *types.QueryGetClassesByISCNResponse
+		request  *types.QueryClassesByISCNRequest
+		response *types.QueryClassesByISCNResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetClassesByISCNRequest{
+			request: &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: msgs[0].IscnIdPrefix,
 			},
-			response: &types.QueryGetClassesByISCNResponse{ClassesByISCN: msgs[0]},
+			response: &types.QueryClassesByISCNResponse{ClassesByISCN: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetClassesByISCNRequest{
+			request: &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: msgs[1].IscnIdPrefix,
 			},
-			response: &types.QueryGetClassesByISCNResponse{ClassesByISCN: msgs[1]},
+			response: &types.QueryClassesByISCNResponse{ClassesByISCN: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetClassesByISCNRequest{
+			request: &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: strconv.Itoa(100000),
 			},
 			err: status.Error(codes.InvalidArgument, "not found"),
@@ -77,8 +77,8 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 	_msgs := createNClassesByISCN(keeper, ctx, 5)
 	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllClassesByISCNRequest {
-		return &types.QueryAllClassesByISCNRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryClassesByISCNIndexRequest {
+		return &types.QueryClassesByISCNIndexRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -90,7 +90,7 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClassesByISCNAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.ClassesByISCNIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
 			require.Subset(t,
@@ -103,7 +103,7 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClassesByISCNAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.ClassesByISCNIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
 			require.Subset(t,
@@ -114,7 +114,7 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.ClassesByISCNAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.ClassesByISCNIndex(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
@@ -123,7 +123,7 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.ClassesByISCNAll(wctx, nil)
+		_, err := keeper.ClassesByISCNIndex(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

@@ -114,22 +114,22 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryGetClassesByISCNRequest struct {
+type QueryClassesByISCNRequest struct {
 	IscnIdPrefix string `protobuf:"bytes,1,opt,name=iscnIdPrefix,proto3" json:"iscnIdPrefix,omitempty"`
 }
 
-func (m *QueryGetClassesByISCNRequest) Reset()         { *m = QueryGetClassesByISCNRequest{} }
-func (m *QueryGetClassesByISCNRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetClassesByISCNRequest) ProtoMessage()    {}
-func (*QueryGetClassesByISCNRequest) Descriptor() ([]byte, []int) {
+func (m *QueryClassesByISCNRequest) Reset()         { *m = QueryClassesByISCNRequest{} }
+func (m *QueryClassesByISCNRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByISCNRequest) ProtoMessage()    {}
+func (*QueryClassesByISCNRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{2}
 }
-func (m *QueryGetClassesByISCNRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryClassesByISCNRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetClassesByISCNRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryClassesByISCNRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetClassesByISCNRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryClassesByISCNRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -139,41 +139,41 @@ func (m *QueryGetClassesByISCNRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *QueryGetClassesByISCNRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetClassesByISCNRequest.Merge(m, src)
+func (m *QueryClassesByISCNRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByISCNRequest.Merge(m, src)
 }
-func (m *QueryGetClassesByISCNRequest) XXX_Size() int {
+func (m *QueryClassesByISCNRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetClassesByISCNRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetClassesByISCNRequest.DiscardUnknown(m)
+func (m *QueryClassesByISCNRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByISCNRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetClassesByISCNRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryClassesByISCNRequest proto.InternalMessageInfo
 
-func (m *QueryGetClassesByISCNRequest) GetIscnIdPrefix() string {
+func (m *QueryClassesByISCNRequest) GetIscnIdPrefix() string {
 	if m != nil {
 		return m.IscnIdPrefix
 	}
 	return ""
 }
 
-type QueryGetClassesByISCNResponse struct {
+type QueryClassesByISCNResponse struct {
 	ClassesByISCN ConcreteClassesByISCN `protobuf:"bytes,1,opt,name=classesByISCN,proto3" json:"classesByISCN"`
 }
 
-func (m *QueryGetClassesByISCNResponse) Reset()         { *m = QueryGetClassesByISCNResponse{} }
-func (m *QueryGetClassesByISCNResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetClassesByISCNResponse) ProtoMessage()    {}
-func (*QueryGetClassesByISCNResponse) Descriptor() ([]byte, []int) {
+func (m *QueryClassesByISCNResponse) Reset()         { *m = QueryClassesByISCNResponse{} }
+func (m *QueryClassesByISCNResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByISCNResponse) ProtoMessage()    {}
+func (*QueryClassesByISCNResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{3}
 }
-func (m *QueryGetClassesByISCNResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryClassesByISCNResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetClassesByISCNResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryClassesByISCNResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetClassesByISCNResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryClassesByISCNResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -183,41 +183,41 @@ func (m *QueryGetClassesByISCNResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryGetClassesByISCNResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetClassesByISCNResponse.Merge(m, src)
+func (m *QueryClassesByISCNResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByISCNResponse.Merge(m, src)
 }
-func (m *QueryGetClassesByISCNResponse) XXX_Size() int {
+func (m *QueryClassesByISCNResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetClassesByISCNResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetClassesByISCNResponse.DiscardUnknown(m)
+func (m *QueryClassesByISCNResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByISCNResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetClassesByISCNResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryClassesByISCNResponse proto.InternalMessageInfo
 
-func (m *QueryGetClassesByISCNResponse) GetClassesByISCN() ConcreteClassesByISCN {
+func (m *QueryClassesByISCNResponse) GetClassesByISCN() ConcreteClassesByISCN {
 	if m != nil {
 		return m.ClassesByISCN
 	}
 	return ConcreteClassesByISCN{}
 }
 
-type QueryAllClassesByISCNRequest struct {
+type QueryClassesByISCNIndexRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllClassesByISCNRequest) Reset()         { *m = QueryAllClassesByISCNRequest{} }
-func (m *QueryAllClassesByISCNRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllClassesByISCNRequest) ProtoMessage()    {}
-func (*QueryAllClassesByISCNRequest) Descriptor() ([]byte, []int) {
+func (m *QueryClassesByISCNIndexRequest) Reset()         { *m = QueryClassesByISCNIndexRequest{} }
+func (m *QueryClassesByISCNIndexRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByISCNIndexRequest) ProtoMessage()    {}
+func (*QueryClassesByISCNIndexRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{4}
 }
-func (m *QueryAllClassesByISCNRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryClassesByISCNIndexRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllClassesByISCNRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryClassesByISCNIndexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllClassesByISCNRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryClassesByISCNIndexRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -227,42 +227,42 @@ func (m *QueryAllClassesByISCNRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *QueryAllClassesByISCNRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllClassesByISCNRequest.Merge(m, src)
+func (m *QueryClassesByISCNIndexRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByISCNIndexRequest.Merge(m, src)
 }
-func (m *QueryAllClassesByISCNRequest) XXX_Size() int {
+func (m *QueryClassesByISCNIndexRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllClassesByISCNRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllClassesByISCNRequest.DiscardUnknown(m)
+func (m *QueryClassesByISCNIndexRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByISCNIndexRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllClassesByISCNRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryClassesByISCNIndexRequest proto.InternalMessageInfo
 
-func (m *QueryAllClassesByISCNRequest) GetPagination() *query.PageRequest {
+func (m *QueryClassesByISCNIndexRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryAllClassesByISCNResponse struct {
+type QueryClassesByISCNIndexResponse struct {
 	ClassesByISCN []ConcreteClassesByISCN `protobuf:"bytes,1,rep,name=classesByISCN,proto3" json:"classesByISCN"`
 	Pagination    *query.PageResponse     `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllClassesByISCNResponse) Reset()         { *m = QueryAllClassesByISCNResponse{} }
-func (m *QueryAllClassesByISCNResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllClassesByISCNResponse) ProtoMessage()    {}
-func (*QueryAllClassesByISCNResponse) Descriptor() ([]byte, []int) {
+func (m *QueryClassesByISCNIndexResponse) Reset()         { *m = QueryClassesByISCNIndexResponse{} }
+func (m *QueryClassesByISCNIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByISCNIndexResponse) ProtoMessage()    {}
+func (*QueryClassesByISCNIndexResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{5}
 }
-func (m *QueryAllClassesByISCNResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryClassesByISCNIndexResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllClassesByISCNResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryClassesByISCNIndexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllClassesByISCNResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryClassesByISCNIndexResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -272,26 +272,26 @@ func (m *QueryAllClassesByISCNResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryAllClassesByISCNResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllClassesByISCNResponse.Merge(m, src)
+func (m *QueryClassesByISCNIndexResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByISCNIndexResponse.Merge(m, src)
 }
-func (m *QueryAllClassesByISCNResponse) XXX_Size() int {
+func (m *QueryClassesByISCNIndexResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllClassesByISCNResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllClassesByISCNResponse.DiscardUnknown(m)
+func (m *QueryClassesByISCNIndexResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByISCNIndexResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllClassesByISCNResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryClassesByISCNIndexResponse proto.InternalMessageInfo
 
-func (m *QueryAllClassesByISCNResponse) GetClassesByISCN() []ConcreteClassesByISCN {
+func (m *QueryClassesByISCNIndexResponse) GetClassesByISCN() []ConcreteClassesByISCN {
 	if m != nil {
 		return m.ClassesByISCN
 	}
 	return nil
 }
 
-func (m *QueryAllClassesByISCNResponse) GetPagination() *query.PageResponse {
+func (m *QueryClassesByISCNIndexResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -413,10 +413,10 @@ func (m *QueryISCNByClassResponse) GetLatestRecord() types.QueryResponseRecord {
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "likecoin.likechain.likenft.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "likecoin.likechain.likenft.QueryParamsResponse")
-	proto.RegisterType((*QueryGetClassesByISCNRequest)(nil), "likecoin.likechain.likenft.QueryGetClassesByISCNRequest")
-	proto.RegisterType((*QueryGetClassesByISCNResponse)(nil), "likecoin.likechain.likenft.QueryGetClassesByISCNResponse")
-	proto.RegisterType((*QueryAllClassesByISCNRequest)(nil), "likecoin.likechain.likenft.QueryAllClassesByISCNRequest")
-	proto.RegisterType((*QueryAllClassesByISCNResponse)(nil), "likecoin.likechain.likenft.QueryAllClassesByISCNResponse")
+	proto.RegisterType((*QueryClassesByISCNRequest)(nil), "likecoin.likechain.likenft.QueryClassesByISCNRequest")
+	proto.RegisterType((*QueryClassesByISCNResponse)(nil), "likecoin.likechain.likenft.QueryClassesByISCNResponse")
+	proto.RegisterType((*QueryClassesByISCNIndexRequest)(nil), "likecoin.likechain.likenft.QueryClassesByISCNIndexRequest")
+	proto.RegisterType((*QueryClassesByISCNIndexResponse)(nil), "likecoin.likechain.likenft.QueryClassesByISCNIndexResponse")
 	proto.RegisterType((*QueryISCNByClassRequest)(nil), "likecoin.likechain.likenft.QueryISCNByClassRequest")
 	proto.RegisterType((*QueryISCNByClassResponse)(nil), "likecoin.likechain.likenft.QueryISCNByClassResponse")
 }
@@ -424,49 +424,49 @@ func init() {
 func init() { proto.RegisterFile("likenft/query.proto", fileDescriptor_af5bbcbe472f31b2) }
 
 var fileDescriptor_af5bbcbe472f31b2 = []byte{
-	// 669 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x4f, 0x6b, 0xd4, 0x4e,
-	0x18, 0xde, 0xe9, 0xbf, 0x1f, 0x9d, 0xb6, 0x50, 0xa6, 0x0b, 0xbf, 0x25, 0xb4, 0xb1, 0x8c, 0x45,
-	0x4b, 0xa5, 0x19, 0xda, 0x55, 0xf0, 0xdf, 0xc1, 0x6e, 0xc1, 0xd2, 0x83, 0x52, 0x23, 0x28, 0x08,
-	0x52, 0x66, 0xd3, 0xd9, 0x34, 0x98, 0x66, 0xd2, 0xcc, 0x54, 0xbb, 0x94, 0x7a, 0xf0, 0x13, 0x08,
-	0xe2, 0x47, 0xf1, 0xe6, 0xdd, 0x7a, 0x2b, 0x78, 0xf1, 0x24, 0xda, 0xfa, 0x41, 0x24, 0x33, 0x93,
-	0x9a, 0xb8, 0xcd, 0xee, 0x56, 0xbc, 0xcd, 0xbc, 0x79, 0x9f, 0xf7, 0x79, 0x9e, 0x79, 0xe7, 0x9d,
-	0xc0, 0xa9, 0x30, 0x78, 0xc1, 0xa2, 0x96, 0x24, 0xbb, 0x7b, 0x2c, 0x69, 0x3b, 0x71, 0xc2, 0x25,
-	0x47, 0x56, 0x1a, 0xf4, 0x78, 0x10, 0x39, 0x6a, 0xb1, 0x4d, 0xcd, 0x2a, 0x6a, 0x49, 0xab, 0xea,
-	0x73, 0x9f, 0xab, 0x34, 0x92, 0xae, 0x34, 0xc2, 0x9a, 0xf6, 0x39, 0xf7, 0x43, 0x46, 0x68, 0x1c,
-	0x10, 0x1a, 0x45, 0x5c, 0x52, 0x19, 0xf0, 0x48, 0x98, 0xaf, 0x0b, 0x1e, 0x17, 0x3b, 0x5c, 0x90,
-	0x26, 0x15, 0x4c, 0x13, 0x91, 0x97, 0x4b, 0x4d, 0x26, 0xe9, 0x12, 0x89, 0xa9, 0x1f, 0x44, 0x2a,
-	0xd9, 0xe4, 0x56, 0x33, 0x41, 0x31, 0x4d, 0xe8, 0x4e, 0x56, 0x61, 0x26, 0x8b, 0x7a, 0x21, 0x15,
-	0x82, 0x89, 0xcd, 0x66, 0x7b, 0x33, 0x10, 0x5e, 0x06, 0x9a, 0x4c, 0xd7, 0x79, 0x0b, 0xb8, 0x0a,
-	0xd1, 0xa3, 0x74, 0xbb, 0xa1, 0xaa, 0xb8, 0x6c, 0x77, 0x8f, 0x09, 0x89, 0x9f, 0xc2, 0xa9, 0x42,
-	0x54, 0xc4, 0x3c, 0x12, 0x0c, 0xdd, 0x83, 0x23, 0x9a, 0xad, 0x06, 0x66, 0xc1, 0xfc, 0xd8, 0x32,
-	0x76, 0xca, 0x0f, 0xc0, 0xd1, 0xd8, 0xc6, 0xd0, 0xd1, 0xb7, 0x4b, 0x15, 0xd7, 0xe0, 0x70, 0x03,
-	0x4e, 0xab, 0xc2, 0x6b, 0x4c, 0xae, 0x6a, 0x85, 0x8d, 0xf6, 0xfa, 0xe3, 0xd5, 0x87, 0x86, 0x18,
-	0x61, 0x38, 0x9e, 0x4a, 0x5c, 0xdf, 0xda, 0x48, 0x58, 0x2b, 0xd8, 0x57, 0x3c, 0xa3, 0x6e, 0x21,
-	0x86, 0x5f, 0xc3, 0x99, 0x92, 0x1a, 0x46, 0xe6, 0x73, 0x38, 0xe1, 0xe5, 0x3f, 0x18, 0xb5, 0x4b,
-	0xdd, 0xd4, 0xae, 0xf2, 0xc8, 0x4b, 0x98, 0x64, 0x85, 0x8a, 0x46, 0x7c, 0xb1, 0x1a, 0x6e, 0x19,
-	0x0f, 0x2b, 0x61, 0x78, 0xae, 0x87, 0xfb, 0x10, 0xfe, 0xee, 0x96, 0xe1, 0xbe, 0xe2, 0xe8, 0xd6,
-	0x3a, 0x69, 0x6b, 0x1d, 0xdd, 0x00, 0xd3, 0x5a, 0x67, 0x83, 0xfa, 0xcc, 0x60, 0xdd, 0x1c, 0x12,
-	0x7f, 0x02, 0xc6, 0x68, 0x27, 0x51, 0xb9, 0xd1, 0xc1, 0x7f, 0x67, 0x14, 0xad, 0x15, 0x8c, 0x0c,
-	0x28, 0x23, 0x57, 0x7b, 0x1a, 0xd1, 0xda, 0x0a, 0x4e, 0xea, 0xf0, 0x7f, 0x65, 0x44, 0x51, 0xb5,
-	0x15, 0x73, 0x76, 0x58, 0x35, 0xf8, 0x9f, 0x22, 0x5d, 0xdf, 0x32, 0xbd, 0xce, 0xb6, 0xf8, 0x33,
-	0x80, 0xb5, 0x4e, 0x94, 0x71, 0xde, 0xc7, 0x3d, 0x41, 0x55, 0x38, 0xcc, 0x5f, 0x45, 0x2c, 0x51,
-	0xca, 0x47, 0x5d, 0xbd, 0x41, 0x73, 0x70, 0x22, 0xa4, 0x92, 0x09, 0xf9, 0x84, 0x25, 0x22, 0xf5,
-	0x35, 0x38, 0x0b, 0xe6, 0x87, 0xdc, 0x62, 0x10, 0x3d, 0x80, 0xe3, 0x3a, 0xe0, 0x32, 0x8f, 0x27,
-	0x5b, 0xb5, 0x21, 0x65, 0xfe, 0x72, 0xee, 0x3c, 0xd5, 0x54, 0x29, 0x7d, 0x67, 0x96, 0x55, 0xaa,
-	0x39, 0xca, 0x02, 0x7c, 0xf9, 0xc7, 0x30, 0x1c, 0x56, 0xb9, 0xe8, 0x3d, 0x80, 0x23, 0x7a, 0x32,
-	0x90, 0xd3, 0xad, 0x4d, 0x9d, 0x43, 0x69, 0x91, 0xbe, 0xf3, 0xb5, 0x1e, 0xbc, 0xf0, 0xe6, 0xcb,
-	0xcf, 0x77, 0x03, 0x73, 0x08, 0x93, 0x0c, 0x48, 0xce, 0x80, 0xa4, 0xf8, 0x7c, 0xa0, 0x23, 0x00,
-	0x27, 0x0a, 0x57, 0x02, 0xdd, 0xec, 0x49, 0x57, 0x32, 0xc4, 0xd6, 0xad, 0xbf, 0x40, 0x1a, 0xc9,
-	0x0d, 0x25, 0xf9, 0x2e, 0xba, 0xdd, 0x4d, 0xf2, 0x1f, 0x6f, 0x1b, 0x39, 0xc8, 0xb7, 0xfd, 0x10,
-	0x7d, 0x04, 0x70, 0xb2, 0x50, 0x7d, 0x25, 0x0c, 0xfb, 0x70, 0x53, 0x32, 0xce, 0x7d, 0xb8, 0x29,
-	0x9b, 0x4f, 0x5c, 0x57, 0x6e, 0x16, 0xd1, 0xb5, 0x0b, 0xb8, 0x41, 0x1f, 0x00, 0x1c, 0xcb, 0x5d,
-	0x79, 0x54, 0xef, 0xc9, 0xdf, 0x39, 0x56, 0xd6, 0xf5, 0x8b, 0x81, 0x8c, 0xde, 0x3b, 0x4a, 0xef,
-	0x0d, 0x54, 0xef, 0xa6, 0x37, 0x15, 0x99, 0x8a, 0x55, 0xba, 0xc9, 0x81, 0x19, 0xd7, 0xc3, 0xc6,
-	0xda, 0xd1, 0x89, 0x0d, 0x8e, 0x4f, 0x6c, 0xf0, 0xfd, 0xc4, 0x06, 0x6f, 0x4f, 0xed, 0xca, 0xf1,
-	0xa9, 0x5d, 0xf9, 0x7a, 0x6a, 0x57, 0x9e, 0x2d, 0xfa, 0x81, 0xdc, 0xde, 0x6b, 0x3a, 0x1e, 0xdf,
-	0x39, 0xaf, 0xf0, 0xfe, 0x59, 0x69, 0xd9, 0x8e, 0x99, 0x68, 0x8e, 0xa8, 0x3f, 0x53, 0xfd, 0x57,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0x34, 0x1f, 0xf5, 0xd7, 0x73, 0x07, 0x00, 0x00,
+	// 666 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0xdf, 0x6a, 0x13, 0x4f,
+	0x14, 0xc7, 0xb3, 0xfd, 0xf7, 0xa3, 0xd3, 0x16, 0x7e, 0x4c, 0x03, 0xc6, 0x45, 0xb7, 0x65, 0x2d,
+	0x5a, 0x2a, 0xdd, 0xa1, 0x8d, 0xf5, 0xa2, 0x15, 0x94, 0x04, 0x2c, 0xb9, 0x50, 0xe2, 0x0a, 0x0a,
+	0x82, 0x94, 0xc9, 0x66, 0xb2, 0x59, 0x4c, 0x76, 0xb6, 0x3b, 0x13, 0x4d, 0x08, 0xbd, 0xf1, 0x09,
+	0x04, 0xf1, 0x51, 0x7c, 0x01, 0xaf, 0xea, 0x5d, 0xc1, 0x1b, 0xaf, 0x44, 0x13, 0x1f, 0x44, 0x76,
+	0x66, 0x36, 0xee, 0x9a, 0x7f, 0x8d, 0x78, 0x37, 0x3b, 0x39, 0xdf, 0x73, 0x3e, 0xdf, 0x73, 0xf6,
+	0x6c, 0xc0, 0x7a, 0xc3, 0x7b, 0x45, 0xfc, 0x1a, 0x47, 0xa7, 0x2d, 0x12, 0x76, 0xac, 0x20, 0xa4,
+	0x9c, 0x42, 0x3d, 0xba, 0x74, 0xa8, 0xe7, 0x5b, 0xe2, 0x50, 0xc7, 0xea, 0xe4, 0xd7, 0xb8, 0x9e,
+	0x75, 0xa9, 0x4b, 0x45, 0x18, 0x8a, 0x4e, 0x52, 0xa1, 0x5f, 0x73, 0x29, 0x75, 0x1b, 0x04, 0xe1,
+	0xc0, 0x43, 0xd8, 0xf7, 0x29, 0xc7, 0xdc, 0xa3, 0x3e, 0x53, 0xbf, 0xee, 0x38, 0x94, 0x35, 0x29,
+	0x43, 0x15, 0xcc, 0x88, 0x2c, 0x84, 0x5e, 0xef, 0x55, 0x08, 0xc7, 0x7b, 0x28, 0xc0, 0xae, 0xe7,
+	0x8b, 0x60, 0x15, 0x9b, 0x8d, 0x81, 0x02, 0x1c, 0xe2, 0x66, 0x9c, 0xe1, 0x7a, 0x7c, 0xeb, 0x34,
+	0x30, 0x63, 0x84, 0x9d, 0x54, 0x3a, 0x27, 0x1e, 0x73, 0x62, 0xd1, 0xff, 0xd1, 0x39, 0x69, 0xc1,
+	0xcc, 0x02, 0xf8, 0x24, 0x7a, 0x2c, 0x8b, 0x2c, 0x36, 0x39, 0x6d, 0x11, 0xc6, 0xcd, 0xe7, 0x60,
+	0x3d, 0x75, 0xcb, 0x02, 0xea, 0x33, 0x02, 0x1f, 0x80, 0x25, 0x59, 0x2d, 0xa7, 0x6d, 0x6a, 0xdb,
+	0x2b, 0xfb, 0xa6, 0x35, 0xbe, 0x01, 0x96, 0xd4, 0x16, 0x16, 0xce, 0xbf, 0x6d, 0x64, 0x6c, 0xa5,
+	0x33, 0xef, 0x83, 0xab, 0x22, 0x71, 0x51, 0xe2, 0x15, 0x3a, 0xa5, 0xa7, 0xc5, 0xc7, 0xaa, 0x2a,
+	0x34, 0xc1, 0x6a, 0xc4, 0x57, 0xaa, 0x96, 0x43, 0x52, 0xf3, 0xda, 0xa2, 0xc8, 0xb2, 0x9d, 0xba,
+	0x33, 0xbb, 0x40, 0x1f, 0x95, 0x40, 0x01, 0xbe, 0x04, 0x6b, 0x4e, 0xf2, 0x07, 0xc5, 0xb9, 0x37,
+	0x89, 0xb3, 0x48, 0x7d, 0x27, 0x24, 0x9c, 0xa4, 0x32, 0x2a, 0xec, 0x74, 0x36, 0xb3, 0x0e, 0x8c,
+	0xe1, 0xe2, 0x25, 0xbf, 0x4a, 0xda, 0xb1, 0x85, 0x87, 0x00, 0xfc, 0x9e, 0x94, 0xaa, 0x7e, 0xd3,
+	0x92, 0x63, 0xb5, 0xa2, 0xb1, 0x5a, 0xb2, 0xf9, 0x6a, 0xac, 0x56, 0x19, 0xbb, 0x44, 0x69, 0xed,
+	0x84, 0xd2, 0xfc, 0xac, 0x81, 0x8d, 0xb1, 0xa5, 0xc6, 0x9b, 0x9d, 0xff, 0x77, 0x66, 0xe1, 0x71,
+	0xca, 0xca, 0x9c, 0xb0, 0x72, 0x6b, 0xaa, 0x15, 0xc9, 0x96, 0xf2, 0x92, 0x07, 0x57, 0x84, 0x15,
+	0x51, 0x4a, 0x1a, 0x8a, 0xdb, 0x95, 0x03, 0xff, 0x89, 0xa2, 0xa5, 0xaa, 0x1a, 0x76, 0xfc, 0x18,
+	0x35, 0x20, 0x37, 0xac, 0x52, 0xce, 0x2f, 0xf1, 0xa2, 0xc0, 0x2c, 0x58, 0xa4, 0x6f, 0x7c, 0x12,
+	0x0a, 0xf2, 0x65, 0x5b, 0x3e, 0xc0, 0x2d, 0xb0, 0xd6, 0xc0, 0x9c, 0x30, 0xfe, 0x8c, 0x84, 0x2c,
+	0xf2, 0x35, 0xbf, 0xa9, 0x6d, 0x2f, 0xd8, 0xe9, 0x4b, 0xf8, 0x08, 0xac, 0xca, 0x0b, 0x9b, 0x38,
+	0x34, 0xac, 0xe6, 0x16, 0x84, 0xf9, 0x1b, 0x89, 0x7e, 0x8a, 0x9d, 0x12, 0x7c, 0x03, 0xcb, 0x22,
+	0x54, 0xb5, 0x32, 0x25, 0xdf, 0xff, 0xb1, 0x08, 0x16, 0x45, 0x2c, 0xfc, 0xa0, 0x81, 0x25, 0xb9,
+	0x17, 0xd0, 0x9a, 0x34, 0xa6, 0xe1, 0x95, 0xd4, 0xd1, 0xa5, 0xe3, 0x25, 0x8f, 0xb9, 0xf3, 0xf6,
+	0xcb, 0xcf, 0xf7, 0x73, 0x5b, 0xd0, 0x44, 0xb1, 0x10, 0x0d, 0x84, 0x28, 0xfd, 0xf1, 0x80, 0x9f,
+	0x34, 0xb0, 0x96, 0x7a, 0x25, 0xe0, 0xc1, 0xd4, 0x72, 0xa3, 0x56, 0x58, 0xbf, 0x3b, 0xab, 0x4c,
+	0xc1, 0x16, 0x04, 0xec, 0x3d, 0x78, 0x38, 0x09, 0xf6, 0x8f, 0x6f, 0x1a, 0xea, 0x26, 0x07, 0x7e,
+	0x16, 0x99, 0x80, 0xc3, 0xeb, 0x02, 0x0f, 0x67, 0x43, 0x4a, 0xae, 0xb3, 0x7e, 0xf4, 0x57, 0x5a,
+	0xe5, 0x29, 0x2f, 0x3c, 0xed, 0xc2, 0xdb, 0x33, 0x78, 0x82, 0x1f, 0x35, 0xb0, 0x92, 0x78, 0xe5,
+	0x61, 0x7e, 0x2a, 0xc1, 0xf0, 0x5a, 0xe9, 0x77, 0x66, 0x13, 0x29, 0xde, 0x23, 0xc1, 0x7b, 0x00,
+	0xf3, 0x93, 0x78, 0x23, 0xc8, 0x08, 0x56, 0x70, 0xa3, 0xae, 0x5a, 0xd7, 0xb3, 0xc2, 0xf1, 0x79,
+	0xcf, 0xd0, 0x2e, 0x7a, 0x86, 0xf6, 0xbd, 0x67, 0x68, 0xef, 0xfa, 0x46, 0xe6, 0xa2, 0x6f, 0x64,
+	0xbe, 0xf6, 0x8d, 0xcc, 0x8b, 0x5d, 0xd7, 0xe3, 0xf5, 0x56, 0xc5, 0x72, 0x68, 0x73, 0x54, 0xe2,
+	0xf6, 0x20, 0x35, 0xef, 0x04, 0x84, 0x55, 0x96, 0xc4, 0xff, 0x52, 0xfe, 0x57, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0xe9, 0xaa, 0x48, 0xcd, 0x71, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -484,9 +484,9 @@ type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a ClassesByISCN by index.
-	ClassesByISCN(ctx context.Context, in *QueryGetClassesByISCNRequest, opts ...grpc.CallOption) (*QueryGetClassesByISCNResponse, error)
+	ClassesByISCN(ctx context.Context, in *QueryClassesByISCNRequest, opts ...grpc.CallOption) (*QueryClassesByISCNResponse, error)
 	// Queries a list of ClassesByISCN items.
-	ClassesByISCNAll(ctx context.Context, in *QueryAllClassesByISCNRequest, opts ...grpc.CallOption) (*QueryAllClassesByISCNResponse, error)
+	ClassesByISCNIndex(ctx context.Context, in *QueryClassesByISCNIndexRequest, opts ...grpc.CallOption) (*QueryClassesByISCNIndexResponse, error)
 	// Queries a list of ISCNByClass items.
 	ISCNByClass(ctx context.Context, in *QueryISCNByClassRequest, opts ...grpc.CallOption) (*QueryISCNByClassResponse, error)
 }
@@ -508,8 +508,8 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) ClassesByISCN(ctx context.Context, in *QueryGetClassesByISCNRequest, opts ...grpc.CallOption) (*QueryGetClassesByISCNResponse, error) {
-	out := new(QueryGetClassesByISCNResponse)
+func (c *queryClient) ClassesByISCN(ctx context.Context, in *QueryClassesByISCNRequest, opts ...grpc.CallOption) (*QueryClassesByISCNResponse, error) {
+	out := new(QueryClassesByISCNResponse)
 	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClassesByISCN", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -517,9 +517,9 @@ func (c *queryClient) ClassesByISCN(ctx context.Context, in *QueryGetClassesByIS
 	return out, nil
 }
 
-func (c *queryClient) ClassesByISCNAll(ctx context.Context, in *QueryAllClassesByISCNRequest, opts ...grpc.CallOption) (*QueryAllClassesByISCNResponse, error) {
-	out := new(QueryAllClassesByISCNResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClassesByISCNAll", in, out, opts...)
+func (c *queryClient) ClassesByISCNIndex(ctx context.Context, in *QueryClassesByISCNIndexRequest, opts ...grpc.CallOption) (*QueryClassesByISCNIndexResponse, error) {
+	out := new(QueryClassesByISCNIndexResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClassesByISCNIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -540,9 +540,9 @@ type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a ClassesByISCN by index.
-	ClassesByISCN(context.Context, *QueryGetClassesByISCNRequest) (*QueryGetClassesByISCNResponse, error)
+	ClassesByISCN(context.Context, *QueryClassesByISCNRequest) (*QueryClassesByISCNResponse, error)
 	// Queries a list of ClassesByISCN items.
-	ClassesByISCNAll(context.Context, *QueryAllClassesByISCNRequest) (*QueryAllClassesByISCNResponse, error)
+	ClassesByISCNIndex(context.Context, *QueryClassesByISCNIndexRequest) (*QueryClassesByISCNIndexResponse, error)
 	// Queries a list of ISCNByClass items.
 	ISCNByClass(context.Context, *QueryISCNByClassRequest) (*QueryISCNByClassResponse, error)
 }
@@ -554,11 +554,11 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) ClassesByISCN(ctx context.Context, req *QueryGetClassesByISCNRequest) (*QueryGetClassesByISCNResponse, error) {
+func (*UnimplementedQueryServer) ClassesByISCN(ctx context.Context, req *QueryClassesByISCNRequest) (*QueryClassesByISCNResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassesByISCN not implemented")
 }
-func (*UnimplementedQueryServer) ClassesByISCNAll(ctx context.Context, req *QueryAllClassesByISCNRequest) (*QueryAllClassesByISCNResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClassesByISCNAll not implemented")
+func (*UnimplementedQueryServer) ClassesByISCNIndex(ctx context.Context, req *QueryClassesByISCNIndexRequest) (*QueryClassesByISCNIndexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassesByISCNIndex not implemented")
 }
 func (*UnimplementedQueryServer) ISCNByClass(ctx context.Context, req *QueryISCNByClassRequest) (*QueryISCNByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ISCNByClass not implemented")
@@ -587,7 +587,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _Query_ClassesByISCN_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetClassesByISCNRequest)
+	in := new(QueryClassesByISCNRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -599,25 +599,25 @@ func _Query_ClassesByISCN_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/likecoin.likechain.likenft.Query/ClassesByISCN",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassesByISCN(ctx, req.(*QueryGetClassesByISCNRequest))
+		return srv.(QueryServer).ClassesByISCN(ctx, req.(*QueryClassesByISCNRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClassesByISCNAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllClassesByISCNRequest)
+func _Query_ClassesByISCNIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassesByISCNIndexRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClassesByISCNAll(ctx, in)
+		return srv.(QueryServer).ClassesByISCNIndex(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Query/ClassesByISCNAll",
+		FullMethod: "/likecoin.likechain.likenft.Query/ClassesByISCNIndex",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassesByISCNAll(ctx, req.(*QueryAllClassesByISCNRequest))
+		return srv.(QueryServer).ClassesByISCNIndex(ctx, req.(*QueryClassesByISCNIndexRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -653,8 +653,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ClassesByISCN_Handler,
 		},
 		{
-			MethodName: "ClassesByISCNAll",
-			Handler:    _Query_ClassesByISCNAll_Handler,
+			MethodName: "ClassesByISCNIndex",
+			Handler:    _Query_ClassesByISCNIndex_Handler,
 		},
 		{
 			MethodName: "ISCNByClass",
@@ -721,7 +721,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetClassesByISCNRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByISCNRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -731,12 +731,12 @@ func (m *QueryGetClassesByISCNRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetClassesByISCNRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetClassesByISCNRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -751,7 +751,7 @@ func (m *QueryGetClassesByISCNRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetClassesByISCNResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByISCNResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -761,12 +761,12 @@ func (m *QueryGetClassesByISCNResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetClassesByISCNResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetClassesByISCNResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -784,7 +784,7 @@ func (m *QueryGetClassesByISCNResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllClassesByISCNRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByISCNIndexRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -794,12 +794,12 @@ func (m *QueryAllClassesByISCNRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllClassesByISCNRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNIndexRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllClassesByISCNRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNIndexRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -819,7 +819,7 @@ func (m *QueryAllClassesByISCNRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllClassesByISCNResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByISCNIndexResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -829,12 +829,12 @@ func (m *QueryAllClassesByISCNResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllClassesByISCNResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNIndexResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllClassesByISCNResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByISCNIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -981,7 +981,7 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetClassesByISCNRequest) Size() (n int) {
+func (m *QueryClassesByISCNRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -994,7 +994,7 @@ func (m *QueryGetClassesByISCNRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetClassesByISCNResponse) Size() (n int) {
+func (m *QueryClassesByISCNResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1005,7 +1005,7 @@ func (m *QueryGetClassesByISCNResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllClassesByISCNRequest) Size() (n int) {
+func (m *QueryClassesByISCNIndexRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1018,7 +1018,7 @@ func (m *QueryAllClassesByISCNRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllClassesByISCNResponse) Size() (n int) {
+func (m *QueryClassesByISCNIndexResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1211,7 +1211,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetClassesByISCNRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByISCNRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1234,10 +1234,10 @@ func (m *QueryGetClassesByISCNRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetClassesByISCNRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByISCNRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetClassesByISCNRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByISCNRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1293,7 +1293,7 @@ func (m *QueryGetClassesByISCNRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetClassesByISCNResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByISCNResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1316,10 +1316,10 @@ func (m *QueryGetClassesByISCNResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetClassesByISCNResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByISCNResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetClassesByISCNResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByISCNResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1376,7 +1376,7 @@ func (m *QueryGetClassesByISCNResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllClassesByISCNRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByISCNIndexRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1399,10 +1399,10 @@ func (m *QueryAllClassesByISCNRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllClassesByISCNRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByISCNIndexRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllClassesByISCNRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByISCNIndexRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1462,7 +1462,7 @@ func (m *QueryAllClassesByISCNRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllClassesByISCNResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByISCNIndexResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1485,10 +1485,10 @@ func (m *QueryAllClassesByISCNResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllClassesByISCNResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByISCNIndexResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllClassesByISCNResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByISCNIndexResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

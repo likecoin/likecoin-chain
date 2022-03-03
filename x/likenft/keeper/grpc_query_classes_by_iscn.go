@@ -30,7 +30,7 @@ func (k Keeper) concretizeClassesByISCN(ctx sdk.Context, val types.ClassesByISCN
 	}
 }
 
-func (k Keeper) ClassesByISCNAll(c context.Context, req *types.QueryAllClassesByISCNRequest) (*types.QueryAllClassesByISCNResponse, error) {
+func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByISCNIndexRequest) (*types.QueryClassesByISCNIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -57,10 +57,10 @@ func (k Keeper) ClassesByISCNAll(c context.Context, req *types.QueryAllClassesBy
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllClassesByISCNResponse{ClassesByISCN: concreteClassesByISCNs, Pagination: pageRes}, nil
+	return &types.QueryClassesByISCNIndexResponse{ClassesByISCN: concreteClassesByISCNs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryGetClassesByISCNRequest) (*types.QueryGetClassesByISCNResponse, error) {
+func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRequest) (*types.QueryClassesByISCNResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -76,5 +76,5 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryGetClassesByISC
 
 	concretized := k.concretizeClassesByISCN(ctx, val)
 
-	return &types.QueryGetClassesByISCNResponse{ClassesByISCN: concretized}, nil
+	return &types.QueryClassesByISCNResponse{ClassesByISCN: concretized}, nil
 }
