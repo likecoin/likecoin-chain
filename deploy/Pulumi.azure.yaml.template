@@ -1,0 +1,13 @@
+config:
+  likecoin-skynet:cloud-provider: azure
+  likecoin-skynet:node-genesis: https://raw.githubusercontent.com/oursky/likecoin-skynet/master/genesis.json
+  likecoin-skynet:node-moniker: likecoin
+  likecoin-skynet:node-seeds: 38d4770245a3f50da3d6e12ff25eaa7065cec431@52.148.89.139:26656,3ed370332975b6ddc1b842774f72bebee0e89d7f@34.126.191.131:26656
+  likecoin-skynet:resource-group-name: likecoin
+  likecoin-skynet:vm-password: 
+  likecoin-skynet:vm-private-key:
+  likecoin-skynet:vm-public-key:
+  likecoin-skynet:vm-ssh-allow-list: ""
+  likecoin-skynet:vm-username: likecoin
+  likecoin-skynet:vm-hardware: Standard_B2s
+  likecoin-skynet:vm-disk-size: 50

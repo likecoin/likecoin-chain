@@ -1,0 +1,18 @@
+[Unit]
+Description=Likecoin node
+After=network.target
+
+[Service]
+User=<USER>
+WorkingDirectory=<WORKDIR>
+ExecStart=<WORKDIR>/cosmovisor run --home <WORKDIR>/.liked start --rpc.laddr tcp://0.0.0.0:26657 --p2p.seeds "<SEED_NODES>" --halt-time 0 --halt-height 0
+Restart=always
+RuntimeMaxSec=86400
+Environment="DAEMON_NAME=liked"
+Environment="DAEMON_HOME=<WORKDIR>/.liked"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target 

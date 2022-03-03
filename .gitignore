@@ -9,5 +9,6 @@ docker-compose.yml
 
 artifacts
 build
+dist
 release
-dist/
+deploy/liked.service

@@ -1,6 +1,6 @@
 version: "3.6"
 x-base: &base
-    user: "${LIKECOIN_UID}"
+    user: "${LIKECOIN_UID}:1000"
     image: ${LIKECOIN_DOCKER_IMAGE}
 x-script-base: &script-base
     <<: *base
@@ -10,12 +10,16 @@ x-script-base: &script-base
       source: ./
       target: /host
 services:
-    liked-service:
+    liked-service-liked:
         <<: *base
+        profiles: ["raw"]
         volumes:
         - type: bind
-          source: ./.liked
-          target: /likechain/.liked
+          source: ./.liked/config
+          target: /likechain/.liked/config
+        - type: bind
+          source: ./.liked/data
+          target: /likechain/.liked/data
         ports:
         - 26656:26656
         - 127.0.0.1:26657:26657
@@ -24,6 +28,32 @@ services:
         restart: always
         command: [
             "liked", "--home", "/likechain/.liked", "start",
+                "--get-ip",
+                "--rpc.laddr", "tcp://0.0.0.0:26657",
+                "--p2p.seeds", "${LIKECOIN_SEED_NODES}",
+                "--halt-time", "${LIKECOIN_HALT_TIME}",
+                "--halt-height", "${LIKECOIN_HALT_HEIGHT}",
+        ]
+    liked-service-cosmovisor:
+        <<: *base
+        volumes:
+        - type: bind
+          source: ./.liked/config
+          target: /likechain/.liked/config
+        - type: bind
+          source: ./.liked/data
+          target: /likechain/.liked/data
+        - type: bind
+          source: ./.liked/cosmovisor/upgrades
+          target: /likechain/.liked/cosmovisor/upgrades
+        ports:
+        - 26656:26656
+        - 127.0.0.1:26657:26657
+        # - 1317:1317 # for RESTful API
+        # - 9090:9090 # for gRPC
+        restart: always
+        command: [
+            "cosmovisor", "run", "--home", "/likechain/.liked", "start",
                 "--get-ip",
                 "--rpc.laddr", "tcp://0.0.0.0:26657",
                 "--p2p.seeds", "${LIKECOIN_SEED_NODES}",
@@ -53,7 +83,7 @@ services:
                 "--commission-max-rate", "1.0",
                 "--commission-max-change-rate", "1.0",
                 "--min-self-delegation", "1",
-                # to fill in: 
+                # to fill in:
                 # --amount
                 # --details
                 # --commission-rate

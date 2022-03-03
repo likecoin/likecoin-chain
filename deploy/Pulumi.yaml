@@ -1,0 +1,4 @@
+name: likecoin-skynet
+runtime: go
+main: cmd/deploy
+description: likecoin-skynet-deployment
