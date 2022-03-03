@@ -52,9 +52,11 @@ func TestMintNFTNormal(t *testing.T) {
 }`)
 
 	// Mock keeper calls
+	classIscnVersionAtMint := uint64(1)
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: classIscnVersionAtMint,
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -78,13 +80,21 @@ func TestMintNFTNormal(t *testing.T) {
 		ClassIds:     []string{classId},
 	})
 
+	iscnLatestVersion := uint64(2)
 	iscnKeeper.
 		EXPECT().
 		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
 		Return(&iscntypes.ContentIdRecord{
 			OwnerAddressBytes: ownerAddressBytes,
-			LatestVersion:     1,
+			LatestVersion:     iscnLatestVersion,
 		})
+
+	// Test for subsequent nft mint at this case
+	// No class update
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), gomock.Eq(classId)).
+		Return(uint64(1))
 
 	wrappedOwnerAddress, _ := sdk.AccAddressFromBech32(ownerAddress)
 	nftKeeper.
@@ -112,6 +122,7 @@ func TestMintNFTNormal(t *testing.T) {
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.IscnIdPrefix)
+	require.Equal(t, classIscnVersionAtMint, nftData.IscnVersionAtMint)
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -265,8 +276,9 @@ func TestMintNFTMissingIscnRelation(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: uint64(1),
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -342,8 +354,9 @@ func TestMintNFTNotRelatedToIscn(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: uint64(1),
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -424,8 +437,9 @@ func TestMintNFTIscnNotFound(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: uint64(1),
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -510,8 +524,9 @@ func TestMintNFTInvalidUserAddress(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: uint64(1),
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -600,8 +615,9 @@ func TestMintNFTUserNotOwner(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: uint64(1),
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
