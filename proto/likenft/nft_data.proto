@@ -10,5 +10,6 @@ message NFTData {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
   ];
-  string iscnIdPrefix = 2; 
+  string iscnIdPrefix = 2;
+  uint64 iscnVersionAtMint = 3;
 }

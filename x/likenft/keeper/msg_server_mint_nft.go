@@ -63,10 +63,26 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the owner of the ISCN %s", msg.Creator, iscnId.Prefix.String())
 	}
 
+	// Refresh recorded iscn version in class if needed and first mint
+	if classData.IscnVersionAtMint != iscnRecord.LatestVersion &&
+		k.nftKeeper.GetTotalSupply(ctx, class.Id) <= 0 {
+		classData.IscnVersionAtMint = iscnRecord.LatestVersion
+		classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
+		if err != nil {
+			return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
+		}
+		class.Data = classDataInAny
+		err = k.nftKeeper.UpdateClass(ctx, class)
+		if err != nil {
+			return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
+		}
+	}
+
 	// Mint NFT
 	nftData := types.NFTData{
-		Metadata:     msg.Metadata,
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata:          msg.Metadata,
+		IscnIdPrefix:      iscnId.Prefix.String(),
+		IscnVersionAtMint: classData.IscnVersionAtMint, // follow class data instead of latest
 	}
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
 	if err != nil {
