@@ -11,7 +11,8 @@ message ClassData {
     (gogoproto.customtype) = "JsonInput"
   ];
   string iscnIdPrefix = 2;
-  ClassConfig config = 3 [(gogoproto.nullable) = false];
+  uint64 iscnVersionAtMint = 3;
+  ClassConfig config = 4 [(gogoproto.nullable) = false];
 }
 
 message ClassConfig {
