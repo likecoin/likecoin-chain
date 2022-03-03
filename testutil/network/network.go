@@ -47,7 +47,6 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 func DefaultConfig() network.Config {
 	encoding := app.MakeEncodingConfig()
 	return network.Config{
-		Codec:             encoding.Codec,
 		TxConfig:          encoding.TxConfig,
 		LegacyAmino:       encoding.Amino,
 		InterfaceRegistry: encoding.InterfaceRegistry,
@@ -61,15 +60,15 @@ func DefaultConfig() network.Config {
 				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 			)
 		},
-		GenesisState:    app.ModuleBasics.DefaultGenesis(encoding.Codec),
+		GenesisState:    app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
 		TimeoutCommit:   2 * time.Second,
 		ChainID:         "chain-" + tmrand.NewRand().Str(6),
 		NumValidators:   1,
 		BondDenom:       sdk.DefaultBondDenom,
 		MinGasPrices:    fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:   sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:   sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
-		BondedTokens:    sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
+		AccountTokens:   sdk.TokensFromConsensusPower(1000),
+		StakingTokens:   sdk.TokensFromConsensusPower(500),
+		BondedTokens:    sdk.TokensFromConsensusPower(100),
 		PruningStrategy: storetypes.PruningOptionNothing,
 		CleanupDir:      true,
 		SigningAlgo:     string(hd.Secp256k1Type),
