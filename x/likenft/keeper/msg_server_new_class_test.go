@@ -51,12 +51,13 @@ func TestNewClassNormal(t *testing.T) {
 	burnable := true
 
 	// Mock keeper calls
+	iscnLatestVersion := uint64(2)
 	iscnKeeper.
 		EXPECT().
 		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
 		Return(&iscntypes.ContentIdRecord{
 			OwnerAddressBytes: ownerAddressBytes,
-			LatestVersion:     1,
+			LatestVersion:     iscnLatestVersion,
 		})
 
 	nftKeeper.
@@ -92,6 +93,7 @@ func TestNewClassNormal(t *testing.T) {
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 
 	// Check mock was called as expected
