@@ -198,7 +198,7 @@ FindIscnIdPrefix:
 	require.NoError(t, err)
 
 	// Unmarshal and check class data
-	classesRes := types.QueryGetClassesByISCNResponse{}
+	classesRes := types.QueryClassesByISCNResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &classesRes)
 
 	require.Len(t, classesRes.ClassesByISCN.Classes, 1)
@@ -240,7 +240,7 @@ FindIscnIdPrefix:
 	require.NoError(t, err)
 
 	// Unmarshal and check updated class data
-	updatedClassesRes := types.QueryGetClassesByISCNResponse{}
+	updatedClassesRes := types.QueryClassesByISCNResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedClassesRes)
 
 	require.Len(t, updatedClassesRes.ClassesByISCN.Classes, 1)
