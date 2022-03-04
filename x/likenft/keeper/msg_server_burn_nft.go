@@ -46,5 +46,13 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 		return nil, types.ErrFailedToBurnNFT.Wrapf("%s", err.Error())
 	}
 
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventBurnNFT{
+		IscnIdPrefix: classData.IscnIdPrefix,
+		ClassId:      class.Id,
+		NftId:        msg.NftID,
+		Owner:        owner.String(),
+	})
+
 	return &types.MsgBurnNFTResponse{}, nil
 }
