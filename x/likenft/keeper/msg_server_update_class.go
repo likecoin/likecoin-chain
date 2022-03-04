@@ -90,6 +90,13 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 	}
 
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventUpdateClass{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassId:      class.Id,
+		Owner:        iscnRecord.OwnerAddress().String(),
+	})
+
 	return &types.MsgUpdateClassResponse{
 		Class: class,
 	}, nil
