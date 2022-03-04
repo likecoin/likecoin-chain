@@ -100,6 +100,14 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
 	}
 
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventMintNFT{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassId:      class.Id,
+		NftId:        msg.Id,
+		Owner:        userAddress.String(),
+	})
+
 	return &types.MsgMintNFTResponse{
 		Nft: nft,
 	}, nil
