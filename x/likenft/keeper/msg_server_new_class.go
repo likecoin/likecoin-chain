@@ -78,6 +78,13 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		ClassIds:     classIds,
 	})
 
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventNewClass{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassId:      *newClassId,
+		Owner:        iscnRecord.OwnerAddress().String(),
+	})
+
 	return &types.MsgNewClassResponse{
 		Class: class,
 	}, nil
