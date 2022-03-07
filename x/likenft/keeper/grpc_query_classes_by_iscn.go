@@ -54,19 +54,23 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRe
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	classes := make([]*nft.Class, len(val.ClassIds))
-	for i, classId := range val.ClassIds {
-		class, found := k.nftKeeper.GetClass(ctx, classId)
-		if found {
-			classes[i] = &class
-		} else {
-			classes[i] = nil
+	var classes []nft.Class
+	pageRes, err := PaginateStringArray(val.ClassIds, req.Pagination, func(i int, val string) error {
+		class, found := k.nftKeeper.GetClass(ctx, val)
+		if !found { // not found, fill in id and return rest fields as empty
+			class.Id = val
 		}
+		classes = append(classes, class)
+		return nil
+	}, 20, 50) // TODO refactor this in oursky/likecoin-chain#98
+	if err != nil {
+		// we will not throw error in onResult, so error must be bad pagination argument
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	return &types.QueryClassesByISCNResponse{
 		IscnIdPrefix: val.IscnIdPrefix,
 		Classes:      classes,
-		Pagination:   nil, // TODO Implement pagination
+		Pagination:   pageRes,
 	}, nil
 }
