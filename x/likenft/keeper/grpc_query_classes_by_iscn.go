@@ -12,24 +12,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) concretizeClassesByISCN(ctx sdk.Context, val types.ClassesByISCN) types.ConcreteClassesByISCN {
-
-	classes := make([]*nft.Class, len(val.ClassIds))
-	for i, classId := range val.ClassIds {
-		class, found := k.nftKeeper.GetClass(ctx, classId)
-		if found {
-			classes[i] = &class
-		} else {
-			classes[i] = nil
-		}
-	}
-
-	return types.ConcreteClassesByISCN{
-		IscnIdPrefix: val.IscnIdPrefix,
-		Classes:      classes,
-	}
-}
-
 func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByISCNIndexRequest) (*types.QueryClassesByISCNIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -72,7 +54,19 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRe
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	concretized := k.concretizeClassesByISCN(ctx, val)
+	classes := make([]*nft.Class, len(val.ClassIds))
+	for i, classId := range val.ClassIds {
+		class, found := k.nftKeeper.GetClass(ctx, classId)
+		if found {
+			classes[i] = &class
+		} else {
+			classes[i] = nil
+		}
+	}
 
-	return &types.QueryClassesByISCNResponse{ClassesByISCN: concretized}, nil
+	return &types.QueryClassesByISCNResponse{
+		IscnIdPrefix: val.IscnIdPrefix,
+		Classes:      classes,
+		Pagination:   nil, // TODO Implement pagination
+	}, nil
 }
