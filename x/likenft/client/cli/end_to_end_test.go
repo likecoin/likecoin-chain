@@ -319,8 +319,8 @@ FindIscnIdPrefix:
 	classesRes := types.QueryClassesByISCNResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &classesRes)
 
-	require.Len(t, classesRes.ClassesByISCN.Classes, 1)
-	class := classesRes.ClassesByISCN.Classes[0]
+	require.Len(t, classesRes.Classes, 1)
+	class := classesRes.Classes[0]
 	require.Equal(t, "New Class", class.Name)
 	require.Equal(t, "CLS", class.Symbol)
 	require.Equal(t, "Testing New Class", class.Description)
@@ -367,8 +367,8 @@ FindIscnIdPrefix:
 	updatedClassesRes := types.QueryClassesByISCNResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedClassesRes)
 
-	require.Len(t, updatedClassesRes.ClassesByISCN.Classes, 1)
-	updatedClass := updatedClassesRes.ClassesByISCN.Classes[0]
+	require.Len(t, updatedClassesRes.Classes, 1)
+	updatedClass := updatedClassesRes.Classes[0]
 	require.Equal(t, "Oursky Cat Photos", updatedClass.Name)
 	require.Equal(t, "Meowgear", updatedClass.Symbol)
 	require.Equal(t, "Photos of our beloved bosses.", updatedClass.Description)

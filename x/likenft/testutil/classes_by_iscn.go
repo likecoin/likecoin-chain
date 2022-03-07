@@ -5,23 +5,20 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func DummyConcretizeClassesByISCN(msg types.ClassesByISCN) types.ConcreteClassesByISCN {
-	var classes []*nft.Class
-	for _, classId := range msg.ClassIds {
-		class := nft.Class{}
-		class.Id = classId
-		classes = append(classes, &class)
+func MakeDummyNFTClasses(msg types.ClassesByISCN) []nft.Class {
+	classes := make([]nft.Class, len(msg.ClassIds))
+	for i, classId := range msg.ClassIds {
+		classes[i] = nft.Class{
+			Id: classId,
+		}
 	}
-	return types.ConcreteClassesByISCN{
-		IscnIdPrefix: msg.IscnIdPrefix,
-		Classes:      classes,
-	}
+	return classes
 }
 
-func BatchDummyConcretizeClassesByISCN(msgs []types.ClassesByISCN) []types.ConcreteClassesByISCN {
-	var output []types.ConcreteClassesByISCN
-	for _, msg := range msgs {
-		output = append(output, DummyConcretizeClassesByISCN(msg))
+func BatchMakeDummyNFTClasses(msgs []types.ClassesByISCN) [][]nft.Class {
+	output := make([][]nft.Class, len(msgs))
+	for i, msg := range msgs {
+		output[i] = MakeDummyNFTClasses(msg)
 	}
 	return output
 }

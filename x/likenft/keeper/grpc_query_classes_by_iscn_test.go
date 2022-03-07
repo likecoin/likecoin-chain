@@ -22,8 +22,11 @@ var _ = strconv.IntSize
 func TestClassesByISCNQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	_msgs := createNClassesByISCN(keeper, ctx, 2)
-	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
+	msgs := createNClassesByISCN(keeper, ctx, 2)
+	// Note: currently does not test pagination (class id arrays are empty)
+	// Effort needed to seed data via mock (similar to e2e test)
+	// Pagination is already covered by unit test and cli test
+	classesByMsgs := testutil.BatchMakeDummyNFTClasses(msgs)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryClassesByISCNRequest
@@ -34,15 +37,35 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 			desc: "First",
 			request: &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: msgs[0].IscnIdPrefix,
+				Pagination: &query.PageRequest{
+					Limit: uint64(len(classesByMsgs[0])),
+				},
 			},
-			response: &types.QueryClassesByISCNResponse{ClassesByISCN: msgs[0]},
+			response: &types.QueryClassesByISCNResponse{
+				IscnIdPrefix: msgs[0].IscnIdPrefix,
+				Classes:      classesByMsgs[0],
+				Pagination: &query.PageResponse{
+					NextKey: nil,
+					Total:   uint64(len(classesByMsgs[0])),
+				},
+			},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryClassesByISCNRequest{
 				IscnIdPrefix: msgs[1].IscnIdPrefix,
+				Pagination: &query.PageRequest{
+					Limit: uint64(len(classesByMsgs[0])),
+				},
 			},
-			response: &types.QueryClassesByISCNResponse{ClassesByISCN: msgs[1]},
+			response: &types.QueryClassesByISCNResponse{
+				IscnIdPrefix: msgs[1].IscnIdPrefix,
+				Classes:      classesByMsgs[1],
+				Pagination: &query.PageResponse{
+					NextKey: nil,
+					Total:   uint64(len(classesByMsgs[0])),
+				},
+			},
 		},
 		{
 			desc: "KeyNotFound",

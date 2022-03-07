@@ -7,11 +7,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/testutil/network"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/client/cli"
@@ -29,10 +31,14 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
+		var classIds []string
+		for j := 0; j < 10; j++ {
+			classIds = append(classIds, fmt.Sprintf("likenft1%d", j))
+		}
 		classesByISCN := types.ClassesByISCN{
 			IscnIdPrefix: strconv.Itoa(i),
+			ClassIds:     classIds,
 		}
-		nullify.Fill(&classesByISCN)
 		state.ClassesByISCNList = append(state.ClassesByISCNList, classesByISCN)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
@@ -42,8 +48,8 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 }
 
 func TestShowClassesByISCN(t *testing.T) {
-	net, _objs := networkWithClassesByISCNObjects(t, 2)
-	objs := testutil.BatchDummyConcretizeClassesByISCN(_objs)
+	net, objs := networkWithClassesByISCNObjects(t, 2)
+	classesByObjs := testutil.BatchMakeDummyNFTClasses(objs)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -53,16 +59,36 @@ func TestShowClassesByISCN(t *testing.T) {
 		desc           string
 		idIscnIdPrefix string
 
-		args []string
-		err  error
-		obj  types.ConcreteClassesByISCN
+		args                 []string
+		err                  error
+		obj                  types.ClassesByISCN
+		classesByObj         []nft.Class
+		expectedClassesByObj []nft.Class
+		pageRes              *query.PageResponse
 	}{
 		{
-			desc:           "found",
-			idIscnIdPrefix: objs[0].IscnIdPrefix,
-
-			args: common,
-			obj:  objs[0],
+			desc:                 "found",
+			idIscnIdPrefix:       objs[0].IscnIdPrefix,
+			args:                 append(common, "--limit=3", "--offset=3"),
+			obj:                  objs[0],
+			classesByObj:         classesByObjs[0],
+			expectedClassesByObj: classesByObjs[0][3:6],
+			pageRes: &query.PageResponse{
+				NextKey: []byte("6"),
+				Total:   uint64(len(classesByObjs[0])),
+			},
+		},
+		{
+			desc:                 "found",
+			idIscnIdPrefix:       objs[0].IscnIdPrefix,
+			args:                 append(common, "--limit=4", "--page-key=8"),
+			obj:                  objs[0],
+			classesByObj:         classesByObjs[0],
+			expectedClassesByObj: classesByObjs[0][8:10],
+			pageRes: &query.PageResponse{
+				NextKey: nil,
+				Total:   uint64(len(classesByObjs[0])),
+			},
 		},
 		{
 			desc:           "not found",
@@ -87,11 +113,9 @@ func TestShowClassesByISCN(t *testing.T) {
 				require.NoError(t, err)
 				var resp types.QueryClassesByISCNResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.ClassesByISCN)
-				require.Equal(t,
-					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.ClassesByISCN),
-				)
+				require.Equal(t, tc.obj.IscnIdPrefix, resp.IscnIdPrefix)
+				require.Equal(t, tc.expectedClassesByObj, resp.Classes)
+				require.Equal(t, tc.pageRes, resp.Pagination)
 			}
 		})
 	}
