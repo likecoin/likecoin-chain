@@ -53,7 +53,7 @@ message QueryClassesByISCNRequest {
 
 message QueryClassesByISCNResponse {
   string iscnIdPrefix = 1;
-  repeated cosmos.nft.v1beta1.Class classes = 2; 
+  repeated cosmos.nft.v1beta1.Class classes = 2 [(gogoproto.nullable) = false]; 
   cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
