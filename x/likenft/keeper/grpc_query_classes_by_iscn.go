@@ -35,7 +35,7 @@ func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByI
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var concreteClassesByISCNs []types.ConcreteClassesByISCN
+	var classesByISCNs []types.ClassesByISCN
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
@@ -47,9 +47,7 @@ func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByI
 			return err
 		}
 
-		concretized := k.concretizeClassesByISCN(ctx, classesByISCN)
-
-		concreteClassesByISCNs = append(concreteClassesByISCNs, concretized)
+		classesByISCNs = append(classesByISCNs, classesByISCN)
 		return nil
 	})
 
@@ -57,7 +55,7 @@ func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByI
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClassesByISCNIndexResponse{ClassesByISCN: concreteClassesByISCNs, Pagination: pageRes}, nil
+	return &types.QueryClassesByISCNIndexResponse{ClassesByISCN: classesByISCNs, Pagination: pageRes}, nil
 }
 
 func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRequest) (*types.QueryClassesByISCNResponse, error) {

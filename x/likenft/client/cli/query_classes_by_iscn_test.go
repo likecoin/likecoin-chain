@@ -98,8 +98,7 @@ func TestShowClassesByISCN(t *testing.T) {
 }
 
 func TestListClassesByISCN(t *testing.T) {
-	net, _objs := networkWithClassesByISCNObjects(t, 5)
-	objs := testutil.BatchDummyConcretizeClassesByISCN(_objs)
+	net, objs := networkWithClassesByISCNObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {

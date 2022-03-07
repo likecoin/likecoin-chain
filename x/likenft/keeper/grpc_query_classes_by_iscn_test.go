@@ -74,8 +74,7 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 func TestClassesByISCNQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	_msgs := createNClassesByISCN(keeper, ctx, 5)
-	msgs := testutil.BatchDummyConcretizeClassesByISCN(_msgs)
+	msgs := createNClassesByISCN(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryClassesByISCNIndexRequest {
 		return &types.QueryClassesByISCNIndexRequest{
