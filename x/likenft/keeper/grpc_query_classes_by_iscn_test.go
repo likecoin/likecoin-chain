@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -70,7 +71,7 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 		{
 			desc: "KeyNotFound",
 			request: &types.QueryClassesByISCNRequest{
-				IscnIdPrefix: strconv.Itoa(100000),
+				IscnIdPrefix: "iscn://likecoin-chain/100000",
 			},
 			err: status.Error(codes.InvalidArgument, "not found"),
 		},

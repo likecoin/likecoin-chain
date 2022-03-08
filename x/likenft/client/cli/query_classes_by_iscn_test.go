@@ -36,7 +36,7 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 			classIds = append(classIds, fmt.Sprintf("likenft1%d", j))
 		}
 		classesByISCN := types.ClassesByISCN{
-			IscnIdPrefix: strconv.Itoa(i),
+			IscnIdPrefix: fmt.Sprintf("iscn://likecoin-chain/%s", strconv.Itoa(i)),
 			ClassIds:     classIds,
 		}
 		state.ClassesByISCNList = append(state.ClassesByISCNList, classesByISCN)

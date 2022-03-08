@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -18,7 +19,7 @@ var _ = strconv.IntSize
 func createNClassesByISCN(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.ClassesByISCN {
 	items := make([]types.ClassesByISCN, n)
 	for i := range items {
-		items[i].IscnIdPrefix = strconv.Itoa(i)
+		items[i].IscnIdPrefix = fmt.Sprintf("iscn://likecoin-chain/%s", strconv.Itoa(i))
 
 		keeper.SetClassesByISCN(ctx, items[i])
 	}
