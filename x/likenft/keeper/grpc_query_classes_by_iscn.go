@@ -2,11 +2,13 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,9 +48,14 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRe
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
+	iscnId, err := iscntypes.ParseIscnId(req.IscnIdPrefix)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid iscn id: %s", err.Error()))
+	}
+
 	val, found := k.GetClassesByISCN(
 		ctx,
-		req.IscnIdPrefix,
+		iscnId.Prefix.String(),
 	)
 	if !found {
 		return nil, status.Error(codes.InvalidArgument, "not found")
@@ -69,7 +76,7 @@ func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRe
 	}
 
 	return &types.QueryClassesByISCNResponse{
-		IscnIdPrefix: val.IscnIdPrefix,
+		IscnIdPrefix: iscnId.Prefix.String(),
 		Classes:      classes,
 		Pagination:   pageRes,
 	}, nil
