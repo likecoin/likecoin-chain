@@ -1,8 +1,6 @@
 STACK ?= validator
 CLOUD ?= azure
 
-include ./cmd/deploy/assets/Makefile
-
 .PHONY: setup-pulumi
 setup-pulumi:
 	pulumi stack init $(STACK)
@@ -27,3 +25,19 @@ deploy:
 .PHONY: destroy
 destroy:
 	pulumi destroy -s $(STACK)
+
+.PHONY: setup-node
+setup-node:
+	make -C cmd/deploy/assets setup-node
+
+.PHONY: initialize-systemctl
+initialize-systemctl:
+	make -C cmd/deploy/assets initialize-systemctl
+
+.PHONY: start-node
+start-node:
+	make -C cmd/deploy/assets start-node
+
+.PHONY: stop-node
+stop-node:
+	make -C cmd/deploy/assets stop-node

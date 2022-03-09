@@ -19,7 +19,7 @@ Following command will download a pre-compiled binary from Github. For compiling
 To setup a node using our setup script, please run the following command in the project root folder
 
 ```
-make -C deploy setup-node MONIKER=$MONIKER
+make -C deploy setup-node MONIKER="<My Moniker>" GENESIS_URL="<URL>" LIKED_SEED_NODES="<SEED>"
 ```
 
 After the initialization, you may run the following commands to start the node as a service.
