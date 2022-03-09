@@ -22,9 +22,9 @@ else ifeq ($(LIKED_SEED_NODES), "")
 	@echo "Missing SEED_NODES env"
 	@echo "Usage: make setup-node MONIKER=<your moniker> GENESIS_URL=<url> LIKED_SEED_NODES=<seed nodes>"
 else
-	LIKED_VERSION=$(LIKED_VERSION) COSMOVISOR_VERSION=$(COSMOVISOR_VERSION) LIKED_REPO_SOURCE=$(LIKED_REPO_SOURCE) ./node-setup.sh $(MONIKER) "$(GENESIS_URL)" "$(LIKED_SEED_NODES)" $(LIKED_WORKDIR) $(LIKED_HOME) $(LIKED_USER) 
-endif 
-	
+	LIKED_VERSION=$(LIKED_VERSION) COSMOVISOR_VERSION=$(COSMOVISOR_VERSION) LIKED_REPO_SOURCE=$(LIKED_REPO_SOURCE) ./node-setup.sh "$(MONIKER)" "$(GENESIS_URL)" "$(LIKED_SEED_NODES)" "$(LIKED_WORKDIR)" "$(LIKED_HOME)" "$(LIKED_USER)" 
+endif
+
 .PHONY: initialize-systemctl
 initialize-systemctl:
 	sudo cp ./liked.service /etc/systemd/system/liked.service
