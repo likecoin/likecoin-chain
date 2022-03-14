@@ -43,7 +43,7 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
 
-	gaiacmd "github.com/cosmos/gaia/v6/cmd/gaiad/cmd"
+	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
 	"github.com/likecoin/likechain/ip"
 )
@@ -176,7 +176,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 			app.DefaultNodeHome,
 		),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
-		gaiacmd.AddGenesisAccountCmd(app.DefaultNodeHome),
+		simappcli.AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 	)
