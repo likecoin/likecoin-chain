@@ -28,6 +28,27 @@ func RegisterDenoms() {
 	}
 }
 
+func SetAddressPrefixes() {
+	bech32PrefixesAccAddr := []string{"like", "cosmos"}
+	bech32PrefixesAccPub := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesValAddr := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesValPub := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesConsAddr := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesConsPub := make([]string, 0, len(bech32PrefixesAccAddr))
+
+	for _, prefix := range bech32PrefixesAccAddr {
+		bech32PrefixesAccPub = append(bech32PrefixesAccPub, prefix+"pub")
+		bech32PrefixesValAddr = append(bech32PrefixesValAddr, prefix+"valoper")
+		bech32PrefixesValPub = append(bech32PrefixesValPub, prefix+"valoperpub")
+		bech32PrefixesConsAddr = append(bech32PrefixesConsAddr, prefix+"valcons")
+		bech32PrefixesConsPub = append(bech32PrefixesConsPub, prefix+"valconspub")
+	}
+	config := sdk.GetConfig()
+	config.SetBech32PrefixesForAccount(bech32PrefixesAccAddr, bech32PrefixesAccPub)
+	config.SetBech32PrefixesForValidator(bech32PrefixesValAddr, bech32PrefixesValPub)
+	config.SetBech32PrefixesForConsensusNode(bech32PrefixesConsAddr, bech32PrefixesConsPub)
+}
+
 type EncodingConfig struct {
 	InterfaceRegistry types.InterfaceRegistry
 	Marshaler         codec.Codec
@@ -54,5 +75,6 @@ func MakeEncodingConfig() EncodingConfig {
 }
 
 func init() {
+	SetAddressPrefixes()
 	RegisterDenoms()
 }
