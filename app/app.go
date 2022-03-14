@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -90,8 +89,6 @@ import (
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 )
 
-const appName = "LikeApp"
-
 var (
 	// default home directories for liked
 	DefaultNodeHome = os.ExpandEnv("$HOME/.liked")
@@ -137,38 +134,12 @@ var (
 	}
 )
 
-// TODO: move to other places
-type EncodingConfig struct {
-	InterfaceRegistry types.InterfaceRegistry
-	Codec             codec.Codec
-	TxConfig          client.TxConfig
-	Amino             *codec.LegacyAmino
-}
-
-// MakeEncodingConfig creates an EncodingConfig for testing
-func MakeEncodingConfig() EncodingConfig {
-	cdc := codec.NewLegacyAmino()
-	interfaceRegistry := types.NewInterfaceRegistry()
-	codec := codec.NewProtoCodec(interfaceRegistry)
-	std.RegisterLegacyAminoCodec(cdc)
-	std.RegisterInterfaces(interfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(cdc)
-	ModuleBasics.RegisterInterfaces(interfaceRegistry)
-
-	return EncodingConfig{
-		InterfaceRegistry: interfaceRegistry,
-		Codec:             codec,
-		TxConfig:          authtx.NewTxConfig(codec, authtx.DefaultSignModes),
-		Amino:             cdc,
-	}
-}
-
 var _ servertypes.Application = (*LikeApp)(nil)
 
 // Extended ABCI application
 type LikeApp struct {
 	*baseapp.BaseApp
-	cdc               *codec.LegacyAmino
+	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 
@@ -210,8 +181,8 @@ func NewLikeApp(
 	invCheckPeriod uint, encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *LikeApp {
-	appCodec := encodingConfig.Codec
-	cdc := encodingConfig.Amino
+	appCodec := encodingConfig.Marshaler
+	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
@@ -231,7 +202,7 @@ func NewLikeApp(
 
 	app := &LikeApp{
 		BaseApp:           bApp,
-		cdc:               cdc,
+		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
@@ -242,7 +213,7 @@ func NewLikeApp(
 
 	// init params keeper and subspaces
 	app.ParamsKeeper = paramskeeper.NewKeeper(
-		appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey],
+		appCodec, legacyAmino, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey],
 	)
 	authSubspace := app.ParamsKeeper.Subspace(authtypes.ModuleName)
 	bankSubspace := app.ParamsKeeper.Subspace(banktypes.ModuleName)
@@ -392,7 +363,7 @@ func NewLikeApp(
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), cdc)
+	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), legacyAmino)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
@@ -488,7 +459,7 @@ func (app *LikeApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.R
 // application update at chain initialization
 func (app *LikeApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState map[string]json.RawMessage
-	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
+	app.legacyAmino.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 

@@ -27,7 +27,7 @@ func (app *LikeApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedA
 	}
 
 	genState := app.mm.ExportGenesis(ctx, app.appCodec)
-	appState, err := codec.MarshalJSONIndent(app.cdc, genState)
+	appState, err := codec.MarshalJSONIndent(app.legacyAmino, genState)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}

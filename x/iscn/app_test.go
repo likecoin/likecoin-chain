@@ -67,7 +67,7 @@ func SetupTestAppWithIscnGenesis(genesisBalances []genesisBalance, iscnGenesisJs
 	encodingCfg := likeapp.MakeEncodingConfig()
 	logger := log.NewTMLogger(os.Stdout)
 	app := likeapp.NewLikeApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encodingCfg, simapp.EmptyAppOptions{})
-	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Codec)
+	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Marshaler)
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
 

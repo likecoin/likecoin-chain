@@ -41,7 +41,6 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
 
 	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
@@ -128,7 +127,6 @@ func txCommand() *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		vestingcli.GetTxCmd(),
 	)
 
 	app.ModuleBasics.AddTxCommands(txCmd)
@@ -141,7 +139,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
 	initClientCtx := client.Context{}.
-		WithJSONCodec(encodingConfig.Codec).
+		WithJSONCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
@@ -163,9 +161,6 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	}
 
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
 	config.Seal()
 
 	rootCmd.AddCommand(
@@ -266,7 +261,7 @@ func exportAppState(
 	jailAllowedAddrs []string, appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	encodingConfig := app.MakeEncodingConfig()
-	encodingConfig.Codec = codec.NewProtoCodec(encodingConfig.InterfaceRegistry)
+	encodingConfig.Marshaler = codec.NewProtoCodec(encodingConfig.InterfaceRegistry)
 	var likeApp *app.LikeApp
 	if height != -1 {
 		likeApp = app.NewLikeApp(
