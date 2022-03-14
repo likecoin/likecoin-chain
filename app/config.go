@@ -11,7 +11,22 @@ import (
 
 const (
 	appName = "LikeApp"
+
+	HumanCoinUnit = "like"
+	BaseCoinUnit  = "nanolike"
+	LikeExponent  = 9
 )
+
+func RegisterDenoms() {
+	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
+	if err != nil {
+		panic(err)
+	}
+	err = sdk.RegisterDenom(BaseCoinUnit, sdk.NewDecWithPrec(1, LikeExponent))
+	if err != nil {
+		panic(err)
+	}
+}
 
 type EncodingConfig struct {
 	InterfaceRegistry types.InterfaceRegistry
@@ -36,4 +51,8 @@ func MakeEncodingConfig() EncodingConfig {
 		TxConfig:          authtx.NewTxConfig(marshaler, authtx.DefaultSignModes),
 		Amino:             cdc,
 	}
+}
+
+func init() {
+	RegisterDenoms()
 }
