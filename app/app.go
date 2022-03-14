@@ -33,6 +33,9 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -49,6 +52,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -97,6 +103,7 @@ var (
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
+		// SDK
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -115,10 +122,16 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
-		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
+
+		// IBC
+		ibc.AppModuleBasic{},
 		transfer.AppModuleBasic{},
+
+		// LikeCoin
 		iscn.AppModuleBasic{},
 	)
 
@@ -165,6 +178,8 @@ type LikeApp struct {
 	IbcKeeper        *ibckeeper.Keeper
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
+	AuthzKeeper      authzkeeper.Keeper
+	FeeGrantKeeper   feegrantkeeper.Keeper
 	IscnKeeper       iscnkeeper.Keeper
 
 	// the module manager
@@ -191,10 +206,21 @@ func NewLikeApp(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	keys := sdk.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
-		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		authtypes.StoreKey,
+		banktypes.StoreKey,
+		stakingtypes.StoreKey,
+		minttypes.StoreKey,
+		distrtypes.StoreKey,
+		slashingtypes.StoreKey,
+		govtypes.StoreKey,
+		paramstypes.StoreKey,
+		ibchost.StoreKey,
+		upgradetypes.StoreKey,
+		feegrant.StoreKey,
+		evidencetypes.StoreKey,
+		ibctransfertypes.StoreKey,
+		capabilitytypes.StoreKey,
+		authzkeeper.StoreKey,
 		iscntypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -244,6 +270,16 @@ func NewLikeApp(
 	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, bankSubspace, app.ModuleAccountAddrs(),
+	)
+	app.AuthzKeeper = authzkeeper.NewKeeper(
+		keys[authzkeeper.StoreKey],
+		appCodec,
+		app.BaseApp.MsgServiceRouter(),
+	)
+	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(
+		appCodec,
+		keys[feegrant.StoreKey],
+		app.AccountKeeper,
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, stakingSubspace,
@@ -325,6 +361,7 @@ func NewLikeApp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		slashing.NewAppModule(
@@ -339,27 +376,56 @@ func NewLikeApp(
 		ibc.NewAppModule(app.IbcKeeper),
 		transferModule,
 		params.NewAppModule(app.ParamsKeeper),
+		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		iscn.NewAppModule(app.IscnKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
+	// NOTE: staking module is required if HistoricalEntries param > 0
+	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.mm.SetOrderBeginBlockers(
-		capabilitytypes.ModuleName, upgradetypes.ModuleName, minttypes.ModuleName,
-		distrtypes.ModuleName, slashingtypes.ModuleName, evidencetypes.ModuleName,
-		stakingtypes.ModuleName, ibchost.ModuleName,
+		upgradetypes.ModuleName,
+		capabilitytypes.ModuleName,
+		minttypes.ModuleName,
+		distrtypes.ModuleName,
+		slashingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		stakingtypes.ModuleName,
+		ibchost.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
+	app.mm.SetOrderEndBlockers(
+		crisistypes.ModuleName,
+		govtypes.ModuleName,
+		stakingtypes.ModuleName,
+		feegrant.ModuleName,
+		authz.ModuleName,
+	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
+	// NOTE: Capability module must occur first so that it can initialize any capabilities
+	// so that other modules that want to create or claim capabilities afterwards in InitChain
+	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
-		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
-		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, iscntypes.ModuleName,
+		capabilitytypes.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
+		distrtypes.ModuleName,
+		stakingtypes.ModuleName,
+		slashingtypes.ModuleName,
+		govtypes.ModuleName,
+		minttypes.ModuleName,
+		crisistypes.ModuleName,
+		ibchost.ModuleName,
+		genutiltypes.ModuleName,
+		evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		feegrant.ModuleName,
+		authz.ModuleName,
+		iscntypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -381,6 +447,7 @@ func NewLikeApp(
 			AccountKeeper:   app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+			FeegrantKeeper:  app.FeeGrantKeeper,
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
 	)
@@ -438,7 +505,7 @@ func (app *LikeApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == "v2.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			// No added, renamed or removed stores
+			Added: []string{"authz", "feegrant"},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
