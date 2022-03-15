@@ -93,7 +93,7 @@ $(LIKED_WORKDIR)/cosmovisor run start
 
 # Upgrades
 
-As a process manager, Cosmovisor automatically download and upgrade binary as upgrade proposals are approved on chain.
+As a process manager, cosmovisor automatically download and upgrade binary as upgrade proposals are approved on chain.
 
 There are two methods to upgrading the chain version using cosmovisor.
 
@@ -109,7 +109,7 @@ If a manual upgrade is expected, the new binary should be placed inside
 $HOME/.liked/cosmovisor/upgrades/<upgrade_name>/bin
 ```
 
-Once the upgrade block is reached, cosmovisor should be able to link the `current` folder to the destinated upgrade folder and automatically restart itself to continue the block syncing process with the latest binary. An extra `upgrade-info.json` file will be generated to indicate the metadata for the upgrade.
+Once the upgrade block is reached, cosmovisor should be able to link the `current` folder to the designated upgrade folder and automatically restart itself to continue the block syncing process with the latest binary. An extra `upgrade-info.json` file will be generated to indicate the metadata for the upgrade.
 
 ## Upgrade Proposal
 
@@ -127,13 +127,13 @@ To submit an auto upgrade proposal, execute the following command
     -y
 ```
 
-Query the proposal to ensure its existance
+Query the proposal to ensure its existence
 
 ```
 ./liked query gov proposal $PROPOSAL_ID
 ```
 
-Deposite a certain amount of `LIKE` to the proposal
+Deposit a certain amount of `LIKE` to the proposal
 
 ```
 ./liked tx gov deposit $PROPOSAL_ID 10000000nanolike --from $ACCOUNT --yes
@@ -145,7 +145,7 @@ Proceed to submit a `Yes` vote for the proposal
 ./liked tx gov vote $PROPOSAL_ID yes --from $ACCOUNT --chain-id $CHAIN_ID -y
 ```
 
-To submit a manual uprade proposal, remove `--upgrade-info` from the proposal submission command above.
+To submit a manual upgrade proposal, remove `--upgrade-info` from the proposal submission command above.
 Note that this will require the new binary to be placed in `/.liked/cosmovisor/upgrades/$UPGRADED_VERSION/bin` for the
 upgrade to be executed successfully.
 
