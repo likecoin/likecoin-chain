@@ -9,9 +9,8 @@ LIKED_WORKDIR="$4"
 LIKED_HOME="$5"
 LIKED_USER="$6"
 
-if [ -z $MONIKER ] || [ -z $GENESIS_URL ] || [ -z $LIKED_SEED_NODES ]; then
-	echo "Usage: $0 NODE_NAME <url to genesis.json>"
-	echo "Example: $0 likecoin-test https://example.com/genesis.json 38d4770245a3f50da3d6e12ff25eaa7065cec431@52.148.89.139:25565"
+if [ -z "$MONIKER" ] || [ -z "$GENESIS_URL" ] || [ -z "$LIKED_SEED_NODES" ]; then
+	echo "Usage: $0 NODE_NAME <url to genesis.json> <seed nodes> <work dir> <liked home> <liked user>"
 	exit 1
 fi
 
