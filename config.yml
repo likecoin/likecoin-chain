@@ -11,6 +11,7 @@ faucet:
   coins: ["100000000000nanolike"]
 build:
   binary: "liked"
+  main: cmd/liked
 init:
   home: "$HOME/.liked"
 genesis:
