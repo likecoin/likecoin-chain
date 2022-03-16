@@ -5,7 +5,7 @@ This document describe how to use Pulumi to set up devnet that support developme
 # Prerequisites
 
 - [Pulumi](https://www.pulumi.com/docs/get-started/install/)
-- Go 1.17+
+- Go 1.18
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos) (for azure nodes)
 - [Gcloud CLI](https://cloud.google.com/sdk/docs/install-sdk) (for gcp nodes)
 

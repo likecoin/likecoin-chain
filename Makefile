@@ -9,10 +9,10 @@ DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 LIKE_HOME := '$(HOME)/.liked'
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
-RBUILDER_IMAGE_TAG = cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb
+RBUILDER_IMAGE_TAG = likecoin/rbuilder:go1.18
 BUILDDIR ?= $(CURDIR)/build
 GOPATH ?= '$(HOME)/go'
-GOLANG_VERSION ?= 1.17.2
+GOLANG_VERSION ?= 1.18
 GOLANG_CROSS_VERSION := v$(GOLANG_VERSION)
 GOGO_PROTO_URL = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 COSMOS_SDK_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.43.0
@@ -77,7 +77,7 @@ build-reproducible: go.sum
 		--env VERSION=$(VERSION) \
 		--env COMMIT=$(COMMIT) \
 		--env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-		--name latest-build likecoin/rbuilder:$(RBUILDER_IMAGE_TAG)
+		--name latest-build $(RBUILDER_IMAGE_TAG)
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 docker-build: go.sum

@@ -1,6 +1,6 @@
 module deploy
 
-go 1.14
+go 1.18
 
 require (
 	github.com/pulumi/pulumi-azure-native/sdk v1.55.0
