@@ -2,7 +2,7 @@ LikeCoin chain is a blockchain built on the Cosmos SDK. Project page: https://li
 
 ## Requirements
 
-- Go1.16+
+- Go 1.18
 
 ## For development.
 
