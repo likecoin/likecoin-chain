@@ -183,6 +183,10 @@ type LikeApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	IscnKeeper       iscnkeeper.Keeper
 
+	// make scoped keepers public for test purposes
+	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+
 	// the module manager
 	mm *module.Manager
 
@@ -471,6 +475,9 @@ func NewLikeApp(
 		}
 	}
 
+	app.ScopedIBCKeeper = scopedIBCKeeper
+	app.ScopedTransferKeeper = scopedTransferKeeper
+
 	return app
 }
 
@@ -555,6 +562,26 @@ func (app *LikeApp) ModuleAccountAddrs() map[string]bool {
 
 func (app *LikeApp) AppCodec() codec.Codec {
 	return app.appCodec
+}
+
+// Interfaces for testing suite
+func (app *LikeApp) GetBaseApp() *baseapp.BaseApp {
+	return app.BaseApp
+}
+func (app *LikeApp) GetStakingKeeper() stakingkeeper.Keeper {
+	return app.StakingKeeper
+}
+func (app *LikeApp) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
+func (app *LikeApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+func (app *LikeApp) GetScopedTransferKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedTransferKeeper
+}
+func (app *LikeApp) GetTxConfig() client.TxConfig {
+	return MakeEncodingConfig().TxConfig
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
