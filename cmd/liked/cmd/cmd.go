@@ -45,6 +45,8 @@ import (
 	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
 	"github.com/likecoin/likechain/ip"
+
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 )
 
 // liked custom flags
@@ -135,6 +137,21 @@ func txCommand() *cobra.Command {
 	return txCmd
 }
 
+// initAppConfig helps to override default appConfig template and configs.
+// return "", nil if no custom configuration is required for the application.
+func initAppConfig() (string, interface{}) {
+	srvCfg := serverconfig.DefaultConfig()
+
+	srvCfg.MinGasPrices = "1nanolike"
+
+	srvCfg.StateSync.SnapshotInterval = 1000
+	srvCfg.StateSync.SnapshotKeepRecent = 2
+
+	customAppTemplate := serverconfig.DefaultConfigTemplate
+
+	return customAppTemplate, srvCfg
+}
+
 func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
@@ -156,7 +173,9 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			customAppTemplate, customAppConfig := initAppConfig()
+
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig)
 		},
 	}
 
