@@ -19,7 +19,12 @@ if [ -z $LIKED_REPO_SOURCE ]; then
 fi
 
 if [ -z $LIKED_VERSION ]; then
-	LIKED_VERSION="2.0.0-alpha"
+	LIKED_VERSION=`
+		curl https://api.github.com/repos/$LIKED_REPO_SOURCE/likecoin-chain/releases/latest | \
+		 grep 'tag_name' | \
+		 cut -d\" -f4 | \
+		 cut -dv -f2
+	`
 fi
 
 if [ -z $COSMOVISOR_VERSION ]; then
