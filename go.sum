@@ -363,8 +363,8 @@ github.com/libp2p/go-buffer-pool v0.0.2 h1:QNK2iAFa8gjAe1SPz6mHSMuCcjs+X1wlHzeOS
 github.com/libp2p/go-buffer-pool v0.0.2/go.mod h1:MvaB6xw5vOrDl8rYZGLFdKAuk/hRoRZd1Vi32+RXyFM=
 github.com/lightstep/lightstep-tracer-common/golang/gogo v0.0.0-20190605223551-bc2310a04743/go.mod h1:qklhhLq1aX+mtWk9cPHPzaBjWImj5ULL6C7HFJtXQMM=
 github.com/lightstep/lightstep-tracer-go v0.18.1/go.mod h1:jlF1pusYV4pidLvZ+XD0UBX0ZE6WURAspgAczcDHrL4=
-github.com/likecoin/cosmos-sdk v0.42.11-write-upgrade-info h1:kovbavBAzjtylNtd+axzCfOR0Ox+XjURyH6toSz01Vw=
-github.com/likecoin/cosmos-sdk v0.42.11-write-upgrade-info/go.mod h1:UdhCvr26SsMdhUlYCO3G7HCSTKpwzUg+MpGbQffb3os=
+github.com/likecoin/cosmos-sdk v0.42.11-iavl-cache h1:hjZ+8yRRPlTJDiA0UoYrAey7pYpGo8Z6avo5gn09prQ=
+github.com/likecoin/cosmos-sdk v0.42.11-iavl-cache/go.mod h1:UdhCvr26SsMdhUlYCO3G7HCSTKpwzUg+MpGbQffb3os=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5 h1:b6kJs+EmPFMYGkow9GiUyCyOvIwYetYJ3fSaWak/Gls=
