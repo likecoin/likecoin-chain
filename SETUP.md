@@ -49,7 +49,7 @@ By default, the [node-setup.sh](../deploy/scripts/node-setup.sh) script would do
 | Env                | Description                                                                         | Default                              |
 | ------------------ | ----------------------------------------------------------------------------------- | ------------------------------------ |
 | MONIKER            | Moniker identifier for the node, this is mandatory for the node setup               | Empty                                |
-| LIKED_VERSION      | Release version of the latest like binary                                           | Latest tag using git describe --tags |
+| LIKED_VERSION      | Release version of the latest like binary                                           | Latest release tag                   |
 | COSMOVISOR_VERSION | Release version of the latest cosmovisor binary                                     | 1.1.0                                |
 | LIKED_WORKDIR      | Working directory, binaries will be downloaded here                                 | $HOME                                |
 | LIKED_HOME         | Home directory for the like node, chain data and configurations will be stored here | $HOME/.liked                         |
