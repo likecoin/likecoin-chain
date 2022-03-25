@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 import "cosmos/nft/v1beta1/nft.proto";
+import "likenft/classes_by_account.proto";
 // this line is used by starport scaffolding # 1
 
 import "iscn/query.proto";
@@ -33,6 +34,16 @@ service Query {
   rpc ISCNByClass(QueryISCNByClassRequest) returns (QueryISCNByClassResponse) {
     option (google.api.http).get = "/likecoin/likechain/likenft/iscn_by_class/{classId}";
   }
+
+// Queries a ClassesByAccount by index.
+	rpc ClassesByAccount(QueryGetClassesByAccountRequest) returns (QueryGetClassesByAccountResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_account/{account}";
+	}
+
+	// Queries a list of ClassesByAccount items.
+	rpc ClassesByAccountAll(QueryAllClassesByAccountRequest) returns (QueryAllClassesByAccountResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_account";
+	}
 
 // this line is used by starport scaffolding # 2
 }
@@ -75,6 +86,24 @@ message QueryISCNByClassResponse {
   string owner = 2;
   uint64 latestVersion = 3;
   .likechain.iscn.QueryResponseRecord latestRecord = 4 [(gogoproto.nullable) = false];
+}
+
+message QueryGetClassesByAccountRequest {
+	  string account = 1;
+
+}
+
+message QueryGetClassesByAccountResponse {
+	ClassesByAccount classesByAccount = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllClassesByAccountRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClassesByAccountResponse {
+	repeated ClassesByAccount classesByAccount = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

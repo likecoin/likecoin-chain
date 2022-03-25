@@ -30,6 +30,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						IscnIdPrefix: "1",
 					},
 				},
+				ClassesByAccountList: []types.ClassesByAccount{
+					{
+						Account: "0",
+					},
+					{
+						Account: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -43,6 +51,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						IscnIdPrefix: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated classesByAccount",
+			genState: &types.GenesisState{
+				ClassesByAccountList: []types.ClassesByAccount{
+					{
+						Account: "0",
+					},
+					{
+						Account: "0",
 					},
 				},
 			},

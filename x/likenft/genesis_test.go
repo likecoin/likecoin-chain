@@ -22,6 +22,14 @@ func TestGenesis(t *testing.T) {
 				IscnIdPrefix: "1",
 			},
 		},
+		ClassesByAccountList: []types.ClassesByAccount{
+			{
+				Account: "0",
+			},
+			{
+				Account: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +42,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.ClassesByISCNList, got.ClassesByISCNList)
+	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
