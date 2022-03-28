@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -53,5 +54,23 @@ func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryGetClassesBy
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryGetClassesByAccountResponse{ClassesByAccount: val}, nil
+	var classes []nft.Class
+	pageRes, err := PaginateStringArray(val.ClassIds, req.Pagination, func(i int, val string) error {
+		class, found := k.nftKeeper.GetClass(ctx, val)
+		if !found { // not found, fill in id and return rest fields as empty
+			class.Id = val
+		}
+		classes = append(classes, class)
+		return nil
+	}, 20, 50) // TODO refactor this in oursky/likecoin-chain#98
+	if err != nil {
+		// we will not throw error in onResult, so error must be bad pagination argument
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	return &types.QueryGetClassesByAccountResponse{
+		Account:    req.Account,
+		Classes:    classes,
+		Pagination: pageRes,
+	}, nil
 }
