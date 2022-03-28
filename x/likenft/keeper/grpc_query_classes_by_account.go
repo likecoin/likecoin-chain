@@ -24,12 +24,12 @@ func (k Keeper) ClassesByAccountIndex(c context.Context, req *types.QueryClasses
 	classesByAccountStore := prefix.NewStore(store, types.KeyPrefix(types.ClassesByAccountKeyPrefix))
 
 	pageRes, err := query.Paginate(classesByAccountStore, req.Pagination, func(key []byte, value []byte) error {
-		var classesByAccount types.ClassesByAccount
-		if err := k.cdc.Unmarshal(value, &classesByAccount); err != nil {
+		var storeRecord types.ClassesByAccountStoreRecord
+		if err := k.cdc.Unmarshal(value, &storeRecord); err != nil {
 			return err
 		}
 
-		classesByAccounts = append(classesByAccounts, classesByAccount)
+		classesByAccounts = append(classesByAccounts, storeRecord.ToPublicRecord())
 		return nil
 	})
 
@@ -46,9 +46,14 @@ func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryGetClassesBy
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
+	acc, err := sdk.AccAddressFromBech32(req.Account)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid address")
+	}
+
 	val, found := k.GetClassesByAccount(
 		ctx,
-		req.Account,
+		acc,
 	)
 	if !found {
 		return nil, status.Error(codes.InvalidArgument, "not found")

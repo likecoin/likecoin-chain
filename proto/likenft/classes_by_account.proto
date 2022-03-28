@@ -7,3 +7,8 @@ message ClassesByAccount {
   string account = 1; 
   repeated string classIds = 2; 
 }
+
+message ClassesByAccountStoreRecord {
+  bytes accAddress = 1; 
+  repeated string classIds = 2; 
+}

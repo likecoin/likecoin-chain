@@ -2,6 +2,8 @@ package types
 
 import (
 	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default capability global index
@@ -34,7 +36,13 @@ func (gs GenesisState) Validate() error {
 	classesByAccountIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.ClassesByAccountList {
-		index := string(ClassesByAccountKey(elem.Account))
+		acc, err := sdk.AccAddressFromBech32(elem.Account)
+		if err != nil {
+			return fmt.Errorf("Invalid account address: %s", err.Error())
+		}
+
+		index := string(ClassesByAccountKey(acc))
+
 		if _, ok := classesByAccountIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for classesByAccount")
 		}

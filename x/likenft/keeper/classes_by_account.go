@@ -9,16 +9,17 @@ import (
 // SetClassesByAccount set a specific classesByAccount in the store from its index
 func (k Keeper) SetClassesByAccount(ctx sdk.Context, classesByAccount types.ClassesByAccount) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassesByAccountKeyPrefix))
-	b := k.cdc.MustMarshal(&classesByAccount)
+	storeRecord := classesByAccount.ToStoreRecord()
+	b := k.cdc.MustMarshal(&storeRecord)
 	store.Set(types.ClassesByAccountKey(
-		classesByAccount.Account,
+		storeRecord.AccAddress,
 	), b)
 }
 
 // GetClassesByAccount returns a classesByAccount from its index
 func (k Keeper) GetClassesByAccount(
 	ctx sdk.Context,
-	account string,
+	account sdk.AccAddress,
 
 ) (val types.ClassesByAccount, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassesByAccountKeyPrefix))
@@ -30,15 +31,15 @@ func (k Keeper) GetClassesByAccount(
 		return val, false
 	}
 
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	var storeRecord types.ClassesByAccountStoreRecord
+	k.cdc.MustUnmarshal(b, &storeRecord)
+	return storeRecord.ToPublicRecord(), true
 }
 
 // RemoveClassesByAccount removes a classesByAccount from the store
 func (k Keeper) RemoveClassesByAccount(
 	ctx sdk.Context,
-	account string,
-
+	account sdk.AccAddress,
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassesByAccountKeyPrefix))
 	store.Delete(types.ClassesByAccountKey(
@@ -54,9 +55,9 @@ func (k Keeper) GetAllClassesByAccount(ctx sdk.Context) (list []types.ClassesByA
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClassesByAccount
+		var val types.ClassesByAccountStoreRecord
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+		list = append(list, val.ToPublicRecord())
 	}
 
 	return
