@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -50,12 +51,18 @@ func CmdShowClassesByAccount() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryClient(clientCtx)
 
 			argAccount := args[0]
 
 			params := &types.QueryGetClassesByAccountRequest{
-				Account: argAccount,
+				Account:    argAccount,
+				Pagination: pageReq,
 			}
 
 			res, err := queryClient.ClassesByAccount(context.Background(), params)
@@ -66,6 +73,16 @@ func CmdShowClassesByAccount() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	// Copy from sdk `flags.AddPaginationFlagsToCmd(cmd, cmd.Use)`
+	// We needed to override default values of limit and count total
+	cmd.Flags().Uint64(flags.FlagPage, 1, fmt.Sprintf("pagination page of %s to query for. This sets offset to a multiple of limit", cmd.Use))
+	cmd.Flags().String(flags.FlagPageKey, "", fmt.Sprintf("pagination page-key of %s to query for", cmd.Use))
+	cmd.Flags().Uint64(flags.FlagOffset, 0, fmt.Sprintf("pagination offset of %s to query for", cmd.Use))
+	// TODO refactor this constant in oursky/likecoin-chain#98
+	cmd.Flags().Uint64(flags.FlagLimit, 20, fmt.Sprintf("pagination limit of %s to query for", cmd.Use))
+	cmd.Flags().Bool(flags.FlagCountTotal, true, fmt.Sprintf("count total number of records in %s to query for", cmd.Use))
+	cmd.Flags().Bool(flags.FlagReverse, false, "results are sorted in descending order")
 
 	flags.AddQueryFlagsToCmd(cmd)
 
