@@ -94,6 +94,11 @@ import (
 	"github.com/likecoin/likechain/x/iscn"
 	iscnkeeper "github.com/likecoin/likechain/x/iscn/keeper"
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+
+	bech32authmigration "github.com/likecoin/likechain/bech32-migration/auth"
+	bech32govmigration "github.com/likecoin/likechain/bech32-migration/gov"
+	bech32slashingmigration "github.com/likecoin/likechain/bech32-migration/slashing"
+	bech32stakingmigration "github.com/likecoin/likechain/bech32-migration/staking"
 )
 
 var (
@@ -507,7 +512,18 @@ func (app *LikeApp) registerUpgradeHandlers() {
 			"iscn":         1,
 		}
 
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		versionMap, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		if err != nil {
+			return versionMap, err
+		}
+
+		// Migrate Bech32 addresses
+		bech32stakingmigration.MigrateAddressBech32(ctx, app.keys[stakingtypes.StoreKey], app.appCodec)
+		bech32slashingmigration.MigrateAddressBech32(ctx, app.keys[slashingtypes.StoreKey], app.appCodec)
+		bech32govmigration.MigrateAddressBech32(ctx, app.keys[govtypes.StoreKey], app.appCodec)
+		bech32authmigration.MigrateAddressBech32(ctx, app.keys[authtypes.StoreKey], app.appCodec)
+
+		return versionMap, nil
 	})
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
