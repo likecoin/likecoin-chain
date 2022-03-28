@@ -120,7 +120,7 @@ func TestListClassesByAccount(t *testing.T) {
 			args := request(nil, uint64(i), uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByAccount(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClassesByAccountResponse
+			var resp types.QueryClassesByAccountIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
 			require.Subset(t,
@@ -136,7 +136,7 @@ func TestListClassesByAccount(t *testing.T) {
 			args := request(next, 0, uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByAccount(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClassesByAccountResponse
+			var resp types.QueryClassesByAccountIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
 			require.Subset(t,
@@ -150,7 +150,7 @@ func TestListClassesByAccount(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
 		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClassesByAccount(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllClassesByAccountResponse
+		var resp types.QueryClassesByAccountIndexResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))

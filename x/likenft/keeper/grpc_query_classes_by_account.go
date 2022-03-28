@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ClassesByAccountAll(c context.Context, req *types.QueryAllClassesByAccountRequest) (*types.QueryAllClassesByAccountResponse, error) {
+func (k Keeper) ClassesByAccountIndex(c context.Context, req *types.QueryClassesByAccountIndexRequest) (*types.QueryClassesByAccountIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,7 +36,7 @@ func (k Keeper) ClassesByAccountAll(c context.Context, req *types.QueryAllClasse
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllClassesByAccountResponse{ClassesByAccount: classesByAccounts, Pagination: pageRes}, nil
+	return &types.QueryClassesByAccountIndexResponse{ClassesByAccount: classesByAccounts, Pagination: pageRes}, nil
 }
 
 func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryGetClassesByAccountRequest) (*types.QueryGetClassesByAccountResponse, error) {

@@ -436,7 +436,8 @@ func (m *QueryISCNByClassResponse) GetLatestRecord() types.QueryResponseRecord {
 }
 
 type QueryGetClassesByAccountRequest struct {
-	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Account    string             `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QueryGetClassesByAccountRequest) Reset()         { *m = QueryGetClassesByAccountRequest{} }
@@ -479,8 +480,17 @@ func (m *QueryGetClassesByAccountRequest) GetAccount() string {
 	return ""
 }
 
+func (m *QueryGetClassesByAccountRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryGetClassesByAccountResponse struct {
-	ClassesByAccount ClassesByAccount `protobuf:"bytes,1,opt,name=classesByAccount,proto3" json:"classesByAccount"`
+	Account    string              `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Classes    []nft.Class         `protobuf:"bytes,2,rep,name=classes,proto3" json:"classes"`
+	Pagination *query.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QueryGetClassesByAccountResponse) Reset()         { *m = QueryGetClassesByAccountResponse{} }
@@ -516,74 +526,43 @@ func (m *QueryGetClassesByAccountResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryGetClassesByAccountResponse proto.InternalMessageInfo
 
-func (m *QueryGetClassesByAccountResponse) GetClassesByAccount() ClassesByAccount {
+func (m *QueryGetClassesByAccountResponse) GetAccount() string {
 	if m != nil {
-		return m.ClassesByAccount
+		return m.Account
 	}
-	return ClassesByAccount{}
+	return ""
 }
 
-type QueryAllClassesByAccountRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllClassesByAccountRequest) Reset()         { *m = QueryAllClassesByAccountRequest{} }
-func (m *QueryAllClassesByAccountRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllClassesByAccountRequest) ProtoMessage()    {}
-func (*QueryAllClassesByAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_af5bbcbe472f31b2, []int{10}
-}
-func (m *QueryAllClassesByAccountRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllClassesByAccountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllClassesByAccountRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
+func (m *QueryGetClassesByAccountResponse) GetClasses() []nft.Class {
+	if m != nil {
+		return m.Classes
 	}
-}
-func (m *QueryAllClassesByAccountRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllClassesByAccountRequest.Merge(m, src)
-}
-func (m *QueryAllClassesByAccountRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllClassesByAccountRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllClassesByAccountRequest.DiscardUnknown(m)
+	return nil
 }
 
-var xxx_messageInfo_QueryAllClassesByAccountRequest proto.InternalMessageInfo
-
-func (m *QueryAllClassesByAccountRequest) GetPagination() *query.PageRequest {
+func (m *QueryGetClassesByAccountResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryAllClassesByAccountResponse struct {
-	ClassesByAccount []ClassesByAccount  `protobuf:"bytes,1,rep,name=classesByAccount,proto3" json:"classesByAccount"`
-	Pagination       *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryClassesByAccountIndexRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllClassesByAccountResponse) Reset()         { *m = QueryAllClassesByAccountResponse{} }
-func (m *QueryAllClassesByAccountResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllClassesByAccountResponse) ProtoMessage()    {}
-func (*QueryAllClassesByAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_af5bbcbe472f31b2, []int{11}
+func (m *QueryClassesByAccountIndexRequest) Reset()         { *m = QueryClassesByAccountIndexRequest{} }
+func (m *QueryClassesByAccountIndexRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByAccountIndexRequest) ProtoMessage()    {}
+func (*QueryClassesByAccountIndexRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_af5bbcbe472f31b2, []int{10}
 }
-func (m *QueryAllClassesByAccountResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryClassesByAccountIndexRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllClassesByAccountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryClassesByAccountIndexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllClassesByAccountResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryClassesByAccountIndexRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -593,26 +572,71 @@ func (m *QueryAllClassesByAccountResponse) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QueryAllClassesByAccountResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllClassesByAccountResponse.Merge(m, src)
+func (m *QueryClassesByAccountIndexRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByAccountIndexRequest.Merge(m, src)
 }
-func (m *QueryAllClassesByAccountResponse) XXX_Size() int {
+func (m *QueryClassesByAccountIndexRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllClassesByAccountResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllClassesByAccountResponse.DiscardUnknown(m)
+func (m *QueryClassesByAccountIndexRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByAccountIndexRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllClassesByAccountResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryClassesByAccountIndexRequest proto.InternalMessageInfo
 
-func (m *QueryAllClassesByAccountResponse) GetClassesByAccount() []ClassesByAccount {
+func (m *QueryClassesByAccountIndexRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryClassesByAccountIndexResponse struct {
+	ClassesByAccount []ClassesByAccount  `protobuf:"bytes,1,rep,name=classesByAccount,proto3" json:"classesByAccount"`
+	Pagination       *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryClassesByAccountIndexResponse) Reset()         { *m = QueryClassesByAccountIndexResponse{} }
+func (m *QueryClassesByAccountIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByAccountIndexResponse) ProtoMessage()    {}
+func (*QueryClassesByAccountIndexResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_af5bbcbe472f31b2, []int{11}
+}
+func (m *QueryClassesByAccountIndexResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryClassesByAccountIndexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryClassesByAccountIndexResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryClassesByAccountIndexResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByAccountIndexResponse.Merge(m, src)
+}
+func (m *QueryClassesByAccountIndexResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryClassesByAccountIndexResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByAccountIndexResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryClassesByAccountIndexResponse proto.InternalMessageInfo
+
+func (m *QueryClassesByAccountIndexResponse) GetClassesByAccount() []ClassesByAccount {
 	if m != nil {
 		return m.ClassesByAccount
 	}
 	return nil
 }
 
-func (m *QueryAllClassesByAccountResponse) GetPagination() *query.PageResponse {
+func (m *QueryClassesByAccountIndexResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -630,68 +654,68 @@ func init() {
 	proto.RegisterType((*QueryISCNByClassResponse)(nil), "likecoin.likechain.likenft.QueryISCNByClassResponse")
 	proto.RegisterType((*QueryGetClassesByAccountRequest)(nil), "likecoin.likechain.likenft.QueryGetClassesByAccountRequest")
 	proto.RegisterType((*QueryGetClassesByAccountResponse)(nil), "likecoin.likechain.likenft.QueryGetClassesByAccountResponse")
-	proto.RegisterType((*QueryAllClassesByAccountRequest)(nil), "likecoin.likechain.likenft.QueryAllClassesByAccountRequest")
-	proto.RegisterType((*QueryAllClassesByAccountResponse)(nil), "likecoin.likechain.likenft.QueryAllClassesByAccountResponse")
+	proto.RegisterType((*QueryClassesByAccountIndexRequest)(nil), "likecoin.likechain.likenft.QueryClassesByAccountIndexRequest")
+	proto.RegisterType((*QueryClassesByAccountIndexResponse)(nil), "likecoin.likechain.likenft.QueryClassesByAccountIndexResponse")
 }
 
 func init() { proto.RegisterFile("likenft/query.proto", fileDescriptor_af5bbcbe472f31b2) }
 
 var fileDescriptor_af5bbcbe472f31b2 = []byte{
-	// 849 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x4d, 0x4f, 0x13, 0x5d,
-	0x14, 0xee, 0x2d, 0x1f, 0xef, 0xcb, 0x05, 0x12, 0x72, 0x69, 0xf2, 0x96, 0x09, 0x6f, 0x69, 0x46,
-	0xa2, 0x88, 0x32, 0x23, 0x54, 0x88, 0x02, 0x0b, 0x28, 0x89, 0xa4, 0x0b, 0x0d, 0xd6, 0xa8, 0x89,
-	0x0b, 0xc9, 0x74, 0x7a, 0x5b, 0x26, 0x0e, 0x73, 0x4b, 0x67, 0xaa, 0x34, 0x84, 0x0d, 0x1b, 0xb7,
-	0x26, 0xc6, 0x9f, 0xe2, 0x0f, 0xd0, 0xb8, 0xc0, 0xb8, 0x90, 0xc4, 0x8d, 0x2b, 0x63, 0xc0, 0xdf,
-	0x61, 0xcc, 0xdc, 0x7b, 0x6e, 0x9d, 0xe9, 0x77, 0x1b, 0x76, 0xf7, 0xe3, 0x3c, 0xe7, 0x3c, 0xcf,
-	0x33, 0xa7, 0xe7, 0x16, 0x4f, 0xda, 0xd6, 0x0b, 0xea, 0x14, 0x3c, 0xfd, 0xa0, 0x42, 0xcb, 0x55,
-	0xad, 0x54, 0x66, 0x1e, 0x23, 0x8a, 0x7f, 0x68, 0x32, 0xcb, 0xd1, 0xf8, 0x62, 0xcf, 0x80, 0x95,
-	0x53, 0xf0, 0x94, 0x58, 0x91, 0x15, 0x19, 0x0f, 0xd3, 0xfd, 0x95, 0x40, 0x28, 0xd3, 0x45, 0xc6,
-	0x8a, 0x36, 0xd5, 0x8d, 0x92, 0xa5, 0x1b, 0x8e, 0xc3, 0x3c, 0xc3, 0xb3, 0x98, 0xe3, 0xc2, 0xed,
-	0xbc, 0xc9, 0xdc, 0x7d, 0xe6, 0xea, 0x39, 0xc3, 0xa5, 0xa2, 0x90, 0xfe, 0x72, 0x31, 0x47, 0x3d,
-	0x63, 0x51, 0x2f, 0x19, 0x45, 0xcb, 0xe1, 0xc1, 0x10, 0x1b, 0x93, 0x84, 0x4a, 0x46, 0xd9, 0xd8,
-	0x97, 0x19, 0xfe, 0x97, 0xa7, 0xa6, 0x6d, 0xb8, 0x2e, 0x75, 0x77, 0x73, 0xd5, 0x5d, 0xcb, 0x35,
-	0x25, 0x68, 0x1a, 0x0a, 0xf8, 0x11, 0x32, 0xb3, 0x53, 0xf0, 0xe0, 0x36, 0xd9, 0x04, 0x6c, 0x98,
-	0x26, 0xab, 0x38, 0x32, 0x62, 0xc2, 0xcf, 0x15, 0xb4, 0x40, 0x8d, 0x61, 0xf2, 0xd0, 0xdf, 0xee,
-	0x70, 0x16, 0x59, 0x7a, 0x50, 0xa1, 0xae, 0xa7, 0x3e, 0xc5, 0x93, 0xa1, 0x53, 0xb7, 0xc4, 0x1c,
-	0x97, 0x92, 0x0d, 0x3c, 0x2c, 0xd8, 0xc6, 0x51, 0x12, 0xcd, 0x8d, 0x2e, 0xa9, 0x5a, 0x6b, 0x03,
-	0x35, 0x81, 0x4d, 0x0f, 0x9e, 0xfe, 0x98, 0x89, 0x64, 0x01, 0xa7, 0xbe, 0x46, 0x78, 0x8a, 0x67,
-	0xde, 0x12, 0x14, 0xd3, 0xd5, 0xcc, 0xa3, 0xad, 0x07, 0x50, 0x96, 0xa8, 0x78, 0xcc, 0x27, 0x98,
-	0xc9, 0xef, 0x94, 0x69, 0xc1, 0x3a, 0xe4, 0x55, 0x46, 0xb2, 0xa1, 0x33, 0x72, 0x0f, 0xe3, 0xbf,
-	0x5e, 0xc6, 0xa3, 0x9c, 0xc7, 0x55, 0x4d, 0xf8, 0xa2, 0xf9, 0xc6, 0x6b, 0x42, 0x1e, 0xd8, 0xa3,
-	0xed, 0x18, 0x45, 0x0a, 0xf9, 0xb3, 0x01, 0xa4, 0xfa, 0x09, 0x61, 0xa5, 0x19, 0x13, 0x90, 0xda,
-	0x0d, 0x95, 0xbb, 0xf8, 0x1f, 0x70, 0x3a, 0x1e, 0x4d, 0x0e, 0xcc, 0x8d, 0x2e, 0x4d, 0x49, 0x1e,
-	0xbe, 0x7e, 0x49, 0x80, 0xe7, 0x07, 0x1b, 0x64, 0x3c, 0xd9, 0x0e, 0xa9, 0x18, 0xe0, 0x2a, 0xae,
-	0x75, 0x54, 0x21, 0xb8, 0x85, 0x64, 0xec, 0xe1, 0x44, 0xa3, 0x8a, 0x8c, 0x93, 0xa7, 0x87, 0xd2,
-	0xd4, 0xb0, 0x61, 0xa8, 0x6f, 0xc3, 0x3e, 0x20, 0x3c, 0xd3, 0xb2, 0x14, 0xb8, 0xf6, 0x18, 0x8f,
-	0x9b, 0xc1, 0xdb, 0x38, 0xe2, 0xbe, 0x5c, 0x6f, 0xd7, 0x27, 0xa1, 0x74, 0xe0, 0x53, 0x38, 0x4b,
-	0x9d, 0x5b, 0xd1, 0xfe, 0xdd, 0x4a, 0xe1, 0xff, 0xb8, 0x04, 0x5e, 0x4a, 0x08, 0x91, 0x36, 0xc5,
-	0xe1, 0x63, 0x66, 0xf2, 0xf0, 0xad, 0xe5, 0x56, 0xfd, 0x8c, 0x70, 0xbc, 0x11, 0xd5, 0x43, 0x9f,
-	0xc4, 0xf0, 0x10, 0x7b, 0xe5, 0xd0, 0x32, 0x67, 0x3e, 0x92, 0x15, 0x1b, 0x32, 0x8b, 0xc7, 0x6d,
-	0xc3, 0xa3, 0xae, 0xf7, 0x84, 0x96, 0x5d, 0xd9, 0x05, 0x83, 0xd9, 0xf0, 0x21, 0xb9, 0x8f, 0xc7,
-	0xc4, 0x41, 0x96, 0x9a, 0xac, 0x9c, 0x8f, 0x0f, 0x72, 0xf1, 0x57, 0x02, 0x3e, 0xf2, 0xf1, 0xc0,
-	0xf9, 0xd5, 0x24, 0xf3, 0x50, 0xb0, 0x32, 0x04, 0x57, 0xd7, 0xe0, 0x1b, 0x6e, 0x53, 0xaf, 0xe6,
-	0xfb, 0xa6, 0x18, 0x11, 0x01, 0x23, 0x60, 0x68, 0x48, 0x23, 0x60, 0xab, 0x9e, 0x20, 0x9c, 0x6c,
-	0x8d, 0x06, 0x43, 0x9e, 0xe3, 0x09, 0xb3, 0xee, 0x0e, 0x9a, 0xee, 0x66, 0x57, 0x5d, 0x00, 0x18,
-	0x60, 0xdf, 0x90, 0x4b, 0xb5, 0x40, 0xc1, 0xa6, 0x6d, 0xb7, 0x52, 0x70, 0x59, 0x1d, 0xff, 0x45,
-	0xea, 0x6d, 0x5a, 0xab, 0xad, 0xde, 0x81, 0xcb, 0xd2, 0x7b, 0x69, 0xbd, 0xbf, 0xf4, 0xfb, 0x5f,
-	0x3c, 0xc4, 0xd5, 0x90, 0x77, 0x08, 0x0f, 0x8b, 0xe9, 0x4c, 0xb4, 0x76, 0x1c, 0x1b, 0x1f, 0x06,
-	0x45, 0xef, 0x3a, 0x5e, 0x30, 0x50, 0xe7, 0x4f, 0xbe, 0xfd, 0x7a, 0x1b, 0x9d, 0x25, 0xaa, 0x2e,
-	0x81, 0x7a, 0x0d, 0xa8, 0x87, 0x9f, 0x40, 0xf2, 0x11, 0xe1, 0xf1, 0xd0, 0x34, 0x20, 0xcb, 0x1d,
-	0xcb, 0x35, 0x7b, 0x47, 0x94, 0x95, 0x5e, 0x61, 0x40, 0x36, 0xcd, 0xc9, 0xae, 0x93, 0xd5, 0x76,
-	0x64, 0xeb, 0x5e, 0x66, 0xfd, 0x28, 0xf8, 0x5b, 0x3f, 0xf6, 0x45, 0x90, 0xc6, 0x09, 0x49, 0x56,
-	0x7b, 0xa3, 0x14, 0x9c, 0xe0, 0xca, 0x5a, 0x5f, 0x58, 0xd0, 0x94, 0xe2, 0x9a, 0x16, 0xc8, 0x8d,
-	0x1e, 0x34, 0x91, 0xf7, 0x08, 0x8f, 0x06, 0xa6, 0x1d, 0x49, 0x75, 0x64, 0xd0, 0x38, 0x51, 0x95,
-	0xdb, 0xbd, 0x81, 0x80, 0xef, 0x1a, 0xe7, 0xbb, 0x4c, 0x52, 0xed, 0xf8, 0xfa, 0x24, 0x7d, 0xb2,
-	0x9c, 0xb7, 0x7e, 0x04, 0x93, 0xfa, 0x98, 0x7c, 0x45, 0x78, 0xa2, 0xfe, 0x97, 0x45, 0x3a, 0xdb,
-	0xd7, 0x7a, 0x1a, 0x2a, 0xeb, 0xfd, 0x81, 0x41, 0xcc, 0x06, 0x17, 0xb3, 0x4a, 0xee, 0x74, 0x69,
-	0x3e, 0x4c, 0x5a, 0xfd, 0x08, 0x16, 0xc7, 0xe4, 0x14, 0xe1, 0xc9, 0xfa, 0xf4, 0x9b, 0xb6, 0xdd,
-	0x85, 0xa8, 0xd6, 0x03, 0xb2, 0x0b, 0x51, 0x6d, 0x26, 0x9e, 0xba, 0xc2, 0x45, 0xdd, 0x22, 0x5a,
-	0x6f, 0xa2, 0xd2, 0xdb, 0xa7, 0xe7, 0x09, 0x74, 0x76, 0x9e, 0x40, 0x3f, 0xcf, 0x13, 0xe8, 0xcd,
-	0x45, 0x22, 0x72, 0x76, 0x91, 0x88, 0x7c, 0xbf, 0x48, 0x44, 0x9e, 0x2d, 0x14, 0x2d, 0x6f, 0xaf,
-	0x92, 0xd3, 0x4c, 0xb6, 0xdf, 0x2c, 0xe7, 0x61, 0x2d, 0xab, 0x57, 0x2d, 0x51, 0x37, 0x37, 0xcc,
-	0xff, 0xba, 0xa6, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0x34, 0xca, 0x81, 0xf0, 0xd4, 0x0b, 0x00,
-	0x00,
+	// 855 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0xcf, 0x4f, 0x13, 0x4f,
+	0x14, 0xef, 0x94, 0x1f, 0xdf, 0x30, 0x40, 0x42, 0x86, 0x7e, 0x63, 0xd9, 0x60, 0xa9, 0x2b, 0x51,
+	0x44, 0xd9, 0x15, 0x2a, 0x44, 0x01, 0x0d, 0x96, 0x44, 0xd2, 0x83, 0x06, 0x6b, 0xd4, 0xc4, 0x83,
+	0x64, 0xbb, 0x9d, 0x96, 0x0d, 0x65, 0xa7, 0xec, 0x6e, 0x95, 0x86, 0x70, 0x51, 0x13, 0xaf, 0x26,
+	0xc6, 0x3f, 0xc5, 0xbb, 0x1a, 0x0f, 0x78, 0x50, 0x49, 0xbc, 0x78, 0x32, 0x06, 0xfc, 0x43, 0xcc,
+	0xce, 0xbe, 0xa9, 0xbb, 0xfd, 0xdd, 0x06, 0x13, 0x6f, 0x3b, 0xb3, 0xef, 0xf3, 0xde, 0xe7, 0xf3,
+	0xd9, 0x79, 0x6f, 0x16, 0x8f, 0x16, 0x8c, 0x2d, 0x6a, 0xe6, 0x1c, 0x75, 0xa7, 0x44, 0xad, 0xb2,
+	0x52, 0xb4, 0x98, 0xc3, 0x88, 0xe4, 0x6e, 0xea, 0xcc, 0x30, 0x15, 0xfe, 0xb0, 0xa9, 0xc1, 0x93,
+	0x99, 0x73, 0xa4, 0x48, 0x9e, 0xe5, 0x19, 0x0f, 0x53, 0xdd, 0x27, 0x0f, 0x21, 0x8d, 0xe7, 0x19,
+	0xcb, 0x17, 0xa8, 0xaa, 0x15, 0x0d, 0x55, 0x33, 0x4d, 0xe6, 0x68, 0x8e, 0xc1, 0x4c, 0x1b, 0xde,
+	0x4e, 0xeb, 0xcc, 0xde, 0x66, 0xb6, 0x9a, 0xd1, 0x6c, 0xea, 0x15, 0x52, 0x9f, 0xcc, 0x66, 0xa8,
+	0xa3, 0xcd, 0xaa, 0x45, 0x2d, 0x6f, 0x98, 0x3c, 0x18, 0x62, 0x23, 0x82, 0x50, 0x51, 0xb3, 0xb4,
+	0x6d, 0x91, 0xe1, 0xb4, 0xd8, 0xd5, 0x0b, 0x9a, 0x6d, 0x53, 0x7b, 0x23, 0x53, 0xde, 0x30, 0x6c,
+	0x5d, 0x80, 0xc6, 0xa1, 0x80, 0x1b, 0x21, 0x32, 0x9b, 0x39, 0x07, 0xde, 0xc6, 0xeb, 0x80, 0x35,
+	0x5d, 0x67, 0x25, 0x53, 0x44, 0x8c, 0xb8, 0xb9, 0xfc, 0x16, 0xc8, 0x11, 0x4c, 0xee, 0xba, 0xcb,
+	0x75, 0xce, 0x22, 0x4d, 0x77, 0x4a, 0xd4, 0x76, 0xe4, 0x87, 0x78, 0x34, 0xb0, 0x6b, 0x17, 0x99,
+	0x69, 0x53, 0xb2, 0x82, 0xfb, 0x3d, 0xb6, 0x51, 0x14, 0x47, 0x53, 0x83, 0x73, 0xb2, 0xd2, 0xd8,
+	0x40, 0xc5, 0xc3, 0x26, 0x7b, 0x0f, 0x7e, 0x4c, 0x84, 0xd2, 0x80, 0x93, 0x5f, 0x22, 0x3c, 0xc6,
+	0x33, 0xaf, 0x7a, 0x14, 0x93, 0xe5, 0xd4, 0xbd, 0xd5, 0x3b, 0x50, 0x96, 0xc8, 0x78, 0xc8, 0x25,
+	0x98, 0xca, 0xae, 0x5b, 0x34, 0x67, 0xec, 0xf2, 0x2a, 0x03, 0xe9, 0xc0, 0x1e, 0xb9, 0x85, 0xf1,
+	0x1f, 0x2f, 0xa3, 0x61, 0xce, 0xe3, 0x9c, 0xe2, 0xf9, 0xa2, 0xb8, 0xc6, 0x2b, 0x9e, 0x3c, 0xb0,
+	0x47, 0x59, 0xd7, 0xf2, 0x14, 0xf2, 0xa7, 0x7d, 0x48, 0xf9, 0x23, 0xc2, 0x52, 0x3d, 0x26, 0x20,
+	0xb5, 0x1d, 0x2a, 0xd7, 0xf0, 0x7f, 0xe0, 0x74, 0x34, 0x1c, 0xef, 0x99, 0x1a, 0x9c, 0x1b, 0x13,
+	0x3c, 0x5c, 0xfd, 0x82, 0x00, 0xcf, 0x0f, 0x36, 0x88, 0x78, 0xb2, 0x16, 0x50, 0xd1, 0xc3, 0x55,
+	0x9c, 0x6f, 0xa9, 0xc2, 0xe3, 0x16, 0x90, 0xb1, 0x89, 0x63, 0xb5, 0x2a, 0x52, 0x66, 0x96, 0xee,
+	0x0a, 0x53, 0x83, 0x86, 0xa1, 0xae, 0x0d, 0x7b, 0x8f, 0xf0, 0x44, 0xc3, 0x52, 0xe0, 0xda, 0x7d,
+	0x3c, 0xac, 0xfb, 0xdf, 0x46, 0x11, 0xf7, 0xe5, 0x42, 0xb3, 0x73, 0x12, 0x48, 0x07, 0x3e, 0x05,
+	0xb3, 0x54, 0xb9, 0x15, 0xee, 0xde, 0xad, 0x04, 0x3e, 0xc5, 0x25, 0xf0, 0x52, 0x9e, 0x10, 0x61,
+	0x53, 0x14, 0x3e, 0x66, 0x2a, 0x0b, 0xdf, 0x5a, 0x2c, 0xe5, 0x4f, 0x08, 0x47, 0x6b, 0x51, 0x1d,
+	0x9c, 0x93, 0x08, 0xee, 0x63, 0x4f, 0x4d, 0x6a, 0x71, 0xe6, 0x03, 0x69, 0x6f, 0x41, 0x26, 0xf1,
+	0x70, 0x41, 0x73, 0xa8, 0xed, 0x3c, 0xa0, 0x96, 0x2d, 0x4e, 0x41, 0x6f, 0x3a, 0xb8, 0x49, 0x6e,
+	0xe3, 0x21, 0x6f, 0x23, 0x4d, 0x75, 0x66, 0x65, 0xa3, 0xbd, 0x5c, 0xfc, 0x59, 0x9f, 0x8f, 0x7c,
+	0x3c, 0x70, 0x7e, 0x15, 0xc9, 0x3c, 0x14, 0xac, 0x0c, 0xc0, 0xe5, 0xe7, 0xe2, 0x23, 0xae, 0x51,
+	0xa7, 0x62, 0xfc, 0x4d, 0x6f, 0x46, 0xf8, 0x9c, 0x80, 0xa9, 0x21, 0x9c, 0x80, 0xe5, 0x89, 0xf5,
+	0xde, 0x3b, 0x84, 0xe3, 0x8d, 0x59, 0x80, 0xb3, 0x8d, 0x69, 0xfc, 0x0b, 0x7d, 0xb7, 0x85, 0xcf,
+	0x04, 0x9b, 0x01, 0xe8, 0xff, 0x95, 0xd6, 0xfb, 0x8c, 0xb0, 0xdc, 0xac, 0x1a, 0x38, 0xf6, 0x18,
+	0x8f, 0xe8, 0x55, 0x01, 0xd0, 0x80, 0x97, 0xda, 0x6a, 0x40, 0xc0, 0x80, 0x67, 0x35, 0xb9, 0x4e,
+	0xac, 0x0d, 0xe7, 0x5e, 0x0c, 0xe0, 0x3e, 0xae, 0x87, 0xbc, 0x41, 0xb8, 0xdf, 0xbb, 0x28, 0x88,
+	0xd2, 0x8c, 0x63, 0xed, 0x1d, 0x25, 0xa9, 0x6d, 0xc7, 0x7b, 0x0c, 0xe4, 0xe9, 0x67, 0xdf, 0x7e,
+	0xbd, 0x0e, 0x4f, 0x12, 0x59, 0x15, 0x40, 0xb5, 0x02, 0x54, 0x83, 0xb7, 0x31, 0xf9, 0x80, 0xf0,
+	0x70, 0x60, 0x30, 0x91, 0xf9, 0x96, 0xe5, 0xea, 0x5d, 0x69, 0xd2, 0x42, 0xa7, 0x30, 0x20, 0x9b,
+	0xe4, 0x64, 0x97, 0xc9, 0x62, 0x33, 0xb2, 0x55, 0x3f, 0x09, 0xea, 0x9e, 0x7f, 0xec, 0xec, 0xbb,
+	0x22, 0x48, 0xed, 0xb0, 0x26, 0x8b, 0x9d, 0x51, 0xf2, 0x9f, 0x68, 0x69, 0xa9, 0x2b, 0x2c, 0x68,
+	0x4a, 0x70, 0x4d, 0x33, 0xe4, 0x62, 0x07, 0x9a, 0xc8, 0x5b, 0x84, 0x07, 0x7d, 0x83, 0x97, 0x24,
+	0x5a, 0x32, 0xa8, 0x1d, 0xee, 0xd2, 0x95, 0xce, 0x40, 0xc0, 0x77, 0x89, 0xf3, 0x9d, 0x27, 0x89,
+	0x66, 0x7c, 0x5d, 0x92, 0x2e, 0x59, 0xce, 0x5b, 0xdd, 0x83, 0x4b, 0x63, 0x9f, 0x7c, 0x45, 0x78,
+	0xa4, 0xba, 0xb3, 0x48, 0x6b, 0xfb, 0x1a, 0xcf, 0x65, 0x69, 0xb9, 0x3b, 0x30, 0x88, 0x59, 0xe1,
+	0x62, 0x16, 0xc9, 0xd5, 0x36, 0xcd, 0x87, 0x61, 0xab, 0xee, 0xc1, 0xc3, 0x3e, 0xf9, 0x82, 0xf0,
+	0xff, 0x75, 0x07, 0x10, 0xb9, 0xde, 0xfe, 0xa9, 0xa8, 0x33, 0x26, 0xa5, 0x1b, 0xdd, 0xc2, 0x41,
+	0xda, 0x02, 0x97, 0x76, 0x99, 0x28, 0x9d, 0x49, 0x4b, 0xae, 0x1d, 0x1c, 0xc5, 0xd0, 0xe1, 0x51,
+	0x0c, 0xfd, 0x3c, 0x8a, 0xa1, 0x57, 0xc7, 0xb1, 0xd0, 0xe1, 0x71, 0x2c, 0xf4, 0xfd, 0x38, 0x16,
+	0x7a, 0x34, 0x93, 0x37, 0x9c, 0xcd, 0x52, 0x46, 0xd1, 0xd9, 0x76, 0xbd, 0x9c, 0xbb, 0x95, 0xac,
+	0x4e, 0xb9, 0x48, 0xed, 0x4c, 0x3f, 0xff, 0x97, 0x4e, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xe1,
+	0x8b, 0xa0, 0xc2, 0x65, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -717,7 +741,7 @@ type QueryClient interface {
 	// Queries a ClassesByAccount by index.
 	ClassesByAccount(ctx context.Context, in *QueryGetClassesByAccountRequest, opts ...grpc.CallOption) (*QueryGetClassesByAccountResponse, error)
 	// Queries a list of ClassesByAccount items.
-	ClassesByAccountAll(ctx context.Context, in *QueryAllClassesByAccountRequest, opts ...grpc.CallOption) (*QueryAllClassesByAccountResponse, error)
+	ClassesByAccountIndex(ctx context.Context, in *QueryClassesByAccountIndexRequest, opts ...grpc.CallOption) (*QueryClassesByAccountIndexResponse, error)
 }
 
 type queryClient struct {
@@ -773,9 +797,9 @@ func (c *queryClient) ClassesByAccount(ctx context.Context, in *QueryGetClassesB
 	return out, nil
 }
 
-func (c *queryClient) ClassesByAccountAll(ctx context.Context, in *QueryAllClassesByAccountRequest, opts ...grpc.CallOption) (*QueryAllClassesByAccountResponse, error) {
-	out := new(QueryAllClassesByAccountResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClassesByAccountAll", in, out, opts...)
+func (c *queryClient) ClassesByAccountIndex(ctx context.Context, in *QueryClassesByAccountIndexRequest, opts ...grpc.CallOption) (*QueryClassesByAccountIndexResponse, error) {
+	out := new(QueryClassesByAccountIndexResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClassesByAccountIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -795,7 +819,7 @@ type QueryServer interface {
 	// Queries a ClassesByAccount by index.
 	ClassesByAccount(context.Context, *QueryGetClassesByAccountRequest) (*QueryGetClassesByAccountResponse, error)
 	// Queries a list of ClassesByAccount items.
-	ClassesByAccountAll(context.Context, *QueryAllClassesByAccountRequest) (*QueryAllClassesByAccountResponse, error)
+	ClassesByAccountIndex(context.Context, *QueryClassesByAccountIndexRequest) (*QueryClassesByAccountIndexResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -817,8 +841,8 @@ func (*UnimplementedQueryServer) ISCNByClass(ctx context.Context, req *QueryISCN
 func (*UnimplementedQueryServer) ClassesByAccount(ctx context.Context, req *QueryGetClassesByAccountRequest) (*QueryGetClassesByAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAccount not implemented")
 }
-func (*UnimplementedQueryServer) ClassesByAccountAll(ctx context.Context, req *QueryAllClassesByAccountRequest) (*QueryAllClassesByAccountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAccountAll not implemented")
+func (*UnimplementedQueryServer) ClassesByAccountIndex(ctx context.Context, req *QueryClassesByAccountIndexRequest) (*QueryClassesByAccountIndexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAccountIndex not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -915,20 +939,20 @@ func _Query_ClassesByAccount_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClassesByAccountAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllClassesByAccountRequest)
+func _Query_ClassesByAccountIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassesByAccountIndexRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClassesByAccountAll(ctx, in)
+		return srv.(QueryServer).ClassesByAccountIndex(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Query/ClassesByAccountAll",
+		FullMethod: "/likecoin.likechain.likenft.Query/ClassesByAccountIndex",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassesByAccountAll(ctx, req.(*QueryAllClassesByAccountRequest))
+		return srv.(QueryServer).ClassesByAccountIndex(ctx, req.(*QueryClassesByAccountIndexRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -958,8 +982,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ClassesByAccount_Handler,
 		},
 		{
-			MethodName: "ClassesByAccountAll",
-			Handler:    _Query_ClassesByAccountAll_Handler,
+			MethodName: "ClassesByAccountIndex",
+			Handler:    _Query_ClassesByAccountIndex_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1306,6 +1330,18 @@ func (m *QueryGetClassesByAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int
 	_ = i
 	var l int
 	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Account) > 0 {
 		i -= len(m.Account)
 		copy(dAtA[i:], m.Account)
@@ -1336,20 +1372,43 @@ func (m *QueryGetClassesByAccountResponse) MarshalToSizedBuffer(dAtA []byte) (in
 	_ = i
 	var l int
 	_ = l
-	{
-		size, err := m.ClassesByAccount.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x1a
 	}
-	i--
-	dAtA[i] = 0xa
+	if len(m.Classes) > 0 {
+		for iNdEx := len(m.Classes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Classes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Account) > 0 {
+		i -= len(m.Account)
+		copy(dAtA[i:], m.Account)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Account)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllClassesByAccountRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByAccountIndexRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1359,12 +1418,12 @@ func (m *QueryAllClassesByAccountRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllClassesByAccountRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByAccountIndexRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllClassesByAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByAccountIndexRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1384,7 +1443,7 @@ func (m *QueryAllClassesByAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllClassesByAccountResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryClassesByAccountIndexResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1394,12 +1453,12 @@ func (m *QueryAllClassesByAccountResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllClassesByAccountResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryClassesByAccountIndexResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllClassesByAccountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryClassesByAccountIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1581,6 +1640,10 @@ func (m *QueryGetClassesByAccountRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -1590,12 +1653,24 @@ func (m *QueryGetClassesByAccountResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.ClassesByAccount.Size()
-	n += 1 + l + sovQuery(uint64(l))
+	l = len(m.Account)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if len(m.Classes) > 0 {
+		for _, e := range m.Classes {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
-func (m *QueryAllClassesByAccountRequest) Size() (n int) {
+func (m *QueryClassesByAccountIndexRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1608,7 +1683,7 @@ func (m *QueryAllClassesByAccountRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllClassesByAccountResponse) Size() (n int) {
+func (m *QueryClassesByAccountIndexResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2551,6 +2626,42 @@ func (m *QueryGetClassesByAccountRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Account = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -2603,7 +2714,39 @@ func (m *QueryGetClassesByAccountResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassesByAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Account = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Classes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2630,7 +2773,44 @@ func (m *QueryGetClassesByAccountResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.ClassesByAccount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Classes = append(m.Classes, nft.Class{})
+			if err := m.Classes[len(m.Classes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2655,7 +2835,7 @@ func (m *QueryGetClassesByAccountResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllClassesByAccountRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByAccountIndexRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2678,10 +2858,10 @@ func (m *QueryAllClassesByAccountRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllClassesByAccountRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByAccountIndexRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllClassesByAccountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByAccountIndexRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2741,7 +2921,7 @@ func (m *QueryAllClassesByAccountRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllClassesByAccountResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryClassesByAccountIndexResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2764,10 +2944,10 @@ func (m *QueryAllClassesByAccountResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllClassesByAccountResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryClassesByAccountIndexResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllClassesByAccountResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryClassesByAccountIndexResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

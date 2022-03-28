@@ -23,11 +23,11 @@ func CmdListClassesByAccount() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClassesByAccountRequest{
+			params := &types.QueryClassesByAccountIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClassesByAccountAll(context.Background(), params)
+			res, err := queryClient.ClassesByAccountIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}

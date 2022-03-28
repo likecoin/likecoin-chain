@@ -74,8 +74,8 @@ func TestClassesByAccountQueryPaginated(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNClassesByAccount(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllClassesByAccountRequest {
-		return &types.QueryAllClassesByAccountRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryClassesByAccountIndexRequest {
+		return &types.QueryClassesByAccountIndexRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
