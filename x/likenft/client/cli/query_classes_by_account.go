@@ -12,8 +12,8 @@ import (
 
 func CmdListClassesByAccount() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-classes-by-account",
-		Short: "list all classesByAccount",
+		Use:   "account-index",
+		Short: "Enumerate all ISCN to NFT classes relation records",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -45,8 +45,8 @@ func CmdListClassesByAccount() *cobra.Command {
 
 func CmdShowClassesByAccount() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-classes-by-account [account]",
-		Short: "shows a classesByAccount",
+		Use:   "account-classes [account]",
+		Short: "Query NFT classes related to an account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
