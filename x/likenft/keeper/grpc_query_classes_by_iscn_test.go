@@ -27,7 +27,7 @@ func TestClassesByISCNQuerySingle(t *testing.T) {
 	// Note: currently does not test pagination (class id arrays are empty)
 	// Effort needed to seed data via mock (similar to e2e test)
 	// Pagination is already covered by unit test and cli test
-	classesByMsgs := testutil.BatchMakeDummyNFTClasses(msgs)
+	classesByMsgs := testutil.BatchMakeDummyNFTClassesForISCN(msgs)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryClassesByISCNRequest

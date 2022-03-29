@@ -49,7 +49,7 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 
 func TestShowClassesByISCN(t *testing.T) {
 	net, objs := networkWithClassesByISCNObjects(t, 2)
-	classesByObjs := testutil.BatchMakeDummyNFTClasses(objs)
+	classesByObjs := testutil.BatchMakeDummyNFTClassesForISCN(objs)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
