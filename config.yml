@@ -14,6 +14,8 @@ build:
   main: cmd/liked
 init:
   home: "$HOME/.liked"
+  app:
+    minimum-gas-prices: 0nanolike
 genesis:
   chain_id: "likecoin-local-1"
   app_state:
