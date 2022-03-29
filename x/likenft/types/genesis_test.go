@@ -3,11 +3,13 @@ package types_test
 import (
 	"testing"
 
+	"github.com/likecoin/likechain/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
+	accounts := testutil.CreateIncrementalAccounts(2)
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -32,10 +34,10 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				ClassesByAccountList: []types.ClassesByAccount{
 					{
-						Account: "0",
+						Account: accounts[0].String(),
 					},
 					{
-						Account: "1",
+						Account: accounts[1].String(),
 					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
@@ -61,10 +63,10 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				ClassesByAccountList: []types.ClassesByAccount{
 					{
-						Account: "0",
+						Account: accounts[0].String(),
 					},
 					{
-						Account: "0",
+						Account: accounts[0].String(),
 					},
 				},
 			},

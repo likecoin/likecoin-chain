@@ -3,6 +3,7 @@ package likenft_test
 import (
 	"testing"
 
+	"github.com/likecoin/likechain/testutil"
 	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft"
@@ -11,6 +12,8 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
+	accounts := testutil.CreateIncrementalAccounts(2)
+
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
@@ -24,10 +27,10 @@ func TestGenesis(t *testing.T) {
 		},
 		ClassesByAccountList: []types.ClassesByAccount{
 			{
-				Account: "0",
+				Account: accounts[0].String(),
 			},
 			{
-				Account: "1",
+				Account: accounts[1].String(),
 			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state

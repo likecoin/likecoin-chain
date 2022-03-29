@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/likecoin/likechain/testutil"
 	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/keeper"
@@ -15,22 +16,22 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNClassesByAccount(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.ClassesByAccount {
+func createNClassesByAccount(keeper *keeper.Keeper, ctx sdk.Context, n int) ([]types.ClassesByAccount, []sdk.AccAddress) {
 	items := make([]types.ClassesByAccount, n)
+	accounts := testutil.CreateIncrementalAccounts(n)
 	for i := range items {
-		items[i].Account = strconv.Itoa(i)
-
+		items[i].Account = accounts[i].String()
 		keeper.SetClassesByAccount(ctx, items[i])
 	}
-	return items
+	return items, accounts
 }
 
 func TestClassesByAccountGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClassesByAccount(keeper, ctx, 10)
-	for _, item := range items {
+	items, accounts := createNClassesByAccount(keeper, ctx, 10)
+	for i, item := range items {
 		rst, found := keeper.GetClassesByAccount(ctx,
-			item.Account,
+			accounts[i],
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -41,13 +42,13 @@ func TestClassesByAccountGet(t *testing.T) {
 }
 func TestClassesByAccountRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClassesByAccount(keeper, ctx, 10)
-	for _, item := range items {
+	items, accounts := createNClassesByAccount(keeper, ctx, 10)
+	for i, _ := range items {
 		keeper.RemoveClassesByAccount(ctx,
-			item.Account,
+			accounts[i],
 		)
 		_, found := keeper.GetClassesByAccount(ctx,
-			item.Account,
+			accounts[i],
 		)
 		require.False(t, found)
 	}
@@ -55,7 +56,7 @@ func TestClassesByAccountRemove(t *testing.T) {
 
 func TestClassesByAccountGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClassesByAccount(keeper, ctx, 10)
+	items, _ := createNClassesByAccount(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetAllClassesByAccount(ctx)),

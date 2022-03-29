@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/likecoin/likechain/testutil"
 	"github.com/likecoin/likechain/testutil/network"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/client/cli"
@@ -26,10 +27,10 @@ func networkWithClassesByAccountObjects(t *testing.T, n int) (*network.Network, 
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
-
+	accounts := testutil.CreateIncrementalAccounts(n)
 	for i := 0; i < n; i++ {
 		classesByAccount := types.ClassesByAccount{
-			Account: strconv.Itoa(i),
+			Account: accounts[i].String(),
 		}
 		nullify.Fill(&classesByAccount)
 		state.ClassesByAccountList = append(state.ClassesByAccountList, classesByAccount)
@@ -85,11 +86,9 @@ func TestShowClassesByAccount(t *testing.T) {
 				require.NoError(t, err)
 				var resp types.QueryGetClassesByAccountResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.ClassesByAccount)
-				require.Equal(t,
-					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.ClassesByAccount),
-				)
+				require.NotNil(t, resp.Account)
+				require.Equal(t, tc.obj.Account, resp.Account)
+				// FIXME Add pagination test
 			}
 		})
 	}

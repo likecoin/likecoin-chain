@@ -22,3 +22,21 @@ func BatchMakeDummyNFTClasses(msgs []types.ClassesByISCN) [][]nft.Class {
 	}
 	return output
 }
+
+func MakeDummyNFTClassesForAccount(msg types.ClassesByAccount) []nft.Class {
+	classes := make([]nft.Class, len(msg.ClassIds))
+	for i, classId := range msg.ClassIds {
+		classes[i] = nft.Class{
+			Id: classId,
+		}
+	}
+	return classes
+}
+
+func BatchMakeDummyNFTClassesForAccount(msgs []types.ClassesByAccount) [][]nft.Class {
+	output := make([][]nft.Class, len(msgs))
+	for i, msg := range msgs {
+		output[i] = MakeDummyNFTClassesForAccount(msg)
+	}
+	return output
+}
