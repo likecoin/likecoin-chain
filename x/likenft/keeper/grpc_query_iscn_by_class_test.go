@@ -32,7 +32,7 @@ func TestISCNByClassNormal(t *testing.T) {
 	classId := "likenft1aabbccddeeff"
 	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
-	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	iscnSequence := uint64(1)
 	iscnCidBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
 	iscnData := iscntypes.IscnInput(`{"qwer": "asdf"}`)
