@@ -23,4 +23,5 @@ var (
 	ErrNftNotFound                       = sdkerrors.Register(ModuleName, 13, "NFT not found")
 	ErrNftNotBurnable                    = sdkerrors.Register(ModuleName, 14, "NFT not burnable")
 	ErrFailedToBurnNFT                   = sdkerrors.Register(ModuleName, 15, "Failed to burn NFT")
+	ErrNftClassNotRelatedToAnyAccount    = sdkerrors.Register(ModuleName, 16, "NFT Class not related to any account")
 )

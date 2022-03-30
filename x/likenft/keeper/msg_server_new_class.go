@@ -8,84 +8,56 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
 func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*types.MsgNewClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var safeParent types.ClassParent
-	var safeUserAddress sdk.AccAddress
-	if msg.Parent.Type == types.ClassParentType_ISCN {
-		// Assert iscn id is valid
-		iscnId, err := iscntypes.ParseIscnId(msg.Parent.IscnIdPrefix)
-		if err != nil {
-			return nil, types.ErrInvalidIscnId.Wrapf("%s", err.Error())
-		}
-		// Assert iscn exists
-		iscnRecord := k.iscnKeeper.GetContentIdRecord(ctx, iscnId.Prefix)
-		if iscnRecord == nil {
-			return nil, types.ErrIscnRecordNotFound.Wrapf("ISCN %s not found", iscnId.Prefix.String())
-		}
-		// Assert current user is owner
-		safeUserAddress, err = sdk.AccAddressFromBech32(msg.Creator)
-		if err != nil {
-			return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-		}
-		if !iscnRecord.OwnerAddress().Equals(safeUserAddress) {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the owner of the ISCN %s", msg.Creator, iscnId.Prefix.String())
-		}
-		safeParent = types.ClassParent{
-			Type:              types.ClassParentType_ISCN,
-			IscnIdPrefix:      iscnId.Prefix.String(),
-			IscnVersionAtMint: iscnRecord.LatestVersion,
-		}
-	} else if msg.Parent.Type == types.ClassParentType_ACCOUNT {
-		var err error
-		safeUserAddress, err = sdk.AccAddressFromBech32(msg.Creator)
-		if err != nil {
-			return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-		}
-		safeParent = types.ClassParent{
-			Type:    types.ClassParentType_ACCOUNT,
-			Account: safeUserAddress.String(),
-		}
-	} else {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Unsupported parent type %s", msg.Parent.Type.String())
+	parent, err := k.resolveClassParentAndOwner(ctx, msg.Parent, msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
+	}
+	if !parent.Owner.Equals(userAddress) {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
 	// Make class id
 	var existingClassIds []string
 	var newClassId string
-	if safeParent.Type == types.ClassParentType_ISCN {
-		value, found := k.GetClassesByISCN(ctx, safeParent.IscnIdPrefix)
+	if parent.Type == types.ClassParentType_ISCN {
+		value, found := k.GetClassesByISCN(ctx, parent.IscnIdPrefix)
 		if found {
 			existingClassIds = value.ClassIds
 		}
 		var err error
-		newClassId, err = types.NewClassIdForISCN(safeParent.IscnIdPrefix, len(existingClassIds))
+		newClassId, err = types.NewClassIdForISCN(parent.IscnIdPrefix, len(existingClassIds))
 		if newClassId == "" || err != nil {
 			return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
 		}
-	} else if safeParent.Type == types.ClassParentType_ACCOUNT {
-		value, found := k.GetClassesByAccount(ctx, safeUserAddress)
+	} else if parent.Type == types.ClassParentType_ACCOUNT {
+		value, found := k.GetClassesByAccount(ctx, parent.Owner)
 		if found {
 			existingClassIds = value.ClassIds
 		}
 		var err error
-		newClassId, err = types.NewClassIdForAccount(safeUserAddress, len(existingClassIds))
+		newClassId, err = types.NewClassIdForAccount(parent.Owner, len(existingClassIds))
 		if newClassId == "" || err != nil {
 			return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
 		}
 	} else {
-		panic(fmt.Sprintf("Unsupported parent type %s after initial check", safeParent.Type.String()))
+		panic(fmt.Sprintf("Unsupported parent type %s after initial check", parent.Type.String()))
 	}
 
 	// Create Class
 	classData := types.ClassData{
 		Metadata: msg.Metadata,
-		Parent:   safeParent,
+		Parent:   parent.ClassParent,
 		Config: types.ClassConfig{
 			Burnable: msg.Burnable,
 		},
@@ -110,25 +82,25 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 
 	// Append iscn to class mapping
 	classIds := append(existingClassIds, newClassId)
-	if safeParent.Type == types.ClassParentType_ISCN {
+	if parent.Type == types.ClassParentType_ISCN {
 		k.SetClassesByISCN(ctx, types.ClassesByISCN{
-			IscnIdPrefix: safeParent.IscnIdPrefix,
+			IscnIdPrefix: parent.IscnIdPrefix,
 			ClassIds:     classIds,
 		})
-	} else if safeParent.Type == types.ClassParentType_ACCOUNT {
+	} else if parent.Type == types.ClassParentType_ACCOUNT {
 		k.SetClassesByAccount(ctx, types.ClassesByAccount{
-			Account:  safeParent.Account,
+			Account:  parent.Account,
 			ClassIds: classIds,
 		})
 	} else {
-		panic(fmt.Sprintf("Unsupported parent type %s after initial check", safeParent.Type.String()))
+		panic(fmt.Sprintf("Unsupported parent type %s after initial check", parent.Type.String()))
 	}
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventNewClass{
-		IscnIdPrefix: safeParent.IscnIdPrefix,
+		IscnIdPrefix: parent.IscnIdPrefix,
 		ClassId:      newClassId,
-		Owner:        safeUserAddress.String(),
+		Owner:        parent.Owner.String(),
 	})
 
 	return &types.MsgNewClassResponse{
