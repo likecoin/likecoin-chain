@@ -10,9 +10,21 @@ message ClassData {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
   ];
-  string iscnIdPrefix = 2;
-  uint64 iscnVersionAtMint = 3;
-  ClassConfig config = 4 [(gogoproto.nullable) = false];
+  ClassParent parent = 2 [(gogoproto.nullable) = false];
+  ClassConfig config = 3 [(gogoproto.nullable) = false];
+}
+
+enum ClassParentType {
+  UNKNOWN = 0;
+  ISCN = 1;
+  ACCOUNT = 2;
+}
+
+message ClassParent {
+  ClassParentType type = 1;
+  string iscnIdPrefix = 2 [(gogoproto.nullable) = true];
+  uint64 iscnVersionAtMint = 3 [(gogoproto.nullable) = true];
+  string account = 4 [(gogoproto.nullable) = true];
 }
 
 message ClassConfig {
