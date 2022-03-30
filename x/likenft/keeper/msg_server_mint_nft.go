@@ -80,9 +80,8 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	// Mint NFT
 	nftData := types.NFTData{
-		Metadata:          msg.Metadata,
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: classData.Parent.IscnVersionAtMint, // follow class data instead of latest
+		Metadata:    msg.Metadata,
+		ClassParent: classData.Parent,
 	}
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
 	if err != nil {

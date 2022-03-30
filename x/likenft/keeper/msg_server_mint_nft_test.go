@@ -125,8 +125,8 @@ func TestMintNFTNormal(t *testing.T) {
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, nftData.Metadata)
-	require.Equal(t, iscnId.Prefix.String(), nftData.IscnIdPrefix)
-	require.Equal(t, classIscnVersionAtMint, nftData.IscnVersionAtMint)
+	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
+	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -269,8 +269,8 @@ func TestMintNFTFirstToken(t *testing.T) {
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, nftData.Metadata)
-	require.Equal(t, iscnId.Prefix.String(), nftData.IscnIdPrefix)
-	require.Equal(t, iscnLatestVersion, nftData.IscnVersionAtMint)
+	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, nftData.ClassParent.IscnVersionAtMint)
 
 	// Check mock was called as expected
 	ctrl.Finish()

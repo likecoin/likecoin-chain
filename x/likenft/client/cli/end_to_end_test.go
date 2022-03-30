@@ -426,7 +426,7 @@ FindIscnIdPrefix:
 	nftData := types.NFTData{}
 	err = nftData.Unmarshal(nftRes.Nft.Data.Value)
 	require.NoError(t, err)
-	require.Equal(t, iscnIdPrefix, nftData.IscnIdPrefix)
+	require.Equal(t, iscnIdPrefix, nftData.ClassParent.IscnIdPrefix)
 	expectedNftMetadata, err := types.JsonInput(`{
 	"name": "Sleepy Coffee #1",
 	"description": "Coffee is very sleepy", 
