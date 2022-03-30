@@ -44,8 +44,11 @@ func TestISCNByClassNormal(t *testing.T) {
 	}
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -161,8 +164,11 @@ func TestISCNByClassMissingRelationRecord(t *testing.T) {
 	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -214,8 +220,11 @@ func TestISCNByClassNotRelatedToISCN(t *testing.T) {
 	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -272,8 +281,11 @@ func TestISCNByClassISCNNotFound(t *testing.T) {
 	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},

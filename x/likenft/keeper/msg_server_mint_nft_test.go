@@ -55,9 +55,12 @@ func TestMintNFTNormal(t *testing.T) {
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: classIscnVersionAtMint,
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: classIscnVersionAtMint,
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -145,7 +148,7 @@ func (m IFirstTokenUpdateClassMatcher) Matches(x interface{}) bool {
 	if err := classData.Unmarshal(class.Data.Value); err != nil {
 		return false
 	}
-	return classData.IscnVersionAtMint == m.iscnVersionAtMint
+	return classData.Parent.IscnVersionAtMint == m.iscnVersionAtMint
 }
 
 func (m IFirstTokenUpdateClassMatcher) String() string {
@@ -191,9 +194,12 @@ func TestMintNFTFirstToken(t *testing.T) {
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: classIscnVersionAtMint,
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: classIscnVersionAtMint,
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -418,9 +424,12 @@ func TestMintNFTMissingIscnRelation(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: uint64(1),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: uint64(1),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -496,9 +505,12 @@ func TestMintNFTNotRelatedToIscn(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: uint64(1),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: uint64(1),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -579,9 +591,12 @@ func TestMintNFTIscnNotFound(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: uint64(1),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: uint64(1),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -666,9 +681,12 @@ func TestMintNFTInvalidUserAddress(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: uint64(1),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: uint64(1),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -757,9 +775,12 @@ func TestMintNFTUserNotOwner(t *testing.T) {
 
 	// Mock keeper calls
 	classData := types.ClassData{
-		Metadata:          types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: uint64(1),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: uint64(1),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},

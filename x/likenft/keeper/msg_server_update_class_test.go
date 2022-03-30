@@ -56,8 +56,11 @@ func TestUpdateClassNormal(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -126,8 +129,8 @@ func TestUpdateClassNormal(t *testing.T) {
 	err = classData.Unmarshal(res.Class.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, classData.Metadata)
-	require.Equal(t, iscnId.Prefix.String(), classData.IscnIdPrefix)
-	require.Equal(t, iscnLatestVersion, classData.IscnVersionAtMint)
+	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 
 	// Check mock was called as expected
@@ -239,8 +242,11 @@ func TestUpdateClassExistingMintedTokens(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -326,8 +332,11 @@ func TestUpdateClassMissingRelationRecord(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -414,8 +423,11 @@ func TestUpdateClassNotRelatedToIscn(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -507,8 +519,11 @@ func TestUpdateClassIscnNotFound(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -604,8 +619,11 @@ func TestUpdateClassInvalidUserAddress(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
@@ -705,8 +723,11 @@ func TestUpdateClassUserNotOwner(t *testing.T) {
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},

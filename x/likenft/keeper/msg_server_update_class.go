@@ -31,9 +31,9 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
-	classesByISCN, found := k.GetClassesByISCN(ctx, classData.IscnIdPrefix)
+	classesByISCN, found := k.GetClassesByISCN(ctx, classData.Parent.IscnIdPrefix)
 	if !found {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 	isRelated := false
 	for _, validClassId := range classesByISCN.ClassIds {
@@ -44,11 +44,11 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		}
 	}
 	if !isRelated {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 
 	// Verify user is owner of iscn and thus the nft class
-	iscnId, err := iscntypes.ParseIscnId(classData.IscnIdPrefix)
+	iscnId, err := iscntypes.ParseIscnId(classData.Parent.IscnIdPrefix)
 	if err != nil {
 		return nil, types.ErrInvalidIscnId.Wrapf("%s", err.Error())
 	}
@@ -66,9 +66,12 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 
 	// Update class
 	classData = types.ClassData{
-		Metadata:          msg.Metadata,
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: iscnRecord.LatestVersion,
+		Metadata: msg.Metadata,
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: iscnRecord.LatestVersion,
+		},
 		Config: types.ClassConfig{
 			Burnable: msg.Burnable,
 		},

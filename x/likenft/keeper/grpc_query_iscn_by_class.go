@@ -28,9 +28,9 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
-	classesByISCN, found := k.GetClassesByISCN(ctx, classData.IscnIdPrefix)
+	classesByISCN, found := k.GetClassesByISCN(ctx, classData.Parent.IscnIdPrefix)
 	if !found {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 	isRelated := false
 	for _, validClassId := range classesByISCN.ClassIds {
@@ -41,7 +41,7 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 		}
 	}
 	if !isRelated {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 
 	// Return related iscn data

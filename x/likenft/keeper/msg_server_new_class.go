@@ -46,9 +46,12 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 
 	// Create Class
 	classData := types.ClassData{
-		Metadata:          msg.Metadata,
-		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: iscnRecord.LatestVersion,
+		Metadata: msg.Metadata,
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: iscnRecord.LatestVersion,
+		},
 		Config: types.ClassConfig{
 			Burnable: msg.Burnable,
 		},

@@ -30,9 +30,9 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
-	classesByISCN, found := k.GetClassesByISCN(ctx, classData.IscnIdPrefix)
+	classesByISCN, found := k.GetClassesByISCN(ctx, classData.Parent.IscnIdPrefix)
 	if !found {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 	isRelated := false
 	for _, validClassId := range classesByISCN.ClassIds {
@@ -43,11 +43,11 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		}
 	}
 	if !isRelated {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.IscnIdPrefix)
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
 	}
 
 	// Verify user is owner of iscn and thus the nft class
-	iscnId, err := iscntypes.ParseIscnId(classData.IscnIdPrefix)
+	iscnId, err := iscntypes.ParseIscnId(classData.Parent.IscnIdPrefix)
 	if err != nil {
 		return nil, types.ErrInvalidIscnId.Wrapf("%s", err.Error())
 	}
@@ -64,9 +64,9 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	}
 
 	// Refresh recorded iscn version in class if needed and first mint
-	if classData.IscnVersionAtMint != iscnRecord.LatestVersion &&
+	if classData.Parent.IscnVersionAtMint != iscnRecord.LatestVersion &&
 		k.nftKeeper.GetTotalSupply(ctx, class.Id) <= 0 {
-		classData.IscnVersionAtMint = iscnRecord.LatestVersion
+		classData.Parent.IscnVersionAtMint = iscnRecord.LatestVersion
 		classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 		if err != nil {
 			return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
@@ -82,7 +82,7 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	nftData := types.NFTData{
 		Metadata:          msg.Metadata,
 		IscnIdPrefix:      iscnId.Prefix.String(),
-		IscnVersionAtMint: classData.IscnVersionAtMint, // follow class data instead of latest
+		IscnVersionAtMint: classData.Parent.IscnVersionAtMint, // follow class data instead of latest
 	}
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
 	if err != nil {

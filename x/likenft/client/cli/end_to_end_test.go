@@ -337,7 +337,7 @@ FindIscnIdPrefix:
 	require.NoError(t, err)
 	require.Equal(t, expectedMetadata, actualMetadata)
 	require.Equal(t, false, classData.Config.Burnable)
-	require.Equal(t, iscnIdPrefix, classData.IscnIdPrefix)
+	require.Equal(t, iscnIdPrefix, classData.Parent.IscnIdPrefix)
 
 	// Update class
 	out, err = clitestutil.ExecTestCLICmd(
@@ -388,7 +388,7 @@ FindIscnIdPrefix:
 	require.NoError(t, err)
 	require.Equal(t, expectedUpdatedMetadata, actualUpdatedMetadata)
 	require.Equal(t, true, updatedClassData.Config.Burnable)
-	require.Equal(t, iscnIdPrefix, updatedClassData.IscnIdPrefix)
+	require.Equal(t, iscnIdPrefix, updatedClassData.Parent.IscnIdPrefix)
 
 	// Mint NFT
 	out, err = clitestutil.ExecTestCLICmd(

@@ -92,8 +92,8 @@ func TestNewClassNormal(t *testing.T) {
 	err = classData.Unmarshal(res.Class.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, classData.Metadata)
-	require.Equal(t, iscnId.Prefix.String(), classData.IscnIdPrefix)
-	require.Equal(t, iscnLatestVersion, classData.IscnVersionAtMint)
+	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 
 	// Check mock was called as expected

@@ -48,8 +48,11 @@ func TestBurnNFTNormal(t *testing.T) {
 		Return(ownerAddressBytes)
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: true,
 		},
@@ -258,8 +261,11 @@ func TestBurnNFTNotBurnable(t *testing.T) {
 		Return(ownerAddressBytes)
 
 	classData := types.ClassData{
-		Metadata:     types.JsonInput(`{"aaaa": "bbbb"}`),
-		IscnIdPrefix: iscnId.Prefix.String(),
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
 		Config: types.ClassConfig{
 			Burnable: false,
 		},
