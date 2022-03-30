@@ -11,7 +11,7 @@ import (
 
 func MigrateAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) {
 	ctx.Logger().Info("Migration of address bech32 for auth module begin")
-	accountCount := uint64(0)
+	migratedAccountCount := uint64(0)
 	utils.IterateStoreByPrefix(ctx, storeKey, types.AddressStoreKeyPrefix, func(bz []byte) []byte {
 		var accountI types.AccountI
 		err := cdc.UnmarshalInterface(bz, &accountI)
@@ -20,25 +20,30 @@ func MigrateAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 		}
 		switch accountI.(type) {
 		case *types.BaseAccount:
-			{
-				acc := accountI.(*types.BaseAccount)
-				acc.Address = utils.ConvertAccAddr(acc.Address)
-			}
+			acc := accountI.(*types.BaseAccount)
+			acc.Address = utils.ConvertAccAddr(acc.Address)
 		case *types.ModuleAccount:
-			{
-				acc := accountI.(*types.ModuleAccount)
-				acc.Address = utils.ConvertAccAddr(acc.Address)
-			}
+			acc := accountI.(*types.ModuleAccount)
+			acc.Address = utils.ConvertAccAddr(acc.Address)
+		default:
+			ctx.Logger().Info(
+				"Warning: unknown account type, skipping migration",
+				"address", accountI.GetAddress().String(),
+				"account_number", accountI.GetAccountNumber(),
+				"public_key", accountI.GetPubKey(),
+				"sequence", accountI.GetSequence(),
+			)
+			return bz
 		}
 		bz, err = cdc.MarshalInterface(accountI)
 		if err != nil {
 			panic(err)
 		}
-		accountCount++
+		migratedAccountCount++
 		return bz
 	})
 	ctx.Logger().Info(
 		"Migration of address bech32 for auth module done",
-		"account_count", accountCount,
+		"migrated_account_count", migratedAccountCount,
 	)
 }
