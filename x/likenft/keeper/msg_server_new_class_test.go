@@ -83,8 +83,8 @@ func TestNewClassNormal(t *testing.T) {
 
 	// Check output
 	require.NoError(t, err)
-	expectedClassId, _ := types.NewClassId(iscnId.Prefix.String(), 0)
-	require.Equal(t, *expectedClassId, res.Class.Id)
+	expectedClassId, _ := types.NewClassIdForISCN(iscnId.Prefix.String(), 0)
+	require.Equal(t, expectedClassId, res.Class.Id)
 	require.Equal(t, name, res.Class.Name)
 	require.Equal(t, symbol, res.Class.Symbol)
 	require.Equal(t, description, res.Class.Description)
