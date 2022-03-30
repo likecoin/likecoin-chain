@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -94,6 +95,8 @@ import (
 	"github.com/likecoin/likechain/x/iscn"
 	iscnkeeper "github.com/likecoin/likechain/x/iscn/keeper"
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+
+	stakingwithindex "github.com/likecoin/likechain/x/staking"
 
 	bech32authmigration "github.com/likecoin/likechain/bech32-migration/auth"
 	bech32govmigration "github.com/likecoin/likechain/bech32-migration/gov"
@@ -313,10 +316,23 @@ func NewLikeApp(
 	app.registerUpgradeHandlers()
 	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
 
+	stakingIndexDB, err := dbm.NewGoLevelDB("index", path.Join(homePath, "data"))
+	if err != nil {
+		panic(fmt.Errorf("failed to create indexing DB for staking module: %s", err))
+	}
+	// TODO: When to close this DB?
+	// This should be handled by the finalizer set in runtime so should not be a problem.
+	// But we still want to do something in code
+	stakingQuerier := stakingwithindex.NewQuerier(&stakingKeeper, appCodec, stakingIndexDB)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+		stakingtypes.NewMultiStakingHooks(
+			app.DistrKeeper.Hooks(),
+			app.SlashingKeeper.Hooks(),
+			stakingwithindex.NewHooks(stakingQuerier),
+		),
 	)
 
 	// Create IBC Keeper
@@ -381,7 +397,7 @@ func NewLikeApp(
 		distr.NewAppModule(
 			appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		stakingwithindex.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, stakingQuerier),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
