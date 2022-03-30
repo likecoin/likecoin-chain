@@ -15,7 +15,7 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Assert iscn id is valid
-	iscnId, err := iscntypes.ParseIscnId(msg.IscnIdPrefix)
+	iscnId, err := iscntypes.ParseIscnId(msg.Parent.IscnIdPrefix)
 	if err != nil {
 		return nil, types.ErrInvalidIscnId.Wrapf("%s", err.Error())
 	}

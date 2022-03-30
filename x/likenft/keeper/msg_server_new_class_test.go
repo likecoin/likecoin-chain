@@ -67,15 +67,18 @@ func TestNewClassNormal(t *testing.T) {
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator:      ownerAddress,
-		IscnIdPrefix: iscnId.Prefix.String(),
-		Name:         name,
-		Symbol:       symbol,
-		Description:  description,
-		Uri:          uri,
-		UriHash:      uriHash,
-		Metadata:     metadata,
-		Burnable:     burnable,
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
 	})
 
 	// Check output
@@ -139,15 +142,18 @@ func TestNewClassInvalidIscn(t *testing.T) {
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator:      ownerAddress,
-		IscnIdPrefix: iscnId,
-		Name:         name,
-		Symbol:       symbol,
-		Description:  description,
-		Uri:          uri,
-		UriHash:      uriHash,
-		Metadata:     metadata,
-		Burnable:     burnable,
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId,
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
 	})
 
 	// Check output
@@ -204,15 +210,18 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator:      ownerAddress,
-		IscnIdPrefix: iscnId.Prefix.String(),
-		Name:         name,
-		Symbol:       symbol,
-		Description:  description,
-		Uri:          uri,
-		UriHash:      uriHash,
-		Metadata:     metadata,
-		Burnable:     burnable,
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
 	})
 
 	// Check output
@@ -271,15 +280,18 @@ func TestNewClassInvalidUserAddress(t *testing.T) {
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator:      "invalid address",
-		IscnIdPrefix: iscnId.Prefix.String(),
-		Name:         name,
-		Symbol:       symbol,
-		Description:  description,
-		Uri:          uri,
-		UriHash:      uriHash,
-		Metadata:     metadata,
-		Burnable:     burnable,
+		Creator: "invalid address",
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
 	})
 
 	// Check output
@@ -340,15 +352,18 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator:      ownerAddress,
-		IscnIdPrefix: iscnId.Prefix.String(),
-		Name:         name,
-		Symbol:       symbol,
-		Description:  description,
-		Uri:          uri,
-		UriHash:      uriHash,
-		Metadata:     metadata,
-		Burnable:     burnable,
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
 	})
 
 	// Check output
