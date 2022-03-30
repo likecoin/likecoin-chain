@@ -43,22 +43,21 @@ func MigrateAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 		unbondingDelegationCount++
 		return types.MustMarshalUBD(cdc, unbonding)
 	})
-	// Not migrating historical info, since it's weird to change "history"
-	// historicalInfoCount := uint64(0)
-	// utils.IterateStoreByPrefix(ctx, storeKey, types.HistoricalInfoKey, func(bz []byte) []byte {
-	// 	historicalInfo := types.MustUnmarshalHistoricalInfo(cdc, bz)
-	// 	for i := range historicalInfo.Valset {
-	// 		historicalInfo.Valset[i].OperatorAddress = utils.ConvertValAddr(historicalInfo.Valset[i].OperatorAddress)
-	// 	}
-	// 	historicalInfoCount++
-	// 	return cdc.MustMarshal(&historicalInfo)
-	// })
+	historicalInfoCount := uint64(0)
+	utils.IterateStoreByPrefix(ctx, storeKey, types.HistoricalInfoKey, func(bz []byte) []byte {
+		historicalInfo := types.MustUnmarshalHistoricalInfo(cdc, bz)
+		for i := range historicalInfo.Valset {
+			historicalInfo.Valset[i].OperatorAddress = utils.ConvertValAddr(historicalInfo.Valset[i].OperatorAddress)
+		}
+		historicalInfoCount++
+		return cdc.MustMarshal(&historicalInfo)
+	})
 	ctx.Logger().Info(
 		"Migration of address bech32 for staking module done",
 		"validator_count", validatorCount,
 		"delegation_count", delegationCount,
 		"redelegation_count", redelegationCount,
 		"unbonding_delegation_count", unbondingDelegationCount,
-		// "historical_info_count", historicalInfoCount,
+		"historical_info_count", historicalInfoCount,
 	)
 }
