@@ -14,8 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
       - name: lint
-        # TODO: Remove after fixing protobuf
-        if: ${{ false }}
         run: make proto-lint
 
   breakage:
@@ -23,6 +21,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
       - name: check-breakage
-        # TODO: Remove after fixing protobuf
-        if: ${{ false }}
         run: make proto-check-breaking
