@@ -3,6 +3,7 @@ package likecoin.likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
+import "likenft/class_data.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -19,7 +20,7 @@ service Msg {
 
 message MsgNewClass {
   string creator = 1;
-  string iscnIdPrefix = 2;
+  ClassParentInput parent = 2 [(gogoproto.nullable) = false];
   string name = 3;
   string symbol = 4;
   string description = 5;
