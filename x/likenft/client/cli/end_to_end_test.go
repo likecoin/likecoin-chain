@@ -295,7 +295,7 @@ FindIscnIdPrefix:
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdNewClass(),
-		append([]string{iscnIdPrefix, newClassFile.Name()}, txArgs...),
+		append([]string{fmt.Sprintf("--iscnIdPrefix=%s", iscnIdPrefix), newClassFile.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
