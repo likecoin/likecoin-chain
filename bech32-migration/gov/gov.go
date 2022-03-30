@@ -47,7 +47,6 @@ func MigrateAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 		communityPoolSpendProposalCount++
 		return cdc.MustMarshal(&proposal)
 	})
-	// TODO: community pool spend receiver address
 	ctx.Logger().Info(
 		"Migration of address bech32 for gov module done",
 		"vote_count", voteCount,
