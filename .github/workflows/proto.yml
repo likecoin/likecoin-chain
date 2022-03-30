@@ -13,12 +13,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2.4.0
+      - name: update proto dependency
+        run: make proto-update-deps
       - name: lint
         run: make proto-lint
-
-  breakage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.4.0
-      - name: check-breakage
-        run: make proto-check-breaking

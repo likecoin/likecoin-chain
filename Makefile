@@ -14,11 +14,6 @@ BUILDDIR ?= $(CURDIR)/build
 GOPATH ?= '$(HOME)/go'
 GOLANG_VERSION ?= 1.18
 GOLANG_CROSS_VERSION := v$(GOLANG_VERSION)
-GOGO_PROTO_URL = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-COSMOS_SDK_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.43.0
-COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-GOGO_PROTO_TYPES = proto/gogoproto
-COSMOS_PROTO_TYPES = proto/cosmos_proto
 
 ###############################################################################
 ###                            Development                                  ###
@@ -134,7 +129,7 @@ release:
 ###                              Protobuf                                   ###
 ###############################################################################
 
-proto-all: proto-format proto-lint gen-proto
+proto-all: proto-update-deps proto-format proto-lint gen-proto
 
 gen-proto: x/
 	ignite generate proto-go
@@ -146,14 +141,7 @@ proto-format:
 proto-lint:
 	@$(DOCKER_BUF) lint --error-format=json
 
-proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=master
-
 proto-update-deps:
-	@mkdir -p $(GOGO_PROTO_TYPES)
-	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
+	@$(DOCKER_BUF) mod update proto
 
-	@mkdir -p $(COSMOS_PROTO_TYPES)
-	@curl -sSL $(COSMOS_PROTO_URL)/cosmos.proto > $(COSMOS_PROTO_TYPES)/cosmos.proto
-
-.PHONY: proto-all gen-proto proto-format proto-lint proto-check-breaking
+.PHONY: proto-all gen-proto proto-format proto-lint proto-update-deps
