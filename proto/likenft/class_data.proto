@@ -35,4 +35,5 @@ message ClassParentInput {
 
 message ClassConfig {
   bool burnable = 1;
+  uint64 maxSupply = 2;
 }
