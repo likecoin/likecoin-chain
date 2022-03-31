@@ -23,6 +23,7 @@ type CmdNewClassInput struct {
 	UriHash      string          `json:"uriHash"`
 	Metadata     types.JsonInput `json:"metadata"`
 	Burnable     bool            `json:"burnable"`
+	MaxSupply    uint64          `json:"maxSupply"`
 }
 
 func CmdNewClass() *cobra.Command {
@@ -37,7 +38,8 @@ func CmdNewClass() *cobra.Command {
 	"uri": "",
 	"uriHash": "",
 	"metadata": {},
-	"burnable": true
+	"burnable": true,
+	"maxSupply": 0 // 0 = unlimited
 }
 `,
 		Args: cobra.ExactArgs(1),
@@ -75,6 +77,7 @@ func CmdNewClass() *cobra.Command {
 			argUriHash := input.UriHash
 			argMetadata := input.Metadata
 			argBurnable := input.Burnable
+			argMaxSupply := input.MaxSupply
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -91,6 +94,7 @@ func CmdNewClass() *cobra.Command {
 				argUriHash,
 				argMetadata,
 				argBurnable,
+				argMaxSupply,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

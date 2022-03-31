@@ -9,7 +9,7 @@ const TypeMsgNewClass = "new_class"
 
 var _ sdk.Msg = &MsgNewClass{}
 
-func NewMsgNewClass(creator string, parent ClassParentInput, name string, symbol string, description string, uri string, uriHash string, metadata JsonInput, burnable bool) *MsgNewClass {
+func NewMsgNewClass(creator string, parent ClassParentInput, name string, symbol string, description string, uri string, uriHash string, metadata JsonInput, burnable bool, maxSupply uint64) *MsgNewClass {
 	return &MsgNewClass{
 		Creator:     creator,
 		Parent:      parent,
@@ -20,6 +20,7 @@ func NewMsgNewClass(creator string, parent ClassParentInput, name string, symbol
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	}
 }
 

@@ -20,6 +20,7 @@ type CmdUpdateClassInput struct {
 	UriHash     string          `json:"uriHash"`
 	Metadata    types.JsonInput `json:"metadata"`
 	Burnable    bool            `json:"burnable"`
+	MaxSupply   uint64          `json:"maxSupply"`
 }
 
 func CmdUpdateClass() *cobra.Command {
@@ -34,7 +35,8 @@ func CmdUpdateClass() *cobra.Command {
 	"uri": "",
 	"uriHash": "",
 	"metadata": {},
-	"burnable": true
+	"burnable": true,
+	"maxSupply": 0 // 0 = unlimited
 }`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -50,6 +52,7 @@ func CmdUpdateClass() *cobra.Command {
 			argUriHash := input.UriHash
 			argMetadata := input.Metadata
 			argBurnable := input.Burnable
+			argMaxSupply := input.MaxSupply
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -66,6 +69,7 @@ func CmdUpdateClass() *cobra.Command {
 				argUriHash,
 				argMetadata,
 				argBurnable,
+				argMaxSupply,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
