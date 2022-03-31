@@ -49,6 +49,7 @@ func TestNewClassNormal(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	iscnLatestVersion := uint64(2)
@@ -79,6 +80,7 @@ func TestNewClassNormal(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -97,7 +99,10 @@ func TestNewClassNormal(t *testing.T) {
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
-	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, types.ClassConfig{
+		Burnable:  burnable,
+		MaxSupply: maxSupply,
+	}, classData.Config)
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -139,6 +144,7 @@ func TestNewClassInvalidIscn(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Run
 	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
@@ -154,6 +160,7 @@ func TestNewClassInvalidIscn(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -201,6 +208,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	iscnKeeper.
@@ -222,6 +230,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -268,6 +277,7 @@ func TestNewClassInvalidUserAddress(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	iscnKeeper.
@@ -292,6 +302,7 @@ func TestNewClassInvalidUserAddress(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -339,6 +350,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	notOwnerAddressBytes := []byte{1, 1, 1, 1, 1, 1, 1, 1}
@@ -364,6 +376,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output

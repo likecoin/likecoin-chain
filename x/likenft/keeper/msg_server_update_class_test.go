@@ -53,6 +53,7 @@ func TestUpdateClassNormal(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -62,7 +63,8 @@ func TestUpdateClassNormal(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -114,6 +116,7 @@ func TestUpdateClassNormal(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -132,6 +135,10 @@ func TestUpdateClassNormal(t *testing.T) {
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, types.ClassConfig{
+		Burnable:  burnable,
+		MaxSupply: maxSupply,
+	}, classData.Config)
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -173,6 +180,7 @@ func TestUpdateClassNotFound(t *testing.T) {
 	}
 	}`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	nftKeeper.
@@ -191,6 +199,7 @@ func TestUpdateClassNotFound(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -239,6 +248,7 @@ func TestUpdateClassExistingMintedTokens(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -248,7 +258,8 @@ func TestUpdateClassExistingMintedTokens(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -281,6 +292,7 @@ func TestUpdateClassExistingMintedTokens(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -329,6 +341,7 @@ func TestUpdateClassMissingRelationRecord(t *testing.T) {
 	}
 	}`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -338,7 +351,8 @@ func TestUpdateClassMissingRelationRecord(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -371,6 +385,7 @@ func TestUpdateClassMissingRelationRecord(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -420,6 +435,7 @@ func TestUpdateClassNotRelatedToIscn(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -429,7 +445,8 @@ func TestUpdateClassNotRelatedToIscn(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -467,6 +484,7 @@ func TestUpdateClassNotRelatedToIscn(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -516,6 +534,7 @@ func TestUpdateClassIscnNotFound(t *testing.T) {
 	}
 	}`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -525,7 +544,8 @@ func TestUpdateClassIscnNotFound(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -568,6 +588,7 @@ func TestUpdateClassIscnNotFound(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -616,6 +637,7 @@ func TestUpdateClassInvalidUserAddress(t *testing.T) {
 	}
 }`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -625,7 +647,8 @@ func TestUpdateClassInvalidUserAddress(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -671,6 +694,7 @@ func TestUpdateClassInvalidUserAddress(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
@@ -720,6 +744,7 @@ func TestUpdateClassUserNotOwner(t *testing.T) {
 	}
 	}`)
 	burnable := true
+	maxSupply := uint64(5)
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -729,7 +754,8 @@ func TestUpdateClassUserNotOwner(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable: false,
+			Burnable:  false,
+			MaxSupply: uint64(500),
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -776,6 +802,7 @@ func TestUpdateClassUserNotOwner(t *testing.T) {
 		UriHash:     uriHash,
 		Metadata:    metadata,
 		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
