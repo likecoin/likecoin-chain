@@ -46,9 +46,11 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
+	totalSupply := k.nftKeeper.GetTotalSupply(ctx, class.Id)
+
 	// Refresh recorded iscn version in class if needed and first mint
 	if classData.Parent.IscnVersionAtMint != parent.IscnVersionAtMint &&
-		k.nftKeeper.GetTotalSupply(ctx, class.Id) <= 0 {
+		totalSupply <= 0 {
 		classData.Parent = parent.ClassParent
 		classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 		if err != nil {
@@ -59,6 +61,12 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		if err != nil {
 			return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 		}
+	}
+
+	// Assert supply is enough
+	if classData.Config.MaxSupply > 0 &&
+		totalSupply >= classData.Config.MaxSupply {
+		return nil, types.ErrNftNoSupply.Wrapf("NFT Class has reached its maximum supply: %d", classData.Config.MaxSupply)
 	}
 
 	// Mint NFT
