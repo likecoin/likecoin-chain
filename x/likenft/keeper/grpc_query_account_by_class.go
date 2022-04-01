@@ -16,8 +16,23 @@ func (k Keeper) AccountByClass(goCtx context.Context, req *types.QueryAccountByC
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	// Get account from class data
+	class, found := k.nftKeeper.GetClass(ctx, req.ClassId)
+	if !found {
+		return nil, types.ErrNftClassNotFound.Wrapf("Class id %s not found", req.ClassId)
+	}
 
-	return &types.QueryAccountByClassResponse{}, nil
+	// Validate relation
+	var classData types.ClassData
+	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
+		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
+	}
+	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
+		return nil, err
+	}
+
+	// Return account address
+	return &types.QueryAccountByClassResponse{
+		Address: classData.Parent.Account,
+	}, nil
 }
