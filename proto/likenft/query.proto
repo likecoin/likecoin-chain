@@ -45,6 +45,11 @@ service Query {
 		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_account";
 	}
 
+// Queries a list of AccountByClass items.
+	rpc AccountByClass(QueryAccountByClassRequest) returns (QueryAccountByClassResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/account_by_class/{classId}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -106,6 +111,14 @@ message QueryClassesByAccountIndexRequest {
 message QueryClassesByAccountIndexResponse {
 	repeated ClassesByAccount classesByAccount = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAccountByClassRequest {
+  string classId = 1;
+}
+
+message QueryAccountByClassResponse {
+  string address = 1;
 }
 
 // this line is used by starport scaffolding # 3
