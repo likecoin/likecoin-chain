@@ -98,9 +98,9 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventNewClass{
-		IscnIdPrefix: parent.IscnIdPrefix,
-		ClassId:      newClassId,
-		Owner:        parent.Owner.String(),
+		ClassId:            newClassId,
+		ParentIscnIdPrefix: classData.Parent.IscnIdPrefix,
+		ParentAccount:      classData.Parent.Account,
 	})
 
 	return &types.MsgNewClassResponse{

@@ -76,9 +76,9 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateClass{
-		IscnIdPrefix: parent.IscnIdPrefix,
-		ClassId:      class.Id,
-		Owner:        parent.Owner.String(),
+		ClassId:            class.Id,
+		ParentIscnIdPrefix: classData.Parent.IscnIdPrefix,
+		ParentAccount:      classData.Parent.Account,
 	})
 
 	return &types.MsgUpdateClassResponse{

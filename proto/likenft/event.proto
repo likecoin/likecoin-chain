@@ -4,27 +4,29 @@ package likecoin.likechain.likenft;
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message EventNewClass {
-  string iscnIdPrefix = 1; 
-  string classId = 2; 
-  string owner = 3; 
+  string classId = 1; 
+  string parentIscnIdPrefix = 2;
+  string parentAccount = 3;
 }
 
 message EventUpdateClass {
-  string iscnIdPrefix = 1; 
-  string classId = 2; 
-  string owner = 3; 
+  string classId = 1; 
+  string parentIscnIdPrefix = 2;
+  string parentAccount = 3;
 }
 
 message EventMintNFT {
-  string iscnIdPrefix = 1; 
-  string classId = 2;
-  string nftId = 3;
-  string owner = 4; 
+  string classId = 1;
+  string nftId = 2;
+  string owner = 3;
+  string classParentIscnIdPrefix = 4;
+  string classParentAccount = 5;
 }
 
 message EventBurnNFT {
-  string iscnIdPrefix = 1; 
-  string classId = 2;
-  string nftId = 3;
-  string owner = 4;
+  string classId = 1;
+  string nftId = 2;
+  string owner = 3;
+  string classParentIscnIdPrefix = 4;
+  string classParentAccount = 5;
 }
