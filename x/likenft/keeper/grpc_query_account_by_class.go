@@ -27,6 +27,10 @@ func (k Keeper) AccountByClass(goCtx context.Context, req *types.QueryAccountByC
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
+	// Check parent is class
+	if classData.Parent.Type != types.ClassParentType_ACCOUNT {
+		return nil, types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT Class is related to a %s, not account", classData.Parent.Type.String())
+	}
 	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
 		return nil, err
 	}

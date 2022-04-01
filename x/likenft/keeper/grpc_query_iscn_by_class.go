@@ -28,6 +28,10 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
+	// Check parent is iscn
+	if classData.Parent.Type != types.ClassParentType_ISCN {
+		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT Class is related to a %s, not ISCN", classData.Parent.Type.String())
+	}
 	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
 		return nil, err
 	}
