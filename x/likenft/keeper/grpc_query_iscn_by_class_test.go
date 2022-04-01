@@ -321,7 +321,7 @@ func TestISCNByClassISCNNotFound(t *testing.T) {
 
 	// Check output
 	require.Error(t, err)
-	require.Contains(t, err.Error(), types.ErrFailedToQueryIscnRecord.Error())
+	require.Contains(t, err.Error(), types.ErrIscnRecordNotFound.Error())
 	require.Nil(t, res)
 
 	// Check mock was called as expected

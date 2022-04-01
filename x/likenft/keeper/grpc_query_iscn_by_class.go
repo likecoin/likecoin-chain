@@ -28,30 +28,14 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
-	classesByISCN, found := k.GetClassesByISCN(ctx, classData.Parent.IscnIdPrefix)
-	if !found {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
-	}
-	isRelated := false
-	for _, validClassId := range classesByISCN.ClassIds {
-		if validClassId == class.Id {
-			// claimed relation is valid
-			isRelated = true
-			break
-		}
-	}
-	if !isRelated {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
+	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
+		return nil, err
 	}
 
 	// Return related iscn data
-	iscnId, err := iscntypes.ParseIscnId(classesByISCN.IscnIdPrefix)
+	iscnId, contentIdRecord, err := k.resolveIscnIdAndRecord(ctx, classData.Parent.IscnIdPrefix)
 	if err != nil {
-		return nil, types.ErrInvalidIscnId.Wrapf(err.Error())
-	}
-	contentIdRecord := k.iscnKeeper.GetContentIdRecord(ctx, iscnId.Prefix)
-	if contentIdRecord == nil {
-		return nil, types.ErrFailedToQueryIscnRecord
+		return nil, err
 	}
 	latestVersion := contentIdRecord.LatestVersion
 	iscnId.Version = latestVersion
@@ -62,7 +46,7 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 		Data: storeRecord.Data,
 	}
 	return &types.QueryISCNByClassResponse{
-		IscnIdPrefix:  classesByISCN.IscnIdPrefix,
+		IscnIdPrefix:  classData.Parent.IscnIdPrefix,
 		Owner:         contentIdRecord.OwnerAddress().String(),
 		LatestVersion: latestVersion,
 		LatestRecord:  record,
