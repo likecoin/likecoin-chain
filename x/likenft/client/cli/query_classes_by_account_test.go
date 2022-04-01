@@ -84,7 +84,7 @@ func TestShowClassesByAccount(t *testing.T) {
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetClassesByAccountResponse
+				var resp types.QueryClassesByAccountResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.Account)
 				require.Equal(t, tc.obj.Account, resp.Account)

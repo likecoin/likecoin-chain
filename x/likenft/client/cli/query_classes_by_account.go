@@ -60,7 +60,7 @@ func CmdShowClassesByAccount() *cobra.Command {
 
 			argAccount := args[0]
 
-			params := &types.QueryGetClassesByAccountRequest{
+			params := &types.QueryClassesByAccountRequest{
 				Account:    argAccount,
 				Pagination: pageReq,
 			}

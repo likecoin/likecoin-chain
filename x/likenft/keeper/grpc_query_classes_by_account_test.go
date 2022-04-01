@@ -26,19 +26,19 @@ func TestClassesByAccountQuerySingle(t *testing.T) {
 	classesByMsgs := testutil.BatchMakeDummyNFTClassesForAccount(msgs)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetClassesByAccountRequest
-		response *types.QueryGetClassesByAccountResponse
+		request  *types.QueryClassesByAccountRequest
+		response *types.QueryClassesByAccountResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetClassesByAccountRequest{
+			request: &types.QueryClassesByAccountRequest{
 				Account: msgs[0].Account,
 				Pagination: &query.PageRequest{
 					Limit: uint64(len(classesByMsgs[0])),
 				},
 			},
-			response: &types.QueryGetClassesByAccountResponse{
+			response: &types.QueryClassesByAccountResponse{
 				Account: msgs[0].Account,
 				Classes: classesByMsgs[0],
 				Pagination: &query.PageResponse{
@@ -49,13 +49,13 @@ func TestClassesByAccountQuerySingle(t *testing.T) {
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetClassesByAccountRequest{
+			request: &types.QueryClassesByAccountRequest{
 				Account: msgs[1].Account,
 				Pagination: &query.PageRequest{
 					Limit: uint64(len(classesByMsgs[0])),
 				},
 			},
-			response: &types.QueryGetClassesByAccountResponse{
+			response: &types.QueryClassesByAccountResponse{
 				Account: msgs[1].Account,
 				Classes: classesByMsgs[1],
 				Pagination: &query.PageResponse{
@@ -66,7 +66,7 @@ func TestClassesByAccountQuerySingle(t *testing.T) {
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetClassesByAccountRequest{
+			request: &types.QueryClassesByAccountRequest{
 				Account: "cosmos1kznrznww4pd6gx0zwrpthjk68fdmqypjpkj5hp",
 			},
 			err: status.Error(codes.InvalidArgument, "not found"),

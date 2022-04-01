@@ -36,7 +36,7 @@ service Query {
   }
 
 // Queries a ClassesByAccount by index.
-	rpc ClassesByAccount(QueryGetClassesByAccountRequest) returns (QueryGetClassesByAccountResponse) {
+	rpc ClassesByAccount(QueryClassesByAccountRequest) returns (QueryClassesByAccountResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_account/{account}";
 	}
 
@@ -88,12 +88,12 @@ message QueryISCNByClassResponse {
   .likechain.iscn.QueryResponseRecord latestRecord = 4 [(gogoproto.nullable) = false];
 }
 
-message QueryGetClassesByAccountRequest {
+message QueryClassesByAccountRequest {
   string account = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryGetClassesByAccountResponse {
+message QueryClassesByAccountResponse {
   string account = 1;
   repeated cosmos.nft.v1beta1.Class classes = 2 [(gogoproto.nullable) = false]; 
   cosmos.base.query.v1beta1.PageResponse pagination = 3;

@@ -40,7 +40,7 @@ func (k Keeper) ClassesByAccountIndex(c context.Context, req *types.QueryClasses
 	return &types.QueryClassesByAccountIndexResponse{ClassesByAccount: classesByAccounts, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryGetClassesByAccountRequest) (*types.QueryGetClassesByAccountResponse, error) {
+func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryClassesByAccountRequest) (*types.QueryClassesByAccountResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -73,7 +73,7 @@ func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryGetClassesBy
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &types.QueryGetClassesByAccountResponse{
+	return &types.QueryClassesByAccountResponse{
 		Account:    req.Account,
 		Classes:    classes,
 		Pagination: pageRes,
