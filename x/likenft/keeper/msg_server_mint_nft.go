@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -30,43 +29,27 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
-	classesByISCN, found := k.GetClassesByISCN(ctx, classData.Parent.IscnIdPrefix)
-	if !found {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
-	}
-	isRelated := false
-	for _, validClassId := range classesByISCN.ClassIds {
-		if validClassId == class.Id {
-			// claimed relation is valid
-			isRelated = true
-			break
-		}
-	}
-	if !isRelated {
-		return nil, types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", classData.Parent.IscnIdPrefix)
+	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
+		return nil, err
 	}
 
-	// Verify user is owner of iscn and thus the nft class
-	iscnId, err := iscntypes.ParseIscnId(classData.Parent.IscnIdPrefix)
+	// refresh parent info (e.g. iscn latest version) & check ownership
+	parent, err := k.resolveClassParentAndOwner(ctx, classData.Parent.ToInput(), classData.Parent.Account)
 	if err != nil {
-		return nil, types.ErrInvalidIscnId.Wrapf("%s", err.Error())
-	}
-	iscnRecord := k.iscnKeeper.GetContentIdRecord(ctx, iscnId.Prefix)
-	if iscnRecord == nil {
-		return nil, types.ErrIscnRecordNotFound.Wrapf("ISCN %s not found", iscnId.Prefix.String())
+		return nil, err
 	}
 	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
 	}
-	if !iscnRecord.OwnerAddress().Equals(userAddress) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the owner of the ISCN %s", msg.Creator, iscnId.Prefix.String())
+	if !parent.Owner.Equals(userAddress) {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
 	// Refresh recorded iscn version in class if needed and first mint
-	if classData.Parent.IscnVersionAtMint != iscnRecord.LatestVersion &&
+	if classData.Parent.IscnVersionAtMint != parent.IscnVersionAtMint &&
 		k.nftKeeper.GetTotalSupply(ctx, class.Id) <= 0 {
-		classData.Parent.IscnVersionAtMint = iscnRecord.LatestVersion
+		classData.Parent = parent.ClassParent
 		classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 		if err != nil {
 			return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
@@ -101,7 +84,7 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventMintNFT{
-		IscnIdPrefix: iscnId.Prefix.String(),
+		IscnIdPrefix: parent.IscnIdPrefix,
 		ClassId:      class.Id,
 		NftId:        msg.Id,
 		Owner:        userAddress.String(),
