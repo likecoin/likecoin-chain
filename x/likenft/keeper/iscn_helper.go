@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) resolveIscnIdAndRecord(ctx sdk.Context, iscnIdStr string) (iscntypes.IscnId, iscntypes.ContentIdRecord, error) {
+func (k Keeper) resolveIscnIdAndRecord(ctx sdk.Context, iscnIdStr string) (iscntypes.IscnId, iscntypes.ContentIdRecord, error) {
 	iscnId, err := iscntypes.ParseIscnId(iscnIdStr)
 	if err != nil {
 		return iscnId, iscntypes.ContentIdRecord{}, types.ErrInvalidIscnId.Wrapf("%s", err.Error())

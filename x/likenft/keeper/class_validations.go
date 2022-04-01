@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) validateClassParentRelation(ctx sdk.Context, classId string, parent types.ClassParent) error {
+func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, parent types.ClassParent) error {
 	if parent.Type == types.ClassParentType_ISCN {
 		classesByISCN, found := k.GetClassesByISCN(ctx, parent.IscnIdPrefix)
 		if !found {
@@ -49,7 +49,7 @@ func (k msgServer) validateClassParentRelation(ctx sdk.Context, classId string, 
 	return nil
 }
 
-func (k msgServer) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.ClassParentInput, ownerBech32 string) (types.ClassParentAndOwner, error) {
+func (k Keeper) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.ClassParentInput, ownerBech32 string) (types.ClassParentAndOwner, error) {
 	if parentInput.Type == types.ClassParentType_ISCN {
 		iscnId, iscnRecord, err := k.resolveIscnIdAndRecord(ctx, parentInput.IscnIdPrefix)
 		if err != nil {
