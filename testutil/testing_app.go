@@ -15,6 +15,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -41,6 +42,33 @@ type TestingApp struct {
 type GenesisBalance struct {
 	Address string
 	Coin    string
+}
+
+func SetupTestAppWithState(appState json.RawMessage, appOptions servertypes.AppOptions) *TestingApp {
+	db := dbm.NewMemDB()
+	encodingCfg := likeapp.MakeEncodingConfig()
+	logger := log.NewTMLogger(os.Stdout)
+	app := likeapp.NewLikeApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encodingCfg, appOptions)
+
+	app.InitChain(
+		abci.RequestInitChain{
+			Validators:      []abci.ValidatorUpdate{},
+			ConsensusParams: simapp.DefaultConsensusParams,
+			AppStateBytes:   appState,
+		},
+	)
+
+	app.Commit()
+
+	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
+	app.BeginBlock(abci.RequestBeginBlock{Header: header})
+
+	return &TestingApp{
+		LikeApp: app,
+		txCfg:   simapp.MakeTestEncodingConfig().TxConfig,
+		Header:  header,
+		Context: app.BaseApp.NewContext(false, header),
+	}
 }
 
 func SetupTestAppWithIscnGenesis(genesisBalances []GenesisBalance, iscnGenesisJson json.RawMessage) *TestingApp {

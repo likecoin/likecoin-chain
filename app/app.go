@@ -623,6 +623,9 @@ func (app *LikeApp) GetScopedTransferKeeper() capabilitykeeper.ScopedKeeper {
 func (app *LikeApp) GetTxConfig() client.TxConfig {
 	return MakeEncodingConfig().TxConfig
 }
+func (app *LikeApp) GetKeys() map[string]*sdk.KVStoreKey {
+	return app.keys
+}
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
