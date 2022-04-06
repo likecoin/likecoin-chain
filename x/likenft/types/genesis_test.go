@@ -40,6 +40,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						Account: accounts[1].String(),
 					},
 				},
+				Params: types.DefaultParams(),
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -55,6 +56,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						IscnIdPrefix: "0",
 					},
 				},
+				Params: types.DefaultParams(),
 			},
 			valid: false,
 		},
@@ -68,6 +70,41 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						Account: accounts[0].String(),
 					},
+				},
+				Params: types.DefaultParams(),
+			},
+			valid: false,
+		},
+		{
+			desc: "empty mint price denom param",
+			genState: &types.GenesisState{
+				ClassesByAccountList: []types.ClassesByAccount{
+					{
+						Account: accounts[0].String(),
+					},
+					{
+						Account: accounts[0].String(),
+					},
+				},
+				Params: types.Params{
+					MintPriceDenom: "",
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid mint price denom param",
+			genState: &types.GenesisState{
+				ClassesByAccountList: []types.ClassesByAccount{
+					{
+						Account: accounts[0].String(),
+					},
+					{
+						Account: accounts[0].String(),
+					},
+				},
+				Params: types.Params{
+					MintPriceDenom: "123456",
 				},
 			},
 			valid: false,

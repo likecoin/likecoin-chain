@@ -8,4 +8,6 @@ option go_package = "github.com/likecoin/likechain/x/likenft/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
+
+  string mintPriceDenom = 1;
 }
