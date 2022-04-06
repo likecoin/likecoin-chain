@@ -32,6 +32,7 @@ message MsgNewClass {
   ];
   bool burnable = 9;
   uint64 maxSupply = 10;
+  uint64 mintPrice = 11;
 }
 
 message MsgNewClassResponse {
@@ -52,6 +53,7 @@ message MsgUpdateClass {
   ];
   bool burnable = 9;
   uint64 maxSupply = 10;
+  uint64 mintPrice = 11;
 }
 
 message MsgUpdateClassResponse {
