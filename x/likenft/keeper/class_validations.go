@@ -79,3 +79,16 @@ func (k Keeper) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.Cl
 		return types.ClassParentAndOwner{}, sdkerrors.ErrInvalidRequest.Wrapf("Unsupported parent type %s in nft class", parentInput.Type.String())
 	}
 }
+
+func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId string, classData *types.ClassData) (*types.ClassParentAndOwner, error) {
+	if err := k.validateClassParentRelation(ctx, classId, classData.Parent); err != nil {
+		return nil, err
+	}
+
+	// refresh parent info (e.g. iscn latest version) & check ownership
+	parent, err := k.resolveClassParentAndOwner(ctx, classData.Parent.ToInput(), classData.Parent.Account)
+	if err != nil {
+		return nil, err
+	}
+	return &parent, nil
+}
