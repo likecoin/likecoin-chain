@@ -14,17 +14,18 @@ import (
 var _ = strconv.Itoa(0)
 
 type CmdNewClassInput struct {
-	ParentType   string          `json:"parentType"`
-	IscnIdPrefix string          `json:"iscnIdPrefix,omitempty"`
-	Name         string          `json:"name"`
-	Symbol       string          `json:"symbol"`
-	Description  string          `json:"description"`
-	Uri          string          `json:"uri"`
-	UriHash      string          `json:"uriHash"`
-	Metadata     types.JsonInput `json:"metadata"`
-	Burnable     bool            `json:"burnable"`
-	MaxSupply    uint64          `json:"maxSupply"`
-	MintPrice    uint64          `json:"mintPrice"`
+	ParentType      string          `json:"parentType"`
+	IscnIdPrefix    string          `json:"iscnIdPrefix,omitempty"`
+	Name            string          `json:"name"`
+	Symbol          string          `json:"symbol"`
+	Description     string          `json:"description"`
+	Uri             string          `json:"uri"`
+	UriHash         string          `json:"uriHash"`
+	Metadata        types.JsonInput `json:"metadata"`
+	Burnable        bool            `json:"burnable"`
+	MaxSupply       uint64          `json:"maxSupply"`
+	EnablePayToMint bool            `json:"enablePayToMint"`
+	MintPrice       uint64          `json:"mintPrice"`
 }
 
 func CmdNewClass() *cobra.Command {
@@ -41,6 +42,7 @@ func CmdNewClass() *cobra.Command {
 	"metadata": {},
 	"burnable": true,
 	"maxSupply": 0, // 0 = unlimited
+	"enablePayToMint": true,
 	"mintPrice": 0 // 0 = free
 }
 `,
@@ -80,6 +82,7 @@ func CmdNewClass() *cobra.Command {
 			argMetadata := input.Metadata
 			argBurnable := input.Burnable
 			argMaxSupply := input.MaxSupply
+			argEnablePayToMint := input.EnablePayToMint
 			argMintPrice := input.MintPrice
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -98,6 +101,7 @@ func CmdNewClass() *cobra.Command {
 				argMetadata,
 				argBurnable,
 				argMaxSupply,
+				argEnablePayToMint,
 				argMintPrice,
 			)
 			if err := msg.ValidateBasic(); err != nil {
