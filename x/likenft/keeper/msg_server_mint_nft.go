@@ -15,11 +15,6 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 	params := k.GetParams(ctx)
 	tokenId := fmt.Sprintf("%s-%d", classId, totalSupply+1)
 
-	spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetMintPriceDenom())
-	if spentableTokens.Amount.Uint64() < classData.Config.MintPrice {
-		return nil, types.ErrInsufficientFunds.Wrapf("insufficient funds to mint tokenId %s", tokenId)
-	}
-
 	nftData := types.NFTData{
 		Metadata:    types.JsonInput{}, // TODO: add metadata template
 		ClassParent: classData.Parent,
@@ -37,9 +32,17 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 		Data:    nftDataInAny,
 	}
 
-	err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(classData.Config.MintPrice)))))
-	if err != nil {
-		return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
+	// Pay price to owner if mintPrice is not zero
+	if classData.Config.MintPrice > 0 {
+		spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetMintPriceDenom())
+		if spentableTokens.Amount.Uint64() < classData.Config.MintPrice {
+			return nil, types.ErrInsufficientFunds.Wrapf("insufficient funds to mint tokenId %s", tokenId)
+		}
+
+		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(classData.Config.MintPrice)))))
+		if err != nil {
+			return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
+		}
 	}
 
 	err = k.nftKeeper.Mint(ctx, nft, userAddress)
@@ -128,16 +131,18 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	// Mint NFT
 	var nft *nft.NFT
-	if classData.Config.MintPrice > 0 && !parent.Owner.Equals(userAddress) {
+	if classData.Config.EnablePayToMint && !parent.Owner.Equals(userAddress) {
 		nft, err = k.mintPayToMintNFT(ctx, class.Id, &classData, parent.Owner, userAddress, totalSupply, msg)
 		if err != nil {
 			return nil, err
 		}
-	} else {
+	} else if parent.Owner.Equals(userAddress) {
 		nft, err = k.mintOwnerNFT(ctx, class.Id, &classData, userAddress, msg)
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
 	// Emit event
