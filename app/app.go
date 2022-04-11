@@ -515,39 +515,29 @@ func (app *LikeApp) registerUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler("v2.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
-		// 1st-time running in-store migrations, using 1 as fromVersion to
-		// avoid running InitGenesis.
-		fromVM := map[string]uint64{
-			"auth":         1,
-			"bank":         1,
-			"capability":   1,
-			"crisis":       1,
-			"distribution": 1,
-			"evidence":     1,
-			"gov":          1,
-			"mint":         1,
-			"params":       1,
-			"slashing":     1,
-			"staking":      1,
-			"upgrade":      1,
-			"ibc":          1,
-			"genutil":      1,
-			"transfer":     1,
-			"iscn":         1,
+		ctx.Logger().Info("First step: Migrate sdk modules")
+		// using 1 as fromVersion to avoid running InitGenesis for existing modules
+		// note newer sdk already guarantees auth module is migrated last
+		fromVM := make(map[string]uint64)
+		for moduleName := range app.mm.Modules {
+			fromVM[moduleName] = 1
 		}
-
-		versionMap, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		// exclude new modules to not skip InitGenesis
+		delete(fromVM, authz.ModuleName)
+		delete(fromVM, feegrant.ModuleName)
+		// run
+		newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		if err != nil {
-			return versionMap, err
+			return nil, err
 		}
 
-		// Migrate Bech32 addresses
+		ctx.Logger().Info("Second step: Migrate addresses stored in bech32 form to use new prefix")
 		bech32stakingmigration.MigrateAddressBech32(ctx, app.keys[stakingtypes.StoreKey], app.appCodec)
 		bech32slashingmigration.MigrateAddressBech32(ctx, app.keys[slashingtypes.StoreKey], app.appCodec)
 		bech32govmigration.MigrateAddressBech32(ctx, app.keys[govtypes.StoreKey], app.appCodec)
 		bech32authmigration.MigrateAddressBech32(ctx, app.keys[authtypes.StoreKey], app.appCodec)
 
-		return versionMap, nil
+		return newVM, nil
 	})
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
@@ -557,7 +547,7 @@ func (app *LikeApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == "v2.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant"},
+			Added: []string{authz.ModuleName, feegrant.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
