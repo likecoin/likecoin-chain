@@ -203,6 +203,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
 		ShowHeightCommand(),
+		ConvertPrefixCommand(),
 	)
 
 	return rootCmd, encodingConfig
