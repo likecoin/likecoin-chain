@@ -182,6 +182,12 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	config := sdk.GetConfig()
 	config.Seal()
 
+	debugCmd := debug.Cmd()
+	debugCmd.AddCommand(
+		ShowHeightCommand(),
+		ConvertPrefixCommand(),
+	)
+
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
@@ -192,7 +198,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		simappcli.AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		debug.Cmd(),
+		debugCmd,
 	)
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, exportAppState, addStartFlags)
@@ -202,8 +208,6 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
-		ShowHeightCommand(),
-		ConvertPrefixCommand(),
 	)
 
 	return rootCmd, encodingConfig
