@@ -1,6 +1,15 @@
 # Changelog
 
-## [Unreleased]
+## [v2.0.0](https://github.com/likecoin/likecoin-chain/releases/v2.0.0)
+
+- Upgrade cosmos-sdk to 0.44.8, ibc-go to 2.1.0
+- Add support for like account prefix (by LikerLand)
+- Add migrations for bech32 stored in state (by LikerLand)
+- Add liked debug convert-prefix command tool for bech32 conversion
+
+## [v1.2.0](https://github.com/likecoin/likecoin-chain/releases/v1.2.0)
+
+- Introduce the support of cosmovisor
 
 ## [fotan-1.2](https://github.com/likecoin/likecoin-chain/releases/fotan-1.2)
 - Upgrade to Cosmos SDK v0.42.11
