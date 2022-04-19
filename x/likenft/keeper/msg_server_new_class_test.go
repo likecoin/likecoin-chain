@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewClassNormal(t *testing.T) {
+func TestNewClassISCNNormal(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -108,6 +108,88 @@ func TestNewClassNormal(t *testing.T) {
 		MaxSupply:       maxSupply,
 		EnablePayToMint: enablePayToMint,
 		MintPrice:       mintPrice,
+	}, classData.Config)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestNewClassAccountNormal(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	ownerAccAddress, _ := sdk.AccAddressFromBech32(ownerAddress)
+
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+
+	nftKeeper.
+		EXPECT().
+		SaveClass(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	// Run
+	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type: types.ClassParentType_ACCOUNT,
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
+		MaxSupply:   maxSupply,
+	})
+
+	// Check output
+	require.NoError(t, err)
+	expectedClassId, _ := types.NewClassIdForAccount(ownerAccAddress, 0)
+	require.Equal(t, expectedClassId, res.Class.Id)
+	require.Equal(t, name, res.Class.Name)
+	require.Equal(t, symbol, res.Class.Symbol)
+	require.Equal(t, description, res.Class.Description)
+	require.Equal(t, uri, res.Class.Uri)
+	require.Equal(t, uriHash, res.Class.UriHash)
+
+	var classData types.ClassData
+	err = classData.Unmarshal(res.Class.Data.Value)
+	require.NoErrorf(t, err, "Error unmarshal class data")
+	require.Equal(t, metadata, classData.Metadata)
+	require.Equal(t, ownerAccAddress.String(), classData.Parent.Account)
+	require.Equal(t, types.ClassConfig{
+		Burnable:  burnable,
+		MaxSupply: maxSupply,
 	}, classData.Config)
 
 	// Check mock was called as expected
@@ -256,7 +338,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestNewClassInvalidUserAddress(t *testing.T) {
+func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -321,6 +403,64 @@ func TestNewClassInvalidUserAddress(t *testing.T) {
 		MaxSupply:       maxSupply,
 		EnablePayToMint: enablePayToMint,
 		MintPrice:       mintPrice,
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), sdkerrors.ErrInvalidAddress.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestNewClassAccountInvalidUserAddress(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+
+	// Run
+	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
+		Creator: "invalid address",
+		Parent: types.ClassParentInput{
+			Type: types.ClassParentType_ACCOUNT,
+		},
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Metadata:    metadata,
+		Burnable:    burnable,
+		MaxSupply:   maxSupply,
 	})
 
 	// Check output
