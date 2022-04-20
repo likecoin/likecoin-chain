@@ -13,9 +13,7 @@ import (
 var _ = strconv.Itoa(0)
 
 type CmdMintNFTInput struct {
-	Uri      string          `json:"uri"`
-	UriHash  string          `json:"uriHash`
-	Metadata types.JsonInput `json:"metadata"`
+	types.NFTInput
 }
 
 func CmdMintNFT() *cobra.Command {
@@ -36,9 +34,6 @@ func CmdMintNFT() *cobra.Command {
 			if input == nil || err != nil {
 				return err
 			}
-			argUri := input.Uri
-			argUriHash := input.UriHash
-			argMetadata := input.Metadata
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -49,9 +44,7 @@ func CmdMintNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,
-				argUri,
-				argUriHash,
-				argMetadata,
+				input.NFTInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

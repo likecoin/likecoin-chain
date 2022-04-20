@@ -108,12 +108,14 @@ func TestMintOwnerNFTNormal(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -254,12 +256,14 @@ func TestMintNFTFirstToken(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -372,12 +376,14 @@ func TestMintNFTOwnerInvalidTokenID(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       "123456", // x/nft requires token id to start with letter
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      "123456", // x/nft requires token id to start with letter
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -431,12 +437,14 @@ func TestMintNFTClassNotFound(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -512,12 +520,14 @@ func TestMintNFTMissingIscnRelation(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -599,12 +609,14 @@ func TestMintNFTNotRelatedToIscn(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -691,12 +703,14 @@ func TestMintNFTIscnNotFound(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -785,12 +799,14 @@ func TestMintNFTInvalidUserAddress(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  "not a valid address",
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: "not a valid address",
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -920,12 +936,14 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  minterAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: minterAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -1041,12 +1059,14 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  minterAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: minterAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -1169,12 +1189,14 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  minterAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: minterAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -1275,12 +1297,14 @@ func TestMintNFTNotOwnerNoPayToMint(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  minterAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: minterAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -1379,12 +1403,14 @@ func TestMintNFTNoSupply(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output
@@ -1488,12 +1514,14 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 
 	// Run
 	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
-		Creator:  ownerAddress,
-		ClassId:  classId,
-		Id:       tokenId,
-		Uri:      uri,
-		UriHash:  uriHash,
-		Metadata: metadata,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
 	})
 
 	// Check output

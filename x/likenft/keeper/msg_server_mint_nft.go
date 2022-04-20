@@ -27,8 +27,8 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 	nft := nft.NFT{
 		ClassId: classId,
 		Id:      tokenId,
-		Uri:     msg.Uri,
-		UriHash: msg.UriHash,
+		Uri:     msg.Input.Uri,
+		UriHash: msg.Input.UriHash,
 		Data:    nftDataInAny,
 	}
 
@@ -60,7 +60,7 @@ func (k msgServer) mintOwnerNFT(ctx sdk.Context, classId string, classData *type
 	}
 
 	nftData := types.NFTData{
-		Metadata:    msg.Metadata,
+		Metadata:    msg.Input.Metadata,
 		ClassParent: classData.Parent,
 	}
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
@@ -70,8 +70,8 @@ func (k msgServer) mintOwnerNFT(ctx sdk.Context, classId string, classData *type
 	nft := nft.NFT{
 		ClassId: classId,
 		Id:      msg.Id,
-		Uri:     msg.Uri,
-		UriHash: msg.UriHash,
+		Uri:     msg.Input.Uri,
+		UriHash: msg.Input.UriHash,
 		Data:    nftDataInAny,
 	}
 	err = k.nftKeeper.Mint(ctx, nft, userAddress)

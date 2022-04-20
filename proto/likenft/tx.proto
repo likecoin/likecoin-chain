@@ -4,6 +4,7 @@ package likecoin.likechain.likenft;
 import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
 import "likenft/class_data.proto";
+import "likenft/nft_input.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -66,12 +67,7 @@ message MsgMintNFT {
   string creator = 1;
   string classId = 2;
   string id = 3;
-  string uri = 4;
-  string uriHash = 5;
-  bytes metadata = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "JsonInput"
-  ];
+  NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
 message MsgMintNFTResponse {
