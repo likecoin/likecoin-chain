@@ -32,7 +32,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -42,11 +41,12 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
 
-	gaiacmd "github.com/cosmos/gaia/v4/cmd/gaiad/cmd"
+	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
 	"github.com/likecoin/likechain/ip"
+
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 )
 
 // liked custom flags
@@ -129,7 +129,6 @@ func txCommand() *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		vestingcli.GetTxCmd(),
 	)
 
 	app.ModuleBasics.AddTxCommands(txCmd)
@@ -138,11 +137,26 @@ func txCommand() *cobra.Command {
 	return txCmd
 }
 
+// initAppConfig helps to override default appConfig template and configs.
+// return "", nil if no custom configuration is required for the application.
+func initAppConfig() (string, interface{}) {
+	srvCfg := serverconfig.DefaultConfig()
+
+	srvCfg.MinGasPrices = "1nanolike"
+
+	srvCfg.StateSync.SnapshotInterval = 1000
+	srvCfg.StateSync.SnapshotKeepRecent = 2
+
+	customAppTemplate := serverconfig.DefaultConfigTemplate
+
+	return customAppTemplate, srvCfg
+}
+
 func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
 	initClientCtx := client.Context{}.
-		WithJSONMarshaler(encodingConfig.Marshaler).
+		WithJSONCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
@@ -159,30 +173,32 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd)
+			customAppTemplate, customAppConfig := initAppConfig()
+
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig)
 		},
 	}
 
-	authclient.Codec = encodingConfig.Marshaler
-
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
 	config.Seal()
+
+	debugCmd := debug.Cmd()
+	debugCmd.AddCommand(
+		ShowHeightCommand(),
+		ConvertPrefixCommand(),
+	)
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
-		MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(
 			app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{},
 			app.DefaultNodeHome,
 		),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
-		gaiacmd.AddGenesisAccountCmd(app.DefaultNodeHome),
+		simappcli.AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		debug.Cmd(),
+		debugCmd,
 	)
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, exportAppState, addStartFlags)
@@ -192,7 +208,6 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
-		ShowHeightCommand(),
 	)
 
 	return rootCmd, encodingConfig

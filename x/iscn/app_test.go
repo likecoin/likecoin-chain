@@ -1,187 +1,25 @@
 package iscn_test
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-
-	likeapp "github.com/likecoin/likechain/app"
 
 	"github.com/likecoin/likechain/x/iscn/keeper"
 	"github.com/likecoin/likechain/x/iscn/types"
+
+	testutil "github.com/likecoin/likechain/testutil"
 )
-
-// TODO: seems a useless param just for creating the app, but not sure if there's a better way to handle
-const DefaultNodeHome = "/tmp/.liked-test"
-const invCheckPeriod = 1
-
-type TestingApp struct {
-	*likeapp.LikeApp
-
-	txCfg   client.TxConfig
-	Header  tmproto.Header
-	Context sdk.Context
-}
-
-type genesisBalance struct {
-	Address string
-	Coin    string
-}
-
-func SetupTestAppWithIscnGenesis(genesisBalances []genesisBalance, iscnGenesisJson json.RawMessage) *TestingApp {
-	genAccs := []authtypes.GenesisAccount{}
-	balances := []banktypes.Balance{}
-	for _, balance := range genesisBalances {
-		addr := balance.Address
-		genAccs = append(genAccs, &authtypes.BaseAccount{Address: addr})
-		coin, err := sdk.ParseCoinNormalized(balance.Coin)
-		if err != nil {
-			panic(err)
-		}
-		balance := banktypes.Balance{Address: addr, Coins: sdk.NewCoins(coin)}
-		balances = append(balances, balance)
-	}
-	db := dbm.NewMemDB()
-	encodingCfg := likeapp.MakeEncodingConfig()
-	logger := log.NewTMLogger(os.Stdout)
-	app := likeapp.NewLikeApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encodingCfg, simapp.EmptyAppOptions{})
-	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Marshaler)
-	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
-	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
-
-	totalSupply := sdk.NewCoins()
-	for _, b := range balances {
-		totalSupply = totalSupply.Add(b.Coins...)
-	}
-
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
-	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
-
-	crisisGenesis := crisistypes.NewGenesisState(sdk.NewInt64Coin("nanolike", 1))
-	genesisState[crisistypes.ModuleName] = app.AppCodec().MustMarshalJSON(crisisGenesis)
-
-	if iscnGenesisJson != nil {
-		genesisState[types.ModuleName] = iscnGenesisJson
-	}
-
-	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
-	if err != nil {
-		panic(err)
-	}
-
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simapp.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-		},
-	)
-
-	app.Commit()
-
-	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-
-	return &TestingApp{
-		LikeApp: app,
-		txCfg:   simapp.MakeTestEncodingConfig().TxConfig,
-		Header:  header,
-		Context: app.BaseApp.NewContext(false, header),
-	}
-}
-
-func SetupTestApp(genesisBalances []genesisBalance) *TestingApp {
-	return SetupTestAppWithIscnGenesis(genesisBalances, nil)
-}
-
-func (app *TestingApp) NextHeader(unixTimestamp int64) {
-	app.Header = tmproto.Header{
-		Time: time.Unix(unixTimestamp, 0),
-	}
-}
-
-func (app *TestingApp) SetForQuery() sdk.Context {
-	app.Header.Height = app.LastBlockHeight() + 1
-	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
-	app.Context = app.BaseApp.NewContext(false, app.Header)
-	return app.Context
-}
-
-func (app *TestingApp) SetForTx() {
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
-}
-
-func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
-	app.Header.Height = app.LastBlockHeight() + 1
-	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
-	app.Context = app.BaseApp.NewContext(false, app.Header)
-	chainId := ""
-	addr := sdk.AccAddress(priv.PubKey().Address())
-	acc := app.AccountKeeper.GetAccount(app.Context, addr)
-	accNum := acc.GetAccountNumber()
-	accSeq := acc.GetSequence()
-	txCfg := app.txCfg
-	tx, err := helpers.GenTx(
-		app.txCfg,
-		msgs,
-		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
-		helpers.DefaultGenTxGas,
-		chainId,
-		[]uint64{accNum},
-		[]uint64{accSeq},
-		priv,
-	)
-	if err != nil {
-		return nil, err, nil, nil
-	}
-	txBytes, err := txCfg.TxEncoder()(tx)
-	if err != nil {
-		return nil, err, nil, nil
-	}
-	_, _, simErr = app.Simulate(txBytes)
-	if simErr != nil {
-		return nil, nil, simErr, nil
-	}
-	_, res, deliverErr = app.Deliver(txCfg.TxEncoder(), tx)
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
-	return res, nil, nil, deliverErr
-}
-
-func (app *TestingApp) DeliverMsg(msg sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
-	return app.DeliverMsgs([]sdk.Msg{msg}, priv)
-}
-
-func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey) *sdk.Result {
-	res, err, simErr, deliverErr := app.DeliverMsgs([]sdk.Msg{msg}, priv)
-	require.NoError(t, err)
-	require.NoError(t, simErr)
-	require.NoError(t, deliverErr)
-	return res
-}
 
 var (
 	priv1 = secp256k1.GenPrivKey()
@@ -234,22 +72,9 @@ var (
 }`)
 )
 
-func getEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
-	for _, e := range events {
-		if e.Type == typ {
-			for _, attr := range e.Attributes {
-				if bytes.Equal(attr.Key, attrKey) {
-					return attr.Value
-				}
-			}
-		}
-	}
-	return nil
-}
-
 func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	var msg sdk.Msg
-	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
 
 	app.NextHeader(1234567890)
 	app.SetForTx()
@@ -263,13 +88,13 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	result := app.DeliverMsgNoError(t, msg, priv1)
 
 	events := result.GetEvents()
-	iscnIdStrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	iscnIdStrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnIdStrBytes)
 	iscnId, err := types.ParseIscnId(string(iscnIdStrBytes))
 	require.NoError(t, err)
-	ipldStrBytes := getEventAttribute(events, "iscn_record", []byte("ipld"))
+	ipldStrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("ipld"))
 	require.NotNil(t, ipldStrBytes)
-	ownerStrBytes := getEventAttribute(events, "iscn_record", []byte("owner"))
+	ownerStrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("owner"))
 	require.NotNil(t, ownerStrBytes)
 	require.Equal(t, string(ownerStrBytes), addr1.String())
 
@@ -355,15 +180,15 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 	result = app.DeliverMsgNoError(t, msg, priv1)
 
 	events = result.GetEvents()
-	iscnId2StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	iscnId2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId2StrBytes)
 	iscnId2, err := types.ParseIscnId(string(iscnId2StrBytes))
 	require.NoError(t, err)
 	require.Equal(t, iscnId.Prefix, iscnId2.Prefix)
 	require.Equal(t, iscnId.Version+1, iscnId2.Version)
-	ipld2StrBytes := getEventAttribute(events, "iscn_record", []byte("ipld"))
+	ipld2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("ipld"))
 	require.NotNil(t, ipld2StrBytes)
-	owner2StrBytes := getEventAttribute(events, "iscn_record", []byte("owner"))
+	owner2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("owner"))
 	require.NotNil(t, owner2StrBytes)
 	require.Equal(t, string(owner2StrBytes), addr1.String())
 
@@ -486,7 +311,7 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 
 func TestOwnerQueryPagination(t *testing.T) {
 	var msg sdk.Msg
-	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
 
 	app.NextHeader(1234567890)
 	app.SetForTx()
@@ -501,7 +326,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
 	result := app.DeliverMsgNoError(t, msg, priv1)
 	events := result.GetEvents()
-	iscnId1StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	iscnId1StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId1StrBytes)
 	iscnId1, err := types.ParseIscnId(string(iscnId1StrBytes))
 	require.NoError(t, err)
@@ -516,7 +341,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
 	result = app.DeliverMsgNoError(t, msg, priv1)
 	events = result.GetEvents()
-	iscnId2StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	iscnId2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId2StrBytes)
 	iscnId2, err := types.ParseIscnId(string(iscnId2StrBytes))
 	require.NoError(t, err)
@@ -528,7 +353,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
 	result = app.DeliverMsgNoError(t, msg, priv1)
 	events = result.GetEvents()
-	iscnId3StrBytes := getEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	iscnId3StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId3StrBytes)
 	iscnId3, err := types.ParseIscnId(string(iscnId3StrBytes))
 	require.NoError(t, err)
@@ -575,7 +400,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 
 func TestFingerprintQueryPagination(t *testing.T) {
 	var msg sdk.Msg
-	app := SetupTestApp([]genesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{{addr1.String(), "1000000000000000000nanolike"}})
 
 	app.NextHeader(1234567890)
 	app.SetForTx()
@@ -619,7 +444,7 @@ func TestFingerprintQueryPagination(t *testing.T) {
 func TestFailureCases(t *testing.T) {
 	var msg sdk.Msg
 	var record types.IscnRecord
-	app := SetupTestApp([]genesisBalance{
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{
 		{addr1.String(), "1000000000000000000nanolike"},
 		{addr2.String(), "1nanolike"},
 		{addr3.String(), "1000000000000000000nanolike"},
@@ -642,7 +467,7 @@ func TestFailureCases(t *testing.T) {
 	record = goodRecord()
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
 	res := app.DeliverMsgNoError(t, msg, priv1)
-	iscnId, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+	iscnId, err := types.ParseIscnId(string(testutil.GetEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
 	require.NoError(t, err)
 
 	// wrong sender address checksum
@@ -702,7 +527,7 @@ func TestFailureCases(t *testing.T) {
 	record = goodRecord()
 	msg = types.NewMsgUpdateIscnRecord(addr1, iscnId, &record)
 	res = app.DeliverMsgNoError(t, msg, priv1)
-	iscnId2, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+	iscnId2, err := types.ParseIscnId(string(testutil.GetEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
 	require.NoError(t, err)
 
 	// wrong sender address checksum
@@ -892,7 +717,7 @@ func TestSimulation(t *testing.T) {
 			addr3.String(): priv3,
 		}
 
-		doRandomTx := func(r *rand.Rand, app *TestingApp) {
+		doRandomTx := func(r *rand.Rand, app *testutil.TestingApp) {
 			x := r.Intn(100)
 			if x < 50 || len(contentIdRecordMap) == 0 {
 				key := keys[r.Intn(len(keys))]
@@ -903,7 +728,7 @@ func TestSimulation(t *testing.T) {
 				record.RecordNotes = notes
 				msg := types.NewMsgCreateIscnRecord(addr, &record)
 				res := app.DeliverMsgNoError(t, msg, privKey)
-				iscnId, err := types.ParseIscnId(string(getEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
+				iscnId, err := types.ParseIscnId(string(testutil.GetEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
 				require.NoError(t, err)
 				prefix := iscnId.Prefix.String()
 				prefixArr = append(prefixArr, prefix)
@@ -940,7 +765,7 @@ func TestSimulation(t *testing.T) {
 			}
 		}
 
-		verifyState := func(app *TestingApp) {
+		verifyState := func(app *testutil.TestingApp) {
 			ctx := app.Context
 			for prefix, contentIdRecord := range contentIdRecordMap {
 				prefixIscnId, err := types.ParseIscnId(prefix)
@@ -966,12 +791,12 @@ func TestSimulation(t *testing.T) {
 			}
 		}
 
-		genesisBalances := []genesisBalance{
+		genesisBalances := []testutil.GenesisBalance{
 			{addr1.String(), "1000000000000000000nanolike"},
 			{addr2.String(), "1000000000000000000nanolike"},
 			{addr3.String(), "1000000000000000000nanolike"},
 		}
-		app := SetupTestApp(genesisBalances)
+		app := testutil.SetupTestApp(genesisBalances)
 		for i := 0; i < txCount; i++ {
 			doRandomTx(r, app)
 		}
@@ -980,7 +805,7 @@ func TestSimulation(t *testing.T) {
 
 		iscnGenesis := app.IscnKeeper.ExportGenesis(ctx)
 		iscnGenesisJson := app.AppCodec().MustMarshalJSON(iscnGenesis)
-		app = SetupTestAppWithIscnGenesis(genesisBalances, iscnGenesisJson)
+		app = testutil.SetupTestAppWithIscnGenesis(genesisBalances, iscnGenesisJson)
 		app.SetForQuery()
 		verifyState(app)
 

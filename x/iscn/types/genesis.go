@@ -99,7 +99,7 @@ func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(DefaultParams(), nil, nil)
 }
 
-func GetGenesisStateFromAppState(cdc codec.JSONMarshaler, appState map[string]json.RawMessage) *GenesisState {
+func GetGenesisStateFromAppState(cdc codec.JSONCodec, appState map[string]json.RawMessage) *GenesisState {
 	var genesisState GenesisState
 
 	if appState[ModuleName] != nil {

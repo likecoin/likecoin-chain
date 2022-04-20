@@ -47,6 +47,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 func DefaultConfig() network.Config {
 	encoding := app.MakeEncodingConfig()
 	return network.Config{
+		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,
 		LegacyAmino:       encoding.Amino,
 		InterfaceRegistry: encoding.InterfaceRegistry,
@@ -66,9 +67,9 @@ func DefaultConfig() network.Config {
 		NumValidators:   1,
 		BondDenom:       sdk.DefaultBondDenom,
 		MinGasPrices:    fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:   sdk.TokensFromConsensusPower(1000),
-		StakingTokens:   sdk.TokensFromConsensusPower(500),
-		BondedTokens:    sdk.TokensFromConsensusPower(100),
+		AccountTokens:   sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
+		StakingTokens:   sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
+		BondedTokens:    sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
 		PruningStrategy: storetypes.PruningOptionNothing,
 		CleanupDir:      true,
 		SigningAlgo:     string(hd.Secp256k1Type),
