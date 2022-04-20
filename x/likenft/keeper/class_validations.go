@@ -66,7 +66,7 @@ func (k Keeper) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.Cl
 	} else if parentInput.Type == types.ClassParentType_ACCOUNT {
 		owner, err := sdk.AccAddressFromBech32(ownerBech32)
 		if err != nil {
-			return types.ClassParentAndOwner{}, types.ErrFailedToUnmarshalData.Wrapf("%s", err.Error())
+			return types.ClassParentAndOwner{}, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
 		}
 		return types.ClassParentAndOwner{
 			ClassParent: types.ClassParent{
