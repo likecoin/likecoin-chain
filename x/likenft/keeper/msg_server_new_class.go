@@ -56,14 +56,9 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 
 	// Create Class
 	classData := types.ClassData{
-		Metadata: msg.Metadata,
+		Metadata: msg.Input.Metadata,
 		Parent:   parent.ClassParent,
-		Config: types.ClassConfig{
-			Burnable:        msg.Burnable,
-			MaxSupply:       msg.MaxSupply,
-			EnablePayToMint: msg.EnablePayToMint,
-			MintPrice:       msg.MintPrice,
-		},
+		Config:   msg.Input.Config,
 	}
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
@@ -71,11 +66,11 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	}
 	class := nft.Class{
 		Id:          newClassId,
-		Name:        msg.Name,
-		Symbol:      msg.Symbol,
-		Description: msg.Description,
-		Uri:         msg.Uri,
-		UriHash:     msg.UriHash,
+		Name:        msg.Input.Name,
+		Symbol:      msg.Input.Symbol,
+		Description: msg.Input.Description,
+		Uri:         msg.Input.Uri,
+		UriHash:     msg.Input.UriHash,
 		Data:        classDataInAny,
 	}
 	err = k.nftKeeper.SaveClass(ctx, class)

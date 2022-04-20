@@ -27,12 +27,6 @@ message ClassParent {
   string account = 4 [(gogoproto.nullable) = true];
 }
 
-message ClassParentInput {
-  ClassParentType type = 1;
-  string iscnIdPrefix = 2 [(gogoproto.nullable) = true];
-  // for account, infers to use message sender's address
-}
-
 message ClassConfig {
   bool burnable = 1;
   uint64 maxSupply = 2;

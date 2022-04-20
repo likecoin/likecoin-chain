@@ -107,16 +107,20 @@ func TestUpdateClassISCNNormal(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -226,16 +230,20 @@ func TestUpdateClassAccountNormal(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -308,16 +316,20 @@ func TestUpdateClassNotFound(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -401,16 +413,20 @@ func TestUpdateClassExistingMintedTokens(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -494,16 +510,20 @@ func TestUpdateClassMissingRelationRecord(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -593,16 +613,20 @@ func TestUpdateClassNotRelatedToIscn(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -689,16 +713,20 @@ func TestUpdateClassNotRelatedToAccount(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -793,16 +821,20 @@ func TestUpdateClassIscnNotFound(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -899,16 +931,20 @@ func TestUpdateClassInvalidUserAddress(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     "not an address",
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: "not an address",
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -1007,16 +1043,20 @@ func TestUpdateClassUserNotISCNOwner(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     ownerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -1106,16 +1146,20 @@ func TestUpdateClassUserNotAccountOwner(t *testing.T) {
 
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator:     notOwnerAddress,
-		ClassId:     classId,
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Creator: notOwnerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output

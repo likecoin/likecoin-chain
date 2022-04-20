@@ -14,18 +14,7 @@ import (
 var _ = strconv.Itoa(0)
 
 type CmdNewClassInput struct {
-	ParentType      string          `json:"parentType"`
-	IscnIdPrefix    string          `json:"iscnIdPrefix,omitempty"`
-	Name            string          `json:"name"`
-	Symbol          string          `json:"symbol"`
-	Description     string          `json:"description"`
-	Uri             string          `json:"uri"`
-	UriHash         string          `json:"uriHash"`
-	Metadata        types.JsonInput `json:"metadata"`
-	Burnable        bool            `json:"burnable"`
-	MaxSupply       uint64          `json:"maxSupply"`
-	EnablePayToMint bool            `json:"enablePayToMint"`
-	MintPrice       uint64          `json:"mintPrice"`
+	types.ClassInput
 }
 
 func CmdNewClass() *cobra.Command {
@@ -40,10 +29,12 @@ func CmdNewClass() *cobra.Command {
 	"uri": "",
 	"uriHash": "",
 	"metadata": {},
-	"burnable": true,
-	"maxSupply": 0, // 0 = unlimited
-	"enablePayToMint": true,
-	"mintPrice": 0 // 0 = free
+	"config": {
+		"burnable": true,
+		"maxSupply": 0, // 0 = unlimited
+		"enablePayToMint": true,
+		"mintPrice": 0 // 0 = free
+	}
 }
 `,
 		Args: cobra.ExactArgs(1),
@@ -74,16 +65,6 @@ func CmdNewClass() *cobra.Command {
 					IscnIdPrefix: argIscnIdPrefix,
 				}
 			}
-			argName := input.Name
-			argSymbol := input.Symbol
-			argDescription := input.Description
-			argUri := input.Uri
-			argUriHash := input.UriHash
-			argMetadata := input.Metadata
-			argBurnable := input.Burnable
-			argMaxSupply := input.MaxSupply
-			argEnablePayToMint := input.EnablePayToMint
-			argMintPrice := input.MintPrice
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -93,16 +74,7 @@ func CmdNewClass() *cobra.Command {
 			msg := types.NewMsgNewClass(
 				clientCtx.GetFromAddress().String(),
 				argParent,
-				argName,
-				argSymbol,
-				argDescription,
-				argUri,
-				argUriHash,
-				argMetadata,
-				argBurnable,
-				argMaxSupply,
-				argEnablePayToMint,
-				argMintPrice,
+				input.ClassInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

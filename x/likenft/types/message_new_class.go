@@ -9,20 +9,11 @@ const TypeMsgNewClass = "new_class"
 
 var _ sdk.Msg = &MsgNewClass{}
 
-func NewMsgNewClass(creator string, parent ClassParentInput, name string, symbol string, description string, uri string, uriHash string, metadata JsonInput, burnable bool, maxSupply uint64, enablePayToMint bool, mintPrice uint64) *MsgNewClass {
+func NewMsgNewClass(creator string, parent ClassParentInput, input ClassInput) *MsgNewClass {
 	return &MsgNewClass{
-		Creator:         creator,
-		Parent:          parent,
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Creator: creator,
+		Parent:  parent,
+		Input:   input,
 	}
 }
 

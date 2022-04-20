@@ -51,12 +51,9 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 
 	// Update class
 	classData = types.ClassData{
-		Metadata: msg.Metadata,
+		Metadata: msg.Input.Metadata,
 		Parent:   parent.ClassParent,
-		Config: types.ClassConfig{
-			Burnable:  msg.Burnable,
-			MaxSupply: msg.MaxSupply,
-		},
+		Config:   msg.Input.Config,
 	}
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
@@ -64,11 +61,11 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	}
 	class = nft.Class{
 		Id:          class.Id,
-		Name:        msg.Name,
-		Symbol:      msg.Symbol,
-		Description: msg.Description,
-		Uri:         msg.Uri,
-		UriHash:     msg.UriHash,
+		Name:        msg.Input.Name,
+		Symbol:      msg.Input.Symbol,
+		Description: msg.Input.Description,
+		Uri:         msg.Input.Uri,
+		UriHash:     msg.Input.UriHash,
 		Data:        classDataInAny,
 	}
 	if err := k.nftKeeper.UpdateClass(ctx, class); err != nil {

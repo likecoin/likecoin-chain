@@ -13,14 +13,7 @@ import (
 var _ = strconv.Itoa(0)
 
 type CmdUpdateClassInput struct {
-	Name        string          `json:"name"`
-	Symbol      string          `json:"symbol"`
-	Description string          `json:"description"`
-	Uri         string          `json:"uri"`
-	UriHash     string          `json:"uriHash"`
-	Metadata    types.JsonInput `json:"metadata"`
-	Burnable    bool            `json:"burnable"`
-	MaxSupply   uint64          `json:"maxSupply"`
+	types.ClassInput
 }
 
 func CmdUpdateClass() *cobra.Command {
@@ -35,8 +28,12 @@ func CmdUpdateClass() *cobra.Command {
 	"uri": "",
 	"uriHash": "",
 	"metadata": {},
-	"burnable": true,
-	"maxSupply": 0 // 0 = unlimited
+	"config": {
+		"burnable": true,
+		"maxSupply": 0, // 0 = unlimited
+		"enablePayToMint": true,
+		"mintPrice": 0 // 0 = free
+	}
 }`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -45,14 +42,6 @@ func CmdUpdateClass() *cobra.Command {
 			if input == nil || err != nil {
 				return err
 			}
-			argName := input.Name
-			argSymbol := input.Symbol
-			argDescription := input.Description
-			argUri := input.Uri
-			argUriHash := input.UriHash
-			argMetadata := input.Metadata
-			argBurnable := input.Burnable
-			argMaxSupply := input.MaxSupply
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -62,14 +51,7 @@ func CmdUpdateClass() *cobra.Command {
 			msg := types.NewMsgUpdateClass(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
-				argName,
-				argSymbol,
-				argDescription,
-				argUri,
-				argUriHash,
-				argMetadata,
-				argBurnable,
-				argMaxSupply,
+				input.ClassInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

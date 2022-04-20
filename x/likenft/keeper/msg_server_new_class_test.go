@@ -75,16 +75,20 @@ func TestNewClassISCNNormal(t *testing.T) {
 			Type:         types.ClassParentType_ISCN,
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+			},
+		},
 	})
 
 	// Check output
@@ -162,14 +166,18 @@ func TestNewClassAccountNormal(t *testing.T) {
 		Parent: types.ClassParentInput{
 			Type: types.ClassParentType_ACCOUNT,
 		},
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -243,16 +251,20 @@ func TestNewClassInvalidIscn(t *testing.T) {
 			Type:         types.ClassParentType_ISCN,
 			IscnIdPrefix: iscnId,
 		},
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+			},
+		},
 	})
 
 	// Check output
@@ -317,16 +329,20 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 			Type:         types.ClassParentType_ISCN,
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+			},
+		},
 	})
 
 	// Check output
@@ -393,16 +409,20 @@ func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 			Type:         types.ClassParentType_ISCN,
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+			},
+		},
 	})
 
 	// Check output
@@ -453,14 +473,18 @@ func TestNewClassAccountInvalidUserAddress(t *testing.T) {
 		Parent: types.ClassParentInput{
 			Type: types.ClassParentType_ACCOUNT,
 		},
-		Name:        name,
-		Symbol:      symbol,
-		Description: description,
-		Uri:         uri,
-		UriHash:     uriHash,
-		Metadata:    metadata,
-		Burnable:    burnable,
-		MaxSupply:   maxSupply,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+			},
+		},
 	})
 
 	// Check output
@@ -529,16 +553,20 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 			Type:         types.ClassParentType_ISCN,
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
-		Name:            name,
-		Symbol:          symbol,
-		Description:     description,
-		Uri:             uri,
-		UriHash:         uriHash,
-		Metadata:        metadata,
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+			},
+		},
 	})
 
 	// Check output

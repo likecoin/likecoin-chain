@@ -3,7 +3,7 @@ package likecoin.likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
-import "likenft/class_data.proto";
+import "likenft/class_input.proto";
 import "likenft/nft_input.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
@@ -22,19 +22,7 @@ service Msg {
 message MsgNewClass {
   string creator = 1;
   ClassParentInput parent = 2 [(gogoproto.nullable) = false];
-  string name = 3;
-  string symbol = 4;
-  string description = 5;
-  string uri = 6;
-  string uriHash = 7;
-  bytes metadata = 8 [
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "JsonInput"
-  ];
-  bool burnable = 9;
-  uint64 maxSupply = 10;
-  bool enablePayToMint = 11;
-  uint64 mintPrice = 12;
+  ClassInput input = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgNewClassResponse {
@@ -44,19 +32,7 @@ message MsgNewClassResponse {
 message MsgUpdateClass {
   string creator = 1;
   string classId = 2;
-  string name = 3;
-  string symbol = 4;
-  string description = 5;
-  string uri = 6;
-  string uriHash = 7;
-  bytes metadata = 8 [
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "JsonInput"
-  ];
-  bool burnable = 9;
-  uint64 maxSupply = 10;
-  bool enablePayToMint = 11;
-  uint64 mintPrice = 12;
+  ClassInput input = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgUpdateClassResponse {

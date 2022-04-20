@@ -53,7 +53,9 @@ func TestEndToEndAccountNormal(t *testing.T) {
 	"metadata": {
 		"abc": "def"
 	},
-	"burnable": false
+	"config": {
+		"burnable": false
+	}
 }
 `)
 	require.NoError(t, err)
@@ -75,7 +77,9 @@ func TestEndToEndAccountNormal(t *testing.T) {
 		"image": "ipfs://QmZu3v5qFaTrrkSJC4mz8nLoDbR5kJx1QwMUy9CZhFZjT3",
 		"external_link": "https://www.facebook.com/chima.fasang"
 	},
-	"burnable": true
+	"config": {
+		"burnable": true
+	}
 }
 `)
 	require.NoError(t, err)
