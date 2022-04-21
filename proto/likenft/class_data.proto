@@ -2,6 +2,7 @@ syntax = "proto3";
 package likecoin.likechain.likenft;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
@@ -28,9 +29,17 @@ message ClassParent {
   string account = 4 [(gogoproto.nullable) = true];
 }
 
+message ClaimPeriod {
+  google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true];
+  repeated string allowAddressList = 2 [(gogoproto.nullable) = true];
+  uint64 mintPrice = 3;
+}
+
 message ClassConfig {
   bool burnable = 1;
   uint64 maxSupply = 2;
   bool enablePayToMint = 3;
   uint64 mintPrice = 4;
+  repeated ClaimPeriod claimPeriods = 5 [(gogoproto.nullable) = true];
+  google.protobuf.Timestamp revealTime = 6 [(gogoproto.stdtime) = true];
 }
