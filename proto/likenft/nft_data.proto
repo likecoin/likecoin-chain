@@ -3,6 +3,7 @@ package likecoin.likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "likenft/class_data.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
@@ -12,4 +13,6 @@ message NFTData {
     (gogoproto.customtype) = "JsonInput"
   ];
   ClassParent classParent = 2 [(gogoproto.nullable) = false];
+  bool sealed = 3;
+  google.protobuf.Timestamp revealTime = 4 [(gogoproto.stdtime) = true];
 }
