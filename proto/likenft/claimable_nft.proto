@@ -1,12 +1,13 @@
 syntax = "proto3";
 package likecoin.likechain.likenft;
 
+import "gogoproto/gogo.proto";
+import "likenft/nft_input.proto";
+
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message ClaimableNFT {
   string classId = 1; 
   string id = 2; 
-  string input = 3; 
-  
+  NFTInput input = 3 [(gogoproto.nullable) = false];
 }
-
