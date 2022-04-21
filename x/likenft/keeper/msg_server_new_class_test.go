@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -572,6 +573,318 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	// Check output
 	require.Error(t, err)
 	require.Contains(t, err.Error(), sdkerrors.ErrUnauthorized.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enablePayToMint := true
+	mintPrice := uint64(1000000000)
+
+	claimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowAddressList: []string{ownerAddress},
+			MintPrice:        uint64(20000),
+		},
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			AllowAddressList: []string{ownerAddress},
+			MintPrice:        uint64(30000),
+		},
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowAddressList: nil,
+			MintPrice:        uint64(90000),
+		},
+	}
+	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+
+	// Mock keeper calls
+	iscnLatestVersion := uint64(2)
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     iscnLatestVersion,
+		})
+
+	nftKeeper.
+		EXPECT().
+		SaveClass(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	// Run
+	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+				ClaimPeriods:    claimPeriods,
+				RevealTime:      revealTime,
+			},
+		},
+	})
+
+	// Check output
+	require.NoError(t, err)
+	expectedClassId, _ := types.NewClassIdForISCN(iscnId.Prefix.String(), 0)
+	require.Equal(t, expectedClassId, res.Class.Id)
+	require.Equal(t, name, res.Class.Name)
+	require.Equal(t, symbol, res.Class.Symbol)
+	require.Equal(t, description, res.Class.Description)
+	require.Equal(t, uri, res.Class.Uri)
+	require.Equal(t, uriHash, res.Class.UriHash)
+
+	var classData types.ClassData
+	err = classData.Unmarshal(res.Class.Data.Value)
+	require.NoErrorf(t, err, "Error unmarshal class data")
+	require.Equal(t, metadata, classData.Metadata)
+	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
+	require.Equal(t, types.ClassConfig{
+		Burnable:        burnable,
+		MaxSupply:       maxSupply,
+		EnablePayToMint: enablePayToMint,
+		MintPrice:       mintPrice,
+		ClaimPeriods:    claimPeriods,
+		RevealTime:      revealTime,
+	}, classData.Config)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestNewClassInvalidClaimPeriod(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enablePayToMint := true
+	mintPrice := uint64(1000000000)
+
+	claimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowAddressList: nil,
+			MintPrice:        0,
+		},
+	}
+	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")
+
+	// Mock keeper calls
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     1,
+		})
+
+	// Run
+	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+				ClaimPeriods:    claimPeriods,
+				RevealTime:      revealTime,
+			},
+		},
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), types.ErrInvalidNftClassConfig.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enablePayToMint := true
+	mintPrice := uint64(1000000000)
+
+	claimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowAddressList: []string{"invalid address"},
+			MintPrice:        0,
+		},
+	}
+	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")
+
+	// Mock keeper calls
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     1,
+		})
+
+	// Run
+	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
+		Creator: ownerAddress,
+		Parent: types.ClassParentInput{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:        burnable,
+				MaxSupply:       maxSupply,
+				EnablePayToMint: enablePayToMint,
+				MintPrice:       mintPrice,
+				ClaimPeriods:    claimPeriods,
+				RevealTime:      revealTime,
+			},
+		},
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), sdkerrors.ErrInvalidAddress.Error())
 	require.Nil(t, res)
 
 	// Check mock was called as expected
