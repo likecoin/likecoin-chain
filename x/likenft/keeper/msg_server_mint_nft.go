@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,9 +16,16 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 	params := k.GetParams(ctx)
 	tokenId := fmt.Sprintf("%s-%d", classId, totalSupply+1)
 
+	revealTime := classData.Config.RevealTime
+	if revealTime != nil && revealTime.Before(time.Now()) {
+		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
+	}
+
 	nftData := types.NFTData{
 		Metadata:    types.JsonInput{}, // TODO: add metadata template
 		ClassParent: classData.Parent,
+		Sealed:      true,
+		RevealTime:  revealTime,
 	}
 
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
