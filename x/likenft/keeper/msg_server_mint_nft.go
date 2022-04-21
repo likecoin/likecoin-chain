@@ -21,6 +21,21 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
 	}
 
+	claimPeriods := classData.Config.ClaimPeriods
+	var mintPrice = classData.Config.MintPrice
+
+	// Set mint price to the closest claim period
+	if claimPeriods != nil && len(claimPeriods) > 0 {
+		var closestClaimPeriod *types.ClaimPeriod
+		for _, claimPeriod := range claimPeriods {
+			if claimPeriod.StartTime.Before(time.Now()) && (closestClaimPeriod == nil || claimPeriod.StartTime.After(*closestClaimPeriod.StartTime)) {
+				closestClaimPeriod = claimPeriod
+				continue
+			}
+		}
+		mintPrice = closestClaimPeriod.MintPrice
+	}
+
 	nftData := types.NFTData{
 		Metadata:    types.JsonInput{}, // TODO: add metadata template
 		ClassParent: classData.Parent,
@@ -41,13 +56,13 @@ func (k msgServer) mintPayToMintNFT(ctx sdk.Context, classId string, classData *
 	}
 
 	// Pay price to owner if mintPrice is not zero
-	if classData.Config.MintPrice > 0 {
+	if mintPrice > 0 {
 		spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetMintPriceDenom())
-		if spentableTokens.Amount.Uint64() < classData.Config.MintPrice {
+		if spentableTokens.Amount.Uint64() < mintPrice {
 			return nil, types.ErrInsufficientFunds.Wrapf("insufficient funds to mint tokenId %s", tokenId)
 		}
 
-		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(classData.Config.MintPrice)))))
+		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(mintPrice)))))
 		if err != nil {
 			return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
 		}
