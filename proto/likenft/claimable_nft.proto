@@ -1,0 +1,12 @@
+syntax = "proto3";
+package likecoin.likechain.likenft;
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message ClaimableNFT {
+  string classId = 1; 
+  string id = 2; 
+  string input = 3; 
+  
+}
+

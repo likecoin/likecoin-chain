@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 import "likenft/classes_by_account.proto";
+import "likenft/claimable_nft.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
@@ -14,5 +15,6 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated ClassesByISCN classesByISCNList = 2 [(gogoproto.nullable) = false];
   repeated ClassesByAccount classesByAccountList = 3 [(gogoproto.nullable) = false];
+  repeated ClaimableNFT claimableNFTList = 4 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

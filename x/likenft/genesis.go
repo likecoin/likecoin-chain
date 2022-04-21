@@ -17,6 +17,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.ClassesByAccountList {
 		k.SetClassesByAccount(ctx, elem)
 	}
+	// Set all the claimableNFT
+	for _, elem := range genState.ClaimableNFTList {
+		k.SetClaimableNFT(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -28,6 +32,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.ClassesByISCNList = k.GetAllClassesByISCN(ctx)
 	genesis.ClassesByAccountList = k.GetAllClassesByAccount(ctx)
+	genesis.ClaimableNFTList = k.GetAllClaimableNFT(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

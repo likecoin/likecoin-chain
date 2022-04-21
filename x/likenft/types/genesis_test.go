@@ -41,6 +41,16 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.DefaultParams(),
+				ClaimableNFTList: []types.ClaimableNFT{
+					{
+						ClassId: "0",
+						Id:      "0",
+					},
+					{
+						ClassId: "1",
+						Id:      "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -105,6 +115,22 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				Params: types.Params{
 					MintPriceDenom: "123456",
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated claimableNFT",
+			genState: &types.GenesisState{
+				ClaimableNFTList: []types.ClaimableNFT{
+					{
+						ClassId: "0",
+						Id:      "0",
+					},
+					{
+						ClassId: "0",
+						Id:      "0",
+					},
 				},
 			},
 			valid: false,

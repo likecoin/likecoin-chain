@@ -8,6 +8,7 @@ import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 import "cosmos/nft/v1beta1/nft.proto";
 import "likenft/classes_by_account.proto";
+import "likenft/claimable_nft.proto";
 // this line is used by starport scaffolding # 1
 
 import "iscn/query.proto";
@@ -48,6 +49,16 @@ service Query {
 // Queries a list of AccountByClass items.
 	rpc AccountByClass(QueryAccountByClassRequest) returns (QueryAccountByClassResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/account_by_class/{classId}";
+	}
+
+// Queries a ClaimableNFT by index.
+	rpc ClaimableNFT(QueryGetClaimableNFTRequest) returns (QueryGetClaimableNFTResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft/{classId}/{id}";
+	}
+
+	// Queries a list of ClaimableNFT items.
+	rpc ClaimableNFTAll(QueryAllClaimableNFTRequest) returns (QueryAllClaimableNFTResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -119,6 +130,25 @@ message QueryAccountByClassRequest {
 
 message QueryAccountByClassResponse {
   string address = 1;
+}
+
+message QueryGetClaimableNFTRequest {
+	string classId = 1;
+  string id = 2;
+
+}
+
+message QueryGetClaimableNFTResponse {
+	ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllClaimableNFTRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClaimableNFTResponse {
+	repeated ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

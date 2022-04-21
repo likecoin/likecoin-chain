@@ -33,6 +33,16 @@ func TestGenesis(t *testing.T) {
 				Account: accounts[1].String(),
 			},
 		},
+		ClaimableNFTList: []types.ClaimableNFT{
+			{
+				ClassId: "0",
+				Id:      "0",
+			},
+			{
+				ClassId: "1",
+				Id:      "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -46,5 +56,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.ClassesByISCNList, got.ClassesByISCNList)
 	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
+	require.ElementsMatch(t, genesisState.ClaimableNFTList, got.ClaimableNFTList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
