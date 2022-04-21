@@ -92,3 +92,25 @@ func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId st
 	}
 	return &parent, nil
 }
+
+func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
+	for _, claimPeriod := range classConfig.ClaimPeriods {
+		if claimPeriod.StartTime.After(*classConfig.RevealTime) {
+			return types.ErrInvalidNftClassConfig.Wrapf("One of the claim periods' start time %s is after reveal time %s", claimPeriod.StartTime.String(), classConfig.RevealTime.String())
+		}
+
+		for _, allowedAddress := range claimPeriod.AllowAddressList {
+			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
+				return sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
+			}
+		}
+	}
+	return nil
+}
+
+func (k msgServer) validateClassConfig(classConfig *types.ClassConfig) error {
+	if err := k.validateClaimPeriods(classConfig); err != nil {
+		return err
+	}
+	return nil
+}

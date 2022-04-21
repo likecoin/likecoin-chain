@@ -27,6 +27,11 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
+	// Verify class config
+	if err := k.validateClassConfig(&msg.Input.Config); err != nil {
+		return nil, err
+	}
+
 	// Make class id
 	var existingClassIds []string
 	var newClassId string

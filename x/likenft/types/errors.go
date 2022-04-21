@@ -28,4 +28,5 @@ var (
 	ErrInsufficientFunds                 = sdkerrors.Register(ModuleName, 18, "Insufficient funds")
 	ErrClaimableNftAlreadyExists         = sdkerrors.Register(ModuleName, 19, "Claimable NFT already exists")
 	ErrClaimableNftNotFound              = sdkerrors.Register(ModuleName, 20, "Claimable NFT not found")
+	ErrInvalidNftClassConfig             = sdkerrors.Register(ModuleName, 21, "Invalid NFT Class Config")
 )

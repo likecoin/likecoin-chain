@@ -25,6 +25,11 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
 
+	// Verify class config
+	if err := k.validateClassConfig(&msg.Input.Config); err != nil {
+		return nil, err
+	}
+
 	// Check class parent relation is valid and current user is owner
 
 	var classData types.ClassData
