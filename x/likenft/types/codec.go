@@ -13,6 +13,9 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateClass{}, "likenft/UpdateClass", nil)
 	cdc.RegisterConcrete(&MsgMintNFT{}, "likenft/MintNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "likenft/BurnNFT", nil)
+	cdc.RegisterConcrete(&MsgCreateClaimableNFT{}, "likenft/CreateClaimableNFT", nil)
+	cdc.RegisterConcrete(&MsgUpdateClaimableNFT{}, "likenft/UpdateClaimableNFT", nil)
+	cdc.RegisterConcrete(&MsgDeleteClaimableNFT{}, "likenft/DeleteClaimableNFT", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&ClassData{}, "likenft/ClassData", nil)
 	cdc.RegisterConcrete(&ClassParent{}, "likenft/ClassParent", nil)
@@ -32,6 +35,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgBurnNFT{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateClaimableNFT{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUpdateClaimableNFT{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgDeleteClaimableNFT{},
 	)
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*proto.Message)(nil), &ClassData{})

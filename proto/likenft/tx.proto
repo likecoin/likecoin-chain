@@ -16,6 +16,9 @@ service Msg {
   rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
   rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
   rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
+  rpc CreateClaimableNFT(MsgCreateClaimableNFT) returns (MsgCreateClaimableNFTResponse);
+  rpc UpdateClaimableNFT(MsgUpdateClaimableNFT) returns (MsgUpdateClaimableNFTResponse);
+  rpc DeleteClaimableNFT(MsgDeleteClaimableNFT) returns (MsgDeleteClaimableNFTResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -57,6 +60,34 @@ message MsgBurnNFT {
 }
 
 message MsgBurnNFTResponse {
+}
+
+message MsgCreateClaimableNFT {
+  string creator = 1;
+  string classId = 2;
+  string input = 3;
+}
+
+message MsgCreateClaimableNFTResponse {
+}
+
+message MsgUpdateClaimableNFT {
+  string creator = 1;
+  string classId = 2;
+  string id = 3;
+  string input = 4;
+}
+
+message MsgUpdateClaimableNFTResponse {
+}
+
+message MsgDeleteClaimableNFT {
+  string creator = 1;
+  string classId = 2;
+  string id = 3;
+}
+
+message MsgDeleteClaimableNFTResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
