@@ -21,7 +21,7 @@ var _ = strconv.IntSize
 func TestClaimableNFTQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimableNFT(keeper, ctx, 2)
+	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetClaimableNFTRequest
@@ -75,7 +75,7 @@ func TestClaimableNFTQuerySingle(t *testing.T) {
 func TestClaimableNFTQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimableNFT(keeper, ctx, 5)
+	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllClaimableNFTRequest {
 		return &types.QueryAllClaimableNFTRequest{

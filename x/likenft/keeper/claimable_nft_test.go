@@ -15,20 +15,24 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNClaimableNFT(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.ClaimableNFT {
-	items := make([]types.ClaimableNFT, n)
-	for i := range items {
-		items[i].ClassId = strconv.Itoa(i)
-		items[i].Id = strconv.Itoa(i)
-
-		keeper.SetClaimableNFT(ctx, items[i])
+func createNClaimableNFT(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) []types.ClaimableNFT {
+	var items []types.ClaimableNFT
+	for i := 0; i < nClass; i++ {
+		for j := 0; j < nNFT; j++ {
+			item := types.ClaimableNFT{
+				ClassId: strconv.Itoa(i),
+				Id:      strconv.Itoa(j),
+			}
+			items = append(items, item)
+			keeper.SetClaimableNFT(ctx, item)
+		}
 	}
 	return items
 }
 
 func TestClaimableNFTGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClaimableNFT(keeper, ctx, 10)
+	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
 		rst, found := keeper.GetClaimableNFT(ctx,
 			item.ClassId,
@@ -43,7 +47,7 @@ func TestClaimableNFTGet(t *testing.T) {
 }
 func TestClaimableNFTRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClaimableNFT(keeper, ctx, 10)
+	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
 		keeper.RemoveClaimableNFT(ctx,
 			item.ClassId,
@@ -59,7 +63,7 @@ func TestClaimableNFTRemove(t *testing.T) {
 
 func TestClaimableNFTGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNClaimableNFT(keeper, ctx, 10)
+	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetAllClaimableNFT(ctx)),
