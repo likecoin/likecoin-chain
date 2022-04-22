@@ -52,12 +52,12 @@ service Query {
 	}
 
 // Queries a ClaimableNFT by index.
-	rpc ClaimableNFT(QueryGetClaimableNFTRequest) returns (QueryGetClaimableNFTResponse) {
+	rpc ClaimableNFT(QueryClaimableNFTRequest) returns (QueryClaimableNFTResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft/{classId}/{id}";
 	}
 
 	// Queries a list of ClaimableNFT items.
-	rpc ClaimableNFTAll(QueryAllClaimableNFTRequest) returns (QueryAllClaimableNFTResponse) {
+	rpc ClaimableNFTIndex(QueryClaimableNFTIndexRequest) returns (QueryClaimableNFTIndexResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft";
 	}
 
@@ -132,21 +132,21 @@ message QueryAccountByClassResponse {
   string address = 1;
 }
 
-message QueryGetClaimableNFTRequest {
+message QueryClaimableNFTRequest {
 	string classId = 1;
   string id = 2;
 
 }
 
-message QueryGetClaimableNFTResponse {
+message QueryClaimableNFTResponse {
 	ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllClaimableNFTRequest {
+message QueryClaimableNFTIndexRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllClaimableNFTResponse {
+message QueryClaimableNFTIndexResponse {
 	repeated ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

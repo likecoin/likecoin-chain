@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ClaimableNFTAll(c context.Context, req *types.QueryAllClaimableNFTRequest) (*types.QueryAllClaimableNFTResponse, error) {
+func (k Keeper) ClaimableNFTIndex(c context.Context, req *types.QueryClaimableNFTIndexRequest) (*types.QueryClaimableNFTIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,10 +36,10 @@ func (k Keeper) ClaimableNFTAll(c context.Context, req *types.QueryAllClaimableN
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllClaimableNFTResponse{ClaimableNFT: claimableNFTs, Pagination: pageRes}, nil
+	return &types.QueryClaimableNFTIndexResponse{ClaimableNFT: claimableNFTs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryGetClaimableNFTRequest) (*types.QueryGetClaimableNFTResponse, error) {
+func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryClaimableNFTRequest) (*types.QueryClaimableNFTResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -54,5 +54,5 @@ func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryGetClaimableNFTR
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryGetClaimableNFTResponse{ClaimableNFT: val}, nil
+	return &types.QueryClaimableNFTResponse{ClaimableNFT: val}, nil
 }

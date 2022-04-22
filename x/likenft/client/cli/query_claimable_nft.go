@@ -23,11 +23,11 @@ func CmdListClaimableNFT() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClaimableNFTRequest{
+			params := &types.QueryClaimableNFTIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClaimableNFTAll(context.Background(), params)
+			res, err := queryClient.ClaimableNFTIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -55,7 +55,7 @@ func CmdShowClaimableNFT() *cobra.Command {
 			argClassId := args[0]
 			argId := args[1]
 
-			params := &types.QueryGetClaimableNFTRequest{
+			params := &types.QueryClaimableNFTRequest{
 				ClassId: argClassId,
 				Id:      argId,
 			}
