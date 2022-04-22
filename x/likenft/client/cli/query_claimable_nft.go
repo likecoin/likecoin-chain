@@ -11,8 +11,8 @@ import (
 
 func CmdListClaimableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-claimable-nft",
-		Short: "list all claimableNFT",
+		Use:   "claimable-nft-index",
+		Short: "Enumerate all Claimable NFT Contents under all classes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -44,8 +44,8 @@ func CmdListClaimableNFT() *cobra.Command {
 
 func CmdShowClaimableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-claimable-nft [class-id] [claimable-id]",
-		Short: "shows a claimableNFT",
+		Use:   "claimable-nft [class-id] [claimable-id]",
+		Short: "Query a specific Claimable NFT Content",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -61,6 +61,46 @@ func CmdShowClaimableNFT() *cobra.Command {
 			}
 
 			res, err := queryClient.ClaimableNFT(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdClaimableNFTs() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "claimable-nfts [class-id]",
+		Short: "Query Claimable NFT Contents under a class",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			reqClassId := args[0]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryClaimableNFTsRequest{
+
+				ClassId: reqClassId,
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			params.Pagination = pageReq
+
+			res, err := queryClient.ClaimableNFTs(cmd.Context(), params)
 			if err != nil {
 				return err
 			}
