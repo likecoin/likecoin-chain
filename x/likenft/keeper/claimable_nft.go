@@ -51,6 +51,22 @@ func (k Keeper) RemoveClaimableNFT(
 	))
 }
 
+// GetClaimableNFTs returns all claimableNFT of a class
+func (k Keeper) GetClaimableNFTs(ctx sdk.Context, classId string) (list []types.ClaimableNFT) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.ClaimableNFTsKey(classId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.ClaimableNFT
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
+}
+
 // GetAllClaimableNFT returns all claimableNFT
 func (k Keeper) GetAllClaimableNFT(ctx sdk.Context) (list []types.ClaimableNFT) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))

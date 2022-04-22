@@ -61,6 +61,23 @@ func TestClaimableNFTRemove(t *testing.T) {
 	}
 }
 
+func TestClaimableNFTGetByClass(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	items := createNClaimableNFT(keeper, ctx, 3, 3)
+	require.ElementsMatch(t,
+		nullify.Fill(items[0:3]),
+		nullify.Fill(keeper.GetClaimableNFTs(ctx, "0")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill(items[3:6]),
+		nullify.Fill(keeper.GetClaimableNFTs(ctx, "1")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill(items[6:9]),
+		nullify.Fill(keeper.GetClaimableNFTs(ctx, "2")),
+	)
+}
+
 func TestClaimableNFTGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items := createNClaimableNFT(keeper, ctx, 3, 3)
