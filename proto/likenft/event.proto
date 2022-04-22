@@ -15,6 +15,14 @@ message EventUpdateClass {
   string parentAccount = 3;
 }
 
+message EventRevealClass {
+  string classId = 1; 
+  string parentIscnIdPrefix = 2;
+  string parentAccount = 3;
+  bool success = 4;
+  string error = 5;
+}
+
 message EventMintNFT {
   string classId = 1;
   string nftId = 2;
