@@ -3,14 +3,16 @@ package cli
 import (
 	"encoding/json"
 	"io/ioutil"
+
+	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func readCmdNewClassInput(path string) (*CmdNewClassInput, error) {
+func readClassInputJsonFile(path string) (*types.ClassInput, error) {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	input := CmdNewClassInput{}
+	input := types.ClassInput{}
 	err = json.Unmarshal(file, &input)
 	if err != nil {
 		return nil, err
@@ -18,25 +20,12 @@ func readCmdNewClassInput(path string) (*CmdNewClassInput, error) {
 	return &input, nil
 }
 
-func readCmdUpdateClassInput(path string) (*CmdUpdateClassInput, error) {
+func readNFTInputJsonFile(path string) (*types.NFTInput, error) {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	input := CmdUpdateClassInput{}
-	err = json.Unmarshal(file, &input)
-	if err != nil {
-		return nil, err
-	}
-	return &input, nil
-}
-
-func readCmdMintNFTInput(path string) (*CmdMintNFTInput, error) {
-	file, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	input := CmdMintNFTInput{}
+	input := types.NFTInput{}
 	err = json.Unmarshal(file, &input)
 	if err != nil {
 		return nil, err

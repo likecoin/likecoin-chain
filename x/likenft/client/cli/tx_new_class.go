@@ -13,10 +13,6 @@ import (
 
 var _ = strconv.Itoa(0)
 
-type CmdNewClassInput struct {
-	types.ClassInput
-}
-
 func CmdNewClass() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "new-class (--account | --iscnIdPrefix=iscn://...) [json-file]",
@@ -39,8 +35,8 @@ func CmdNewClass() *cobra.Command {
 `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			input, err := readCmdNewClassInput(args[0])
-			if input == nil || err != nil {
+			classInput, err := readClassInputJsonFile(args[0])
+			if classInput == nil || err != nil {
 				return err
 			}
 			argAccount, err := cmd.Flags().GetBool("account")
@@ -74,7 +70,7 @@ func CmdNewClass() *cobra.Command {
 			msg := types.NewMsgNewClass(
 				clientCtx.GetFromAddress().String(),
 				argParent,
-				input.ClassInput,
+				*classInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

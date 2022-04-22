@@ -12,10 +12,6 @@ import (
 
 var _ = strconv.Itoa(0)
 
-type CmdUpdateClassInput struct {
-	types.ClassInput
-}
-
 func CmdUpdateClass() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class [class-id] [json-file-input]",
@@ -38,8 +34,8 @@ func CmdUpdateClass() *cobra.Command {
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
-			input, err := readCmdUpdateClassInput(args[1])
-			if input == nil || err != nil {
+			classInput, err := readClassInputJsonFile(args[1])
+			if classInput == nil || err != nil {
 				return err
 			}
 
@@ -51,7 +47,7 @@ func CmdUpdateClass() *cobra.Command {
 			msg := types.NewMsgUpdateClass(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
-				input.ClassInput,
+				*classInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

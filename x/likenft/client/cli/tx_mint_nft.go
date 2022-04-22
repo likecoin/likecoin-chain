@@ -12,10 +12,6 @@ import (
 
 var _ = strconv.Itoa(0)
 
-type CmdMintNFTInput struct {
-	types.NFTInput
-}
-
 func CmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mint-nft [class-id] [id] [json-file-input]",
@@ -30,8 +26,8 @@ func CmdMintNFT() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argId := args[1]
-			input, err := readCmdMintNFTInput(args[2])
-			if input == nil || err != nil {
+			nftInput, err := readNFTInputJsonFile(args[2])
+			if nftInput == nil || err != nil {
 				return err
 			}
 
@@ -44,7 +40,7 @@ func CmdMintNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,
-				input.NFTInput,
+				*nftInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
