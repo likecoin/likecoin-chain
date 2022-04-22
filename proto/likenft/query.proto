@@ -61,6 +61,11 @@ service Query {
 		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft";
 	}
 
+// Queries a list of ClaimableNFTs by classId
+	rpc ClaimableNFTs(QueryClaimableNFTsRequest) returns (QueryClaimableNFTsResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft/{classId}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -149,6 +154,16 @@ message QueryClaimableNFTIndexRequest {
 message QueryClaimableNFTIndexResponse {
 	repeated ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryClaimableNFTsRequest {
+  string classId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryClaimableNFTsResponse {
+  repeated ClaimableNFT claimableNFTs = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

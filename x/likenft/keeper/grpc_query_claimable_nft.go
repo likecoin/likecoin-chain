@@ -39,6 +39,34 @@ func (k Keeper) ClaimableNFTIndex(c context.Context, req *types.QueryClaimableNF
 	return &types.QueryClaimableNFTIndexResponse{ClaimableNFT: claimableNFTs, Pagination: pageRes}, nil
 }
 
+func (k Keeper) ClaimableNFTs(c context.Context, req *types.QueryClaimableNFTsRequest) (*types.QueryClaimableNFTsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var claimableNFTs []types.ClaimableNFT
+	ctx := sdk.UnwrapSDKContext(c)
+
+	store := ctx.KVStore(k.storeKey)
+	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.ClaimableNFTKeyPrefix), types.ClaimableNFTsKey(req.ClassId)...))
+
+	pageRes, err := query.Paginate(subStore, req.Pagination, func(key []byte, value []byte) error {
+		var claimableNFT types.ClaimableNFT
+		if err := k.cdc.Unmarshal(value, &claimableNFT); err != nil {
+			return err
+		}
+
+		claimableNFTs = append(claimableNFTs, claimableNFT)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryClaimableNFTsResponse{ClaimableNFTs: claimableNFTs, Pagination: pageRes}, nil
+}
+
 func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryClaimableNFTRequest) (*types.QueryClaimableNFTResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
