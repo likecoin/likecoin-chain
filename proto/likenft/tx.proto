@@ -65,7 +65,8 @@ message MsgBurnNFTResponse {
 message MsgCreateClaimableNFT {
   string creator = 1;
   string classId = 2;
-  string input = 3;
+  string id = 3;
+  NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
 message MsgCreateClaimableNFTResponse {
@@ -75,7 +76,7 @@ message MsgUpdateClaimableNFT {
   string creator = 1;
   string classId = 2;
   string id = 3;
-  string input = 4;
+  NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
 message MsgUpdateClaimableNFTResponse {

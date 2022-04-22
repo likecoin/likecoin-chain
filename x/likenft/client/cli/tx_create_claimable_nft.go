@@ -19,7 +19,6 @@ func CmdCreateClaimableNFT() *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
-			argInput := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -29,7 +28,7 @@ func CmdCreateClaimableNFT() *cobra.Command {
 			msg := types.NewMsgCreateClaimableNFT(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
-				argInput,
+				types.NFTInput{}, // FIXME read json file
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

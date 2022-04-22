@@ -20,7 +20,6 @@ func CmdUpdateClaimableNFT() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argId := args[1]
-			argInput := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -31,7 +30,7 @@ func CmdUpdateClaimableNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,
-				argInput,
+				types.NFTInput{}, // FIXME read json file
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -9,7 +9,7 @@ const TypeMsgCreateClaimableNFT = "create_claimable_nft"
 
 var _ sdk.Msg = &MsgCreateClaimableNFT{}
 
-func NewMsgCreateClaimableNFT(creator string, classId string, id string, input string) *MsgCreateClaimableNFT {
+func NewMsgCreateClaimableNFT(creator string, classId string, id string, input NFTInput) *MsgCreateClaimableNFT {
 	return &MsgCreateClaimableNFT{
 		Creator: creator,
 		ClassId: classId,

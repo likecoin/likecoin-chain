@@ -9,7 +9,7 @@ const TypeMsgUpdateClaimableNFT = "update_claimable_nft"
 
 var _ sdk.Msg = &MsgUpdateClaimableNFT{}
 
-func NewMsgUpdateClaimableNFT(creator string, classId string, id string, input string) *MsgUpdateClaimableNFT {
+func NewMsgUpdateClaimableNFT(creator string, classId string, id string, input NFTInput) *MsgUpdateClaimableNFT {
 	return &MsgUpdateClaimableNFT{
 		Creator: creator,
 		ClassId: classId,
