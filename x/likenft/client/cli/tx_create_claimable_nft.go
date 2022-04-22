@@ -14,11 +14,22 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateClaimableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-claimable-nft [class-id] [input]",
-		Short: "Broadcast message CreateClaimableNFT",
-		Args:  cobra.ExactArgs(2),
+		Use:   "create-claimable-nft [class-id] [id] [json-file-input]",
+		Short: "Create claimable nft content",
+		Example: `JSON file content:
+{
+	"uri": "",
+	"uriHash": "",
+	"metadata": {}
+}`,
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
+			argId := args[1]
+			nftInput, err := readNFTInputJsonFile(args[2])
+			if nftInput == nil || err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -28,7 +39,8 @@ func CmdCreateClaimableNFT() *cobra.Command {
 			msg := types.NewMsgCreateClaimableNFT(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
-				types.NFTInput{}, // FIXME read json file
+				argId,
+				*nftInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

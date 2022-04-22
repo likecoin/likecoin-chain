@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdDeleteClaimableNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete-claimable-nft [class-id] [id]",
-		Short: "Broadcast message DeleteClaimableNFT",
+		Short: "Delete claimable nft content",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
