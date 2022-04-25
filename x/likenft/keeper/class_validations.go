@@ -80,7 +80,7 @@ func (k Keeper) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.Cl
 	}
 }
 
-func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId string, classData *types.ClassData) (*types.ClassParentAndOwner, error) {
+func (k Keeper) validateAndGetClassParentAndOwner(ctx sdk.Context, classId string, classData *types.ClassData) (*types.ClassParentAndOwner, error) {
 	if err := k.validateClassParentRelation(ctx, classId, classData.Parent); err != nil {
 		return nil, err
 	}
