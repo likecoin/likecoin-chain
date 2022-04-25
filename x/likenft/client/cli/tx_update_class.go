@@ -27,13 +27,12 @@ func CmdUpdateClass() *cobra.Command {
 	"config": {
 		"burnable": true,
 		"maxSupply": 0, // 0 = unlimited
-		"enablePayToMint": true,
-		"mintPrice": 0, // 0 = free
+		"enableBlindBox": true,
 		"claimPeriods": [
 			{
 				"startTime": "2022-01-01T00:00:00Z",
-				"allowAddressList"; ["cosmos1"], // null = public
-				"mintPrice": 0, // 0 = free
+				"allowedAddressList"; ["cosmos1"], // null = public
+				"mintPrice": 0 // 0 = free
 			}
 		],
 		"revealTime": "2022-01-01T00:00:00Z"
