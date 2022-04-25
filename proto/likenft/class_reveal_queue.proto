@@ -1,0 +1,11 @@
+syntax = "proto3";
+package likecoin.likechain.likenft;
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message ClassRevealQueue {
+  string revealTime = 1; 
+  string classId = 2; 
+  
+}
+

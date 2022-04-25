@@ -15,6 +15,7 @@ func DefaultGenesis() *GenesisState {
 		ClassesByISCNList:    []ClassesByISCN{},
 		ClassesByAccountList: []ClassesByAccount{},
 		MintableNFTList:      []MintableNFT{},
+		ClassRevealQueueList: []ClassRevealQueue{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -58,6 +59,17 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for mintableNFT")
 		}
 		mintableNFTIndexMap[index] = struct{}{}
+	}
+
+	// Check for duplicated index in classRevealQueue
+	classRevealQueueIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.ClassRevealQueueList {
+		index := string(ClassRevealQueueKey(elem.RevealTime, elem.ClassId))
+		if _, ok := classRevealQueueIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for classRevealQueue")
+		}
+		classRevealQueueIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

@@ -51,6 +51,16 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id:      "1",
 					},
 				},
+				ClassRevealQueueList: []types.ClassRevealQueue{
+					{
+						RevealTime: "0",
+						ClassId:    "0",
+					},
+					{
+						RevealTime: "1",
+						ClassId:    "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -130,6 +140,21 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						ClassId: "0",
 						Id:      "0",
+					},
+				},
+			},
+		},
+		{
+			desc: "duplicated classRevealQueue",
+			genState: &types.GenesisState{
+				ClassRevealQueueList: []types.ClassRevealQueue{
+					{
+						RevealTime: "0",
+						ClassId:    "0",
+					},
+					{
+						RevealTime: "0",
+						ClassId:    "0",
 					},
 				},
 			},
