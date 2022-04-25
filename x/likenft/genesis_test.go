@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"github.com/likecoin/likechain/testutil"
-	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
+
+	likenfttestutil "github.com/likecoin/likechain/x/likenft/testutil"
 )
 
 func TestGenesis(t *testing.T) {
@@ -46,7 +47,9 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.LikenftKeeper(t)
+	k, ctx, ctrl := likenfttestutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	likenft.InitGenesis(ctx, *k, genesisState)
 	got := likenft.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)

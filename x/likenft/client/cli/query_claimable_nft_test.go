@@ -6,12 +6,14 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/testutil/network"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/client/cli"
@@ -24,16 +26,35 @@ var _ = strconv.IntSize
 func networkWithClaimableNFTObjects(t *testing.T, n int) (*network.Network, []types.ClaimableNFT) {
 	t.Helper()
 	cfg := network.DefaultConfig()
+	// seed nft class
+	nftState := nft.GenesisState{}
+	// seed claimable
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
+		// seed nft class
+		classData := types.ClassData{
+			ClaimableCount: 0,
+		}
+		classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
+		class := nft.Class{
+			Id:   strconv.Itoa(i),
+			Data: classDataInAny,
+		}
+		nftState.Classes = append(nftState.Classes, &class)
+		// seed claimable
 		claimableNFT := types.ClaimableNFT{
 			ClassId: strconv.Itoa(i),
 			Id:      strconv.Itoa(i),
 		}
 		state.ClaimableNFTList = append(state.ClaimableNFTList, claimableNFT)
 	}
+	// seed nft class
+	nftBuf, err := cfg.Codec.MarshalJSON(&nftState)
+	require.NoError(t, err)
+	cfg.GenesisState[nft.ModuleName] = nftBuf
+	// seed claimable
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf

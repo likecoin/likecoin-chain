@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
+	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -19,7 +19,9 @@ import (
 var _ = strconv.IntSize
 
 func TestClaimableNFTQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, tc := range []struct {
@@ -73,7 +75,9 @@ func TestClaimableNFTQuerySingle(t *testing.T) {
 }
 
 func TestClaimableNFTQueryByClass(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	wctx := sdk.WrapSDKContext(ctx)
 	nClass := 3
 	nItem := 3
@@ -138,7 +142,9 @@ func TestClaimableNFTQueryByClass(t *testing.T) {
 }
 
 func TestClaimableNFTQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
 

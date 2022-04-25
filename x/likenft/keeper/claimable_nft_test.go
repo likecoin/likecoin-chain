@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/keeper"
+	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
@@ -31,7 +31,9 @@ func createNClaimableNFT(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNF
 }
 
 func TestClaimableNFTGet(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
 		rst, found := keeper.GetClaimableNFT(ctx,
@@ -46,7 +48,9 @@ func TestClaimableNFTGet(t *testing.T) {
 	}
 }
 func TestClaimableNFTRemove(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
 		keeper.RemoveClaimableNFT(ctx,
@@ -62,7 +66,9 @@ func TestClaimableNFTRemove(t *testing.T) {
 }
 
 func TestClaimableNFTGetByClass(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items[0:3]),
@@ -79,7 +85,9 @@ func TestClaimableNFTGetByClass(t *testing.T) {
 }
 
 func TestClaimableNFTGetAll(t *testing.T) {
-	keeper, ctx := keepertest.LikenftKeeper(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+	defer ctrl.Finish()
+
 	items := createNClaimableNFT(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
