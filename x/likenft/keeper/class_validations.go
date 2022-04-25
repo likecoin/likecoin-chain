@@ -95,10 +95,11 @@ func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId st
 
 func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
 	for _, claimPeriod := range classConfig.ClaimPeriods {
+		// Ensure all claim period start time is before reveal time
 		if claimPeriod.StartTime.After(*classConfig.RevealTime) {
 			return types.ErrInvalidNftClassConfig.Wrapf("One of the claim periods' start time %s is after reveal time %s", claimPeriod.StartTime.String(), classConfig.RevealTime.String())
 		}
-
+		// Ensure all the addresses in allow list is valid
 		for _, allowedAddress := range claimPeriod.AllowedAddressList {
 			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
 				return sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
@@ -109,6 +110,7 @@ func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
 }
 
 func (k msgServer) validateClassConfig(classConfig *types.ClassConfig) error {
+	// Ensure claim periods and reveal time are set when blind box mode is enabled
 	if classConfig.EnableBlindBox {
 		if classConfig.ClaimPeriods == nil {
 			return types.ErrInvalidNftClassConfig.Wrapf("Claim periods are enabled but no claim periods are provided")
