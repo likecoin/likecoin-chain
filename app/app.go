@@ -555,6 +555,10 @@ func (app *LikeApp) registerUpgradeHandlers() {
 	}
 }
 
+func (app *LikeApp) Name() string {
+	return app.BaseApp.Name()
+}
+
 // application updates every begin block
 func (app *LikeApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
