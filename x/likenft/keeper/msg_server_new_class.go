@@ -59,6 +59,9 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		panic(fmt.Sprintf("Unsupported parent type %s after initial check", parent.Type.String()))
 	}
 
+	// Sort the claim period by start time
+	msg.Input.Config.ClaimPeriods = SortClaimPeriod(msg.Input.Config.ClaimPeriods, true)
+
 	// Create Class
 	classData := types.ClassData{
 		Metadata: msg.Input.Metadata,

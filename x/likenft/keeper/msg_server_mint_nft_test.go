@@ -1033,11 +1033,12 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
+			// Assume sorted descending when creating/updating class
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
 					AllowedAddressList: nil,
-					MintPrice:          firstClaimPeriodPrice,
+					MintPrice:          thirdClaimPeriodPrice,
 				},
 				{
 					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
@@ -1045,9 +1046,9 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 					MintPrice:          secondClaimPeriodPrice,
 				},
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
 					AllowedAddressList: nil,
-					MintPrice:          thirdClaimPeriodPrice,
+					MintPrice:          firstClaimPeriodPrice,
 				},
 			},
 			RevealTime: revealTime,

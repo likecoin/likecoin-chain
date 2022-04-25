@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/likecoin/likechain/x/likenft/types"
@@ -37,4 +38,16 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 	}
 
 	return nil, nil
+}
+
+func SortClaimPeriod(claimPeriods []*types.ClaimPeriod, descending bool) []*types.ClaimPeriod {
+	// Sort the claim periods by start time
+	sort.Slice(claimPeriods, func(i, j int) bool {
+		if descending {
+			i, j = j, i
+		}
+		return claimPeriods[j].StartTime.After(*claimPeriods[i].StartTime)
+	})
+
+	return claimPeriods
 }
