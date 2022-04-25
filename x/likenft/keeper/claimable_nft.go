@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/likecoin/likechain/x/likenft/types"
@@ -10,10 +12,17 @@ import (
 func (k Keeper) SetClaimableNFT(ctx sdk.Context, claimableNFT types.ClaimableNFT) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
 	b := k.cdc.MustMarshal(&claimableNFT)
-	store.Set(types.ClaimableNFTKey(
+	key := types.ClaimableNFTKey(
 		claimableNFT.ClassId,
 		claimableNFT.Id,
-	), b)
+	)
+	if !store.Has(key) {
+		// new claimable, increment count
+		if err := k.incClaimableCount(ctx, claimableNFT.ClassId); err != nil {
+			panic(fmt.Errorf("Failed to increase claimable count: %s", err.Error()))
+		}
+	}
+	store.Set(key, b)
 }
 
 // GetClaimableNFT returns a claimableNFT from its index
@@ -45,10 +54,17 @@ func (k Keeper) RemoveClaimableNFT(
 
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
-	store.Delete(types.ClaimableNFTKey(
+	key := types.ClaimableNFTKey(
 		classId,
 		id,
-	))
+	)
+	if store.Has(key) {
+		// remove existing claimable, decrement count
+		if err := k.decClaimableCount(ctx, classId); err != nil {
+			panic(fmt.Errorf("Failed to decrease claimable count: %s", err.Error()))
+		}
+	}
+	store.Delete(key)
 }
 
 // GetClaimableNFTs returns all claimableNFT of a class
