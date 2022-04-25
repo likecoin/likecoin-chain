@@ -8,7 +8,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classData types.ClassData, userAddress sdk.AccAddress) (*types.ClaimPeriod, error) {
+func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classData types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.ClaimPeriod, error) {
 
 	claimPeriods := classData.Config.ClaimPeriods
 	if claimPeriods == nil {
@@ -19,10 +19,12 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 		// Check the first applicable claim period
 		if claimPeriod.StartTime.Before(ctx.BlockHeader().Time) {
 			// Check if the user is allowed to mint the token
+			// If the minter is the owner, any claim period that is after the block time is valid
 			// If allowed address list is nil it means the the class is publically available
-			if claimPeriod.AllowedAddressList == nil {
+			if ownerAddress.Equals(userAddress) || claimPeriod.AllowedAddressList == nil {
 				return claimPeriod, nil
 			}
+
 			for _, allowedAddress := range claimPeriod.AllowedAddressList {
 				// Ensure the configured allowed address is valid
 				wrappedAddress, err := sdk.AccAddressFromBech32(allowedAddress)
