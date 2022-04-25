@@ -16,10 +16,7 @@ func tryRevealClassCatchPanic(ctx sdk.Context, keeper keeper.Keeper, classId str
 			err = r.(error)
 		}
 	}()
-	// Note: Create public functions from keeper files and access them here instead of mutating directly
-	// TODO: Mint unclaimed tokens supply to class owner #206
-	// TODO: Reveal nft class #206
-	// err = keeper.RevealClass(ctx, classId)
+	err = keeper.RevealMintableNFTs(ctx, classId)
 	return err
 }
 
@@ -37,14 +34,12 @@ func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 		err := tryRevealClassCatchPanic(ctx, keeper, entry.ClassId)
 
 		if err != nil {
-			// FIXME: Fill parent info
 			ctx.EventManager().EmitTypedEvent(&types.EventRevealClass{
 				ClassId: entry.ClassId,
 				Success: false,
 				Error:   err.Error(),
 			})
 		} else {
-			// FIXME: Fill parent info
 			ctx.EventManager().EmitTypedEvent(&types.EventRevealClass{
 				ClassId: entry.ClassId,
 				Success: true,

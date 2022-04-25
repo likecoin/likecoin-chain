@@ -29,4 +29,8 @@ var (
 	ErrMintableNftAlreadyExists          = sdkerrors.Register(ModuleName, 19, "Mintable NFT already exists")
 	ErrMintableNftNotFound               = sdkerrors.Register(ModuleName, 20, "Mintable NFT not found")
 	ErrInvalidNftClassConfig             = sdkerrors.Register(ModuleName, 21, "Invalid NFT Class Config")
+	ErrClaimableNftAlreadyExists         = sdkerrors.Register(ModuleName, 22, "Claimable NFT already exists")
+	ErrClaimableNftNotFound              = sdkerrors.Register(ModuleName, 23, "Claimable NFT not found")
+	ErrClassIsNotBlindBox                = sdkerrors.Register(ModuleName, 24, "Class is not using the blind box feature")
+	ErrFailedToUpdateNFT                 = sdkerrors.Register(ModuleName, 25, "Failed to update NFT")
 )
