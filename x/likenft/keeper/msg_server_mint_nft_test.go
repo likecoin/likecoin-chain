@@ -15,6 +15,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestMintOwnerNFTNormal(t *testing.T) {
@@ -329,9 +330,9 @@ func TestMintNFTOwnerInvalidTokenID(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:  false,
-			MaxSupply: uint64(5),
-			MintPrice: uint64(0),
+			Burnable:       false,
+			MaxSupply:      uint64(5),
+			EnableBlindBox: false,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -819,7 +820,7 @@ func TestMintNFTInvalidUserAddress(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintPayToMintNFTNormal(t *testing.T) {
+func TestMintBlindBoxNFTNormal(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -833,6 +834,8 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -857,6 +860,7 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(5000000000)
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -868,10 +872,17 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(5000000000),
-			EnablePayToMint: true,
-			MintPrice:       mintPrice,
+			Burnable:       false,
+			MaxSupply:      uint64(5000000000),
+			EnableBlindBox: true,
+			ClaimPeriods: []*types.ClaimPeriod{
+				{
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          mintPrice,
+				},
+			},
+			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -936,7 +947,7 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 	)
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -964,7 +975,7 @@ func TestMintPayToMintNFTNormal(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
+func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -978,6 +989,8 @@ func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1001,10 +1014,11 @@ func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
 		}
 	}
 }`)
-	initialMintPrice := uint64(5000000000)
 	firstClaimPeriodPrice := uint64(10000000000)
 	secondClaimPeriodPrice := uint64(20000000000)
 	thirdClaimPeriodPrice := uint64(30000000000)
+
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1016,27 +1030,27 @@ func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(5000000000),
-			EnablePayToMint: true,
-			MintPrice:       initialMintPrice,
+			Burnable:       false,
+			MaxSupply:      uint64(5000000000),
+			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
-					AllowAddressList: nil,
-					MintPrice:        firstClaimPeriodPrice,
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          firstClaimPeriodPrice,
 				},
 				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
-					AllowAddressList: nil,
-					MintPrice:        secondClaimPeriodPrice,
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          secondClaimPeriodPrice,
 				},
 				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
-					AllowAddressList: nil,
-					MintPrice:        thirdClaimPeriodPrice,
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          thirdClaimPeriodPrice,
 				},
 			},
+			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1101,7 +1115,7 @@ func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
 	)
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1129,7 +1143,7 @@ func TestMintPayToMintNFTChangingClaimPeriodPrice(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintPayToMintNFTFree(t *testing.T) {
+func TestMintBlindBoxNFTFree(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1143,6 +1157,8 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1166,6 +1182,7 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(0)
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1177,10 +1194,17 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(5000000000),
-			EnablePayToMint: true,
-			MintPrice:       mintPrice,
+			Burnable:       false,
+			MaxSupply:      uint64(5000000000),
+			EnableBlindBox: true,
+			ClaimPeriods: []*types.ClaimPeriod{
+				{
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          mintPrice,
+				},
+			},
+			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1224,7 +1248,7 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 		Mint(gomock.Any(), gomock.Any(), wrappedMinterAddress)
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1252,7 +1276,7 @@ func TestMintPayToMintNFTFree(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
+func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1266,6 +1290,8 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1289,6 +1315,7 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(5000000000)
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1300,10 +1327,17 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(5000000000),
-			EnablePayToMint: true,
-			MintPrice:       mintPrice,
+			Burnable:       false,
+			MaxSupply:      uint64(5000000000),
+			EnableBlindBox: true,
+			ClaimPeriods: []*types.ClaimPeriod{
+				{
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          mintPrice,
+				},
+			},
+			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1354,7 +1388,7 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 		})
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1374,7 +1408,7 @@ func TestMintPayToMintNFTInsufficientFunds(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintNFTNotOwnerNoPayToMint(t *testing.T) {
+func TestMintNFTNotOwnerNoBlindBox(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1388,6 +1422,8 @@ func TestMintNFTNotOwnerNoPayToMint(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1421,9 +1457,9 @@ func TestMintNFTNotOwnerNoPayToMint(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(5000000000),
-			EnablePayToMint: false,
+			Burnable:       false,
+			MaxSupply:      uint64(5000000000),
+			EnableBlindBox: false,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1462,7 +1498,7 @@ func TestMintNFTNotOwnerNoPayToMint(t *testing.T) {
 		Return(uint64(1))
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1496,6 +1532,8 @@ func TestMintNFTNoSupply(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input 1
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1568,7 +1606,7 @@ func TestMintNFTNoSupply(t *testing.T) {
 		Return(uint64(500))
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1588,7 +1626,7 @@ func TestMintNFTNoSupply(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintPayToMintNFTAfterRevealTime(t *testing.T) {
+func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1602,6 +1640,8 @@ func TestMintPayToMintNFTAfterRevealTime(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input 1
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1636,10 +1676,17 @@ func TestMintPayToMintNFTAfterRevealTime(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:        false,
-			MaxSupply:       uint64(500),
-			EnablePayToMint: true,
-			RevealTime:      revealTime,
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: true,
+			ClaimPeriods: []*types.ClaimPeriod{
+				{
+					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddressList: nil,
+					MintPrice:          uint64(0),
+				},
+			},
+			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1678,7 +1725,7 @@ func TestMintPayToMintNFTAfterRevealTime(t *testing.T) {
 		Return(uint64(2))
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
@@ -1712,6 +1759,8 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 		NftKeeper:     nftKeeper,
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockHeader(tmproto.Header{Time: *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")})
+	updatedGoCtx := sdk.WrapSDKContext(ctx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -1789,7 +1838,7 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 		Mint(gomock.Any(), gomock.Any(), wrappedOwnerAddress)
 
 	// Run
-	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+	res, err := msgServer.MintNFT(updatedGoCtx, &types.MsgMintNFT{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,

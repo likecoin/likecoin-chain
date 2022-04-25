@@ -1211,8 +1211,7 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enablePayToMint := true
-	mintPrice := uint64(1000000000)
+	enableBlindBox := true
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1242,19 +1241,19 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowAddressList: []string{ownerAddress},
-			MintPrice:        uint64(20000),
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddressList: []string{ownerAddress},
+			MintPrice:          uint64(20000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
-			AllowAddressList: []string{ownerAddress},
-			MintPrice:        uint64(30000),
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			AllowedAddressList: []string{ownerAddress},
+			MintPrice:          uint64(30000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowAddressList: nil,
-			MintPrice:        uint64(90000),
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddressList: nil,
+			MintPrice:          uint64(90000),
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
@@ -1296,12 +1295,11 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:        burnable,
-				MaxSupply:       maxSupply,
-				EnablePayToMint: enablePayToMint,
-				MintPrice:       mintPrice,
-				ClaimPeriods:    claimPeriods,
-				RevealTime:      revealTime,
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				ClaimPeriods:   claimPeriods,
+				RevealTime:     revealTime,
 			},
 		},
 	})
@@ -1322,12 +1320,11 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, types.ClassConfig{
-		Burnable:        burnable,
-		MaxSupply:       maxSupply,
-		EnablePayToMint: enablePayToMint,
-		MintPrice:       mintPrice,
-		ClaimPeriods:    claimPeriods,
-		RevealTime:      revealTime,
+		Burnable:       burnable,
+		MaxSupply:      maxSupply,
+		EnableBlindBox: enableBlindBox,
+		ClaimPeriods:   claimPeriods,
+		RevealTime:     revealTime,
 	}, classData.Config)
 
 	// Check mock was called as expected
@@ -1372,17 +1369,16 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enablePayToMint := true
-	mintPrice := uint64(1000000000)
+	enableBlindBox := true
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowAddressList: nil,
-			MintPrice:        0,
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddressList: nil,
+			MintPrice:          0,
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1392,8 +1388,11 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable:  false,
-			MaxSupply: uint64(500),
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: true,
+			ClaimPeriods:   claimPeriods,
+			RevealTime:     revealTime,
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -1415,6 +1414,14 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 		GetTotalSupply(gomock.Any(), classId).
 		Return(uint64(0))
 
+	newClaimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
+			AllowedAddressList: nil,
+			MintPrice:          0,
+		},
+	}
+
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
 		Creator: ownerAddress,
@@ -1427,12 +1434,11 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:        burnable,
-				MaxSupply:       maxSupply,
-				EnablePayToMint: enablePayToMint,
-				MintPrice:       mintPrice,
-				ClaimPeriods:    claimPeriods,
-				RevealTime:      revealTime,
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				ClaimPeriods:   newClaimPeriods,
+				RevealTime:     revealTime,
 			},
 		},
 	})
@@ -1484,17 +1490,16 @@ func TestUpdateClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enablePayToMint := true
-	mintPrice := uint64(1000000000)
+	enableBlindBox := true
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowAddressList: []string{"invalid address"},
-			MintPrice:        0,
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddressList: []string{"invalid address"},
+			MintPrice:          0,
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z")
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1539,12 +1544,11 @@ func TestUpdateClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:        burnable,
-				MaxSupply:       maxSupply,
-				EnablePayToMint: enablePayToMint,
-				MintPrice:       mintPrice,
-				ClaimPeriods:    claimPeriods,
-				RevealTime:      revealTime,
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				ClaimPeriods:   claimPeriods,
+				RevealTime:     revealTime,
 			},
 		},
 	})
@@ -1552,6 +1556,232 @@ func TestUpdateClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 	// Check output
 	require.Error(t, err)
 	require.Contains(t, err.Error(), sdkerrors.ErrInvalidAddress.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestUpdateClassNoClaimPeriod(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	classId := "likenft1aabbccddeeff"
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enableBlindBox := true
+
+	claimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddressList: nil,
+			MintPrice:          0,
+		},
+	}
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+
+	// Mock keeper calls
+	oldClassData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Config: types.ClassConfig{
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: true,
+			ClaimPeriods:   claimPeriods,
+			RevealTime:     revealTime,
+		},
+	}
+	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), classId).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Old Name",
+			Symbol:      "OLD",
+			Description: "Old Class 234",
+			Uri:         "ipfs://11223344",
+			UriHash:     "11223344",
+			Data:        oldClassDataInAny,
+		}, true)
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), classId).
+		Return(uint64(0))
+
+	// Run
+	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				ClaimPeriods:   nil,
+				RevealTime:     revealTime,
+			},
+		},
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), types.ErrInvalidNftClassConfig.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestUpdateClassNoRevealTime(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	classId := "likenft1aabbccddeeff"
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enableBlindBox := true
+
+	claimPeriods := []*types.ClaimPeriod{
+		{
+			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddressList: nil,
+			MintPrice:          0,
+		},
+	}
+	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+
+	// Mock keeper calls
+	oldClassData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Config: types.ClassConfig{
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: true,
+			ClaimPeriods:   claimPeriods,
+			RevealTime:     revealTime,
+		},
+	}
+	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), classId).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Old Name",
+			Symbol:      "OLD",
+			Description: "Old Class 234",
+			Uri:         "ipfs://11223344",
+			UriHash:     "11223344",
+			Data:        oldClassDataInAny,
+		}, true)
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), classId).
+		Return(uint64(0))
+
+	// Run
+	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				ClaimPeriods:   claimPeriods,
+				RevealTime:     nil,
+			},
+		},
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), types.ErrInvalidNftClassConfig.Error())
 	require.Nil(t, res)
 
 	// Check mock was called as expected
