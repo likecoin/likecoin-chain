@@ -10,7 +10,8 @@ import (
 func (k msgServer) CreateClaimableNFT(goCtx context.Context, msg *types.MsgCreateClaimableNFT) (*types.MsgCreateClaimableNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.validateRequestToMutateClaimableNFT(ctx, msg.Creator, msg.ClassId); err != nil {
+	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateClaimableNFT(ctx, msg.Creator, msg.ClassId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -26,6 +27,13 @@ func (k msgServer) CreateClaimableNFT(goCtx context.Context, msg *types.MsgCreat
 		Input:   msg.Input,
 	})
 
-	// TODO emit event
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventCreateClaimableNFT{
+		ClassId:                 msg.ClassId,
+		ClaimableNFTId:          msg.Id,
+		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
+		ClassParentAccount:      parentAndOwner.ClassParent.Account,
+	})
+
 	return &types.MsgCreateClaimableNFTResponse{}, nil
 }

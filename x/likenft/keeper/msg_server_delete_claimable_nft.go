@@ -10,7 +10,8 @@ import (
 func (k msgServer) DeleteClaimableNFT(goCtx context.Context, msg *types.MsgDeleteClaimableNFT) (*types.MsgDeleteClaimableNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.validateRequestToMutateClaimableNFT(ctx, msg.Creator, msg.ClassId); err != nil {
+	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateClaimableNFT(ctx, msg.Creator, msg.ClassId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -19,9 +20,16 @@ func (k msgServer) DeleteClaimableNFT(goCtx context.Context, msg *types.MsgDelet
 		return nil, types.ErrClaimableNftNotFound
 	}
 
-	// set record
+	// remove record
 	k.RemoveClaimableNFT(ctx, msg.ClassId, msg.Id)
 
-	// TODO emit event
+	// Emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventDeleteClaimableNFT{
+		ClassId:                 msg.ClassId,
+		ClaimableNFTId:          msg.Id,
+		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
+		ClassParentAccount:      parentAndOwner.ClassParent.Account,
+	})
+
 	return &types.MsgDeleteClaimableNFTResponse{}, nil
 }
