@@ -44,6 +44,17 @@ type GenesisBalance struct {
 	Coin    string
 }
 
+func SetupTestAppWithDefaultState() *TestingApp {
+	encodingCfg := likeapp.MakeEncodingConfig()
+	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Marshaler)
+	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	return SetupTestAppWithState(stateBytes, simapp.EmptyAppOptions{})
+}
+
 func SetupTestAppWithState(appState json.RawMessage, appOptions servertypes.AppOptions) *TestingApp {
 	db := dbm.NewMemDB()
 	encodingCfg := likeapp.MakeEncodingConfig()
