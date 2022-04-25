@@ -12,6 +12,7 @@ message ClassData {
   ];
   ClassParent parent = 2 [(gogoproto.nullable) = false];
   ClassConfig config = 3 [(gogoproto.nullable) = false];
+  uint64 claimableCount = 4;
 }
 
 enum ClassParentType {
