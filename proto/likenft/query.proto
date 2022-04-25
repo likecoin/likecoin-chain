@@ -66,16 +66,6 @@ service Query {
 	rpc MintableNFTs(QueryMintableNFTsRequest) returns (QueryMintableNFTsResponse) {
 		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{classId}";
 	}
-
-  // Queries a ClassRevealQueue by index.
-  rpc ClassRevealQueue(QueryGetClassRevealQueueRequest) returns (QueryGetClassRevealQueueResponse) {
-      option (google.api.http).get = "/likecoin/likechain/likenft/class_reveal_queue/{revealTime}/{classId}";
-  }
-  
-  // Queries a list of ClassRevealQueue items.
-  rpc ClassRevealQueueAll(QueryAllClassRevealQueueRequest) returns (QueryAllClassRevealQueueResponse) {
-      option (google.api.http).get = "/likecoin/likechain/likenft/class_reveal_queue";
-  }
     
 // this line is used by starport scaffolding # 2
 }
@@ -175,25 +165,6 @@ message QueryMintableNFTsRequest {
 message QueryMintableNFTsResponse {
   repeated MintableNFT mintableNFTs = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetClassRevealQueueRequest {
-	string revealTime = 1;
-  string classId = 2;
-
-}
-
-message QueryGetClassRevealQueueResponse {
-	ClassRevealQueue classRevealQueue = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllClassRevealQueueRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllClassRevealQueueResponse {
-	repeated ClassRevealQueue classRevealQueue = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
