@@ -1,6 +1,11 @@
 package types
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 var _ binary.ByteOrder
 
@@ -11,12 +16,12 @@ const (
 
 // ClassRevealQueueKey returns the store key to retrieve a ClassRevealQueue from the index fields
 func ClassRevealQueueKey(
-	revealTime string,
+	revealTime time.Time,
 	classId string,
 ) []byte {
 	var key []byte
 
-	revealTimeBytes := []byte(revealTime)
+	revealTimeBytes := sdk.FormatTimeBytes(revealTime)
 	key = append(key, revealTimeBytes...)
 	key = append(key, []byte("/")...)
 

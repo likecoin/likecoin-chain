@@ -2,6 +2,7 @@ package likenft_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/likecoin/likechain/testutil"
 	"github.com/likecoin/likechain/testutil/nullify"
@@ -14,7 +15,7 @@ import (
 
 func TestGenesis(t *testing.T) {
 	accounts := testutil.CreateIncrementalAccounts(2)
-
+	revealTime := time.Now()
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
@@ -46,11 +47,11 @@ func TestGenesis(t *testing.T) {
 		},
 		ClassRevealQueueList: []types.ClassRevealQueue{
 			{
-				RevealTime: "0",
+				RevealTime: revealTime,
 				ClassId:    "0",
 			},
 			{
-				RevealTime: "1",
+				RevealTime: revealTime,
 				ClassId:    "1",
 			},
 		},

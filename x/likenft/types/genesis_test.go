@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/likecoin/likechain/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
@@ -10,6 +11,7 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	accounts := testutil.CreateIncrementalAccounts(2)
+	revealTime := time.Now()
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -53,11 +55,11 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				ClassRevealQueueList: []types.ClassRevealQueue{
 					{
-						RevealTime: "0",
+						RevealTime: revealTime,
 						ClassId:    "0",
 					},
 					{
-						RevealTime: "1",
+						RevealTime: revealTime,
 						ClassId:    "1",
 					},
 				},
@@ -149,11 +151,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				ClassRevealQueueList: []types.ClassRevealQueue{
 					{
-						RevealTime: "0",
+						RevealTime: revealTime,
 						ClassId:    "0",
 					},
 					{
-						RevealTime: "0",
+						RevealTime: revealTime,
 						ClassId:    "0",
 					},
 				},
