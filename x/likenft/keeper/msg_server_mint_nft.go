@@ -35,7 +35,7 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	nftData := types.NFTData{
 		Metadata:    types.JsonInput{}, // TODO: add metadata template
 		ClassParent: classData.Parent,
-		Sealed:      true,
+		IsRevealed:  false,
 		RevealTime:  revealTime,
 	}
 
