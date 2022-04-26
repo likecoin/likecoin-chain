@@ -21,11 +21,11 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 			// Check if the user is allowed to mint the token
 			// If the minter is the owner, any claim period that is after the block time is valid
 			// If allowed address list is nil it means the the class is publically available
-			if ownerAddress.Equals(userAddress) || claimPeriod.AllowedAddressList == nil {
+			if ownerAddress.Equals(userAddress) || claimPeriod.AllowedAddresses == nil {
 				return claimPeriod, nil
 			}
 
-			for _, allowedAddress := range claimPeriod.AllowedAddressList {
+			for _, allowedAddress := range claimPeriod.AllowedAddresses {
 				// Ensure the configured allowed address is valid
 				wrappedAddress, err := sdk.AccAddressFromBech32(allowedAddress)
 				if err != nil {

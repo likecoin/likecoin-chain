@@ -54,9 +54,9 @@ func TestNewClassISCNNormal(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -254,9 +254,9 @@ func TestNewClassInvalidIscn(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -334,9 +334,9 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -419,9 +419,9 @@ func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -570,9 +570,9 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -661,19 +661,19 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowedAddressList: []string{ownerAddress},
-			MintPrice:          uint64(20000),
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddresses: []string{ownerAddress},
+			MintPrice:        uint64(20000),
 		},
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
-			AllowedAddressList: []string{ownerAddress},
-			MintPrice:          uint64(30000),
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			AllowedAddresses: []string{ownerAddress},
+			MintPrice:        uint64(30000),
 		},
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          uint64(90000),
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        uint64(90000),
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
@@ -786,9 +786,9 @@ func TestNewClassInvalidClaimPeriod(t *testing.T) {
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -876,9 +876,9 @@ func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowedAddressList: []string{"invalid address"},
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddresses: []string{"invalid address"},
+			MintPrice:        1000000000,
 		},
 	}
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
@@ -1047,9 +1047,9 @@ func TestNewClassBlindBoxNoRevealTime(t *testing.T) {
 	enableBlindBox := true
 	claimPeriods := []*types.ClaimPeriod{
 		{
-			StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowedAddressList: nil,
-			MintPrice:          1000000000,
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddresses: nil,
+			MintPrice:        1000000000,
 		},
 	}
 

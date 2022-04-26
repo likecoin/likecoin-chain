@@ -100,7 +100,7 @@ func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
 			return types.ErrInvalidNftClassConfig.Wrapf("One of the claim periods' start time %s is after reveal time %s", claimPeriod.StartTime.String(), classConfig.RevealTime.String())
 		}
 		// Ensure all the addresses in allow list is valid
-		for _, allowedAddress := range claimPeriod.AllowedAddressList {
+		for _, allowedAddress := range claimPeriod.AllowedAddresses {
 			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
 				return sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
 			}

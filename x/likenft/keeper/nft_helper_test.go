@@ -14,19 +14,19 @@ func TestClaimPeriodSorter(t *testing.T) {
 	// Setup
 
 	claimPeriod1 := types.ClaimPeriod{
-		StartTime:          testutil.MustParseTime(time.RFC3339, "2019-01-01T00:00:00Z"),
-		MintPrice:          uint64(0),
-		AllowedAddressList: nil,
+		StartTime:        testutil.MustParseTime(time.RFC3339, "2019-01-01T00:00:00Z"),
+		MintPrice:        uint64(0),
+		AllowedAddresses: nil,
 	}
 	claimPeriod2 := types.ClaimPeriod{
-		StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-		MintPrice:          uint64(0),
-		AllowedAddressList: nil,
+		StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+		MintPrice:        uint64(0),
+		AllowedAddresses: nil,
 	}
 	claimPeriod3 := types.ClaimPeriod{
-		StartTime:          testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
-		MintPrice:          uint64(0),
-		AllowedAddressList: nil,
+		StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+		MintPrice:        uint64(0),
+		AllowedAddresses: nil,
 	}
 
 	inputClaimPeriods := []*types.ClaimPeriod{

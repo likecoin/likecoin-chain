@@ -32,7 +32,7 @@ func CmdNewClass() *cobra.Command {
 		"claimPeriods": [
 			{
 				"startTime": "2022-01-01T00:00:00Z",
-				"allowedAddressList": ["cosmos1"], // null = public
+				"allowedAddresses": ["cosmos1"], // null = public, [] = owner only
 				"mintPrice": 0 // 0 = free
 			}
 		],

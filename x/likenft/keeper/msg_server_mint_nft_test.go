@@ -877,9 +877,9 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          mintPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        mintPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1030,9 +1030,9 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          mintPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        mintPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1162,9 +1162,9 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: []string{},
-					MintPrice:          mintPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: []string{},
+					MintPrice:        mintPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1300,19 +1300,19 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 			// Assume sorted descending when creating/updating class
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          thirdClaimPeriodPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        thirdClaimPeriodPrice,
 				},
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          secondClaimPeriodPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        secondClaimPeriodPrice,
 				},
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          firstClaimPeriodPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        firstClaimPeriodPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1464,9 +1464,9 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          mintPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        mintPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1597,9 +1597,9 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          mintPrice,
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        mintPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1946,9 +1946,9 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 			EnableBlindBox: true,
 			ClaimPeriods: []*types.ClaimPeriod{
 				{
-					StartTime:          testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddressList: nil,
-					MintPrice:          uint64(0),
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+					AllowedAddresses: nil,
+					MintPrice:        uint64(0),
 				},
 			},
 			RevealTime: revealTime,
