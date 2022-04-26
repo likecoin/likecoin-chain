@@ -139,7 +139,6 @@ func TestUpdateClassISCNNormal(t *testing.T) {
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
-	require.Equal(t, burnable, classData.Config.Burnable)
 	require.Equal(t, types.ClassConfig{
 		Burnable:  burnable,
 		MaxSupply: maxSupply,
@@ -261,7 +260,6 @@ func TestUpdateClassAccountNormal(t *testing.T) {
 	require.NoErrorf(t, err, "Error unmarshal class data")
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, ownerAccAddress.String(), classData.Parent.Account)
-	require.Equal(t, burnable, classData.Config.Burnable)
 	require.Equal(t, types.ClassConfig{
 		Burnable:  burnable,
 		MaxSupply: maxSupply,
@@ -1239,7 +1237,7 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 			Data:        oldClassDataInAny,
 		}, true)
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
@@ -1252,7 +1250,7 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 		},
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        uint64(90000),
 		},
 	}
@@ -1319,13 +1317,17 @@ func TestUpdateClassNormalClaimPeriodConfig(t *testing.T) {
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
-	require.Equal(t, types.ClassConfig{
-		Burnable:       burnable,
-		MaxSupply:      maxSupply,
-		EnableBlindBox: enableBlindBox,
-		ClaimPeriods:   claimPeriods,
-		RevealTime:     revealTime,
-	}, classData.Config)
+	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, maxSupply, classData.Config.MaxSupply)
+	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
+	require.Equal(t, revealTime, classData.Config.RevealTime)
+
+	require.Equal(t, len(claimPeriods), len(classData.Config.ClaimPeriods))
+	for i, claimPeriod := range classData.Config.ClaimPeriods {
+		require.Equal(t, claimPeriod.StartTime, claimPeriods[i].StartTime)
+		require.ElementsMatch(t, claimPeriod.AllowedAddresses, claimPeriods[i].AllowedAddresses)
+		require.Equal(t, claimPeriod.MintPrice, claimPeriods[i].MintPrice)
+	}
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -1371,10 +1373,10 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}
@@ -1414,10 +1416,10 @@ func TestUpdateClassInvalidClaimPeriod(t *testing.T) {
 		GetTotalSupply(gomock.Any(), classId).
 		Return(uint64(0))
 
-	newClaimPeriods := []*types.ClaimPeriod{
+	newClaimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}
@@ -1492,7 +1494,7 @@ func TestUpdateClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{"invalid address"},
@@ -1602,10 +1604,10 @@ func TestUpdateClassNoClaimPeriod(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}
@@ -1715,10 +1717,10 @@ func TestUpdateClassNoRevealTime(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}

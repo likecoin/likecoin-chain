@@ -11,7 +11,7 @@ import (
 func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classData types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.ClaimPeriod, error) {
 
 	claimPeriods := classData.Config.ClaimPeriods
-	if claimPeriods == nil {
+	if len(claimPeriods) == 0 {
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("Pay to mint is not configurated for the class %s ", classId))
 	}
 
@@ -21,8 +21,8 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 			// Check if the user is allowed to mint the token
 			// If the minter is the owner, any claim period that is after the block time is valid
 			// If allowed address list is nil it means the the class is publically available
-			if ownerAddress.Equals(userAddress) || claimPeriod.AllowedAddresses == nil {
-				return claimPeriod, nil
+			if ownerAddress.Equals(userAddress) || len(claimPeriod.AllowedAddresses) == 0 {
+				return &claimPeriod, nil
 			}
 
 			for _, allowedAddress := range claimPeriod.AllowedAddresses {
@@ -33,7 +33,7 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 				}
 
 				if userAddress.Equals(wrappedAddress) {
-					return claimPeriod, nil
+					return &claimPeriod, nil
 				}
 			}
 		}
@@ -42,7 +42,7 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 	return nil, nil
 }
 
-func SortClaimPeriod(claimPeriods []*types.ClaimPeriod, descending bool) []*types.ClaimPeriod {
+func SortClaimPeriod(claimPeriods []types.ClaimPeriod, descending bool) []types.ClaimPeriod {
 	// Sort the claim periods by start time
 	sort.Slice(claimPeriods, func(i, j int) bool {
 		if descending {

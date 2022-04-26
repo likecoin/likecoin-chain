@@ -52,10 +52,10 @@ func TestNewClassISCNNormal(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -116,13 +116,17 @@ func TestNewClassISCNNormal(t *testing.T) {
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
-	require.Equal(t, types.ClassConfig{
-		Burnable:       burnable,
-		MaxSupply:      maxSupply,
-		EnableBlindBox: enableBlindBox,
-		ClaimPeriods:   claimPeriods,
-		RevealTime:     revealTime,
-	}, classData.Config)
+	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, maxSupply, classData.Config.MaxSupply)
+	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
+	require.Equal(t, revealTime, classData.Config.RevealTime)
+
+	require.Equal(t, len(claimPeriods), len(classData.Config.ClaimPeriods))
+	for i, claimPeriod := range classData.Config.ClaimPeriods {
+		require.Equal(t, claimPeriod.StartTime, claimPeriods[i].StartTime)
+		require.ElementsMatch(t, claimPeriod.AllowedAddresses, claimPeriods[i].AllowedAddresses)
+		require.Equal(t, claimPeriod.MintPrice, claimPeriods[i].MintPrice)
+	}
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -252,10 +256,10 @@ func TestNewClassInvalidIscn(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -332,10 +336,10 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -417,10 +421,10 @@ func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -568,10 +572,10 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -659,7 +663,7 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
@@ -672,7 +676,7 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 		},
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        uint64(90000),
 		},
 	}
@@ -733,13 +737,17 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 	require.Equal(t, metadata, classData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
-	require.Equal(t, types.ClassConfig{
-		Burnable:       burnable,
-		MaxSupply:      maxSupply,
-		EnableBlindBox: enableBlindBox,
-		ClaimPeriods:   claimPeriods,
-		RevealTime:     revealTime,
-	}, classData.Config)
+	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, maxSupply, classData.Config.MaxSupply)
+	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
+	require.Equal(t, revealTime, classData.Config.RevealTime)
+
+	require.Equal(t, len(claimPeriods), len(classData.Config.ClaimPeriods))
+	for i, claimPeriod := range classData.Config.ClaimPeriods {
+		require.Equal(t, claimPeriod.StartTime, claimPeriods[i].StartTime)
+		require.ElementsMatch(t, claimPeriod.AllowedAddresses, claimPeriods[i].AllowedAddresses)
+		require.Equal(t, claimPeriod.MintPrice, claimPeriods[i].MintPrice)
+	}
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -784,10 +792,10 @@ func TestNewClassInvalidClaimPeriod(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}
@@ -874,7 +882,7 @@ func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{"invalid address"},
@@ -1045,10 +1053,10 @@ func TestNewClassBlindBoxNoRevealTime(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []*types.ClaimPeriod{
+	claimPeriods := []types.ClaimPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-			AllowedAddresses: nil,
+			AllowedAddresses: make([]string, 0),
 			MintPrice:        1000000000,
 		},
 	}

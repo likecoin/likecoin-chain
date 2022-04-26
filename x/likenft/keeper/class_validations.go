@@ -112,7 +112,7 @@ func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
 func (k msgServer) validateClassConfig(classConfig *types.ClassConfig) error {
 	// Ensure claim periods and reveal time are set when blind box mode is enabled
 	if classConfig.EnableBlindBox {
-		if classConfig.ClaimPeriods == nil {
+		if len(classConfig.ClaimPeriods) == 0 {
 			return types.ErrInvalidNftClassConfig.Wrapf("Claim periods are enabled but no claim periods are provided")
 		}
 

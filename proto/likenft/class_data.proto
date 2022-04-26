@@ -31,7 +31,7 @@ message ClassParent {
 
 message ClaimPeriod {
   google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true];
-  repeated string allowedAddresses = 2 [(gogoproto.nullable) = true];
+  repeated string allowedAddresses = 2 ;
   uint64 mintPrice = 3;
 }
 
@@ -39,6 +39,6 @@ message ClassConfig {
   bool burnable = 1;
   uint64 maxSupply = 2;
   bool enableBlindBox = 3;
-  repeated ClaimPeriod claimPeriods = 4 [(gogoproto.nullable) = true];
+  repeated ClaimPeriod claimPeriods = 4 [(gogoproto.nullable) = false];
   google.protobuf.Timestamp revealTime = 5 [(gogoproto.stdtime) = true];
 }

@@ -875,10 +875,10 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        mintPrice,
 				},
 			},
@@ -1028,10 +1028,10 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        mintPrice,
 				},
 			},
@@ -1160,7 +1160,7 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1298,20 +1298,20 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
 			// Assume sorted descending when creating/updating class
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        thirdClaimPeriodPrice,
 				},
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        secondClaimPeriodPrice,
 				},
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        firstClaimPeriodPrice,
 				},
 			},
@@ -1462,10 +1462,10 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        mintPrice,
 				},
 			},
@@ -1595,10 +1595,10 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        mintPrice,
 				},
 			},
@@ -1944,10 +1944,10 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(500),
 			EnableBlindBox: true,
-			ClaimPeriods: []*types.ClaimPeriod{
+			ClaimPeriods: []types.ClaimPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: nil,
+					AllowedAddresses: []string{},
 					MintPrice:        uint64(0),
 				},
 			},
