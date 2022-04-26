@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -12,7 +13,7 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 
 	claimPeriods := classData.Config.ClaimPeriods
 	if len(claimPeriods) == 0 {
-		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("Pay to mint is not configurated for the class %s ", classId))
+		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("Pay to mint is not configurated for the class %s ", classId))
 	}
 
 	for _, claimPeriod := range claimPeriods {
