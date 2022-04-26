@@ -49,6 +49,11 @@ func SortClaimPeriod(claimPeriods []types.ClaimPeriod, descending bool) []types.
 		if descending {
 			i, j = j, i
 		}
+
+		if claimPeriods[j].StartTime.Equal(*claimPeriods[i].StartTime) {
+			return claimPeriods[j].MintPrice > claimPeriods[i].MintPrice
+		}
+
 		return claimPeriods[j].StartTime.After(*claimPeriods[i].StartTime)
 	})
 

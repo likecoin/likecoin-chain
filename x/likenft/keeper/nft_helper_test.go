@@ -24,8 +24,18 @@ func TestClaimPeriodSorter(t *testing.T) {
 		AllowedAddresses: []string{},
 	}
 	claimPeriod3 := types.ClaimPeriod{
+		StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+		MintPrice:        uint64(400),
+		AllowedAddresses: []string{},
+	}
+	claimPeriod4 := types.ClaimPeriod{
 		StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
 		MintPrice:        uint64(0),
+		AllowedAddresses: []string{},
+	}
+	claimPeriod5 := types.ClaimPeriod{
+		StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+		MintPrice:        uint64(100),
 		AllowedAddresses: []string{},
 	}
 
@@ -33,6 +43,8 @@ func TestClaimPeriodSorter(t *testing.T) {
 		claimPeriod2,
 		claimPeriod1,
 		claimPeriod3,
+		claimPeriod5,
+		claimPeriod4,
 	}
 
 	ascendingRes := keeper.SortClaimPeriod(inputClaimPeriods, false)
@@ -40,12 +52,16 @@ func TestClaimPeriodSorter(t *testing.T) {
 		claimPeriod1,
 		claimPeriod2,
 		claimPeriod3,
+		claimPeriod4,
+		claimPeriod5,
 	}
 
 	require.Equal(t, ascendingRes, expectedAscendingClaimPeriods)
 
 	descendingRes := keeper.SortClaimPeriod(inputClaimPeriods, true)
 	expectedDescendingClaimPeriods := []types.ClaimPeriod{
+		claimPeriod5,
+		claimPeriod4,
 		claimPeriod3,
 		claimPeriod2,
 		claimPeriod1,
