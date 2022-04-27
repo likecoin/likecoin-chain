@@ -13,7 +13,7 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 
 	claimPeriods := classData.Config.ClaimPeriods
 	if len(claimPeriods) == 0 {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("Pay to mint is not configurated for the class %s ", classId))
+		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("No claim period is configured for class %s", classId))
 	}
 
 	for _, claimPeriod := range claimPeriods {
