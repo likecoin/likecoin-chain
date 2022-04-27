@@ -8,7 +8,7 @@ import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 import "cosmos/nft/v1beta1/nft.proto";
 import "likenft/classes_by_account.proto";
-import "likenft/claimable_nft.proto";
+import "likenft/mintable_nft.proto";
 // this line is used by starport scaffolding # 1
 
 import "iscn/query.proto";

@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "likenft/params.proto";
 import "likenft/classes_by_iscn.proto";
 import "likenft/classes_by_account.proto";
-import "likenft/claimable_nft.proto";
+import "likenft/mintable_nft.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
