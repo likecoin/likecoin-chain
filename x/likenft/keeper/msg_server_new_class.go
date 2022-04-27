@@ -102,6 +102,14 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		panic(fmt.Sprintf("Unsupported parent type %s after initial check", parent.Type.String()))
 	}
 
+	// Enqueue class for reveal
+	if classData.Config.EnableBlindBox {
+		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+			ClassId:    newClassId,
+			RevealTime: *classData.Config.RevealTime,
+		})
+	}
+
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventNewClass{
 		ClassId:            newClassId,

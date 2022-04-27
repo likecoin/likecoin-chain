@@ -57,6 +57,9 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	// Sort the mint period by start time
 	msg.Input.Config.MintPeriods = SortMintPeriod(msg.Input.Config.MintPeriods, true)
 
+	originalConfig := classData.Config
+	updatedConfig := msg.Input.Config
+
 	// Update class
 	classData = types.ClassData{
 		Metadata: msg.Input.Metadata,
@@ -78,6 +81,20 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	}
 	if err := k.nftKeeper.UpdateClass(ctx, class); err != nil {
 		return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
+	}
+
+	if !originalConfig.EnableBlindBox && updatedConfig.EnableBlindBox {
+		// Enqueue class if enabled after update
+		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+			ClassId:    class.Id,
+			RevealTime: *updatedConfig.RevealTime,
+		})
+	} else if originalConfig.EnableBlindBox && updatedConfig.EnableBlindBox {
+		// Update reveal queue entry if it is config update
+		k.UpdateClassRevealQueueEntry(ctx, *originalConfig.RevealTime, class.Id, *updatedConfig.RevealTime)
+	} else if originalConfig.EnableBlindBox && !updatedConfig.EnableBlindBox {
+		// Remove reveal queue entry if it is disabled
+		k.RemoveClassRevealQueueEntry(ctx, *originalConfig.RevealTime, class.Id)
 	}
 
 	// Emit event

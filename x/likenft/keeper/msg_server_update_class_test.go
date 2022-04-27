@@ -1170,7 +1170,7 @@ func TestUpdateClassUserNotAccountOwner(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateClassNormalMintPeriodConfig(t *testing.T) {
+func TestUpdateClassEnableBlindBox(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1281,6 +1281,10 @@ func TestUpdateClassNormalMintPeriodConfig(t *testing.T) {
 		UpdateClass(gomock.Any(), gomock.Any()).
 		Return(nil)
 
+	// Ensure queue is empty
+	revealQueue := keeper.GetClassRevealQueue(ctx)
+	require.Equal(t, 0, len(revealQueue))
+
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
 		Creator: ownerAddress,
@@ -1328,6 +1332,366 @@ func TestUpdateClassNormalMintPeriodConfig(t *testing.T) {
 		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
 		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
 	}
+
+	// Check class is now enqueued
+	revealQueue = keeper.GetClassRevealQueue(ctx)
+	require.Contains(t, revealQueue, types.ClassRevealQueueEntry{
+		ClassId:    classId,
+		RevealTime: *revealTime,
+	})
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestUpdateClassDisableBlindBox(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, keeper := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	classId := "likenft1aabbccddeeff"
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enableBlindBox := true
+
+	// Mock keeper calls
+	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+	oldClassData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Config: types.ClassConfig{
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: enableBlindBox,
+			MintPeriods: []types.MintPeriod{
+				{
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+					AllowedAddresses: []string{ownerAddress},
+					MintPrice:        uint64(20000),
+				},
+				{
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+					AllowedAddresses: []string{ownerAddress},
+					MintPrice:        uint64(30000),
+				},
+				{
+					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+					AllowedAddresses: make([]string, 0),
+					MintPrice:        uint64(90000),
+				},
+			},
+			RevealTime: revealTime,
+		},
+	}
+	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), classId).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Old Name",
+			Symbol:      "OLD",
+			Description: "Old Class 234",
+			Uri:         "ipfs://11223344",
+			UriHash:     "11223344",
+			Data:        oldClassDataInAny,
+		}, true)
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), classId).
+		Return(uint64(0))
+
+	keeper.SetClassesByISCN(ctx, types.ClassesByISCN{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassIds:     []string{classId},
+	})
+
+	// Mock keeper calls
+	iscnLatestVersion := uint64(2)
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     iscnLatestVersion,
+		})
+
+	nftKeeper.
+		EXPECT().
+		UpdateClass(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	// Assume entry is inserted
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		ClassId:    classId,
+		RevealTime: *revealTime,
+	})
+
+	updatedEnableBlindBox := false
+
+	// Run
+	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: updatedEnableBlindBox,
+			},
+		},
+	})
+
+	// Check output
+	require.NoError(t, err)
+	require.Equal(t, classId, res.Class.Id)
+	require.Equal(t, name, res.Class.Name)
+	require.Equal(t, symbol, res.Class.Symbol)
+	require.Equal(t, description, res.Class.Description)
+	require.Equal(t, uri, res.Class.Uri)
+	require.Equal(t, uriHash, res.Class.UriHash)
+
+	var classData types.ClassData
+	err = classData.Unmarshal(res.Class.Data.Value)
+	require.NoErrorf(t, err, "Error unmarshal class data")
+	require.Equal(t, metadata, classData.Metadata)
+	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
+	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, maxSupply, classData.Config.MaxSupply)
+	require.Equal(t, updatedEnableBlindBox, classData.Config.EnableBlindBox)
+
+	// Check class is now enqueued
+	revealQueue := keeper.GetClassRevealQueue(ctx)
+	require.Equal(t, 0, len(revealQueue))
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestUpdateClassUpdateMintPeriod(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, keeper := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	classId := "likenft1aabbccddeeff"
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	name := "Class Name"
+	symbol := "ABC"
+	description := "Testing Class 123"
+	uri := "ipfs://abcdef"
+	uriHash := "abcdef"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+	burnable := true
+	maxSupply := uint64(5)
+	enableBlindBox := true
+
+	// Mock keeper calls
+	oldMintPeriods := []types.MintPeriod{
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddresses: []string{ownerAddress},
+			MintPrice:        uint64(2048),
+		},
+	}
+	oldRevealTime := testutil.MustParseTime(time.RFC3339, "2022-05-01T00:00:00Z")
+	oldClassData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:         types.ClassParentType_ISCN,
+			IscnIdPrefix: iscnId.Prefix.String(),
+		},
+		Config: types.ClassConfig{
+			Burnable:       false,
+			MaxSupply:      uint64(500),
+			EnableBlindBox: true,
+			MintPeriods:    oldMintPeriods,
+			RevealTime:     oldRevealTime,
+		},
+	}
+	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), classId).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Old Name",
+			Symbol:      "OLD",
+			Description: "Old Class 234",
+			Uri:         "ipfs://11223344",
+			UriHash:     "11223344",
+			Data:        oldClassDataInAny,
+		}, true)
+
+	// Assume entry is inserted
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		ClassId:    classId,
+		RevealTime: *oldRevealTime,
+	})
+
+	updatedMintPeriods := []types.MintPeriod{
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			AllowedAddresses: []string{ownerAddress},
+			MintPrice:        uint64(20000),
+		},
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			AllowedAddresses: []string{ownerAddress},
+			MintPrice:        uint64(30000),
+		},
+		{
+			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			AllowedAddresses: make([]string, 0),
+			MintPrice:        uint64(90000),
+		},
+	}
+	updatedRevealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), classId).
+		Return(uint64(0))
+
+	keeper.SetClassesByISCN(ctx, types.ClassesByISCN{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassIds:     []string{classId},
+	})
+
+	// Mock keeper calls
+	iscnLatestVersion := uint64(2)
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     iscnLatestVersion,
+		})
+
+	nftKeeper.
+		EXPECT().
+		UpdateClass(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	// Run
+	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Input: types.ClassInput{
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			Uri:         uri,
+			UriHash:     uriHash,
+			Metadata:    metadata,
+			Config: types.ClassConfig{
+				Burnable:       burnable,
+				MaxSupply:      maxSupply,
+				EnableBlindBox: enableBlindBox,
+				MintPeriods:    updatedMintPeriods,
+				RevealTime:     updatedRevealTime,
+			},
+		},
+	})
+
+	// Check output
+	require.NoError(t, err)
+	require.Equal(t, classId, res.Class.Id)
+	require.Equal(t, name, res.Class.Name)
+	require.Equal(t, symbol, res.Class.Symbol)
+	require.Equal(t, description, res.Class.Description)
+	require.Equal(t, uri, res.Class.Uri)
+	require.Equal(t, uriHash, res.Class.UriHash)
+
+	var classData types.ClassData
+	err = classData.Unmarshal(res.Class.Data.Value)
+	require.NoErrorf(t, err, "Error unmarshal class data")
+	require.Equal(t, metadata, classData.Metadata)
+	require.Equal(t, iscnId.Prefix.String(), classData.Parent.IscnIdPrefix)
+	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
+	require.Equal(t, burnable, classData.Config.Burnable)
+	require.Equal(t, maxSupply, classData.Config.MaxSupply)
+	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
+	require.Equal(t, updatedRevealTime, classData.Config.RevealTime)
+
+	require.Equal(t, len(updatedMintPeriods), len(classData.Config.MintPeriods))
+	for i, mintPeriod := range classData.Config.MintPeriods {
+		require.Equal(t, mintPeriod.StartTime, updatedMintPeriods[i].StartTime)
+		require.ElementsMatch(t, mintPeriod.AllowedAddresses, updatedMintPeriods[i].AllowedAddresses)
+		require.Equal(t, mintPeriod.MintPrice, updatedMintPeriods[i].MintPrice)
+	}
+
+	// Check class is now enqueued
+	revealQueue := keeper.GetClassRevealQueue(ctx)
+	require.Contains(t, revealQueue, types.ClassRevealQueueEntry{
+		ClassId:    classId,
+		RevealTime: *updatedRevealTime,
+	})
 
 	// Check mock was called as expected
 	ctrl.Finish()

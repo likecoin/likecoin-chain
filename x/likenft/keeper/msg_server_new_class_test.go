@@ -631,12 +631,13 @@ func TestNewClassNormalMintPeriodConfig(t *testing.T) {
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
 	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
 	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
+	msgServer, goCtx, keeper := setupMsgServer(t, keeper.LikenftDependedKeepers{
 		AccountKeeper: accountKeeper,
 		BankKeeper:    bankKeeper,
 		IscnKeeper:    iscnKeeper,
 		NftKeeper:     nftKeeper,
 	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Test Input
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
@@ -748,6 +749,12 @@ func TestNewClassNormalMintPeriodConfig(t *testing.T) {
 		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
 		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
 	}
+
+	revealQueue := keeper.GetClassRevealQueue(ctx)
+	require.Contains(t, revealQueue, types.ClassRevealQueueEntry{
+		ClassId:    expectedClassId,
+		RevealTime: *revealTime,
+	})
 
 	// Check mock was called as expected
 	ctrl.Finish()
