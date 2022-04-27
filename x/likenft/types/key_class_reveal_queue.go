@@ -10,11 +10,11 @@ import (
 var _ binary.ByteOrder
 
 const (
-	// ClassRevealQueueKeyPrefix is the prefix to retrieve all ClassRevealQueue
+	// ClassRevealQueueKeyPrefix is the prefix to retrieve all ClassRevealQueueEntry
 	ClassRevealQueueKeyPrefix = "ClassRevealQueue/value/"
 )
 
-// ClassRevealQueueKey returns the store key to retrieve a ClassRevealQueue from the index fields
+// ClassRevealQueueKey returns the store key to retrieve a ClassRevealQueueEntry from the index fields
 func ClassRevealQueueKey(
 	revealTime time.Time,
 	classId string,

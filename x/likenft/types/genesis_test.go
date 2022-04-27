@@ -53,7 +53,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id:      "1",
 					},
 				},
-				ClassRevealQueueList: []types.ClassRevealQueue{
+				ClassRevealQueue: []types.ClassRevealQueueEntry{
 					{
 						RevealTime: revealTime,
 						ClassId:    "0",
@@ -147,9 +147,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 		},
 		{
-			desc: "duplicated classRevealQueue",
+			desc: "duplicated classRevealQueueEntry",
 			genState: &types.GenesisState{
-				ClassRevealQueueList: []types.ClassRevealQueue{
+				ClassRevealQueue: []types.ClassRevealQueueEntry{
 					{
 						RevealTime: revealTime,
 						ClassId:    "0",

@@ -18,7 +18,7 @@ var _ = strconv.IntSize
 
 func getAllClassIdsFromQueue(ctx sdk.Context, keeper *keeper.Keeper) []string {
 	var resultClassIds []string
-	keeper.IterateClassRevealQueue(ctx, func(val types.ClassRevealQueue) (stop bool) {
+	keeper.IterateClassRevealQueue(ctx, func(val types.ClassRevealQueueEntry) (stop bool) {
 		resultClassIds = append(resultClassIds, val.ClassId)
 		return false
 	})
@@ -44,19 +44,19 @@ func TestClassRevealQueueInsert(t *testing.T) {
 	revealTime4, err := time.Parse(time.RFC3339, "2009-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime1,
 		ClassId:    classId1,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime2,
 		ClassId:    classId2,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime3,
 		ClassId:    classId3,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime4,
 		ClassId:    classId4,
 	})
@@ -85,31 +85,31 @@ func TestClassRevealQueueRemove(t *testing.T) {
 	revealTime4, err := time.Parse(time.RFC3339, "2009-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime1,
 		ClassId:    classId1,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime2,
 		ClassId:    classId2,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime3,
 		ClassId:    classId3,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime4,
 		ClassId:    classId4,
 	})
 
 	// Remove valid entry
-	err = keeper.RemoveFromClassRevealQueue(ctx, revealTime2, classId2)
+	err = keeper.RemoveClassRevealQueueEntry(ctx, revealTime2, classId2)
 	require.NoError(t, err)
 	validClassIds := getAllClassIdsFromQueue(ctx, keeper)
 	require.Equal(t, 3, len(validClassIds))
 
 	// Remove invalid entry
-	err = keeper.RemoveFromClassRevealQueue(ctx, revealTime3, classId4)
+	err = keeper.RemoveClassRevealQueueEntry(ctx, revealTime3, classId4)
 	require.Contains(t, err.Error(), sdkerrors.ErrKeyNotFound.Error())
 }
 
@@ -132,19 +132,19 @@ func TestClassRevealQueueUpdate(t *testing.T) {
 	revealTime4, err := time.Parse(time.RFC3339, "2009-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime1,
 		ClassId:    classId1,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime2,
 		ClassId:    classId2,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime3,
 		ClassId:    classId3,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime4,
 		ClassId:    classId4,
 	})
@@ -153,7 +153,7 @@ func TestClassRevealQueueUpdate(t *testing.T) {
 	updatedRevealTime, err := time.Parse(time.RFC3339, "2099-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	err = keeper.UpdateClassRevealQueue(ctx, revealTime4, classId4, updatedRevealTime)
+	err = keeper.UpdateClassRevealQueueEntry(ctx, revealTime4, classId4, updatedRevealTime)
 	require.NoError(t, err)
 
 	classIds := getAllClassIdsFromQueue(ctx, keeper)
@@ -165,7 +165,7 @@ func TestClassRevealQueueUpdate(t *testing.T) {
 	}, classIds)
 
 	// Update invalid entry
-	err = keeper.UpdateClassRevealQueue(ctx, revealTime3, classId2, updatedRevealTime)
+	err = keeper.UpdateClassRevealQueueEntry(ctx, revealTime3, classId2, updatedRevealTime)
 	require.Contains(t, err.Error(), sdkerrors.ErrKeyNotFound.Error())
 }
 
@@ -188,19 +188,19 @@ func TestClassRevealQueueSorting(t *testing.T) {
 	revealTime4, err := time.Parse(time.RFC3339, "2009-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime1,
 		ClassId:    classId1,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime2,
 		ClassId:    classId2,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime3,
 		ClassId:    classId3,
 	})
-	keeper.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: revealTime4,
 		ClassId:    classId4,
 	})

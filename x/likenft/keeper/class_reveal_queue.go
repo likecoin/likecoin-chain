@@ -9,18 +9,18 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-// SetClassRevealQueue set a specific classRevealQueue in the store from its index
-func (k Keeper) SetClassRevealQueue(ctx sdk.Context, classRevealQueue types.ClassRevealQueue) {
+// SetClassRevealQueueEntry set a specific classRevealQueueEntry in the store from its index
+func (k Keeper) SetClassRevealQueueEntry(ctx sdk.Context, classRevealQueueEntry types.ClassRevealQueueEntry) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
-	b := k.cdc.MustMarshal(&classRevealQueue)
+	b := k.cdc.MustMarshal(&classRevealQueueEntry)
 	store.Set(types.ClassRevealQueueKey(
-		classRevealQueue.RevealTime,
-		classRevealQueue.ClassId,
+		classRevealQueueEntry.RevealTime,
+		classRevealQueueEntry.ClassId,
 	), b)
 }
 
-// RemoveClassRevealQueue removes a classRevealQueue from the store
-func (k Keeper) RemoveFromClassRevealQueue(
+// RemoveClassRevealQueueEntry removes a classRevealQueueEntry from the store
+func (k Keeper) RemoveClassRevealQueueEntry(
 	ctx sdk.Context,
 	revealTime time.Time,
 	classId string,
@@ -28,7 +28,7 @@ func (k Keeper) RemoveFromClassRevealQueue(
 ) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
 	if !store.Has(types.ClassRevealQueueKey(revealTime, classId)) {
-		return sdkerrors.ErrKeyNotFound.Wrapf("classRevealQueue entry not found: classId: %s, revealTime: %s", classId, revealTime)
+		return sdkerrors.ErrKeyNotFound.Wrapf("classRevealQueueEntry not found: classId: %s, revealTime: %s", classId, revealTime)
 	}
 	store.Delete(types.ClassRevealQueueKey(
 		revealTime,
@@ -37,13 +37,13 @@ func (k Keeper) RemoveFromClassRevealQueue(
 	return nil
 }
 
-// UpdateClassRevealQueue updates a classRevealQueue in the store
-func (k Keeper) UpdateClassRevealQueue(ctx sdk.Context, originalRevealTime time.Time, classId string, updatedRevealTime time.Time) error {
-	err := k.RemoveFromClassRevealQueue(ctx, originalRevealTime, classId)
+// UpdateClassRevealQueueEntry updates a classRevealQueueEntry in the store
+func (k Keeper) UpdateClassRevealQueueEntry(ctx sdk.Context, originalRevealTime time.Time, classId string, updatedRevealTime time.Time) error {
+	err := k.RemoveClassRevealQueueEntry(ctx, originalRevealTime, classId)
 	if err != nil {
 		return err
 	}
-	k.SetClassRevealQueue(ctx, types.ClassRevealQueue{
+	k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: updatedRevealTime,
 		ClassId:    classId,
 	})
@@ -56,14 +56,14 @@ func (k Keeper) ClassRevealQueueIterator(ctx sdk.Context) sdk.Iterator {
 	return iterator
 }
 
-// IterateClassRevealQueue iterates over all classRevealQueue
-func (k Keeper) IterateClassRevealQueue(ctx sdk.Context, cb func(val types.ClassRevealQueue) (stop bool)) {
+// IterateClassRevealQueue iterates over all classRevealQueueEntry
+func (k Keeper) IterateClassRevealQueue(ctx sdk.Context, cb func(val types.ClassRevealQueueEntry) (stop bool)) {
 	iterator := k.ClassRevealQueueIterator(ctx)
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClassRevealQueue
+		var val types.ClassRevealQueueEntry
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		if cb(val) {
@@ -74,15 +74,15 @@ func (k Keeper) IterateClassRevealQueue(ctx sdk.Context, cb func(val types.Class
 	return
 }
 
-// GetAllClassRevealQueue returns all classRevealQueue
-func (k Keeper) GetAllClassRevealQueue(ctx sdk.Context) (list []types.ClassRevealQueue) {
+// GetClassRevealQueue returns all classRevealQueueEntry
+func (k Keeper) GetClassRevealQueue(ctx sdk.Context) (list []types.ClassRevealQueueEntry) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClassRevealQueue
+		var val types.ClassRevealQueueEntry
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
