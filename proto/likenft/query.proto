@@ -51,19 +51,19 @@ service Query {
 		option (google.api.http).get = "/likecoin/likechain/likenft/account_by_class/{classId}";
 	}
 
-// Queries a ClaimableNFT by index.
-	rpc ClaimableNFT(QueryClaimableNFTRequest) returns (QueryClaimableNFTResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft/{classId}/{id}";
+// Queries a MintableNFT by index.
+	rpc MintableNFT(QueryMintableNFTRequest) returns (QueryMintableNFTResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{classId}/{id}";
 	}
 
-	// Queries a list of ClaimableNFT items.
-	rpc ClaimableNFTIndex(QueryClaimableNFTIndexRequest) returns (QueryClaimableNFTIndexResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft";
+	// Queries a list of MintableNFT items.
+	rpc MintableNFTIndex(QueryMintableNFTIndexRequest) returns (QueryMintableNFTIndexResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft";
 	}
 
-// Queries a list of ClaimableNFTs by classId
-	rpc ClaimableNFTs(QueryClaimableNFTsRequest) returns (QueryClaimableNFTsResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/claimable_nft/{classId}";
+// Queries a list of MintableNFTs by classId
+	rpc MintableNFTs(QueryMintableNFTsRequest) returns (QueryMintableNFTsResponse) {
+		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{classId}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -137,32 +137,32 @@ message QueryAccountByClassResponse {
   string address = 1;
 }
 
-message QueryClaimableNFTRequest {
+message QueryMintableNFTRequest {
 	string classId = 1;
   string id = 2;
 
 }
 
-message QueryClaimableNFTResponse {
-	ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
+message QueryMintableNFTResponse {
+	MintableNFT mintableNFT = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryClaimableNFTIndexRequest {
+message QueryMintableNFTIndexRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryClaimableNFTIndexResponse {
-	repeated ClaimableNFT claimableNFT = 1 [(gogoproto.nullable) = false];
+message QueryMintableNFTIndexResponse {
+	repeated MintableNFT mintableNFT = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryClaimableNFTsRequest {
+message QueryMintableNFTsRequest {
   string classId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryClaimableNFTsResponse {
-  repeated ClaimableNFT claimableNFTs = 1 [(gogoproto.nullable) = false];
+message QueryMintableNFTsResponse {
+  repeated MintableNFT mintableNFTs = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

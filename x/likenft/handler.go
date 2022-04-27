@@ -29,14 +29,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgBurnNFT:
 			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgCreateClaimableNFT:
-			res, err := msgServer.CreateClaimableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCreateMintableNFT:
+			res, err := msgServer.CreateMintableNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateClaimableNFT:
-			res, err := msgServer.UpdateClaimableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateMintableNFT:
+			res, err := msgServer.UpdateMintableNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeleteClaimableNFT:
-			res, err := msgServer.DeleteClaimableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDeleteMintableNFT:
+			res, err := msgServer.DeleteMintableNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
 		default:

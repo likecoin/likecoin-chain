@@ -445,25 +445,25 @@ func (m *MsgBurnNFTResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgBurnNFTResponse proto.InternalMessageInfo
 
-type MsgCreateClaimableNFT struct {
+type MsgCreateMintableNFT struct {
 	Creator string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string   `protobuf:"bytes,2,opt,name=classId,proto3" json:"classId,omitempty"`
 	Id      string   `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 	Input   NFTInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input"`
 }
 
-func (m *MsgCreateClaimableNFT) Reset()         { *m = MsgCreateClaimableNFT{} }
-func (m *MsgCreateClaimableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaimableNFT) ProtoMessage()    {}
-func (*MsgCreateClaimableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgCreateMintableNFT) Reset()         { *m = MsgCreateMintableNFT{} }
+func (m *MsgCreateMintableNFT) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateMintableNFT) ProtoMessage()    {}
+func (*MsgCreateMintableNFT) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{8}
 }
-func (m *MsgCreateClaimableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateMintableNFT) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateClaimableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateMintableNFT.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -473,61 +473,61 @@ func (m *MsgCreateClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateClaimableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaimableNFT.Merge(m, src)
+func (m *MsgCreateMintableNFT) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateMintableNFT.Merge(m, src)
 }
-func (m *MsgCreateClaimableNFT) XXX_Size() int {
+func (m *MsgCreateMintableNFT) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateClaimableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaimableNFT.DiscardUnknown(m)
+func (m *MsgCreateMintableNFT) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateMintableNFT.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateClaimableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateMintableNFT proto.InternalMessageInfo
 
-func (m *MsgCreateClaimableNFT) GetCreator() string {
+func (m *MsgCreateMintableNFT) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgCreateClaimableNFT) GetClassId() string {
+func (m *MsgCreateMintableNFT) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgCreateClaimableNFT) GetId() string {
+func (m *MsgCreateMintableNFT) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *MsgCreateClaimableNFT) GetInput() NFTInput {
+func (m *MsgCreateMintableNFT) GetInput() NFTInput {
 	if m != nil {
 		return m.Input
 	}
 	return NFTInput{}
 }
 
-type MsgCreateClaimableNFTResponse struct {
+type MsgCreateMintableNFTResponse struct {
 }
 
-func (m *MsgCreateClaimableNFTResponse) Reset()         { *m = MsgCreateClaimableNFTResponse{} }
-func (m *MsgCreateClaimableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaimableNFTResponse) ProtoMessage()    {}
-func (*MsgCreateClaimableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateMintableNFTResponse) Reset()         { *m = MsgCreateMintableNFTResponse{} }
+func (m *MsgCreateMintableNFTResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateMintableNFTResponse) ProtoMessage()    {}
+func (*MsgCreateMintableNFTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{9}
 }
-func (m *MsgCreateClaimableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateMintableNFTResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateClaimableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateMintableNFTResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -537,37 +537,37 @@ func (m *MsgCreateClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateClaimableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaimableNFTResponse.Merge(m, src)
+func (m *MsgCreateMintableNFTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateMintableNFTResponse.Merge(m, src)
 }
-func (m *MsgCreateClaimableNFTResponse) XXX_Size() int {
+func (m *MsgCreateMintableNFTResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateClaimableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaimableNFTResponse.DiscardUnknown(m)
+func (m *MsgCreateMintableNFTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateMintableNFTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateClaimableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateMintableNFTResponse proto.InternalMessageInfo
 
-type MsgUpdateClaimableNFT struct {
+type MsgUpdateMintableNFT struct {
 	Creator string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string   `protobuf:"bytes,2,opt,name=classId,proto3" json:"classId,omitempty"`
 	Id      string   `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 	Input   NFTInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input"`
 }
 
-func (m *MsgUpdateClaimableNFT) Reset()         { *m = MsgUpdateClaimableNFT{} }
-func (m *MsgUpdateClaimableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateClaimableNFT) ProtoMessage()    {}
-func (*MsgUpdateClaimableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateMintableNFT) Reset()         { *m = MsgUpdateMintableNFT{} }
+func (m *MsgUpdateMintableNFT) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMintableNFT) ProtoMessage()    {}
+func (*MsgUpdateMintableNFT) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{10}
 }
-func (m *MsgUpdateClaimableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateMintableNFT) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateClaimableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateMintableNFT.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -577,61 +577,61 @@ func (m *MsgUpdateClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateClaimableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateClaimableNFT.Merge(m, src)
+func (m *MsgUpdateMintableNFT) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMintableNFT.Merge(m, src)
 }
-func (m *MsgUpdateClaimableNFT) XXX_Size() int {
+func (m *MsgUpdateMintableNFT) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateClaimableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateClaimableNFT.DiscardUnknown(m)
+func (m *MsgUpdateMintableNFT) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMintableNFT.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateClaimableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateMintableNFT proto.InternalMessageInfo
 
-func (m *MsgUpdateClaimableNFT) GetCreator() string {
+func (m *MsgUpdateMintableNFT) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgUpdateClaimableNFT) GetClassId() string {
+func (m *MsgUpdateMintableNFT) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgUpdateClaimableNFT) GetId() string {
+func (m *MsgUpdateMintableNFT) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *MsgUpdateClaimableNFT) GetInput() NFTInput {
+func (m *MsgUpdateMintableNFT) GetInput() NFTInput {
 	if m != nil {
 		return m.Input
 	}
 	return NFTInput{}
 }
 
-type MsgUpdateClaimableNFTResponse struct {
+type MsgUpdateMintableNFTResponse struct {
 }
 
-func (m *MsgUpdateClaimableNFTResponse) Reset()         { *m = MsgUpdateClaimableNFTResponse{} }
-func (m *MsgUpdateClaimableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateClaimableNFTResponse) ProtoMessage()    {}
-func (*MsgUpdateClaimableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateMintableNFTResponse) Reset()         { *m = MsgUpdateMintableNFTResponse{} }
+func (m *MsgUpdateMintableNFTResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMintableNFTResponse) ProtoMessage()    {}
+func (*MsgUpdateMintableNFTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{11}
 }
-func (m *MsgUpdateClaimableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateMintableNFTResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateClaimableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateMintableNFTResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -641,36 +641,36 @@ func (m *MsgUpdateClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateClaimableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateClaimableNFTResponse.Merge(m, src)
+func (m *MsgUpdateMintableNFTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMintableNFTResponse.Merge(m, src)
 }
-func (m *MsgUpdateClaimableNFTResponse) XXX_Size() int {
+func (m *MsgUpdateMintableNFTResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateClaimableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateClaimableNFTResponse.DiscardUnknown(m)
+func (m *MsgUpdateMintableNFTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMintableNFTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateClaimableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateMintableNFTResponse proto.InternalMessageInfo
 
-type MsgDeleteClaimableNFT struct {
+type MsgDeleteMintableNFT struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string `protobuf:"bytes,2,opt,name=classId,proto3" json:"classId,omitempty"`
 	Id      string `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *MsgDeleteClaimableNFT) Reset()         { *m = MsgDeleteClaimableNFT{} }
-func (m *MsgDeleteClaimableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteClaimableNFT) ProtoMessage()    {}
-func (*MsgDeleteClaimableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgDeleteMintableNFT) Reset()         { *m = MsgDeleteMintableNFT{} }
+func (m *MsgDeleteMintableNFT) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteMintableNFT) ProtoMessage()    {}
+func (*MsgDeleteMintableNFT) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{12}
 }
-func (m *MsgDeleteClaimableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgDeleteMintableNFT) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeleteClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDeleteMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeleteClaimableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDeleteMintableNFT.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -680,54 +680,54 @@ func (m *MsgDeleteClaimableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgDeleteClaimableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteClaimableNFT.Merge(m, src)
+func (m *MsgDeleteMintableNFT) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteMintableNFT.Merge(m, src)
 }
-func (m *MsgDeleteClaimableNFT) XXX_Size() int {
+func (m *MsgDeleteMintableNFT) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeleteClaimableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteClaimableNFT.DiscardUnknown(m)
+func (m *MsgDeleteMintableNFT) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteMintableNFT.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeleteClaimableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgDeleteMintableNFT proto.InternalMessageInfo
 
-func (m *MsgDeleteClaimableNFT) GetCreator() string {
+func (m *MsgDeleteMintableNFT) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgDeleteClaimableNFT) GetClassId() string {
+func (m *MsgDeleteMintableNFT) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgDeleteClaimableNFT) GetId() string {
+func (m *MsgDeleteMintableNFT) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type MsgDeleteClaimableNFTResponse struct {
+type MsgDeleteMintableNFTResponse struct {
 }
 
-func (m *MsgDeleteClaimableNFTResponse) Reset()         { *m = MsgDeleteClaimableNFTResponse{} }
-func (m *MsgDeleteClaimableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteClaimableNFTResponse) ProtoMessage()    {}
-func (*MsgDeleteClaimableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgDeleteMintableNFTResponse) Reset()         { *m = MsgDeleteMintableNFTResponse{} }
+func (m *MsgDeleteMintableNFTResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteMintableNFTResponse) ProtoMessage()    {}
+func (*MsgDeleteMintableNFTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c012793039203f1f, []int{13}
 }
-func (m *MsgDeleteClaimableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgDeleteMintableNFTResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeleteClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDeleteMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeleteClaimableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDeleteMintableNFTResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -737,17 +737,17 @@ func (m *MsgDeleteClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgDeleteClaimableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteClaimableNFTResponse.Merge(m, src)
+func (m *MsgDeleteMintableNFTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteMintableNFTResponse.Merge(m, src)
 }
-func (m *MsgDeleteClaimableNFTResponse) XXX_Size() int {
+func (m *MsgDeleteMintableNFTResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeleteClaimableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteClaimableNFTResponse.DiscardUnknown(m)
+func (m *MsgDeleteMintableNFTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteMintableNFTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeleteClaimableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgDeleteMintableNFTResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*MsgNewClass)(nil), "likecoin.likechain.likenft.MsgNewClass")
@@ -758,57 +758,57 @@ func init() {
 	proto.RegisterType((*MsgMintNFTResponse)(nil), "likecoin.likechain.likenft.MsgMintNFTResponse")
 	proto.RegisterType((*MsgBurnNFT)(nil), "likecoin.likechain.likenft.MsgBurnNFT")
 	proto.RegisterType((*MsgBurnNFTResponse)(nil), "likecoin.likechain.likenft.MsgBurnNFTResponse")
-	proto.RegisterType((*MsgCreateClaimableNFT)(nil), "likecoin.likechain.likenft.MsgCreateClaimableNFT")
-	proto.RegisterType((*MsgCreateClaimableNFTResponse)(nil), "likecoin.likechain.likenft.MsgCreateClaimableNFTResponse")
-	proto.RegisterType((*MsgUpdateClaimableNFT)(nil), "likecoin.likechain.likenft.MsgUpdateClaimableNFT")
-	proto.RegisterType((*MsgUpdateClaimableNFTResponse)(nil), "likecoin.likechain.likenft.MsgUpdateClaimableNFTResponse")
-	proto.RegisterType((*MsgDeleteClaimableNFT)(nil), "likecoin.likechain.likenft.MsgDeleteClaimableNFT")
-	proto.RegisterType((*MsgDeleteClaimableNFTResponse)(nil), "likecoin.likechain.likenft.MsgDeleteClaimableNFTResponse")
+	proto.RegisterType((*MsgCreateMintableNFT)(nil), "likecoin.likechain.likenft.MsgCreateMintableNFT")
+	proto.RegisterType((*MsgCreateMintableNFTResponse)(nil), "likecoin.likechain.likenft.MsgCreateMintableNFTResponse")
+	proto.RegisterType((*MsgUpdateMintableNFT)(nil), "likecoin.likechain.likenft.MsgUpdateMintableNFT")
+	proto.RegisterType((*MsgUpdateMintableNFTResponse)(nil), "likecoin.likechain.likenft.MsgUpdateMintableNFTResponse")
+	proto.RegisterType((*MsgDeleteMintableNFT)(nil), "likecoin.likechain.likenft.MsgDeleteMintableNFT")
+	proto.RegisterType((*MsgDeleteMintableNFTResponse)(nil), "likecoin.likechain.likenft.MsgDeleteMintableNFTResponse")
 }
 
 func init() { proto.RegisterFile("likenft/tx.proto", fileDescriptor_c012793039203f1f) }
 
 var fileDescriptor_c012793039203f1f = []byte{
-	// 620 bytes of a gzipped FileDescriptorProto
+	// 617 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x31, 0x6f, 0xd3, 0x40,
-	0x14, 0xc7, 0xe3, 0xa6, 0x49, 0xe9, 0x8b, 0x54, 0x21, 0x13, 0x68, 0x6a, 0x81, 0x5b, 0x59, 0xa8,
-	0x54, 0x08, 0x6c, 0x25, 0x88, 0x81, 0x0d, 0xa5, 0x21, 0xa8, 0x08, 0x07, 0x14, 0x05, 0x06, 0x18,
-	0x90, 0x93, 0x5c, 0x5c, 0x8b, 0xe4, 0x6c, 0xe5, 0x2e, 0x50, 0x56, 0x26, 0x46, 0xc4, 0xce, 0x67,
-	0x60, 0xe4, 0x2b, 0x74, 0xec, 0xc8, 0x84, 0x50, 0xf2, 0x45, 0xd0, 0x9d, 0xef, 0x8c, 0xd3, 0x38,
-	0xb5, 0x81, 0x0e, 0xdd, 0xce, 0x79, 0xef, 0xfd, 0xdf, 0xff, 0xf7, 0x9c, 0x77, 0x32, 0x5c, 0x1e,
-	0x7a, 0x6f, 0x11, 0x1e, 0x50, 0x8b, 0x1e, 0x99, 0xc1, 0xd8, 0xa7, 0xbe, 0xaa, 0xb1, 0x5f, 0x7a,
-	0xbe, 0x87, 0x4d, 0x7e, 0x38, 0x74, 0xc4, 0x09, 0x0f, 0xa8, 0x56, 0x76, 0x7d, 0xd7, 0xe7, 0x69,
-	0x16, 0x3b, 0x85, 0x15, 0xda, 0xf5, 0x9e, 0x4f, 0x46, 0x3e, 0xb1, 0x98, 0xcc, 0xbb, 0x6a, 0x17,
-	0x51, 0xa7, 0xca, 0xce, 0x22, 0xba, 0x25, 0x3b, 0xf4, 0x86, 0x0e, 0x21, 0x6f, 0x3c, 0x1c, 0x4c,
-	0x64, 0x68, 0x53, 0x86, 0xf0, 0x80, 0xc6, 0x03, 0xc6, 0x77, 0x05, 0x4a, 0x36, 0x71, 0x5b, 0xe8,
-	0xfd, 0x3e, 0x2b, 0x52, 0x2b, 0xb0, 0xd6, 0x1b, 0x23, 0x87, 0xfa, 0xe3, 0x8a, 0xb2, 0xa3, 0xec,
-	0xad, 0xb7, 0xe5, 0xa3, 0xfa, 0x04, 0x8a, 0x81, 0x33, 0x46, 0x98, 0x56, 0x56, 0x76, 0x94, 0xbd,
-	0x52, 0xed, 0x8e, 0xb9, 0xdc, 0xbe, 0xc9, 0xc5, 0x9e, 0xf3, 0xf4, 0x03, 0xd6, 0xad, 0xbe, 0x7a,
-	0xfc, 0x73, 0x3b, 0xd7, 0x16, 0x0a, 0x6a, 0x1d, 0x0a, 0xdc, 0x44, 0x25, 0xcf, 0xa5, 0x76, 0x53,
-	0xa5, 0xe2, 0x22, 0x61, 0xa9, 0xf1, 0x14, 0xae, 0xc4, 0x8c, 0xb7, 0x11, 0x09, 0x7c, 0x4c, 0x90,
-	0x7a, 0x1f, 0x0a, 0x1c, 0x9f, 0xdb, 0x2f, 0xd5, 0xb6, 0xcc, 0x70, 0x64, 0x26, 0x93, 0x12, 0x23,
-	0x0b, 0x25, 0xa5, 0x1a, 0xcf, 0x36, 0x3e, 0x29, 0xb0, 0x61, 0x13, 0xf7, 0x45, 0xd0, 0x77, 0x28,
-	0x4a, 0x1b, 0x05, 0x8b, 0x70, 0x57, 0x7d, 0x3e, 0x0b, 0x16, 0x09, 0x1f, 0xcf, 0x05, 0xec, 0x19,
-	0x5c, 0x9b, 0x77, 0xf2, 0xbf, 0x6c, 0x5f, 0x14, 0x00, 0x9b, 0xb8, 0xb6, 0x87, 0x69, 0xab, 0xd9,
-	0xf9, 0x27, 0xae, 0x0d, 0x58, 0xf1, 0xfa, 0x1c, 0x6a, 0xbd, 0xbd, 0xe2, 0xf5, 0xd5, 0x87, 0x92,
-	0x73, 0x95, 0x3b, 0xb9, 0x79, 0x16, 0x67, 0xab, 0xd9, 0x49, 0xa0, 0x7c, 0x04, 0xea, 0x1f, 0x4f,
-	0x11, 0xa1, 0x05, 0x79, 0x3c, 0xa0, 0x82, 0x6f, 0x33, 0x89, 0xaf, 0xd5, 0xec, 0x08, 0x21, 0x96,
-	0x69, 0xbc, 0xe4, 0x68, 0xf5, 0xc9, 0x18, 0x67, 0x44, 0x6b, 0xcc, 0xa3, 0x35, 0xd4, 0x32, 0x14,
-	0xf0, 0x80, 0x1e, 0x34, 0x04, 0x5d, 0xf8, 0x60, 0x94, 0xb9, 0x3d, 0xa1, 0x2b, 0xed, 0x19, 0x5f,
-	0x15, 0xb8, 0x6a, 0x13, 0x77, 0x9f, 0x89, 0xb2, 0x77, 0xe3, 0x8d, 0x9c, 0xee, 0x10, 0x5d, 0x9c,
-	0xa1, 0x6e, 0xc3, 0x8d, 0x44, 0x7b, 0xa7, 0x01, 0xa2, 0x3f, 0xd7, 0xc5, 0x04, 0x58, 0xb4, 0x17,
-	0x01, 0xbc, 0xe6, 0xfe, 0x1b, 0x68, 0x88, 0xce, 0xdf, 0xbf, 0xe8, 0xbe, 0x28, 0x2e, 0xbb, 0xd7,
-	0xbe, 0x15, 0x21, 0x6f, 0x13, 0x57, 0xed, 0xc3, 0xa5, 0xe8, 0xc6, 0xbc, 0x75, 0x16, 0x65, 0xec,
-	0x86, 0xd2, 0xac, 0x8c, 0x89, 0xd1, 0x32, 0x8c, 0xa0, 0x14, 0xbf, 0x8f, 0x6e, 0xa7, 0xd4, 0xc7,
-	0x72, 0xb5, 0x5a, 0xf6, 0xdc, 0xa8, 0x9d, 0x03, 0x6b, 0xf2, 0x8a, 0xd8, 0x4d, 0x29, 0x17, 0x79,
-	0x9a, 0x99, 0x2d, 0x2f, 0xde, 0x42, 0xae, 0x6a, 0x5a, 0x0b, 0x91, 0x97, 0xda, 0xe2, 0xd4, 0x8a,
-	0xaa, 0x1f, 0x15, 0x50, 0x13, 0xf6, 0xb3, 0x9a, 0x22, 0xb3, 0x58, 0xa2, 0x3d, 0xf8, 0xeb, 0x92,
-	0x39, 0x13, 0x09, 0x3b, 0x56, 0xcd, 0xfa, 0x56, 0xb2, 0x9b, 0x58, 0xbe, 0x2a, 0xdc, 0x44, 0xc2,
-	0xa2, 0xa4, 0x99, 0x58, 0x2c, 0x49, 0x35, 0xb1, 0x7c, 0x63, 0xea, 0x8f, 0x8f, 0xa7, 0xba, 0x72,
-	0x32, 0xd5, 0x95, 0x5f, 0x53, 0x5d, 0xf9, 0x3c, 0xd3, 0x73, 0x27, 0x33, 0x3d, 0xf7, 0x63, 0xa6,
-	0xe7, 0x5e, 0xdd, 0x75, 0x3d, 0x7a, 0x38, 0xe9, 0x9a, 0x3d, 0x7f, 0x64, 0x49, 0x79, 0x2b, 0x92,
-	0xb7, 0x8e, 0xac, 0xe8, 0x7b, 0xe9, 0x43, 0x80, 0x48, 0xb7, 0xc8, 0xbf, 0x57, 0xee, 0xfd, 0x0e,
-	0x00, 0x00, 0xff, 0xff, 0x90, 0x94, 0xb2, 0xf2, 0x47, 0x09, 0x00, 0x00,
+	0x14, 0xc7, 0xe3, 0xa4, 0x49, 0xe9, 0x8b, 0x54, 0x81, 0x89, 0x68, 0x6a, 0x55, 0xa6, 0xb2, 0x50,
+	0xa9, 0x10, 0xd8, 0x6d, 0x10, 0x12, 0x23, 0x4a, 0x43, 0x50, 0x11, 0x0e, 0x28, 0x0a, 0x0c, 0x5d,
+	0x90, 0x93, 0x5c, 0x5c, 0x8b, 0xe4, 0x6c, 0xe5, 0x2e, 0x50, 0x26, 0x56, 0x46, 0xc4, 0xcc, 0xc6,
+	0x87, 0xe0, 0x2b, 0x74, 0xec, 0xc8, 0x84, 0x50, 0xf2, 0x45, 0xd0, 0x9d, 0xef, 0x8c, 0x5b, 0x27,
+	0xb5, 0x0b, 0x1d, 0xba, 0xdd, 0xf5, 0xbd, 0xf7, 0x7f, 0xbf, 0xff, 0x6b, 0xde, 0xc9, 0x70, 0x7d,
+	0xe8, 0xbd, 0x43, 0x78, 0x40, 0x2d, 0x7a, 0x64, 0x06, 0x63, 0x9f, 0xfa, 0xaa, 0xc6, 0xfe, 0xd2,
+	0xf3, 0x3d, 0x6c, 0xf2, 0xc3, 0xa1, 0x23, 0x4e, 0x78, 0x40, 0xb5, 0x8a, 0xeb, 0xbb, 0x3e, 0x4f,
+	0xb3, 0xd8, 0x29, 0xac, 0xd0, 0x36, 0x7a, 0x3e, 0x19, 0xf9, 0xc4, 0x62, 0x32, 0xef, 0x77, 0xbb,
+	0x88, 0x3a, 0xbb, 0xec, 0x2c, 0xa2, 0xeb, 0xb2, 0x43, 0x6f, 0xe8, 0x10, 0xf2, 0xd6, 0xc3, 0xc1,
+	0x44, 0x86, 0xd6, 0x64, 0x08, 0x0f, 0x68, 0x3c, 0x60, 0xfc, 0x50, 0xa0, 0x6c, 0x13, 0xb7, 0x85,
+	0x3e, 0xec, 0xb1, 0x22, 0xb5, 0x0a, 0xcb, 0xbd, 0x31, 0x72, 0xa8, 0x3f, 0xae, 0x2a, 0x9b, 0xca,
+	0xf6, 0x4a, 0x5b, 0x5e, 0xd5, 0xe7, 0x50, 0x0a, 0x9c, 0x31, 0xc2, 0xb4, 0x9a, 0xdf, 0x54, 0xb6,
+	0xcb, 0xb5, 0xfb, 0xe6, 0x62, 0x7c, 0x93, 0x8b, 0xbd, 0xe2, 0xe9, 0xfb, 0xac, 0x5b, 0x7d, 0xe9,
+	0xf8, 0xd7, 0xed, 0x5c, 0x5b, 0x28, 0xa8, 0x75, 0x28, 0x72, 0x88, 0x6a, 0x81, 0x4b, 0x6d, 0xa5,
+	0x4a, 0xc5, 0x45, 0xc2, 0x52, 0xe3, 0x05, 0xdc, 0x8c, 0x81, 0xb7, 0x11, 0x09, 0x7c, 0x4c, 0x90,
+	0xfa, 0x08, 0x8a, 0xdc, 0x3e, 0xc7, 0x2f, 0xd7, 0xd6, 0xcd, 0x70, 0x64, 0x26, 0x93, 0x12, 0x23,
+	0x0b, 0x25, 0xa5, 0x1a, 0xcf, 0x36, 0x3e, 0x2b, 0xb0, 0x6a, 0x13, 0xf7, 0x75, 0xd0, 0x77, 0x28,
+	0x4a, 0x1b, 0x05, 0x8b, 0x70, 0xaa, 0x3e, 0x9f, 0x05, 0x8b, 0x84, 0xd7, 0x4b, 0x31, 0xf6, 0x12,
+	0x6e, 0x9d, 0x26, 0xf9, 0x5f, 0x6f, 0x5f, 0x15, 0x00, 0x9b, 0xb8, 0xb6, 0x87, 0x69, 0xab, 0xd9,
+	0xf9, 0x27, 0x5f, 0xab, 0x90, 0xf7, 0xfa, 0xdc, 0xd4, 0x4a, 0x3b, 0xef, 0xf5, 0xd5, 0x27, 0xd2,
+	0xe7, 0x12, 0x27, 0xb9, 0x73, 0x9e, 0xcf, 0x56, 0xb3, 0x33, 0xc7, 0xe5, 0x53, 0x50, 0xff, 0x32,
+	0x45, 0x0e, 0x2d, 0x28, 0xe0, 0x01, 0x15, 0xfe, 0xd6, 0xe6, 0xf9, 0x6b, 0x35, 0x3b, 0x42, 0x88,
+	0x65, 0x1a, 0x6f, 0xb8, 0xb5, 0xfa, 0x64, 0x8c, 0x33, 0x5a, 0x6b, 0x9c, 0xb6, 0xd6, 0x50, 0x2b,
+	0x50, 0xc4, 0x03, 0xba, 0xdf, 0x10, 0xee, 0xc2, 0x8b, 0x51, 0xe1, 0x78, 0x42, 0x57, 0xe2, 0x19,
+	0xdf, 0x14, 0xa8, 0xd8, 0xc4, 0xdd, 0x63, 0xa2, 0x88, 0xb1, 0x3b, 0xdd, 0x21, 0xba, 0x3a, 0x33,
+	0xd5, 0x61, 0x63, 0x1e, 0xdd, 0x59, 0xfc, 0xf0, 0xa7, 0x75, 0x55, 0xf1, 0x13, 0x74, 0x11, 0xfe,
+	0x01, 0xa7, 0x6f, 0xa0, 0x21, 0xba, 0x74, 0x7a, 0xd1, 0x3b, 0xa1, 0x2d, 0x7b, 0xd7, 0xbe, 0x97,
+	0xa0, 0x60, 0x13, 0x57, 0xed, 0xc3, 0xb5, 0xe8, 0xad, 0xbc, 0x7b, 0x9e, 0xc5, 0xd8, 0xdb, 0xa4,
+	0x59, 0x19, 0x13, 0xa3, 0x35, 0x18, 0x41, 0x39, 0xfe, 0x12, 0xdd, 0x4b, 0xa9, 0x8f, 0xe5, 0x6a,
+	0xb5, 0xec, 0xb9, 0x51, 0x3b, 0x07, 0x96, 0xe5, 0xe3, 0xb0, 0x95, 0x52, 0x2e, 0xf2, 0x34, 0x33,
+	0x5b, 0x5e, 0xbc, 0x85, 0x5c, 0xd2, 0xb4, 0x16, 0x22, 0x2f, 0xb5, 0xc5, 0x99, 0xe5, 0x54, 0x3f,
+	0xc1, 0x8d, 0xe4, 0x62, 0xee, 0xa4, 0x88, 0x24, 0x2a, 0xb4, 0xc7, 0x17, 0xad, 0x88, 0x03, 0x24,
+	0x57, 0x6b, 0x27, 0xd3, 0xff, 0xe3, 0x22, 0x00, 0x0b, 0x17, 0x84, 0x01, 0x24, 0xb7, 0x23, 0x0d,
+	0x20, 0x51, 0x91, 0x0a, 0xb0, 0x70, 0x4b, 0xea, 0xcf, 0x8e, 0xa7, 0xba, 0x72, 0x32, 0xd5, 0x95,
+	0xdf, 0x53, 0x5d, 0xf9, 0x32, 0xd3, 0x73, 0x27, 0x33, 0x3d, 0xf7, 0x73, 0xa6, 0xe7, 0x0e, 0x1e,
+	0xb8, 0x1e, 0x3d, 0x9c, 0x74, 0xcd, 0x9e, 0x3f, 0xb2, 0xa4, 0xba, 0x15, 0xa9, 0x5b, 0x47, 0x56,
+	0xf4, 0x75, 0xf4, 0x31, 0x40, 0xa4, 0x5b, 0xe2, 0x5f, 0x27, 0x0f, 0xff, 0x04, 0x00, 0x00, 0xff,
+	0xff, 0xcb, 0x82, 0xe5, 0xc5, 0x35, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -827,9 +827,9 @@ type MsgClient interface {
 	UpdateClass(ctx context.Context, in *MsgUpdateClass, opts ...grpc.CallOption) (*MsgUpdateClassResponse, error)
 	MintNFT(ctx context.Context, in *MsgMintNFT, opts ...grpc.CallOption) (*MsgMintNFTResponse, error)
 	BurnNFT(ctx context.Context, in *MsgBurnNFT, opts ...grpc.CallOption) (*MsgBurnNFTResponse, error)
-	CreateClaimableNFT(ctx context.Context, in *MsgCreateClaimableNFT, opts ...grpc.CallOption) (*MsgCreateClaimableNFTResponse, error)
-	UpdateClaimableNFT(ctx context.Context, in *MsgUpdateClaimableNFT, opts ...grpc.CallOption) (*MsgUpdateClaimableNFTResponse, error)
-	DeleteClaimableNFT(ctx context.Context, in *MsgDeleteClaimableNFT, opts ...grpc.CallOption) (*MsgDeleteClaimableNFTResponse, error)
+	CreateMintableNFT(ctx context.Context, in *MsgCreateMintableNFT, opts ...grpc.CallOption) (*MsgCreateMintableNFTResponse, error)
+	UpdateMintableNFT(ctx context.Context, in *MsgUpdateMintableNFT, opts ...grpc.CallOption) (*MsgUpdateMintableNFTResponse, error)
+	DeleteMintableNFT(ctx context.Context, in *MsgDeleteMintableNFT, opts ...grpc.CallOption) (*MsgDeleteMintableNFTResponse, error)
 }
 
 type msgClient struct {
@@ -876,27 +876,27 @@ func (c *msgClient) BurnNFT(ctx context.Context, in *MsgBurnNFT, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *msgClient) CreateClaimableNFT(ctx context.Context, in *MsgCreateClaimableNFT, opts ...grpc.CallOption) (*MsgCreateClaimableNFTResponse, error) {
-	out := new(MsgCreateClaimableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/CreateClaimableNFT", in, out, opts...)
+func (c *msgClient) CreateMintableNFT(ctx context.Context, in *MsgCreateMintableNFT, opts ...grpc.CallOption) (*MsgCreateMintableNFTResponse, error) {
+	out := new(MsgCreateMintableNFTResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/CreateMintableNFT", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateClaimableNFT(ctx context.Context, in *MsgUpdateClaimableNFT, opts ...grpc.CallOption) (*MsgUpdateClaimableNFTResponse, error) {
-	out := new(MsgUpdateClaimableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/UpdateClaimableNFT", in, out, opts...)
+func (c *msgClient) UpdateMintableNFT(ctx context.Context, in *MsgUpdateMintableNFT, opts ...grpc.CallOption) (*MsgUpdateMintableNFTResponse, error) {
+	out := new(MsgUpdateMintableNFTResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/UpdateMintableNFT", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DeleteClaimableNFT(ctx context.Context, in *MsgDeleteClaimableNFT, opts ...grpc.CallOption) (*MsgDeleteClaimableNFTResponse, error) {
-	out := new(MsgDeleteClaimableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/DeleteClaimableNFT", in, out, opts...)
+func (c *msgClient) DeleteMintableNFT(ctx context.Context, in *MsgDeleteMintableNFT, opts ...grpc.CallOption) (*MsgDeleteMintableNFTResponse, error) {
+	out := new(MsgDeleteMintableNFTResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Msg/DeleteMintableNFT", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -909,9 +909,9 @@ type MsgServer interface {
 	UpdateClass(context.Context, *MsgUpdateClass) (*MsgUpdateClassResponse, error)
 	MintNFT(context.Context, *MsgMintNFT) (*MsgMintNFTResponse, error)
 	BurnNFT(context.Context, *MsgBurnNFT) (*MsgBurnNFTResponse, error)
-	CreateClaimableNFT(context.Context, *MsgCreateClaimableNFT) (*MsgCreateClaimableNFTResponse, error)
-	UpdateClaimableNFT(context.Context, *MsgUpdateClaimableNFT) (*MsgUpdateClaimableNFTResponse, error)
-	DeleteClaimableNFT(context.Context, *MsgDeleteClaimableNFT) (*MsgDeleteClaimableNFTResponse, error)
+	CreateMintableNFT(context.Context, *MsgCreateMintableNFT) (*MsgCreateMintableNFTResponse, error)
+	UpdateMintableNFT(context.Context, *MsgUpdateMintableNFT) (*MsgUpdateMintableNFTResponse, error)
+	DeleteMintableNFT(context.Context, *MsgDeleteMintableNFT) (*MsgDeleteMintableNFTResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -930,14 +930,14 @@ func (*UnimplementedMsgServer) MintNFT(ctx context.Context, req *MsgMintNFT) (*M
 func (*UnimplementedMsgServer) BurnNFT(ctx context.Context, req *MsgBurnNFT) (*MsgBurnNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BurnNFT not implemented")
 }
-func (*UnimplementedMsgServer) CreateClaimableNFT(ctx context.Context, req *MsgCreateClaimableNFT) (*MsgCreateClaimableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClaimableNFT not implemented")
+func (*UnimplementedMsgServer) CreateMintableNFT(ctx context.Context, req *MsgCreateMintableNFT) (*MsgCreateMintableNFTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMintableNFT not implemented")
 }
-func (*UnimplementedMsgServer) UpdateClaimableNFT(ctx context.Context, req *MsgUpdateClaimableNFT) (*MsgUpdateClaimableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateClaimableNFT not implemented")
+func (*UnimplementedMsgServer) UpdateMintableNFT(ctx context.Context, req *MsgUpdateMintableNFT) (*MsgUpdateMintableNFTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMintableNFT not implemented")
 }
-func (*UnimplementedMsgServer) DeleteClaimableNFT(ctx context.Context, req *MsgDeleteClaimableNFT) (*MsgDeleteClaimableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteClaimableNFT not implemented")
+func (*UnimplementedMsgServer) DeleteMintableNFT(ctx context.Context, req *MsgDeleteMintableNFT) (*MsgDeleteMintableNFTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMintableNFT not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -1016,56 +1016,56 @@ func _Msg_BurnNFT_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_CreateClaimableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClaimableNFT)
+func _Msg_CreateMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateMintableNFT)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateClaimableNFT(ctx, in)
+		return srv.(MsgServer).CreateMintableNFT(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Msg/CreateClaimableNFT",
+		FullMethod: "/likecoin.likechain.likenft.Msg/CreateMintableNFT",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClaimableNFT(ctx, req.(*MsgCreateClaimableNFT))
+		return srv.(MsgServer).CreateMintableNFT(ctx, req.(*MsgCreateMintableNFT))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateClaimableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateClaimableNFT)
+func _Msg_UpdateMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateMintableNFT)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateClaimableNFT(ctx, in)
+		return srv.(MsgServer).UpdateMintableNFT(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Msg/UpdateClaimableNFT",
+		FullMethod: "/likecoin.likechain.likenft.Msg/UpdateMintableNFT",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateClaimableNFT(ctx, req.(*MsgUpdateClaimableNFT))
+		return srv.(MsgServer).UpdateMintableNFT(ctx, req.(*MsgUpdateMintableNFT))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DeleteClaimableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeleteClaimableNFT)
+func _Msg_DeleteMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteMintableNFT)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DeleteClaimableNFT(ctx, in)
+		return srv.(MsgServer).DeleteMintableNFT(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Msg/DeleteClaimableNFT",
+		FullMethod: "/likecoin.likechain.likenft.Msg/DeleteMintableNFT",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DeleteClaimableNFT(ctx, req.(*MsgDeleteClaimableNFT))
+		return srv.(MsgServer).DeleteMintableNFT(ctx, req.(*MsgDeleteMintableNFT))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1091,16 +1091,16 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_BurnNFT_Handler,
 		},
 		{
-			MethodName: "CreateClaimableNFT",
-			Handler:    _Msg_CreateClaimableNFT_Handler,
+			MethodName: "CreateMintableNFT",
+			Handler:    _Msg_CreateMintableNFT_Handler,
 		},
 		{
-			MethodName: "UpdateClaimableNFT",
-			Handler:    _Msg_UpdateClaimableNFT_Handler,
+			MethodName: "UpdateMintableNFT",
+			Handler:    _Msg_UpdateMintableNFT_Handler,
 		},
 		{
-			MethodName: "DeleteClaimableNFT",
-			Handler:    _Msg_DeleteClaimableNFT_Handler,
+			MethodName: "DeleteMintableNFT",
+			Handler:    _Msg_DeleteMintableNFT_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1424,7 +1424,7 @@ func (m *MsgBurnNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateClaimableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateMintableNFT) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1434,12 +1434,12 @@ func (m *MsgCreateClaimableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateClaimableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1478,7 +1478,7 @@ func (m *MsgCreateClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1488,12 +1488,12 @@ func (m *MsgCreateClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateClaimableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1501,7 +1501,7 @@ func (m *MsgCreateClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateClaimableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateMintableNFT) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1511,12 +1511,12 @@ func (m *MsgUpdateClaimableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateClaimableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1555,7 +1555,7 @@ func (m *MsgUpdateClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1565,12 +1565,12 @@ func (m *MsgUpdateClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateClaimableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1578,7 +1578,7 @@ func (m *MsgUpdateClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeleteClaimableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgDeleteMintableNFT) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1588,12 +1588,12 @@ func (m *MsgDeleteClaimableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeleteClaimableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDeleteMintableNFT) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeleteClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1622,7 +1622,7 @@ func (m *MsgDeleteClaimableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeleteClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgDeleteMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1632,12 +1632,12 @@ func (m *MsgDeleteClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeleteClaimableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDeleteMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeleteClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDeleteMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1778,7 +1778,7 @@ func (m *MsgBurnNFTResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateClaimableNFT) Size() (n int) {
+func (m *MsgCreateMintableNFT) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1801,7 +1801,7 @@ func (m *MsgCreateClaimableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateClaimableNFTResponse) Size() (n int) {
+func (m *MsgCreateMintableNFTResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1810,7 +1810,7 @@ func (m *MsgCreateClaimableNFTResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateClaimableNFT) Size() (n int) {
+func (m *MsgUpdateMintableNFT) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1833,7 +1833,7 @@ func (m *MsgUpdateClaimableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateClaimableNFTResponse) Size() (n int) {
+func (m *MsgUpdateMintableNFTResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1842,7 +1842,7 @@ func (m *MsgUpdateClaimableNFTResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDeleteClaimableNFT) Size() (n int) {
+func (m *MsgDeleteMintableNFT) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1863,7 +1863,7 @@ func (m *MsgDeleteClaimableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgDeleteClaimableNFTResponse) Size() (n int) {
+func (m *MsgDeleteMintableNFTResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2797,7 +2797,7 @@ func (m *MsgBurnNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateClaimableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateMintableNFT) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2820,10 +2820,10 @@ func (m *MsgCreateClaimableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaimableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateMintableNFT: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaimableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2976,7 +2976,7 @@ func (m *MsgCreateClaimableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2999,10 +2999,10 @@ func (m *MsgCreateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaimableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateMintableNFTResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaimableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -3026,7 +3026,7 @@ func (m *MsgCreateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateClaimableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3049,10 +3049,10 @@ func (m *MsgUpdateClaimableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateClaimableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateMintableNFT: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateClaimableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3205,7 +3205,7 @@ func (m *MsgUpdateClaimableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3228,10 +3228,10 @@ func (m *MsgUpdateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateClaimableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateMintableNFTResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateClaimableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -3255,7 +3255,7 @@ func (m *MsgUpdateClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeleteClaimableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3278,10 +3278,10 @@ func (m *MsgDeleteClaimableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteClaimableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteMintableNFT: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteClaimableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3401,7 +3401,7 @@ func (m *MsgDeleteClaimableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeleteClaimableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3424,10 +3424,10 @@ func (m *MsgDeleteClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteClaimableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteMintableNFTResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteClaimableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

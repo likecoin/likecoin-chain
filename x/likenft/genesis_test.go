@@ -34,7 +34,7 @@ func TestGenesis(t *testing.T) {
 				Account: accounts[1].String(),
 			},
 		},
-		ClaimableNFTList: []types.ClaimableNFT{
+		MintableNFTList: []types.MintableNFT{
 			{
 				ClassId: "0",
 				Id:      "0",
@@ -47,7 +47,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx, ctrl := likenfttestutil.LikenftKeeperForClaimableTest(t)
+	k, ctx, ctrl := likenfttestutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	likenft.InitGenesis(ctx, *k, genesisState)
@@ -59,6 +59,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.ClassesByISCNList, got.ClassesByISCNList)
 	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
-	require.ElementsMatch(t, genesisState.ClaimableNFTList, got.ClaimableNFTList)
+	require.ElementsMatch(t, genesisState.MintableNFTList, got.MintableNFTList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

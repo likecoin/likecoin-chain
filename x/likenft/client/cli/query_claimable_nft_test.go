@@ -23,19 +23,19 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithClaimableNFTObjects(t *testing.T, n int) (*network.Network, []types.ClaimableNFT) {
+func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []types.MintableNFT) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	// seed nft class
 	nftState := nft.GenesisState{}
-	// seed claimable
+	// seed mintable
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
 		// seed nft class
 		classData := types.ClassData{
-			ClaimableCount: 0,
+			MintableCount: 0,
 		}
 		classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 		class := nft.Class{
@@ -43,26 +43,26 @@ func networkWithClaimableNFTObjects(t *testing.T, n int) (*network.Network, []ty
 			Data: classDataInAny,
 		}
 		nftState.Classes = append(nftState.Classes, &class)
-		// seed claimable
-		claimableNFT := types.ClaimableNFT{
+		// seed mintable
+		mintableNFT := types.MintableNFT{
 			ClassId: strconv.Itoa(i),
 			Id:      strconv.Itoa(i),
 		}
-		state.ClaimableNFTList = append(state.ClaimableNFTList, claimableNFT)
+		state.MintableNFTList = append(state.MintableNFTList, mintableNFT)
 	}
 	// seed nft class
 	nftBuf, err := cfg.Codec.MarshalJSON(&nftState)
 	require.NoError(t, err)
 	cfg.GenesisState[nft.ModuleName] = nftBuf
-	// seed claimable
+	// seed mintable
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.ClaimableNFTList
+	return network.New(t, cfg), state.MintableNFTList
 }
 
-func TestShowClaimableNFT(t *testing.T) {
-	net, objs := networkWithClaimableNFTObjects(t, 2)
+func TestShowMintableNFT(t *testing.T) {
+	net, objs := networkWithMintableNFTObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -75,7 +75,7 @@ func TestShowClaimableNFT(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.ClaimableNFT
+		obj  types.MintableNFT
 	}{
 		{
 			desc:      "found",
@@ -101,27 +101,27 @@ func TestShowClaimableNFT(t *testing.T) {
 				tc.idId,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowClaimableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowMintableNFT(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryClaimableNFTResponse
+				var resp types.QueryMintableNFTResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.ClaimableNFT)
+				require.NotNil(t, resp.MintableNFT)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.ClaimableNFT),
+					nullify.Fill(&resp.MintableNFT),
 				)
 			}
 		})
 	}
 }
 
-func TestListClaimableNFT(t *testing.T) {
-	net, objs := networkWithClaimableNFTObjects(t, 5)
+func TestListMintableNFT(t *testing.T) {
+	net, objs := networkWithMintableNFTObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
@@ -143,14 +143,14 @@ func TestListClaimableNFT(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
 			require.NoError(t, err)
-			var resp types.QueryClaimableNFTIndexResponse
+			var resp types.QueryMintableNFTIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClaimableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNFT), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClaimableNFT),
+				nullify.Fill(resp.MintableNFT),
 			)
 		}
 	})
@@ -159,29 +159,29 @@ func TestListClaimableNFT(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
 			require.NoError(t, err)
-			var resp types.QueryClaimableNFTIndexResponse
+			var resp types.QueryMintableNFTIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClaimableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNFT), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClaimableNFT),
+				nullify.Fill(resp.MintableNFT),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimableNFT(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
 		require.NoError(t, err)
-		var resp types.QueryClaimableNFTIndexResponse
+		var resp types.QueryMintableNFTIndexResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.ClaimableNFT),
+			nullify.Fill(resp.MintableNFT),
 		)
 	})
 }

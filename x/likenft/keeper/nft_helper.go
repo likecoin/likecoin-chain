@@ -9,24 +9,24 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classData types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.ClaimPeriod, error) {
+func (k Keeper) resolveValidMintPeriod(ctx sdk.Context, classId string, classData types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.MintPeriod, error) {
 
-	claimPeriods := classData.Config.ClaimPeriods
-	if len(claimPeriods) == 0 {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("No claim period is configured for class %s", classId))
+	mintPeriods := classData.Config.MintPeriods
+	if len(mintPeriods) == 0 {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("No mint period is configured for class %s", classId))
 	}
 
-	for _, claimPeriod := range claimPeriods {
-		// Check the first applicable claim period
-		if claimPeriod.StartTime.Before(ctx.BlockHeader().Time) {
+	for _, mintPeriod := range mintPeriods {
+		// Check the first applicable mint period
+		if mintPeriod.StartTime.Before(ctx.BlockHeader().Time) {
 			// Check if the user is allowed to mint the token
-			// If the minter is the owner, any claim period that is after the block time is valid
+			// If the minter is the owner, any mint period that is after the block time is valid
 			// If allowed address list is nil it means the the class is publically available
-			if ownerAddress.Equals(userAddress) || len(claimPeriod.AllowedAddresses) == 0 {
-				return &claimPeriod, nil
+			if ownerAddress.Equals(userAddress) || len(mintPeriod.AllowedAddresses) == 0 {
+				return &mintPeriod, nil
 			}
 
-			for _, allowedAddress := range claimPeriod.AllowedAddresses {
+			for _, allowedAddress := range mintPeriod.AllowedAddresses {
 				// Ensure the configured allowed address is valid
 				wrappedAddress, err := sdk.AccAddressFromBech32(allowedAddress)
 				if err != nil {
@@ -34,7 +34,7 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 				}
 
 				if userAddress.Equals(wrappedAddress) {
-					return &claimPeriod, nil
+					return &mintPeriod, nil
 				}
 			}
 		}
@@ -43,19 +43,19 @@ func (k Keeper) resolveValidClaimPeriod(ctx sdk.Context, classId string, classDa
 	return nil, nil
 }
 
-func SortClaimPeriod(claimPeriods []types.ClaimPeriod, descending bool) []types.ClaimPeriod {
-	// Sort the claim periods by start time
-	sort.Slice(claimPeriods, func(i, j int) bool {
+func SortMintPeriod(mintPeriods []types.MintPeriod, descending bool) []types.MintPeriod {
+	// Sort the mint periods by start time
+	sort.Slice(mintPeriods, func(i, j int) bool {
 		if descending {
 			i, j = j, i
 		}
 
-		if claimPeriods[j].StartTime.Equal(*claimPeriods[i].StartTime) {
-			return claimPeriods[j].MintPrice > claimPeriods[i].MintPrice
+		if mintPeriods[j].StartTime.Equal(*mintPeriods[i].StartTime) {
+			return mintPeriods[j].MintPrice > mintPeriods[i].MintPrice
 		}
 
-		return claimPeriods[j].StartTime.After(*claimPeriods[i].StartTime)
+		return mintPeriods[j].StartTime.After(*mintPeriods[i].StartTime)
 	})
 
-	return claimPeriods
+	return mintPeriods
 }

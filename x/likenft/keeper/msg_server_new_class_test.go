@@ -52,7 +52,7 @@ func TestNewClassISCNNormal(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -94,7 +94,7 @@ func TestNewClassISCNNormal(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -121,11 +121,11 @@ func TestNewClassISCNNormal(t *testing.T) {
 	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
 	require.Equal(t, revealTime, classData.Config.RevealTime)
 
-	require.Equal(t, len(claimPeriods), len(classData.Config.ClaimPeriods))
-	for i, claimPeriod := range classData.Config.ClaimPeriods {
-		require.Equal(t, claimPeriod.StartTime, claimPeriods[i].StartTime)
-		require.ElementsMatch(t, claimPeriod.AllowedAddresses, claimPeriods[i].AllowedAddresses)
-		require.Equal(t, claimPeriod.MintPrice, claimPeriods[i].MintPrice)
+	require.Equal(t, len(mintPeriods), len(classData.Config.MintPeriods))
+	for i, mintPeriod := range classData.Config.MintPeriods {
+		require.Equal(t, mintPeriod.StartTime, mintPeriods[i].StartTime)
+		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
+		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
 	}
 
 	// Check mock was called as expected
@@ -256,7 +256,7 @@ func TestNewClassInvalidIscn(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -283,7 +283,7 @@ func TestNewClassInvalidIscn(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -336,7 +336,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -369,7 +369,7 @@ func TestNewClassNonExistentIscn(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -421,7 +421,7 @@ func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -457,7 +457,7 @@ func TestNewClassISCNInvalidUserAddress(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -572,7 +572,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -609,7 +609,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -624,7 +624,7 @@ func TestNewClassUserNotIscnOwner(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
+func TestNewClassNormalMintPeriodConfig(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -663,7 +663,7 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
@@ -715,7 +715,7 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -742,18 +742,18 @@ func TestNewClassNormalClaimPeriodConfig(t *testing.T) {
 	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
 	require.Equal(t, revealTime, classData.Config.RevealTime)
 
-	require.Equal(t, len(claimPeriods), len(classData.Config.ClaimPeriods))
-	for i, claimPeriod := range classData.Config.ClaimPeriods {
-		require.Equal(t, claimPeriod.StartTime, claimPeriods[i].StartTime)
-		require.ElementsMatch(t, claimPeriod.AllowedAddresses, claimPeriods[i].AllowedAddresses)
-		require.Equal(t, claimPeriod.MintPrice, claimPeriods[i].MintPrice)
+	require.Equal(t, len(mintPeriods), len(classData.Config.MintPeriods))
+	for i, mintPeriod := range classData.Config.MintPeriods {
+		require.Equal(t, mintPeriod.StartTime, mintPeriods[i].StartTime)
+		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
+		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
 	}
 
 	// Check mock was called as expected
 	ctrl.Finish()
 }
 
-func TestNewClassInvalidClaimPeriod(t *testing.T) {
+func TestNewClassInvalidMintPeriod(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -792,7 +792,7 @@ func TestNewClassInvalidClaimPeriod(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -828,7 +828,7 @@ func TestNewClassInvalidClaimPeriod(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -843,7 +843,7 @@ func TestNewClassInvalidClaimPeriod(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
+func TestNewClassMintPeriodInvalidAllowListAddress(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -882,7 +882,7 @@ func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 	maxSupply := uint64(5)
 	enableBlindBox := true
 
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{"invalid address"},
@@ -918,7 +918,7 @@ func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     revealTime,
 			},
 		},
@@ -933,7 +933,7 @@ func TestNewClassClaimPeriodInvalidAllowListAddress(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestNewClassBlindBoxNoClaimPeriod(t *testing.T) {
+func TestNewClassBlindBoxNoMintPeriod(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1000,7 +1000,7 @@ func TestNewClassBlindBoxNoClaimPeriod(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   nil,
+				MintPeriods:    nil,
 				RevealTime:     revealTime,
 			},
 		},
@@ -1053,7 +1053,7 @@ func TestNewClassBlindBoxNoRevealTime(t *testing.T) {
 	burnable := true
 	maxSupply := uint64(5)
 	enableBlindBox := true
-	claimPeriods := []types.ClaimPeriod{
+	mintPeriods := []types.MintPeriod{
 		{
 			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
@@ -1088,7 +1088,7 @@ func TestNewClassBlindBoxNoRevealTime(t *testing.T) {
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
 				EnableBlindBox: enableBlindBox,
-				ClaimPeriods:   claimPeriods,
+				MintPeriods:    mintPeriods,
 				RevealTime:     nil,
 			},
 		},

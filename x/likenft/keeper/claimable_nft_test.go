@@ -15,28 +15,28 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNClaimableNFT(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) []types.ClaimableNFT {
-	var items []types.ClaimableNFT
+func createNMintableNFT(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) []types.MintableNFT {
+	var items []types.MintableNFT
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
-			item := types.ClaimableNFT{
+			item := types.MintableNFT{
 				ClassId: strconv.Itoa(i),
 				Id:      strconv.Itoa(j),
 			}
 			items = append(items, item)
-			keeper.SetClaimableNFT(ctx, item)
+			keeper.SetMintableNFT(ctx, item)
 		}
 	}
 	return items
 }
 
-func TestClaimableNFTGet(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTGet(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNClaimableNFT(keeper, ctx, 3, 3)
+	items := createNMintableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
-		rst, found := keeper.GetClaimableNFT(ctx,
+		rst, found := keeper.GetMintableNFT(ctx,
 			item.ClassId,
 			item.Id,
 		)
@@ -47,17 +47,17 @@ func TestClaimableNFTGet(t *testing.T) {
 		)
 	}
 }
-func TestClaimableNFTRemove(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTRemove(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNClaimableNFT(keeper, ctx, 3, 3)
+	items := createNMintableNFT(keeper, ctx, 3, 3)
 	for _, item := range items {
-		keeper.RemoveClaimableNFT(ctx,
+		keeper.RemoveMintableNFT(ctx,
 			item.ClassId,
 			item.Id,
 		)
-		_, found := keeper.GetClaimableNFT(ctx,
+		_, found := keeper.GetMintableNFT(ctx,
 			item.ClassId,
 			item.Id,
 		)
@@ -65,32 +65,32 @@ func TestClaimableNFTRemove(t *testing.T) {
 	}
 }
 
-func TestClaimableNFTGetByClass(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTGetByClass(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNClaimableNFT(keeper, ctx, 3, 3)
+	items := createNMintableNFT(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items[0:3]),
-		nullify.Fill(keeper.GetClaimableNFTs(ctx, "0")),
+		nullify.Fill(keeper.GetMintableNFTs(ctx, "0")),
 	)
 	require.ElementsMatch(t,
 		nullify.Fill(items[3:6]),
-		nullify.Fill(keeper.GetClaimableNFTs(ctx, "1")),
+		nullify.Fill(keeper.GetMintableNFTs(ctx, "1")),
 	)
 	require.ElementsMatch(t,
 		nullify.Fill(items[6:9]),
-		nullify.Fill(keeper.GetClaimableNFTs(ctx, "2")),
+		nullify.Fill(keeper.GetMintableNFTs(ctx, "2")),
 	)
 }
 
-func TestClaimableNFTGetAll(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTGetAll(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNClaimableNFT(keeper, ctx, 3, 3)
+	items := createNMintableNFT(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllClaimableNFT(ctx)),
+		nullify.Fill(keeper.GetAllMintableNFT(ctx)),
 	)
 }

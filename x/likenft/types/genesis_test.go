@@ -41,7 +41,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.DefaultParams(),
-				ClaimableNFTList: []types.ClaimableNFT{
+				MintableNFTList: []types.MintableNFT{
 					{
 						ClassId: "0",
 						Id:      "0",
@@ -120,9 +120,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			desc: "duplicated claimableNFT",
+			desc: "duplicated mintableNFT",
 			genState: &types.GenesisState{
-				ClaimableNFTList: []types.ClaimableNFT{
+				MintableNFTList: []types.MintableNFT{
 					{
 						ClassId: "0",
 						Id:      "0",

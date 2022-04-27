@@ -5,27 +5,27 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgDeleteClaimableNFT = "delete_claimable_nft"
+const TypeMsgDeleteMintableNFT = "delete_mintable_nft"
 
-var _ sdk.Msg = &MsgDeleteClaimableNFT{}
+var _ sdk.Msg = &MsgDeleteMintableNFT{}
 
-func NewMsgDeleteClaimableNFT(creator string, classId string, id string) *MsgDeleteClaimableNFT {
-	return &MsgDeleteClaimableNFT{
+func NewMsgDeleteMintableNFT(creator string, classId string, id string) *MsgDeleteMintableNFT {
+	return &MsgDeleteMintableNFT{
 		Creator: creator,
 		ClassId: classId,
 		Id:      id,
 	}
 }
 
-func (msg *MsgDeleteClaimableNFT) Route() string {
+func (msg *MsgDeleteMintableNFT) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDeleteClaimableNFT) Type() string {
-	return TypeMsgDeleteClaimableNFT
+func (msg *MsgDeleteMintableNFT) Type() string {
+	return TypeMsgDeleteMintableNFT
 }
 
-func (msg *MsgDeleteClaimableNFT) GetSigners() []sdk.AccAddress {
+func (msg *MsgDeleteMintableNFT) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -33,12 +33,12 @@ func (msg *MsgDeleteClaimableNFT) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgDeleteClaimableNFT) GetSignBytes() []byte {
+func (msg *MsgDeleteMintableNFT) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgDeleteClaimableNFT) ValidateBasic() error {
+func (msg *MsgDeleteMintableNFT) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

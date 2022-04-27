@@ -12,7 +12,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func LikenftKeeperForClaimableTest(t *testing.T) (*keeper.Keeper, sdk.Context, *gomock.Controller) {
+func LikenftKeeperForMintableTest(t *testing.T) (*keeper.Keeper, sdk.Context, *gomock.Controller) {
 	ctrl := gomock.NewController(t)
 	accountKeeper := NewMockAccountKeeper(ctrl)
 	bankKeeper := NewMockBankKeeper(ctrl)
@@ -25,7 +25,7 @@ func LikenftKeeperForClaimableTest(t *testing.T) (*keeper.Keeper, sdk.Context, *
 		NftKeeper:     nftKeeper,
 	})
 	classData := types.ClassData{
-		ClaimableCount: 0,
+		MintableCount: 0,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.

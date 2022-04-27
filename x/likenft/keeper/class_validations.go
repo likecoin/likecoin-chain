@@ -10,18 +10,18 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 	if parent.Type == types.ClassParentType_ISCN {
 		classesByISCN, found := k.GetClassesByISCN(ctx, parent.IscnIdPrefix)
 		if !found {
-			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
+			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT mints it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
 		}
 		isRelated := false
 		for _, validClassId := range classesByISCN.ClassIds {
 			if validClassId == classId {
-				// claimed relation is valid
+				// minted relation is valid
 				isRelated = true
 				break
 			}
 		}
 		if !isRelated {
-			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
+			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT mints it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
 		}
 	} else if parent.Type == types.ClassParentType_ACCOUNT {
 		acc, err := sdk.AccAddressFromBech32(parent.Account)
@@ -30,18 +30,18 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 		}
 		classesByAccount, found := k.GetClassesByAccount(ctx, acc)
 		if !found {
-			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT claims it is related to account %s but no mapping is found", parent.Account)
+			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT mints it is related to account %s but no mapping is found", parent.Account)
 		}
 		isRelated := false
 		for _, validClassId := range classesByAccount.ClassIds {
 			if validClassId == classId {
-				// claimed relation is valid
+				// minted relation is valid
 				isRelated = true
 				break
 			}
 		}
 		if !isRelated {
-			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT claims it is related to account %s but no mapping is found", parent.Account)
+			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT mints it is related to account %s but no mapping is found", parent.Account)
 		}
 	} else {
 		return sdkerrors.ErrInvalidRequest.Wrapf("Unsupported parent type %s in nft class", parent.Type.String())
@@ -93,14 +93,14 @@ func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId st
 	return &parent, nil
 }
 
-func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
-	for _, claimPeriod := range classConfig.ClaimPeriods {
-		// Ensure all claim period start time is before reveal time
-		if claimPeriod.StartTime.After(*classConfig.RevealTime) {
-			return types.ErrInvalidNftClassConfig.Wrapf("One of the claim periods' start time %s is after reveal time %s", claimPeriod.StartTime.String(), classConfig.RevealTime.String())
+func (k msgServer) validateMintPeriods(classConfig *types.ClassConfig) error {
+	for _, mintPeriod := range classConfig.MintPeriods {
+		// Ensure all mint period start time is before reveal time
+		if mintPeriod.StartTime.After(*classConfig.RevealTime) {
+			return types.ErrInvalidNftClassConfig.Wrapf("One of the mint periods' start time %s is after reveal time %s", mintPeriod.StartTime.String(), classConfig.RevealTime.String())
 		}
 		// Ensure all the addresses in allow list is valid
-		for _, allowedAddress := range claimPeriod.AllowedAddresses {
+		for _, allowedAddress := range mintPeriod.AllowedAddresses {
 			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
 				return sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
 			}
@@ -110,17 +110,17 @@ func (k msgServer) validateClaimPeriods(classConfig *types.ClassConfig) error {
 }
 
 func (k msgServer) validateClassConfig(classConfig *types.ClassConfig) error {
-	// Ensure claim periods and reveal time are set when blind box mode is enabled
+	// Ensure mint periods and reveal time are set when blind box mode is enabled
 	if classConfig.EnableBlindBox {
-		if len(classConfig.ClaimPeriods) == 0 {
-			return types.ErrInvalidNftClassConfig.Wrapf("Claim periods are enabled but no claim periods are provided")
+		if len(classConfig.MintPeriods) == 0 {
+			return types.ErrInvalidNftClassConfig.Wrapf("Mint periods are enabled but no mint periods are provided")
 		}
 
 		if classConfig.RevealTime == nil {
-			return types.ErrInvalidNftClassConfig.Wrapf("Claim periods are enabled but no reveal time is provided")
+			return types.ErrInvalidNftClassConfig.Wrapf("Mint periods are enabled but no reveal time is provided")
 		}
 
-		if err := k.validateClaimPeriods(classConfig); err != nil {
+		if err := k.validateMintPeriods(classConfig); err != nil {
 			return err
 		}
 	}

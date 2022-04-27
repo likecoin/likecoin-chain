@@ -18,37 +18,37 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestClaimableNFTQuerySingle(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTQuerySingle(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
+	msgs := createNMintableNFT(keeper, ctx, 3, 3)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryClaimableNFTRequest
-		response *types.QueryClaimableNFTResponse
+		request  *types.QueryMintableNFTRequest
+		response *types.QueryMintableNFTResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryClaimableNFTRequest{
+			request: &types.QueryMintableNFTRequest{
 				ClassId: msgs[0].ClassId,
 				Id:      msgs[0].Id,
 			},
-			response: &types.QueryClaimableNFTResponse{ClaimableNFT: msgs[0]},
+			response: &types.QueryMintableNFTResponse{MintableNFT: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryClaimableNFTRequest{
+			request: &types.QueryMintableNFTRequest{
 				ClassId: msgs[1].ClassId,
 				Id:      msgs[1].Id,
 			},
-			response: &types.QueryClaimableNFTResponse{ClaimableNFT: msgs[1]},
+			response: &types.QueryMintableNFTResponse{MintableNFT: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryClaimableNFTRequest{
+			request: &types.QueryMintableNFTRequest{
 				ClassId: strconv.Itoa(100000),
 				Id:      strconv.Itoa(100000),
 			},
@@ -60,7 +60,7 @@ func TestClaimableNFTQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.ClaimableNFT(wctx, tc.request)
+			response, err := keeper.MintableNFT(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -74,16 +74,16 @@ func TestClaimableNFTQuerySingle(t *testing.T) {
 	}
 }
 
-func TestClaimableNFTQueryByClass(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTQueryByClass(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
 	nClass := 3
 	nItem := 3
-	msgs := createNClaimableNFT(keeper, ctx, nClass, nItem)
-	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryClaimableNFTsRequest {
-		return &types.QueryClaimableNFTsRequest{
+	msgs := createNMintableNFT(keeper, ctx, nClass, nItem)
+	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryMintableNFTsRequest {
+		return &types.QueryMintableNFTsRequest{
 			ClassId: classId,
 			Pagination: &query.PageRequest{
 				Key:        next,
@@ -97,12 +97,12 @@ func TestClaimableNFTQueryByClass(t *testing.T) {
 		for classId := 0; classId < nClass; classId++ {
 			step := 2
 			for i := 0; i < nItem; i += step {
-				resp, err := keeper.ClaimableNFTs(wctx, request(strconv.Itoa(classId), nil, uint64(i), uint64(step), false))
+				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), nil, uint64(i), uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.ClaimableNFTs), step)
+				require.LessOrEqual(t, len(resp.MintableNFTs), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.ClaimableNFTs),
+					nullify.Fill(resp.MintableNFTs),
 				)
 			}
 		}
@@ -113,12 +113,12 @@ func TestClaimableNFTQueryByClass(t *testing.T) {
 			step := 2
 			var next []byte
 			for i := 0; i < nItem; i += step {
-				resp, err := keeper.ClaimableNFTs(wctx, request(strconv.Itoa(classId), next, 0, uint64(step), false))
+				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), next, 0, uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.ClaimableNFTs), step)
+				require.LessOrEqual(t, len(resp.MintableNFTs), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.ClaimableNFTs),
+					nullify.Fill(resp.MintableNFTs),
 				)
 				next = resp.Pagination.NextKey
 			}
@@ -126,30 +126,30 @@ func TestClaimableNFTQueryByClass(t *testing.T) {
 	})
 	t.Run("Total", func(t *testing.T) {
 		for classId := 0; classId < nClass; classId++ {
-			resp, err := keeper.ClaimableNFTs(wctx, request(strconv.Itoa(classId), nil, 0, 0, true))
+			resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), nil, 0, 0, true))
 			require.NoError(t, err)
 			require.Equal(t, nItem, int(resp.Pagination.Total))
 			require.ElementsMatch(t,
 				nullify.Fill(msgs[classId*nItem:classId*nItem+nItem]),
-				nullify.Fill(resp.ClaimableNFTs),
+				nullify.Fill(resp.MintableNFTs),
 			)
 		}
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.ClaimableNFTs(wctx, nil)
+		_, err := keeper.MintableNFTs(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }
 
-func TestClaimableNFTQueryPaginated(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForClaimableTest(t)
+func TestMintableNFTQueryPaginated(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimableNFT(keeper, ctx, 3, 3)
+	msgs := createNMintableNFT(keeper, ctx, 3, 3)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryClaimableNFTIndexRequest {
-		return &types.QueryClaimableNFTIndexRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryMintableNFTIndexRequest {
+		return &types.QueryMintableNFTIndexRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -161,12 +161,12 @@ func TestClaimableNFTQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClaimableNFTIndex(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.MintableNFTIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNFT), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimableNFT),
+				nullify.Fill(resp.MintableNFT),
 			)
 		}
 	})
@@ -174,27 +174,27 @@ func TestClaimableNFTQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClaimableNFTIndex(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.MintableNFTIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNFT), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimableNFT),
+				nullify.Fill(resp.MintableNFT),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.ClaimableNFTIndex(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.MintableNFTIndex(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.ClaimableNFT),
+			nullify.Fill(resp.MintableNFT),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.ClaimableNFTIndex(wctx, nil)
+		_, err := keeper.MintableNFTIndex(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

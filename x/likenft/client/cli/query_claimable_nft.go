@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListClaimableNFT() *cobra.Command {
+func CmdListMintableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "claimable-nft-index",
-		Short: "Enumerate all Claimable NFT Contents under all classes",
+		Use:   "mintable-nft-index",
+		Short: "Enumerate all Mintable NFT Contents under all classes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -23,11 +23,11 @@ func CmdListClaimableNFT() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryClaimableNFTIndexRequest{
+			params := &types.QueryMintableNFTIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClaimableNFTIndex(context.Background(), params)
+			res, err := queryClient.MintableNFTIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,10 +42,10 @@ func CmdListClaimableNFT() *cobra.Command {
 	return cmd
 }
 
-func CmdShowClaimableNFT() *cobra.Command {
+func CmdShowMintableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "claimable-nft [class-id] [claimable-id]",
-		Short: "Query a specific Claimable NFT Content",
+		Use:   "mintable-nft [class-id] [mintable-id]",
+		Short: "Query a specific Mintable NFT Content",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -55,12 +55,12 @@ func CmdShowClaimableNFT() *cobra.Command {
 			argClassId := args[0]
 			argId := args[1]
 
-			params := &types.QueryClaimableNFTRequest{
+			params := &types.QueryMintableNFTRequest{
 				ClassId: argClassId,
 				Id:      argId,
 			}
 
-			res, err := queryClient.ClaimableNFT(context.Background(), params)
+			res, err := queryClient.MintableNFT(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -74,10 +74,10 @@ func CmdShowClaimableNFT() *cobra.Command {
 	return cmd
 }
 
-func CmdClaimableNFTs() *cobra.Command {
+func CmdMintableNFTs() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "claimable-nfts [class-id]",
-		Short: "Query Claimable NFT Contents under a class",
+		Use:   "mintable-nfts [class-id]",
+		Short: "Query Mintable NFT Contents under a class",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqClassId := args[0]
@@ -89,7 +89,7 @@ func CmdClaimableNFTs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryClaimableNFTsRequest{
+			params := &types.QueryMintableNFTsRequest{
 
 				ClassId: reqClassId,
 			}
@@ -100,7 +100,7 @@ func CmdClaimableNFTs() *cobra.Command {
 			}
 			params.Pagination = pageReq
 
-			res, err := queryClient.ClaimableNFTs(cmd.Context(), params)
+			res, err := queryClient.MintableNFTs(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

@@ -8,33 +8,33 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-// SetClaimableNFT set a specific claimableNFT in the store from its index
-func (k Keeper) SetClaimableNFT(ctx sdk.Context, claimableNFT types.ClaimableNFT) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
-	b := k.cdc.MustMarshal(&claimableNFT)
-	key := types.ClaimableNFTKey(
-		claimableNFT.ClassId,
-		claimableNFT.Id,
+// SetMintableNFT set a specific mintableNFT in the store from its index
+func (k Keeper) SetMintableNFT(ctx sdk.Context, mintableNFT types.MintableNFT) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+	b := k.cdc.MustMarshal(&mintableNFT)
+	key := types.MintableNFTKey(
+		mintableNFT.ClassId,
+		mintableNFT.Id,
 	)
 	if !store.Has(key) {
-		// new claimable, increment count
-		if err := k.incClaimableCount(ctx, claimableNFT.ClassId); err != nil {
-			panic(fmt.Errorf("Failed to increase claimable count: %s", err.Error()))
+		// new mintable, increment count
+		if err := k.incMintableCount(ctx, mintableNFT.ClassId); err != nil {
+			panic(fmt.Errorf("Failed to increase mintable count: %s", err.Error()))
 		}
 	}
 	store.Set(key, b)
 }
 
-// GetClaimableNFT returns a claimableNFT from its index
-func (k Keeper) GetClaimableNFT(
+// GetMintableNFT returns a mintableNFT from its index
+func (k Keeper) GetMintableNFT(
 	ctx sdk.Context,
 	classId string,
 	id string,
 
-) (val types.ClaimableNFT, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
+) (val types.MintableNFT, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
 
-	b := store.Get(types.ClaimableNFTKey(
+	b := store.Get(types.MintableNFTKey(
 		classId,
 		id,
 	))
@@ -46,36 +46,36 @@ func (k Keeper) GetClaimableNFT(
 	return val, true
 }
 
-// RemoveClaimableNFT removes a claimableNFT from the store
-func (k Keeper) RemoveClaimableNFT(
+// RemoveMintableNFT removes a mintableNFT from the store
+func (k Keeper) RemoveMintableNFT(
 	ctx sdk.Context,
 	classId string,
 	id string,
 
 ) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
-	key := types.ClaimableNFTKey(
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+	key := types.MintableNFTKey(
 		classId,
 		id,
 	)
 	if store.Has(key) {
-		// remove existing claimable, decrement count
-		if err := k.decClaimableCount(ctx, classId); err != nil {
-			panic(fmt.Errorf("Failed to decrease claimable count: %s", err.Error()))
+		// remove existing mintable, decrement count
+		if err := k.decMintableCount(ctx, classId); err != nil {
+			panic(fmt.Errorf("Failed to decrease mintable count: %s", err.Error()))
 		}
 	}
 	store.Delete(key)
 }
 
-// GetClaimableNFTs returns all claimableNFT of a class
-func (k Keeper) GetClaimableNFTs(ctx sdk.Context, classId string) (list []types.ClaimableNFT) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, types.ClaimableNFTsKey(classId))
+// GetMintableNFTs returns all mintableNFT of a class
+func (k Keeper) GetMintableNFTs(ctx sdk.Context, classId string) (list []types.MintableNFT) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.MintableNFTsKey(classId))
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClaimableNFT
+		var val types.MintableNFT
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -83,15 +83,15 @@ func (k Keeper) GetClaimableNFTs(ctx sdk.Context, classId string) (list []types.
 	return
 }
 
-// GetAllClaimableNFT returns all claimableNFT
-func (k Keeper) GetAllClaimableNFT(ctx sdk.Context) (list []types.ClaimableNFT) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimableNFTKeyPrefix))
+// GetAllMintableNFT returns all mintableNFT
+func (k Keeper) GetAllMintableNFT(ctx sdk.Context) (list []types.MintableNFT) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClaimableNFT
+		var val types.MintableNFT
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

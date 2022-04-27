@@ -13,7 +13,7 @@ message ClassData {
   ];
   ClassParent parent = 2 [(gogoproto.nullable) = false];
   ClassConfig config = 3 [(gogoproto.nullable) = false];
-  uint64 claimableCount = 4;
+  uint64 mintableCount = 4;
 }
 
 enum ClassParentType {
@@ -29,7 +29,7 @@ message ClassParent {
   string account = 4 [(gogoproto.nullable) = true];
 }
 
-message ClaimPeriod {
+message MintPeriod {
   google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true];
   repeated string allowedAddresses = 2 ;
   uint64 mintPrice = 3;
@@ -39,6 +39,6 @@ message ClassConfig {
   bool burnable = 1;
   uint64 maxSupply = 2;
   bool enableBlindBox = 3;
-  repeated ClaimPeriod claimPeriods = 4 [(gogoproto.nullable) = false];
+  repeated MintPeriod mintPeriods = 4 [(gogoproto.nullable) = false];
   google.protobuf.Timestamp revealTime = 5 [(gogoproto.stdtime) = true];
 }

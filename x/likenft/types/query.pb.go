@@ -731,23 +731,23 @@ func (m *QueryAccountByClassResponse) GetAddress() string {
 	return ""
 }
 
-type QueryClaimableNFTRequest struct {
+type QueryMintableNFTRequest struct {
 	ClassId string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
 	Id      string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryClaimableNFTRequest) Reset()         { *m = QueryClaimableNFTRequest{} }
-func (m *QueryClaimableNFTRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTRequest) ProtoMessage()    {}
-func (*QueryClaimableNFTRequest) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTRequest) Reset()         { *m = QueryMintableNFTRequest{} }
+func (m *QueryMintableNFTRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTRequest) ProtoMessage()    {}
+func (*QueryMintableNFTRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{14}
 }
-func (m *QueryClaimableNFTRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -757,48 +757,48 @@ func (m *QueryClaimableNFTRequest) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTRequest.Merge(m, src)
+func (m *QueryMintableNFTRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTRequest.Merge(m, src)
 }
-func (m *QueryClaimableNFTRequest) XXX_Size() int {
+func (m *QueryMintableNFTRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTRequest.DiscardUnknown(m)
+func (m *QueryMintableNFTRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTRequest proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTRequest) GetClassId() string {
+func (m *QueryMintableNFTRequest) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *QueryClaimableNFTRequest) GetId() string {
+func (m *QueryMintableNFTRequest) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type QueryClaimableNFTResponse struct {
-	ClaimableNFT ClaimableNFT `protobuf:"bytes,1,opt,name=claimableNFT,proto3" json:"claimableNFT"`
+type QueryMintableNFTResponse struct {
+	MintableNFT MintableNFT `protobuf:"bytes,1,opt,name=mintableNFT,proto3" json:"mintableNFT"`
 }
 
-func (m *QueryClaimableNFTResponse) Reset()         { *m = QueryClaimableNFTResponse{} }
-func (m *QueryClaimableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTResponse) ProtoMessage()    {}
-func (*QueryClaimableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTResponse) Reset()         { *m = QueryMintableNFTResponse{} }
+func (m *QueryMintableNFTResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTResponse) ProtoMessage()    {}
+func (*QueryMintableNFTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{15}
 }
-func (m *QueryClaimableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -808,41 +808,41 @@ func (m *QueryClaimableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTResponse.Merge(m, src)
+func (m *QueryMintableNFTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTResponse.Merge(m, src)
 }
-func (m *QueryClaimableNFTResponse) XXX_Size() int {
+func (m *QueryMintableNFTResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTResponse.DiscardUnknown(m)
+func (m *QueryMintableNFTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTResponse proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTResponse) GetClaimableNFT() ClaimableNFT {
+func (m *QueryMintableNFTResponse) GetMintableNFT() MintableNFT {
 	if m != nil {
-		return m.ClaimableNFT
+		return m.MintableNFT
 	}
-	return ClaimableNFT{}
+	return MintableNFT{}
 }
 
-type QueryClaimableNFTIndexRequest struct {
+type QueryMintableNFTIndexRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryClaimableNFTIndexRequest) Reset()         { *m = QueryClaimableNFTIndexRequest{} }
-func (m *QueryClaimableNFTIndexRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTIndexRequest) ProtoMessage()    {}
-func (*QueryClaimableNFTIndexRequest) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTIndexRequest) Reset()         { *m = QueryMintableNFTIndexRequest{} }
+func (m *QueryMintableNFTIndexRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTIndexRequest) ProtoMessage()    {}
+func (*QueryMintableNFTIndexRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{16}
 }
-func (m *QueryClaimableNFTIndexRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTIndexRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTIndexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTIndexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTIndexRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTIndexRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -852,42 +852,42 @@ func (m *QueryClaimableNFTIndexRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTIndexRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTIndexRequest.Merge(m, src)
+func (m *QueryMintableNFTIndexRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTIndexRequest.Merge(m, src)
 }
-func (m *QueryClaimableNFTIndexRequest) XXX_Size() int {
+func (m *QueryMintableNFTIndexRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTIndexRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTIndexRequest.DiscardUnknown(m)
+func (m *QueryMintableNFTIndexRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTIndexRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTIndexRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTIndexRequest proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTIndexRequest) GetPagination() *query.PageRequest {
+func (m *QueryMintableNFTIndexRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryClaimableNFTIndexResponse struct {
-	ClaimableNFT []ClaimableNFT      `protobuf:"bytes,1,rep,name=claimableNFT,proto3" json:"claimableNFT"`
-	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryMintableNFTIndexResponse struct {
+	MintableNFT []MintableNFT       `protobuf:"bytes,1,rep,name=mintableNFT,proto3" json:"mintableNFT"`
+	Pagination  *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryClaimableNFTIndexResponse) Reset()         { *m = QueryClaimableNFTIndexResponse{} }
-func (m *QueryClaimableNFTIndexResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTIndexResponse) ProtoMessage()    {}
-func (*QueryClaimableNFTIndexResponse) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTIndexResponse) Reset()         { *m = QueryMintableNFTIndexResponse{} }
+func (m *QueryMintableNFTIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTIndexResponse) ProtoMessage()    {}
+func (*QueryMintableNFTIndexResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{17}
 }
-func (m *QueryClaimableNFTIndexResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTIndexResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTIndexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTIndexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTIndexResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTIndexResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -897,49 +897,49 @@ func (m *QueryClaimableNFTIndexResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTIndexResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTIndexResponse.Merge(m, src)
+func (m *QueryMintableNFTIndexResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTIndexResponse.Merge(m, src)
 }
-func (m *QueryClaimableNFTIndexResponse) XXX_Size() int {
+func (m *QueryMintableNFTIndexResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTIndexResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTIndexResponse.DiscardUnknown(m)
+func (m *QueryMintableNFTIndexResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTIndexResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTIndexResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTIndexResponse proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTIndexResponse) GetClaimableNFT() []ClaimableNFT {
+func (m *QueryMintableNFTIndexResponse) GetMintableNFT() []MintableNFT {
 	if m != nil {
-		return m.ClaimableNFT
+		return m.MintableNFT
 	}
 	return nil
 }
 
-func (m *QueryClaimableNFTIndexResponse) GetPagination() *query.PageResponse {
+func (m *QueryMintableNFTIndexResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryClaimableNFTsRequest struct {
+type QueryMintableNFTsRequest struct {
 	ClassId    string             `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryClaimableNFTsRequest) Reset()         { *m = QueryClaimableNFTsRequest{} }
-func (m *QueryClaimableNFTsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTsRequest) ProtoMessage()    {}
-func (*QueryClaimableNFTsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTsRequest) Reset()         { *m = QueryMintableNFTsRequest{} }
+func (m *QueryMintableNFTsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTsRequest) ProtoMessage()    {}
+func (*QueryMintableNFTsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{18}
 }
-func (m *QueryClaimableNFTsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -949,49 +949,49 @@ func (m *QueryClaimableNFTsRequest) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTsRequest.Merge(m, src)
+func (m *QueryMintableNFTsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTsRequest.Merge(m, src)
 }
-func (m *QueryClaimableNFTsRequest) XXX_Size() int {
+func (m *QueryMintableNFTsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTsRequest.DiscardUnknown(m)
+func (m *QueryMintableNFTsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTsRequest proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTsRequest) GetClassId() string {
+func (m *QueryMintableNFTsRequest) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *QueryClaimableNFTsRequest) GetPagination() *query.PageRequest {
+func (m *QueryMintableNFTsRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryClaimableNFTsResponse struct {
-	ClaimableNFTs []ClaimableNFT      `protobuf:"bytes,1,rep,name=claimableNFTs,proto3" json:"claimableNFTs"`
-	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryMintableNFTsResponse struct {
+	MintableNFTs []MintableNFT       `protobuf:"bytes,1,rep,name=mintableNFTs,proto3" json:"mintableNFTs"`
+	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryClaimableNFTsResponse) Reset()         { *m = QueryClaimableNFTsResponse{} }
-func (m *QueryClaimableNFTsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryClaimableNFTsResponse) ProtoMessage()    {}
-func (*QueryClaimableNFTsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryMintableNFTsResponse) Reset()         { *m = QueryMintableNFTsResponse{} }
+func (m *QueryMintableNFTsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMintableNFTsResponse) ProtoMessage()    {}
+func (*QueryMintableNFTsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_af5bbcbe472f31b2, []int{19}
 }
-func (m *QueryClaimableNFTsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryMintableNFTsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryClaimableNFTsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryMintableNFTsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryClaimableNFTsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryMintableNFTsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1001,26 +1001,26 @@ func (m *QueryClaimableNFTsResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *QueryClaimableNFTsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryClaimableNFTsResponse.Merge(m, src)
+func (m *QueryMintableNFTsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMintableNFTsResponse.Merge(m, src)
 }
-func (m *QueryClaimableNFTsResponse) XXX_Size() int {
+func (m *QueryMintableNFTsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryClaimableNFTsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryClaimableNFTsResponse.DiscardUnknown(m)
+func (m *QueryMintableNFTsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMintableNFTsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryClaimableNFTsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryMintableNFTsResponse proto.InternalMessageInfo
 
-func (m *QueryClaimableNFTsResponse) GetClaimableNFTs() []ClaimableNFT {
+func (m *QueryMintableNFTsResponse) GetMintableNFTs() []MintableNFT {
 	if m != nil {
-		return m.ClaimableNFTs
+		return m.MintableNFTs
 	}
 	return nil
 }
 
-func (m *QueryClaimableNFTsResponse) GetPagination() *query.PageResponse {
+func (m *QueryMintableNFTsResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -1042,87 +1042,88 @@ func init() {
 	proto.RegisterType((*QueryClassesByAccountIndexResponse)(nil), "likecoin.likechain.likenft.QueryClassesByAccountIndexResponse")
 	proto.RegisterType((*QueryAccountByClassRequest)(nil), "likecoin.likechain.likenft.QueryAccountByClassRequest")
 	proto.RegisterType((*QueryAccountByClassResponse)(nil), "likecoin.likechain.likenft.QueryAccountByClassResponse")
-	proto.RegisterType((*QueryClaimableNFTRequest)(nil), "likecoin.likechain.likenft.QueryClaimableNFTRequest")
-	proto.RegisterType((*QueryClaimableNFTResponse)(nil), "likecoin.likechain.likenft.QueryClaimableNFTResponse")
-	proto.RegisterType((*QueryClaimableNFTIndexRequest)(nil), "likecoin.likechain.likenft.QueryClaimableNFTIndexRequest")
-	proto.RegisterType((*QueryClaimableNFTIndexResponse)(nil), "likecoin.likechain.likenft.QueryClaimableNFTIndexResponse")
-	proto.RegisterType((*QueryClaimableNFTsRequest)(nil), "likecoin.likechain.likenft.QueryClaimableNFTsRequest")
-	proto.RegisterType((*QueryClaimableNFTsResponse)(nil), "likecoin.likechain.likenft.QueryClaimableNFTsResponse")
+	proto.RegisterType((*QueryMintableNFTRequest)(nil), "likecoin.likechain.likenft.QueryMintableNFTRequest")
+	proto.RegisterType((*QueryMintableNFTResponse)(nil), "likecoin.likechain.likenft.QueryMintableNFTResponse")
+	proto.RegisterType((*QueryMintableNFTIndexRequest)(nil), "likecoin.likechain.likenft.QueryMintableNFTIndexRequest")
+	proto.RegisterType((*QueryMintableNFTIndexResponse)(nil), "likecoin.likechain.likenft.QueryMintableNFTIndexResponse")
+	proto.RegisterType((*QueryMintableNFTsRequest)(nil), "likecoin.likechain.likenft.QueryMintableNFTsRequest")
+	proto.RegisterType((*QueryMintableNFTsResponse)(nil), "likecoin.likechain.likenft.QueryMintableNFTsResponse")
 }
 
 func init() { proto.RegisterFile("likenft/query.proto", fileDescriptor_af5bbcbe472f31b2) }
 
 var fileDescriptor_af5bbcbe472f31b2 = []byte{
-	// 1103 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xcf, 0x6f, 0xdc, 0x54,
-	0x10, 0xce, 0xdb, 0xa4, 0x41, 0x9d, 0x24, 0x25, 0x4c, 0x83, 0xd8, 0xba, 0xe9, 0x36, 0x98, 0x0a,
-	0xd2, 0x96, 0xda, 0x24, 0xdb, 0xa4, 0x49, 0x0a, 0x55, 0x49, 0x50, 0xab, 0x1c, 0xa8, 0xc2, 0x52,
-	0x40, 0xe2, 0x40, 0xe4, 0xf5, 0xbe, 0x6c, 0xac, 0x6e, 0xec, 0xed, 0xda, 0x81, 0x44, 0x51, 0xa4,
-	0x8a, 0x0b, 0x57, 0x24, 0xc4, 0x9f, 0xc2, 0xa9, 0xca, 0xa1, 0x88, 0x43, 0x7b, 0x00, 0x55, 0xe2,
-	0xc2, 0x09, 0xa1, 0x84, 0x3f, 0x04, 0xf9, 0x79, 0xde, 0xae, 0xdf, 0xae, 0xf7, 0x87, 0x97, 0x8d,
-	0xd4, 0x9b, 0xfd, 0xfc, 0x66, 0xe6, 0xfb, 0xbe, 0x37, 0xf3, 0x66, 0x64, 0x38, 0x5f, 0x71, 0x1e,
-	0x71, 0x77, 0x2b, 0x30, 0x1f, 0xef, 0xf2, 0xda, 0xbe, 0x51, 0xad, 0x79, 0x81, 0x87, 0x5a, 0xb8,
-	0x68, 0x7b, 0x8e, 0x6b, 0x88, 0x87, 0x6d, 0x8b, 0x9e, 0xdc, 0xad, 0x40, 0x9b, 0x2a, 0x7b, 0x65,
-	0x4f, 0x6c, 0x33, 0xc3, 0xa7, 0xc8, 0x42, 0x9b, 0x2e, 0x7b, 0x5e, 0xb9, 0xc2, 0x4d, 0xab, 0xea,
-	0x98, 0x96, 0xeb, 0x7a, 0x81, 0x15, 0x38, 0x9e, 0xeb, 0xd3, 0xd7, 0x6b, 0xb6, 0xe7, 0xef, 0x78,
-	0xbe, 0x59, 0xb4, 0x7c, 0x1e, 0x05, 0x32, 0xbf, 0x9d, 0x2b, 0xf2, 0xc0, 0x9a, 0x33, 0xab, 0x56,
-	0xd9, 0x71, 0xc5, 0x66, 0xda, 0x3b, 0x25, 0x01, 0x55, 0xad, 0x9a, 0xb5, 0x23, 0x3d, 0x5c, 0x92,
-	0xab, 0x76, 0xc5, 0xf2, 0x7d, 0xee, 0x6f, 0x16, 0xf7, 0x37, 0x1d, 0xdf, 0x96, 0x46, 0xd3, 0x14,
-	0x20, 0xdc, 0x21, 0x3d, 0xbb, 0x5b, 0x01, 0x7d, 0x9d, 0x49, 0x30, 0xb6, 0x6c, 0xdb, 0xdb, 0x75,
-	0xe5, 0x8e, 0x8b, 0xb1, 0x1d, 0xce, 0x8e, 0x55, 0xac, 0xf0, 0xcd, 0x86, 0xf9, 0x64, 0x18, 0x28,
-	0xae, 0x8f, 0x3e, 0x05, 0xf8, 0x59, 0xf8, 0xba, 0x21, 0x20, 0x16, 0xf8, 0xe3, 0x5d, 0xee, 0x07,
-	0xfa, 0x57, 0x70, 0x5e, 0x59, 0xf5, 0xab, 0x9e, 0xeb, 0x73, 0xbc, 0x0b, 0xa3, 0x11, 0x95, 0x2c,
-	0x9b, 0x61, 0xb3, 0x63, 0xf3, 0xba, 0xd1, 0x5e, 0x5d, 0x23, 0xb2, 0x5d, 0x1d, 0x79, 0xfe, 0xf7,
-	0xe5, 0xa1, 0x02, 0xd9, 0xe9, 0x3f, 0x30, 0xb8, 0x20, 0x3c, 0xaf, 0x45, 0xf8, 0x57, 0xf7, 0xd7,
-	0x3f, 0x5f, 0x7b, 0x40, 0x61, 0x51, 0x87, 0xf1, 0x10, 0xe0, 0x7a, 0x69, 0xa3, 0xc6, 0xb7, 0x9c,
-	0x3d, 0x11, 0xe5, 0x6c, 0x41, 0x59, 0xc3, 0x7b, 0x00, 0x0d, 0xa1, 0xb3, 0x19, 0x81, 0xe3, 0x5d,
-	0x23, 0x12, 0xcd, 0x08, 0x4f, 0xc5, 0x88, 0xe8, 0x91, 0x76, 0xc6, 0x86, 0x55, 0xe6, 0xe4, 0xbf,
-	0x10, 0xb3, 0xd4, 0x7f, 0x63, 0xa0, 0x25, 0x21, 0x21, 0xaa, 0xbd, 0x40, 0x59, 0x86, 0xd7, 0xe8,
-	0x18, 0xb2, 0x99, 0x99, 0xe1, 0xd9, 0xb1, 0xf9, 0x0b, 0x12, 0x47, 0xc8, 0x5f, 0x02, 0x10, 0xfe,
-	0x49, 0x06, 0xb9, 0x1f, 0xef, 0x2b, 0x2c, 0x86, 0x05, 0x8b, 0xf7, 0xba, 0xb2, 0x88, 0xb0, 0x29,
-	0x34, 0xb6, 0x21, 0xd7, 0xca, 0x62, 0xdd, 0x2d, 0xf1, 0x3d, 0x29, 0xaa, 0x2a, 0x18, 0xeb, 0x5b,
-	0xb0, 0x67, 0x0c, 0x2e, 0xb7, 0x0d, 0x45, 0xaa, 0x7d, 0x01, 0x13, 0x76, 0xfc, 0x6b, 0x96, 0x09,
-	0x5d, 0xae, 0x76, 0xca, 0x13, 0xc5, 0x1d, 0xe9, 0xa4, 0x7a, 0x69, 0x52, 0x2b, 0xd3, 0xbf, 0x5a,
-	0x79, 0x78, 0x4b, 0x50, 0x10, 0xa1, 0x22, 0x22, 0x52, 0xa6, 0x2c, 0x1d, 0xe6, 0x7a, 0x89, 0xce,
-	0x5a, 0xbe, 0xea, 0x2f, 0x18, 0x64, 0x5b, 0xad, 0x52, 0xe4, 0xc9, 0x14, 0x9c, 0xf1, 0xbe, 0x73,
-	0x79, 0x4d, 0x20, 0x3f, 0x5b, 0x88, 0x5e, 0xf0, 0x0a, 0x4c, 0x54, 0xac, 0x80, 0xfb, 0xc1, 0x97,
-	0xbc, 0xe6, 0xcb, 0x2c, 0x18, 0x29, 0xa8, 0x8b, 0xf8, 0x29, 0x8c, 0x47, 0x0b, 0x05, 0x6e, 0x7b,
-	0xb5, 0x52, 0x76, 0x44, 0x90, 0x7f, 0x27, 0xa6, 0xa3, 0xb8, 0x3b, 0x04, 0xbe, 0x3a, 0x65, 0xb1,
-	0x95, 0xa4, 0x54, 0xcc, 0xf5, 0x27, 0x0c, 0xa6, 0xd5, 0x43, 0xfc, 0x38, 0xba, 0x3d, 0x62, 0x32,
-	0xd0, 0x7d, 0x22, 0x65, 0xa0, 0xd7, 0x81, 0x15, 0xde, 0x11, 0x83, 0x4b, 0x6d, 0x20, 0x90, 0xa6,
-	0xed, 0x31, 0xbc, 0x0a, 0x15, 0xf7, 0x08, 0xde, 0x4e, 0x84, 0x7f, 0x2a, 0x45, 0xf7, 0x3b, 0x03,
-	0xbd, 0x53, 0x34, 0x52, 0xec, 0x1b, 0x98, 0xb4, 0x9b, 0x36, 0x50, 0xe9, 0xbd, 0xdf, 0x53, 0xe9,
-	0x91, 0x0d, 0x69, 0xd6, 0xe2, 0x6b, 0x70, 0x05, 0xb8, 0x48, 0x97, 0xae, 0x0c, 0xd8, 0x6b, 0x0d,
-	0xde, 0x82, 0x8b, 0x89, 0x76, 0xb1, 0x8c, 0x29, 0x95, 0x6a, 0xdc, 0xf7, 0xeb, 0x19, 0x13, 0xbd,
-	0xea, 0x9f, 0x50, 0xed, 0xae, 0xc9, 0x6e, 0xf8, 0xe0, 0xde, 0xc3, 0xae, 0xe1, 0xf0, 0x1c, 0x64,
-	0x9c, 0x12, 0x95, 0x6b, 0xc6, 0x29, 0xe9, 0x5e, 0xa3, 0x6b, 0xc5, 0xbc, 0x50, 0xf0, 0x02, 0x8c,
-	0xdb, 0xb1, 0x75, 0x3a, 0xed, 0xd9, 0x2e, 0xc2, 0xd7, 0xf7, 0xcb, 0x3a, 0x8d, 0xfb, 0xd0, 0xcb,
-	0x8d, 0x1a, 0xa9, 0x2f, 0x9e, 0x4a, 0x82, 0x1d, 0xb1, 0x46, 0x03, 0x69, 0x8e, 0xd4, 0x96, 0xdf,
-	0xf0, 0xff, 0xe5, 0x37, 0xb8, 0x84, 0x3a, 0x4c, 0x38, 0x99, 0xee, 0xf9, 0x34, 0xb0, 0xcb, 0xec,
-	0x69, 0x6c, 0x8a, 0x88, 0xc7, 0x27, 0xe9, 0x1e, 0x8a, 0x7e, 0xd8, 0xf8, 0xd0, 0xa7, 0x76, 0xaa,
-	0x93, 0x81, 0x89, 0x37, 0xff, 0xe4, 0x75, 0x38, 0x23, 0xd0, 0xe3, 0xcf, 0x0c, 0x46, 0xa3, 0x81,
-	0x0d, 0x8d, 0x4e, 0xe0, 0x5a, 0x67, 0x45, 0xcd, 0xec, 0x79, 0x7f, 0x84, 0x40, 0xbf, 0xf6, 0xfd,
-	0x9f, 0xff, 0xfe, 0x94, 0xb9, 0x82, 0xba, 0x29, 0x0d, 0xcd, 0xba, 0xa1, 0xa9, 0x8e, 0xcc, 0xf8,
-	0x2b, 0x83, 0x09, 0x65, 0x40, 0xc0, 0x85, 0xae, 0xe1, 0x92, 0x46, 0x4b, 0x6d, 0x31, 0xad, 0x19,
-	0x81, 0x5d, 0x15, 0x60, 0x3f, 0xc4, 0x95, 0x4e, 0x60, 0x9b, 0x26, 0x79, 0xf3, 0x20, 0xde, 0xfe,
-	0x0f, 0x43, 0x12, 0xd8, 0x3a, 0x34, 0xe1, 0x4a, 0x3a, 0x48, 0xf1, 0xf2, 0xd7, 0x6e, 0xf7, 0x65,
-	0x4b, 0x9c, 0xf2, 0x82, 0xd3, 0x0d, 0xbc, 0x9e, 0x82, 0x13, 0xfe, 0xc2, 0x60, 0x2c, 0x36, 0x00,
-	0x61, 0xbe, 0x2b, 0x82, 0xd6, 0x21, 0x4b, 0xbb, 0x99, 0xce, 0x88, 0xf0, 0xde, 0x16, 0x78, 0x17,
-	0x30, 0xdf, 0x09, 0x6f, 0x08, 0x32, 0x04, 0x2b, 0x70, 0x9b, 0x07, 0x54, 0xe8, 0x87, 0xf8, 0x82,
-	0xc1, 0x64, 0x73, 0x9f, 0xc3, 0xa5, 0xde, 0xe5, 0x53, 0xe7, 0x23, 0x6d, 0xb9, 0x0f, 0x4b, 0xa2,
-	0x71, 0x57, 0xd0, 0x58, 0xc1, 0xa5, 0x1e, 0x65, 0xa7, 0xa1, 0xc7, 0x3c, 0xa0, 0x87, 0x43, 0xfc,
-	0x83, 0xc1, 0x9b, 0x89, 0x83, 0x00, 0x7e, 0x94, 0x1a, 0x96, 0x92, 0x4e, 0x77, 0xfa, 0x35, 0x27,
-	0x6a, 0x8b, 0x82, 0xda, 0x07, 0x68, 0xa4, 0xa3, 0x86, 0xcf, 0x18, 0x9c, 0x53, 0x5b, 0x3a, 0x76,
-	0x2f, 0xd4, 0xc4, 0xd9, 0x41, 0xbb, 0x95, 0xda, 0x8e, 0xb0, 0xdf, 0x11, 0xd8, 0x97, 0x70, 0xb1,
-	0x13, 0x76, 0x02, 0x9c, 0x94, 0x60, 0x47, 0x0c, 0xc6, 0xe3, 0x77, 0x36, 0xde, 0xec, 0x45, 0xcc,
-	0xe6, 0x61, 0x44, 0x5b, 0x48, 0x69, 0x95, 0x32, 0xa9, 0x1a, 0xbf, 0x02, 0x1a, 0xd0, 0xcd, 0x03,
-	0x27, 0xc2, 0xff, 0x46, 0x4b, 0xf3, 0xc7, 0xe5, 0x54, 0x70, 0x94, 0x64, 0x5a, 0xe9, 0xc7, 0x94,
-	0xe8, 0xcc, 0x09, 0x3a, 0xd7, 0xf1, 0x6a, 0xcf, 0x74, 0xf0, 0x69, 0xd4, 0x22, 0x62, 0xfd, 0x31,
-	0x9d, 0x94, 0x7e, 0xaa, 0x16, 0xd1, 0xda, 0xe4, 0x7b, 0xbb, 0x9e, 0xda, 0x1c, 0xc1, 0xea, 0xfd,
-	0xe7, 0xc7, 0x39, 0xf6, 0xf2, 0x38, 0xc7, 0xfe, 0x39, 0xce, 0xb1, 0x1f, 0x4f, 0x72, 0x43, 0x2f,
-	0x4f, 0x72, 0x43, 0x7f, 0x9d, 0xe4, 0x86, 0xbe, 0xbe, 0x51, 0x76, 0x82, 0xed, 0xdd, 0xa2, 0x61,
-	0x7b, 0x3b, 0x49, 0x8e, 0xf7, 0xea, 0xae, 0x83, 0xfd, 0x2a, 0xf7, 0x8b, 0xa3, 0xe2, 0x7f, 0x4e,
-	0xfe, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x86, 0x60, 0x94, 0xf6, 0x06, 0x13, 0x00, 0x00,
+	// 1117 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xcf, 0x38, 0x69, 0x50, 0x9f, 0x93, 0x28, 0x9a, 0x06, 0xe1, 0x6e, 0x53, 0x37, 0x2c, 0x15,
+	0x0d, 0x81, 0xee, 0xb6, 0x71, 0xf3, 0xb7, 0x50, 0x4a, 0x22, 0xb5, 0xca, 0xa1, 0x25, 0x35, 0xff,
+	0x24, 0x0e, 0x44, 0xeb, 0xf5, 0xd8, 0x59, 0xc5, 0xde, 0x75, 0xbd, 0x1b, 0x48, 0x14, 0x22, 0x21,
+	0x2e, 0x5c, 0x91, 0x10, 0x1f, 0x05, 0x55, 0x3d, 0x70, 0x28, 0xe2, 0xd0, 0x1e, 0x40, 0x95, 0xb8,
+	0x70, 0x42, 0x28, 0xe1, 0x23, 0xf0, 0x01, 0xd0, 0xce, 0xbe, 0xb1, 0x77, 0xbc, 0x6b, 0x7b, 0xd7,
+	0xb8, 0x52, 0x6f, 0x3b, 0xe3, 0xf7, 0xe7, 0xf7, 0xfb, 0xcd, 0x7b, 0x33, 0x2f, 0x81, 0x73, 0x35,
+	0x6b, 0x8f, 0xd9, 0x15, 0x4f, 0x7f, 0xb8, 0xcf, 0x9a, 0x87, 0x5a, 0xa3, 0xe9, 0x78, 0x0e, 0x55,
+	0xfc, 0x4d, 0xd3, 0xb1, 0x6c, 0x8d, 0x7f, 0xec, 0x1a, 0xf8, 0x65, 0x57, 0x3c, 0x65, 0xa6, 0xea,
+	0x54, 0x1d, 0x6e, 0xa6, 0xfb, 0x5f, 0x81, 0x87, 0x32, 0x5b, 0x75, 0x9c, 0x6a, 0x8d, 0xe9, 0x46,
+	0xc3, 0xd2, 0x0d, 0xdb, 0x76, 0x3c, 0xc3, 0xb3, 0x1c, 0xdb, 0xc5, 0x5f, 0x17, 0x4c, 0xc7, 0xad,
+	0x3b, 0xae, 0x5e, 0x32, 0x5c, 0x16, 0x24, 0xd2, 0xbf, 0xbc, 0x5e, 0x62, 0x9e, 0x71, 0x5d, 0x6f,
+	0x18, 0x55, 0xcb, 0xe6, 0xc6, 0x68, 0x3b, 0x23, 0x00, 0x35, 0x8c, 0xa6, 0x51, 0x17, 0x11, 0x2e,
+	0x8a, 0x5d, 0xb3, 0x66, 0xb8, 0x2e, 0x73, 0x77, 0x4a, 0x87, 0x3b, 0x96, 0x6b, 0x0a, 0xa7, 0x59,
+	0x4c, 0xe0, 0x5b, 0x88, 0xc8, 0x76, 0xc5, 0xc3, 0x5f, 0xe7, 0x62, 0x9c, 0x0d, 0xd3, 0x74, 0xf6,
+	0x6d, 0x61, 0x71, 0x21, 0x64, 0x61, 0xd5, 0x8d, 0x52, 0x8d, 0xed, 0xb4, 0xdd, 0xa7, 0xfd, 0x44,
+	0x61, 0x7d, 0xd4, 0x19, 0xa0, 0x0f, 0xfc, 0xe5, 0x36, 0x87, 0x58, 0x64, 0x0f, 0xf7, 0x99, 0xeb,
+	0xa9, 0x9f, 0xc1, 0x39, 0x69, 0xd7, 0x6d, 0x38, 0xb6, 0xcb, 0xe8, 0x6d, 0x18, 0x0f, 0xa8, 0xe4,
+	0xc8, 0x1c, 0x99, 0xcf, 0x2e, 0xaa, 0x5a, 0x77, 0x75, 0xb5, 0xc0, 0x77, 0x63, 0xec, 0xe9, 0x5f,
+	0x97, 0x46, 0x8a, 0xe8, 0xa7, 0x7e, 0x47, 0xe0, 0x3c, 0x8f, 0xbc, 0x19, 0xe0, 0xdf, 0x38, 0xdc,
+	0xfa, 0x68, 0xf3, 0x3e, 0xa6, 0xa5, 0x2a, 0x4c, 0xf8, 0x00, 0xb7, 0xca, 0xdb, 0x4d, 0x56, 0xb1,
+	0x0e, 0x78, 0x96, 0xb3, 0x45, 0x69, 0x8f, 0xde, 0x01, 0x68, 0x0b, 0x9d, 0xcb, 0x70, 0x1c, 0x6f,
+	0x6a, 0x81, 0x68, 0x9a, 0x7f, 0x2a, 0x5a, 0x40, 0x0f, 0xb5, 0xd3, 0xb6, 0x8d, 0x2a, 0xc3, 0xf8,
+	0xc5, 0x90, 0xa7, 0xfa, 0x2b, 0x01, 0x25, 0x0e, 0x09, 0x52, 0x4d, 0x02, 0x65, 0x0d, 0x5e, 0xc1,
+	0x63, 0xc8, 0x65, 0xe6, 0x46, 0xe7, 0xb3, 0x8b, 0xe7, 0x05, 0x0e, 0x9f, 0xbf, 0x00, 0xc0, 0xe3,
+	0xa3, 0x0c, 0xc2, 0x9e, 0xde, 0x95, 0x58, 0x8c, 0x72, 0x16, 0x57, 0xfa, 0xb2, 0x08, 0xb0, 0x49,
+	0x34, 0x76, 0x21, 0x1f, 0x65, 0xb1, 0x65, 0x97, 0xd9, 0x81, 0x10, 0x55, 0x16, 0x8c, 0x0c, 0x2c,
+	0xd8, 0x13, 0x02, 0x97, 0xba, 0xa6, 0x42, 0xd5, 0x3e, 0x81, 0x49, 0x33, 0xfc, 0x6b, 0x8e, 0x70,
+	0x5d, 0xde, 0xea, 0x55, 0x27, 0x52, 0x38, 0xd4, 0x49, 0x8e, 0xd2, 0xa1, 0x56, 0x66, 0x70, 0xb5,
+	0x0a, 0xf0, 0x1a, 0xa7, 0xc0, 0x53, 0x05, 0x44, 0x84, 0x4c, 0x39, 0x3c, 0xcc, 0xad, 0x32, 0x9e,
+	0xb5, 0x58, 0xaa, 0xcf, 0x08, 0xe4, 0xa2, 0x5e, 0x29, 0xea, 0x64, 0x06, 0xce, 0x38, 0x5f, 0xd9,
+	0xac, 0xc9, 0x91, 0x9f, 0x2d, 0x06, 0x0b, 0x7a, 0x19, 0x26, 0x6b, 0x86, 0xc7, 0x5c, 0xef, 0x53,
+	0xd6, 0x74, 0x45, 0x15, 0x8c, 0x15, 0xe5, 0x4d, 0x7a, 0x0f, 0x26, 0x82, 0x8d, 0x22, 0x33, 0x9d,
+	0x66, 0x39, 0x37, 0xc6, 0xc9, 0xbf, 0x11, 0xd2, 0x91, 0xdf, 0x1d, 0x1c, 0x5f, 0x8b, 0x32, 0x37,
+	0x45, 0x29, 0x25, 0x77, 0xf5, 0x1b, 0x02, 0xb3, 0xf2, 0x21, 0x7e, 0x10, 0xdc, 0x1e, 0x21, 0x19,
+	0xf0, 0x3e, 0x11, 0x32, 0xe0, 0x72, 0x68, 0x8d, 0xf7, 0x33, 0x81, 0x8b, 0x5d, 0x20, 0xa0, 0xa6,
+	0xdd, 0x31, 0xbc, 0x0c, 0x1d, 0xb7, 0x07, 0xaf, 0xc7, 0xc2, 0x7f, 0x21, 0x4d, 0xf7, 0x1b, 0x01,
+	0xb5, 0x57, 0x36, 0x54, 0xec, 0x0b, 0x98, 0x36, 0x3b, 0x0c, 0xb0, 0xf5, 0xde, 0x49, 0xd4, 0x7a,
+	0xe8, 0x83, 0x9a, 0x45, 0x62, 0x0d, 0xaf, 0x01, 0x97, 0xf1, 0xd2, 0x15, 0x09, 0x93, 0xf6, 0xe0,
+	0x0a, 0x5c, 0x88, 0xf5, 0x0b, 0x55, 0x4c, 0xb9, 0xdc, 0x64, 0xae, 0xdb, 0xaa, 0x98, 0x60, 0xa9,
+	0x6e, 0x62, 0xc7, 0xdf, 0xb3, 0x6c, 0xcf, 0x7f, 0x0c, 0xef, 0xdf, 0xf9, 0xb8, 0x6f, 0x36, 0x3a,
+	0x05, 0x19, 0xab, 0x8c, 0xdd, 0x9a, 0xb1, 0xca, 0xea, 0x1e, 0x5e, 0x00, 0x52, 0x10, 0x4c, 0xfd,
+	0x21, 0x64, 0xeb, 0xed, 0x6d, 0x3c, 0xea, 0x2b, 0xbd, 0x54, 0x0f, 0x45, 0x41, 0xc1, 0xc3, 0x11,
+	0xd4, 0x0a, 0x76, 0x68, 0xc8, 0xec, 0x85, 0x94, 0xd6, 0x63, 0xd1, 0x87, 0xd1, 0x44, 0xdd, 0xa8,
+	0x8d, 0xfe, 0x3f, 0x6a, 0xc3, 0x2b, 0xa3, 0xaf, 0xa3, 0x07, 0xd2, 0xbf, 0x88, 0x86, 0x76, 0x83,
+	0x3d, 0x12, 0x43, 0x8c, 0x9c, 0x1e, 0x55, 0x7b, 0x00, 0x13, 0x21, 0xce, 0xee, 0x60, 0xb2, 0x49,
+	0x21, 0x86, 0xa6, 0xdb, 0xe2, 0xbf, 0x53, 0x70, 0x86, 0x23, 0xa7, 0x3f, 0x12, 0x18, 0x0f, 0x26,
+	0x34, 0xaa, 0xf5, 0x82, 0x16, 0x1d, 0x0e, 0x15, 0x3d, 0xb1, 0x7d, 0x80, 0x40, 0x5d, 0xf8, 0xf6,
+	0x8f, 0x7f, 0x7e, 0xc8, 0x5c, 0xa6, 0xaa, 0x2e, 0x1c, 0xf5, 0x96, 0xa3, 0x2e, 0xcf, 0xc8, 0xf4,
+	0x17, 0x02, 0x93, 0xd2, 0x44, 0x40, 0x97, 0xfa, 0xa6, 0x8b, 0x9b, 0x25, 0x95, 0xe5, 0xb4, 0x6e,
+	0x08, 0x76, 0x83, 0x83, 0x7d, 0x97, 0xae, 0xf7, 0x02, 0xdb, 0x31, 0xba, 0xeb, 0x47, 0xe1, 0xf7,
+	0xfe, 0xd8, 0x27, 0x41, 0xa3, 0x53, 0x12, 0x5d, 0x4f, 0x07, 0x29, 0xdc, 0xf5, 0xca, 0xcd, 0x81,
+	0x7c, 0x91, 0x53, 0x81, 0x73, 0xba, 0x4a, 0xdf, 0x4e, 0xc1, 0x89, 0xfe, 0x44, 0x20, 0x1b, 0x9a,
+	0x78, 0x68, 0xa1, 0x2f, 0x82, 0xe8, 0x54, 0xa5, 0xdc, 0x48, 0xe7, 0x84, 0x78, 0x6f, 0x72, 0xbc,
+	0x4b, 0xb4, 0xd0, 0x0b, 0xaf, 0x0f, 0xd2, 0x07, 0xcb, 0x71, 0xeb, 0x47, 0xd8, 0xe4, 0xc7, 0xf4,
+	0x19, 0x81, 0xe9, 0xce, 0x87, 0x8d, 0xae, 0x26, 0x97, 0x4f, 0x1e, 0x88, 0x94, 0xb5, 0x01, 0x3c,
+	0x91, 0xc6, 0x6d, 0x4e, 0x63, 0x9d, 0xae, 0x26, 0x94, 0x1d, 0xa7, 0x1c, 0xfd, 0x08, 0x3f, 0x8e,
+	0xe9, 0xef, 0x04, 0x5e, 0x8d, 0x7d, 0xf9, 0xe9, 0x7b, 0xa9, 0x61, 0x49, 0xe5, 0x74, 0x6b, 0x50,
+	0x77, 0xa4, 0xb6, 0xcc, 0xa9, 0x5d, 0xa3, 0x5a, 0x3a, 0x6a, 0xf4, 0x09, 0x81, 0x29, 0xf9, 0x0d,
+	0xa7, 0xfd, 0x1b, 0x35, 0x76, 0x58, 0x50, 0x56, 0x52, 0xfb, 0x21, 0xf6, 0x5b, 0x1c, 0xfb, 0x2a,
+	0x5d, 0xee, 0x85, 0x1d, 0x01, 0xc7, 0x15, 0xd8, 0x63, 0x02, 0xd9, 0xd0, 0x8d, 0x9d, 0xa0, 0x31,
+	0xa2, 0xc3, 0x47, 0x82, 0xc6, 0x88, 0x19, 0x36, 0xd4, 0xf7, 0x39, 0xf4, 0x35, 0xba, 0xd2, 0x0b,
+	0xba, 0x78, 0x3a, 0xfc, 0xbf, 0xfb, 0xdb, 0xb0, 0xf5, 0x23, 0x2b, 0xc0, 0x3e, 0xdd, 0xf9, 0xde,
+	0x27, 0x68, 0x8e, 0x2e, 0xb3, 0x48, 0x82, 0xe6, 0xe8, 0x36, 0x5c, 0xa8, 0xd7, 0x38, 0x95, 0x05,
+	0x3a, 0x9f, 0x94, 0x0a, 0x7d, 0x44, 0x60, 0x22, 0xfc, 0xe2, 0xd2, 0x54, 0x1a, 0xb6, 0xea, 0x66,
+	0x29, 0xa5, 0x17, 0xe2, 0x5d, 0xe7, 0x78, 0x6f, 0xd0, 0xc5, 0xf4, 0xd2, 0x6f, 0xdc, 0x7d, 0x7a,
+	0x92, 0x27, 0xcf, 0x4f, 0xf2, 0xe4, 0xef, 0x93, 0x3c, 0xf9, 0xfe, 0x34, 0x3f, 0xf2, 0xfc, 0x34,
+	0x3f, 0xf2, 0xe7, 0x69, 0x7e, 0xe4, 0xf3, 0xab, 0x55, 0xcb, 0xdb, 0xdd, 0x2f, 0x69, 0xa6, 0x53,
+	0x8f, 0x8b, 0x7b, 0xd0, 0x8a, 0xec, 0x1d, 0x36, 0x98, 0x5b, 0x1a, 0xe7, 0xff, 0xb4, 0x29, 0xfc,
+	0x17, 0x00, 0x00, 0xff, 0xff, 0xdf, 0xb2, 0xb3, 0x26, 0xeb, 0x12, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1151,12 +1152,12 @@ type QueryClient interface {
 	ClassesByAccountIndex(ctx context.Context, in *QueryClassesByAccountIndexRequest, opts ...grpc.CallOption) (*QueryClassesByAccountIndexResponse, error)
 	// Queries a list of AccountByClass items.
 	AccountByClass(ctx context.Context, in *QueryAccountByClassRequest, opts ...grpc.CallOption) (*QueryAccountByClassResponse, error)
-	// Queries a ClaimableNFT by index.
-	ClaimableNFT(ctx context.Context, in *QueryClaimableNFTRequest, opts ...grpc.CallOption) (*QueryClaimableNFTResponse, error)
-	// Queries a list of ClaimableNFT items.
-	ClaimableNFTIndex(ctx context.Context, in *QueryClaimableNFTIndexRequest, opts ...grpc.CallOption) (*QueryClaimableNFTIndexResponse, error)
-	// Queries a list of ClaimableNFTs by classId
-	ClaimableNFTs(ctx context.Context, in *QueryClaimableNFTsRequest, opts ...grpc.CallOption) (*QueryClaimableNFTsResponse, error)
+	// Queries a MintableNFT by index.
+	MintableNFT(ctx context.Context, in *QueryMintableNFTRequest, opts ...grpc.CallOption) (*QueryMintableNFTResponse, error)
+	// Queries a list of MintableNFT items.
+	MintableNFTIndex(ctx context.Context, in *QueryMintableNFTIndexRequest, opts ...grpc.CallOption) (*QueryMintableNFTIndexResponse, error)
+	// Queries a list of MintableNFTs by classId
+	MintableNFTs(ctx context.Context, in *QueryMintableNFTsRequest, opts ...grpc.CallOption) (*QueryMintableNFTsResponse, error)
 }
 
 type queryClient struct {
@@ -1230,27 +1231,27 @@ func (c *queryClient) AccountByClass(ctx context.Context, in *QueryAccountByClas
 	return out, nil
 }
 
-func (c *queryClient) ClaimableNFT(ctx context.Context, in *QueryClaimableNFTRequest, opts ...grpc.CallOption) (*QueryClaimableNFTResponse, error) {
-	out := new(QueryClaimableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClaimableNFT", in, out, opts...)
+func (c *queryClient) MintableNFT(ctx context.Context, in *QueryMintableNFTRequest, opts ...grpc.CallOption) (*QueryMintableNFTResponse, error) {
+	out := new(QueryMintableNFTResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/MintableNFT", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ClaimableNFTIndex(ctx context.Context, in *QueryClaimableNFTIndexRequest, opts ...grpc.CallOption) (*QueryClaimableNFTIndexResponse, error) {
-	out := new(QueryClaimableNFTIndexResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClaimableNFTIndex", in, out, opts...)
+func (c *queryClient) MintableNFTIndex(ctx context.Context, in *QueryMintableNFTIndexRequest, opts ...grpc.CallOption) (*QueryMintableNFTIndexResponse, error) {
+	out := new(QueryMintableNFTIndexResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/MintableNFTIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ClaimableNFTs(ctx context.Context, in *QueryClaimableNFTsRequest, opts ...grpc.CallOption) (*QueryClaimableNFTsResponse, error) {
-	out := new(QueryClaimableNFTsResponse)
-	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/ClaimableNFTs", in, out, opts...)
+func (c *queryClient) MintableNFTs(ctx context.Context, in *QueryMintableNFTsRequest, opts ...grpc.CallOption) (*QueryMintableNFTsResponse, error) {
+	out := new(QueryMintableNFTsResponse)
+	err := c.cc.Invoke(ctx, "/likecoin.likechain.likenft.Query/MintableNFTs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1273,12 +1274,12 @@ type QueryServer interface {
 	ClassesByAccountIndex(context.Context, *QueryClassesByAccountIndexRequest) (*QueryClassesByAccountIndexResponse, error)
 	// Queries a list of AccountByClass items.
 	AccountByClass(context.Context, *QueryAccountByClassRequest) (*QueryAccountByClassResponse, error)
-	// Queries a ClaimableNFT by index.
-	ClaimableNFT(context.Context, *QueryClaimableNFTRequest) (*QueryClaimableNFTResponse, error)
-	// Queries a list of ClaimableNFT items.
-	ClaimableNFTIndex(context.Context, *QueryClaimableNFTIndexRequest) (*QueryClaimableNFTIndexResponse, error)
-	// Queries a list of ClaimableNFTs by classId
-	ClaimableNFTs(context.Context, *QueryClaimableNFTsRequest) (*QueryClaimableNFTsResponse, error)
+	// Queries a MintableNFT by index.
+	MintableNFT(context.Context, *QueryMintableNFTRequest) (*QueryMintableNFTResponse, error)
+	// Queries a list of MintableNFT items.
+	MintableNFTIndex(context.Context, *QueryMintableNFTIndexRequest) (*QueryMintableNFTIndexResponse, error)
+	// Queries a list of MintableNFTs by classId
+	MintableNFTs(context.Context, *QueryMintableNFTsRequest) (*QueryMintableNFTsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1306,14 +1307,14 @@ func (*UnimplementedQueryServer) ClassesByAccountIndex(ctx context.Context, req 
 func (*UnimplementedQueryServer) AccountByClass(ctx context.Context, req *QueryAccountByClassRequest) (*QueryAccountByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountByClass not implemented")
 }
-func (*UnimplementedQueryServer) ClaimableNFT(ctx context.Context, req *QueryClaimableNFTRequest) (*QueryClaimableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClaimableNFT not implemented")
+func (*UnimplementedQueryServer) MintableNFT(ctx context.Context, req *QueryMintableNFTRequest) (*QueryMintableNFTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MintableNFT not implemented")
 }
-func (*UnimplementedQueryServer) ClaimableNFTIndex(ctx context.Context, req *QueryClaimableNFTIndexRequest) (*QueryClaimableNFTIndexResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClaimableNFTIndex not implemented")
+func (*UnimplementedQueryServer) MintableNFTIndex(ctx context.Context, req *QueryMintableNFTIndexRequest) (*QueryMintableNFTIndexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MintableNFTIndex not implemented")
 }
-func (*UnimplementedQueryServer) ClaimableNFTs(ctx context.Context, req *QueryClaimableNFTsRequest) (*QueryClaimableNFTsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClaimableNFTs not implemented")
+func (*UnimplementedQueryServer) MintableNFTs(ctx context.Context, req *QueryMintableNFTsRequest) (*QueryMintableNFTsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MintableNFTs not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1446,56 +1447,56 @@ func _Query_AccountByClass_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClaimableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClaimableNFTRequest)
+func _Query_MintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMintableNFTRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClaimableNFT(ctx, in)
+		return srv.(QueryServer).MintableNFT(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Query/ClaimableNFT",
+		FullMethod: "/likecoin.likechain.likenft.Query/MintableNFT",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClaimableNFT(ctx, req.(*QueryClaimableNFTRequest))
+		return srv.(QueryServer).MintableNFT(ctx, req.(*QueryMintableNFTRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClaimableNFTIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClaimableNFTIndexRequest)
+func _Query_MintableNFTIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMintableNFTIndexRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClaimableNFTIndex(ctx, in)
+		return srv.(QueryServer).MintableNFTIndex(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Query/ClaimableNFTIndex",
+		FullMethod: "/likecoin.likechain.likenft.Query/MintableNFTIndex",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClaimableNFTIndex(ctx, req.(*QueryClaimableNFTIndexRequest))
+		return srv.(QueryServer).MintableNFTIndex(ctx, req.(*QueryMintableNFTIndexRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClaimableNFTs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClaimableNFTsRequest)
+func _Query_MintableNFTs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMintableNFTsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClaimableNFTs(ctx, in)
+		return srv.(QueryServer).MintableNFTs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likecoin.likechain.likenft.Query/ClaimableNFTs",
+		FullMethod: "/likecoin.likechain.likenft.Query/MintableNFTs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClaimableNFTs(ctx, req.(*QueryClaimableNFTsRequest))
+		return srv.(QueryServer).MintableNFTs(ctx, req.(*QueryMintableNFTsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1533,16 +1534,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_AccountByClass_Handler,
 		},
 		{
-			MethodName: "ClaimableNFT",
-			Handler:    _Query_ClaimableNFT_Handler,
+			MethodName: "MintableNFT",
+			Handler:    _Query_MintableNFT_Handler,
 		},
 		{
-			MethodName: "ClaimableNFTIndex",
-			Handler:    _Query_ClaimableNFTIndex_Handler,
+			MethodName: "MintableNFTIndex",
+			Handler:    _Query_MintableNFTIndex_Handler,
 		},
 		{
-			MethodName: "ClaimableNFTs",
-			Handler:    _Query_ClaimableNFTs_Handler,
+			MethodName: "MintableNFTs",
+			Handler:    _Query_MintableNFTs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -2111,7 +2112,7 @@ func (m *QueryAccountByClassResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2121,12 +2122,12 @@ func (m *QueryClaimableNFTRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2148,7 +2149,7 @@ func (m *QueryClaimableNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2158,18 +2159,18 @@ func (m *QueryClaimableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.ClaimableNFT.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.MintableNFT.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -2181,7 +2182,7 @@ func (m *QueryClaimableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTIndexRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTIndexRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2191,12 +2192,12 @@ func (m *QueryClaimableNFTIndexRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTIndexRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTIndexRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTIndexRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTIndexRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2216,7 +2217,7 @@ func (m *QueryClaimableNFTIndexRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTIndexResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTIndexResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2226,12 +2227,12 @@ func (m *QueryClaimableNFTIndexResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTIndexResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTIndexResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2248,10 +2249,10 @@ func (m *QueryClaimableNFTIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.ClaimableNFT) > 0 {
-		for iNdEx := len(m.ClaimableNFT) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.MintableNFT) > 0 {
+		for iNdEx := len(m.MintableNFT) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.ClaimableNFT[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.MintableNFT[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -2265,7 +2266,7 @@ func (m *QueryClaimableNFTIndexResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2275,12 +2276,12 @@ func (m *QueryClaimableNFTsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2307,7 +2308,7 @@ func (m *QueryClaimableNFTsRequest) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryClaimableNFTsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryMintableNFTsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2317,12 +2318,12 @@ func (m *QueryClaimableNFTsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryClaimableNFTsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryClaimableNFTsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryMintableNFTsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2339,10 +2340,10 @@ func (m *QueryClaimableNFTsResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.ClaimableNFTs) > 0 {
-		for iNdEx := len(m.ClaimableNFTs) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.MintableNFTs) > 0 {
+		for iNdEx := len(m.MintableNFTs) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.ClaimableNFTs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.MintableNFTs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -2592,7 +2593,7 @@ func (m *QueryAccountByClassResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryClaimableNFTRequest) Size() (n int) {
+func (m *QueryMintableNFTRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2609,18 +2610,18 @@ func (m *QueryClaimableNFTRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryClaimableNFTResponse) Size() (n int) {
+func (m *QueryMintableNFTResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.ClaimableNFT.Size()
+	l = m.MintableNFT.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
-func (m *QueryClaimableNFTIndexRequest) Size() (n int) {
+func (m *QueryMintableNFTIndexRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2633,14 +2634,14 @@ func (m *QueryClaimableNFTIndexRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryClaimableNFTIndexResponse) Size() (n int) {
+func (m *QueryMintableNFTIndexResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.ClaimableNFT) > 0 {
-		for _, e := range m.ClaimableNFT {
+	if len(m.MintableNFT) > 0 {
+		for _, e := range m.MintableNFT {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2652,7 +2653,7 @@ func (m *QueryClaimableNFTIndexResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryClaimableNFTsRequest) Size() (n int) {
+func (m *QueryMintableNFTsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2669,14 +2670,14 @@ func (m *QueryClaimableNFTsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryClaimableNFTsResponse) Size() (n int) {
+func (m *QueryMintableNFTsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.ClaimableNFTs) > 0 {
-		for _, e := range m.ClaimableNFTs {
+	if len(m.MintableNFTs) > 0 {
+		for _, e := range m.MintableNFTs {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -4191,7 +4192,7 @@ func (m *QueryAccountByClassResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4214,10 +4215,10 @@ func (m *QueryClaimableNFTRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4305,7 +4306,7 @@ func (m *QueryClaimableNFTRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4328,15 +4329,15 @@ func (m *QueryClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClaimableNFT", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFT", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4363,7 +4364,7 @@ func (m *QueryClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.ClaimableNFT.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.MintableNFT.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4388,7 +4389,7 @@ func (m *QueryClaimableNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTIndexRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTIndexRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4411,10 +4412,10 @@ func (m *QueryClaimableNFTIndexRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTIndexRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTIndexRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTIndexRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTIndexRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4474,7 +4475,7 @@ func (m *QueryClaimableNFTIndexRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTIndexResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTIndexResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4497,15 +4498,15 @@ func (m *QueryClaimableNFTIndexResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTIndexResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTIndexResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTIndexResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTIndexResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClaimableNFT", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFT", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4532,8 +4533,8 @@ func (m *QueryClaimableNFTIndexResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ClaimableNFT = append(m.ClaimableNFT, ClaimableNFT{})
-			if err := m.ClaimableNFT[len(m.ClaimableNFT)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.MintableNFT = append(m.MintableNFT, MintableNFT{})
+			if err := m.MintableNFT[len(m.MintableNFT)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4594,7 +4595,7 @@ func (m *QueryClaimableNFTIndexResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4617,10 +4618,10 @@ func (m *QueryClaimableNFTsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4712,7 +4713,7 @@ func (m *QueryClaimableNFTsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryClaimableNFTsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryMintableNFTsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4735,15 +4736,15 @@ func (m *QueryClaimableNFTsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryClaimableNFTsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryMintableNFTsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryClaimableNFTsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryMintableNFTsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClaimableNFTs", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFTs", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4770,8 +4771,8 @@ func (m *QueryClaimableNFTsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ClaimableNFTs = append(m.ClaimableNFTs, ClaimableNFT{})
-			if err := m.ClaimableNFTs[len(m.ClaimableNFTs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.MintableNFTs = append(m.MintableNFTs, MintableNFT{})
+			if err := m.MintableNFTs[len(m.MintableNFTs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

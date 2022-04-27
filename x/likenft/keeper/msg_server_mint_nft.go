@@ -22,13 +22,13 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
 	}
 
-	// Resolve the most applicable claim period
-	claimPeriod, err := k.resolveValidClaimPeriod(ctx, classId, *classData, ownerAddress, userAddress)
+	// Resolve the most applicable mint period
+	mintPeriod, err := k.resolveValidMintPeriod(ctx, classId, *classData, ownerAddress, userAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	if claimPeriod == nil {
+	if mintPeriod == nil {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("The user %s is not allowed to mint the class %s", userAddress, classId))
 	}
 
@@ -52,13 +52,13 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	}
 
 	// Pay price to owner if mintPrice is not zero and the minter is not the owner
-	if !ownerAddress.Equals(userAddress) && claimPeriod.MintPrice > 0 {
+	if !ownerAddress.Equals(userAddress) && mintPeriod.MintPrice > 0 {
 		spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetMintPriceDenom())
-		if spentableTokens.Amount.Uint64() < claimPeriod.MintPrice {
+		if spentableTokens.Amount.Uint64() < mintPeriod.MintPrice {
 			return nil, types.ErrInsufficientFunds.Wrapf("insufficient funds to mint tokenId %s", tokenId)
 		}
 
-		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(claimPeriod.MintPrice)))))
+		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(mintPeriod.MintPrice)))))
 		if err != nil {
 			return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
 		}

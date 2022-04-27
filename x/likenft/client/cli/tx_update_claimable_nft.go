@@ -12,10 +12,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdUpdateClaimableNFT() *cobra.Command {
+func CmdUpdateMintableNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-claimable-nft [class-id] [id] [json-file-input]",
-		Short: "Update claimable nft content",
+		Use:   "update-mintable-nft [class-id] [id] [json-file-input]",
+		Short: "Update mintable nft content",
 		Example: `JSON file content:
 {
 	"uri": "",
@@ -36,7 +36,7 @@ func CmdUpdateClaimableNFT() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateClaimableNFT(
+			msg := types.NewMsgUpdateMintableNFT(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,

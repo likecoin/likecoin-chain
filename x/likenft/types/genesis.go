@@ -14,7 +14,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		ClassesByISCNList:    []ClassesByISCN{},
 		ClassesByAccountList: []ClassesByAccount{},
-		ClaimableNFTList:     []ClaimableNFT{},
+		MintableNFTList:      []MintableNFT{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -49,15 +49,15 @@ func (gs GenesisState) Validate() error {
 		}
 		classesByAccountIndexMap[index] = struct{}{}
 	}
-	// Check for duplicated index in claimableNFT
-	claimableNFTIndexMap := make(map[string]struct{})
+	// Check for duplicated index in mintableNFT
+	mintableNFTIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.ClaimableNFTList {
-		index := string(ClaimableNFTKey(elem.ClassId, elem.Id))
-		if _, ok := claimableNFTIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for claimableNFT")
+	for _, elem := range gs.MintableNFTList {
+		index := string(MintableNFTKey(elem.ClassId, elem.Id))
+		if _, ok := mintableNFTIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for mintableNFT")
 		}
-		claimableNFTIndexMap[index] = struct{}{}
+		mintableNFTIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

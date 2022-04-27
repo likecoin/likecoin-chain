@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// ClaimableNFTKeyPrefix is the prefix to retrieve all ClaimableNFT
-	ClaimableNFTKeyPrefix = "ClaimableNFT/value/"
+	// MintableNFTKeyPrefix is the prefix to retrieve all MintableNFT
+	MintableNFTKeyPrefix = "MintableNFT/value/"
 )
 
-// ClaimableNFTsKey gets the first part of the ClaimableNFT key based on the classID
-func ClaimableNFTsKey(
+// MintableNFTsKey gets the first part of the MintableNFT key based on the classID
+func MintableNFTsKey(
 	classId string,
 ) []byte {
 	var key []byte
@@ -22,12 +22,12 @@ func ClaimableNFTsKey(
 	return key
 }
 
-// ClaimableNFTKey returns the store key to retrieve a ClaimableNFT from the index fields
-func ClaimableNFTKey(
+// MintableNFTKey returns the store key to retrieve a MintableNFT from the index fields
+func MintableNFTKey(
 	classId string,
 	id string,
 ) []byte {
-	key := ClaimableNFTsKey(classId)
+	key := MintableNFTsKey(classId)
 
 	idBytes := []byte(id)
 	key = append(key, idBytes...)

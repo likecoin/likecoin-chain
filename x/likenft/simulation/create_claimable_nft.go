@@ -10,7 +10,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func SimulateMsgCreateClaimableNFT(
+func SimulateMsgCreateMintableNFT(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgCreateClaimableNFT(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgCreateClaimableNFT{
+		msg := &types.MsgCreateMintableNFT{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the CreateClaimableNFT simulation
+		// TODO: Handling the CreateMintableNFT simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "CreateClaimableNFT simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "CreateMintableNFT simulation not implemented"), nil, nil
 	}
 }

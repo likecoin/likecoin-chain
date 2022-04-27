@@ -11,24 +11,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ClaimableNFTIndex(c context.Context, req *types.QueryClaimableNFTIndexRequest) (*types.QueryClaimableNFTIndexResponse, error) {
+func (k Keeper) MintableNFTIndex(c context.Context, req *types.QueryMintableNFTIndexRequest) (*types.QueryMintableNFTIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var claimableNFTs []types.ClaimableNFT
+	var mintableNFTs []types.MintableNFT
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimableNFTStore := prefix.NewStore(store, types.KeyPrefix(types.ClaimableNFTKeyPrefix))
+	mintableNFTStore := prefix.NewStore(store, types.KeyPrefix(types.MintableNFTKeyPrefix))
 
-	pageRes, err := query.Paginate(claimableNFTStore, req.Pagination, func(key []byte, value []byte) error {
-		var claimableNFT types.ClaimableNFT
-		if err := k.cdc.Unmarshal(value, &claimableNFT); err != nil {
+	pageRes, err := query.Paginate(mintableNFTStore, req.Pagination, func(key []byte, value []byte) error {
+		var mintableNFT types.MintableNFT
+		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
 			return err
 		}
 
-		claimableNFTs = append(claimableNFTs, claimableNFT)
+		mintableNFTs = append(mintableNFTs, mintableNFT)
 		return nil
 	})
 
@@ -36,27 +36,27 @@ func (k Keeper) ClaimableNFTIndex(c context.Context, req *types.QueryClaimableNF
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClaimableNFTIndexResponse{ClaimableNFT: claimableNFTs, Pagination: pageRes}, nil
+	return &types.QueryMintableNFTIndexResponse{MintableNFT: mintableNFTs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClaimableNFTs(c context.Context, req *types.QueryClaimableNFTsRequest) (*types.QueryClaimableNFTsResponse, error) {
+func (k Keeper) MintableNFTs(c context.Context, req *types.QueryMintableNFTsRequest) (*types.QueryMintableNFTsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var claimableNFTs []types.ClaimableNFT
+	var mintableNFTs []types.MintableNFT
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.ClaimableNFTKeyPrefix), types.ClaimableNFTsKey(req.ClassId)...))
+	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.MintableNFTKeyPrefix), types.MintableNFTsKey(req.ClassId)...))
 
 	pageRes, err := query.Paginate(subStore, req.Pagination, func(key []byte, value []byte) error {
-		var claimableNFT types.ClaimableNFT
-		if err := k.cdc.Unmarshal(value, &claimableNFT); err != nil {
+		var mintableNFT types.MintableNFT
+		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
 			return err
 		}
 
-		claimableNFTs = append(claimableNFTs, claimableNFT)
+		mintableNFTs = append(mintableNFTs, mintableNFT)
 		return nil
 	})
 
@@ -64,16 +64,16 @@ func (k Keeper) ClaimableNFTs(c context.Context, req *types.QueryClaimableNFTsRe
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClaimableNFTsResponse{ClaimableNFTs: claimableNFTs, Pagination: pageRes}, nil
+	return &types.QueryMintableNFTsResponse{MintableNFTs: mintableNFTs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryClaimableNFTRequest) (*types.QueryClaimableNFTResponse, error) {
+func (k Keeper) MintableNFT(c context.Context, req *types.QueryMintableNFTRequest) (*types.QueryMintableNFTResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetClaimableNFT(
+	val, found := k.GetMintableNFT(
 		ctx,
 		req.ClassId,
 		req.Id,
@@ -82,5 +82,5 @@ func (k Keeper) ClaimableNFT(c context.Context, req *types.QueryClaimableNFTRequ
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryClaimableNFTResponse{ClaimableNFT: val}, nil
+	return &types.QueryMintableNFTResponse{MintableNFT: val}, nil
 }

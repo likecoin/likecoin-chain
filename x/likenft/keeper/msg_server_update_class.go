@@ -54,8 +54,8 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
-	// Sort the claim period by start time
-	msg.Input.Config.ClaimPeriods = SortClaimPeriod(msg.Input.Config.ClaimPeriods, true)
+	// Sort the mint period by start time
+	msg.Input.Config.MintPeriods = SortMintPeriod(msg.Input.Config.MintPeriods, true)
 
 	// Update class
 	classData = types.ClassData{

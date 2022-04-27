@@ -40,17 +40,17 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgBurnNFT int = 100
 
-	opWeightMsgCreateClaimableNFT = "op_weight_msg_create_chain"
+	opWeightMsgCreateMintableNFT = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateClaimableNFT int = 100
+	defaultWeightMsgCreateMintableNFT int = 100
 
-	opWeightMsgUpdateClaimableNFT = "op_weight_msg_create_chain"
+	opWeightMsgUpdateMintableNFT = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateClaimableNFT int = 100
+	defaultWeightMsgUpdateMintableNFT int = 100
 
-	opWeightMsgDeleteClaimableNFT = "op_weight_msg_create_chain"
+	opWeightMsgDeleteMintableNFT = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeleteClaimableNFT int = 100
+	defaultWeightMsgDeleteMintableNFT int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -129,37 +129,37 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		likenftsimulation.SimulateMsgBurnNFT(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCreateClaimableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateClaimableNFT, &weightMsgCreateClaimableNFT, nil,
+	var weightMsgCreateMintableNFT int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateMintableNFT, &weightMsgCreateMintableNFT, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateClaimableNFT = defaultWeightMsgCreateClaimableNFT
+			weightMsgCreateMintableNFT = defaultWeightMsgCreateMintableNFT
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateClaimableNFT,
-		likenftsimulation.SimulateMsgCreateClaimableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCreateMintableNFT,
+		likenftsimulation.SimulateMsgCreateMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgUpdateClaimableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateClaimableNFT, &weightMsgUpdateClaimableNFT, nil,
+	var weightMsgUpdateMintableNFT int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateMintableNFT, &weightMsgUpdateMintableNFT, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateClaimableNFT = defaultWeightMsgUpdateClaimableNFT
+			weightMsgUpdateMintableNFT = defaultWeightMsgUpdateMintableNFT
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateClaimableNFT,
-		likenftsimulation.SimulateMsgUpdateClaimableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgUpdateMintableNFT,
+		likenftsimulation.SimulateMsgUpdateMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgDeleteClaimableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteClaimableNFT, &weightMsgDeleteClaimableNFT, nil,
+	var weightMsgDeleteMintableNFT int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteMintableNFT, &weightMsgDeleteMintableNFT, nil,
 		func(_ *rand.Rand) {
-			weightMsgDeleteClaimableNFT = defaultWeightMsgDeleteClaimableNFT
+			weightMsgDeleteMintableNFT = defaultWeightMsgDeleteMintableNFT
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteClaimableNFT,
-		likenftsimulation.SimulateMsgDeleteClaimableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgDeleteMintableNFT,
+		likenftsimulation.SimulateMsgDeleteMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

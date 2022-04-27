@@ -15,6 +15,6 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated ClassesByISCN classesByISCNList = 2 [(gogoproto.nullable) = false];
   repeated ClassesByAccount classesByAccountList = 3 [(gogoproto.nullable) = false];
-  repeated ClaimableNFT claimableNFTList = 4 [(gogoproto.nullable) = false];
+  repeated MintableNFT mintableNFTList = 4 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

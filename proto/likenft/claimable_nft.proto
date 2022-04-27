@@ -6,7 +6,7 @@ import "likenft/nft_input.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
-message ClaimableNFT {
+message MintableNFT {
   string classId = 1; 
   string id = 2; 
   NFTInput input = 3 [(gogoproto.nullable) = false];

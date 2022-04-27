@@ -16,9 +16,9 @@ service Msg {
   rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
   rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
   rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
-  rpc CreateClaimableNFT(MsgCreateClaimableNFT) returns (MsgCreateClaimableNFTResponse);
-  rpc UpdateClaimableNFT(MsgUpdateClaimableNFT) returns (MsgUpdateClaimableNFTResponse);
-  rpc DeleteClaimableNFT(MsgDeleteClaimableNFT) returns (MsgDeleteClaimableNFTResponse);
+  rpc CreateMintableNFT(MsgCreateMintableNFT) returns (MsgCreateMintableNFTResponse);
+  rpc UpdateMintableNFT(MsgUpdateMintableNFT) returns (MsgUpdateMintableNFTResponse);
+  rpc DeleteMintableNFT(MsgDeleteMintableNFT) returns (MsgDeleteMintableNFTResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -62,33 +62,33 @@ message MsgBurnNFT {
 message MsgBurnNFTResponse {
 }
 
-message MsgCreateClaimableNFT {
+message MsgCreateMintableNFT {
   string creator = 1;
   string classId = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgCreateClaimableNFTResponse {
+message MsgCreateMintableNFTResponse {
 }
 
-message MsgUpdateClaimableNFT {
+message MsgUpdateMintableNFT {
   string creator = 1;
   string classId = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateClaimableNFTResponse {
+message MsgUpdateMintableNFTResponse {
 }
 
-message MsgDeleteClaimableNFT {
+message MsgDeleteMintableNFT {
   string creator = 1;
   string classId = 2;
   string id = 3;
 }
 
-message MsgDeleteClaimableNFTResponse {
+message MsgDeleteMintableNFTResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

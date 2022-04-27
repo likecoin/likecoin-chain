@@ -29,7 +29,7 @@ func CmdNewClass() *cobra.Command {
 		"burnable": true,
 		"maxSupply": 0, // 0 = unlimited
 		"enableBlindBox": true,
-		"claimPeriods": [
+		"mintPeriods": [
 			{
 				"startTime": "2022-01-01T00:00:00Z",
 				"allowedAddresses": ["cosmos1"], // null = public, [] = owner only

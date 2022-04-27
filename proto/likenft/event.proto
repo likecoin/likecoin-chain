@@ -31,23 +31,23 @@ message EventBurnNFT {
   string classParentAccount = 5;
 }
 
-message EventCreateClaimableNFT {
+message EventCreateMintableNFT {
   string classId = 1;
-  string claimableNFTId = 2;
+  string mintableNFTId = 2;
   string classParentIscnIdPrefix = 3;
   string classParentAccount = 4;
 }
 
-message EventUpdateClaimableNFT {
+message EventUpdateMintableNFT {
   string classId = 1;
-  string claimableNFTId = 2;
+  string mintableNFTId = 2;
   string classParentIscnIdPrefix = 3;
   string classParentAccount = 4;
 }
 
-message EventDeleteClaimableNFT {
+message EventDeleteMintableNFT {
   string classId = 1;
-  string claimableNFTId = 2;
+  string mintableNFTId = 2;
   string classParentIscnIdPrefix = 3;
   string classParentAccount = 4;
 }

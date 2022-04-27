@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) getParentOwnerAndValidateReqToMutateClaimableNFT(ctx sdk.Context, creator string, classId string) (*types.ClassParentAndOwner, error) {
+func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string) (*types.ClassParentAndOwner, error) {
 
 	// Verify class exists
 	class, found := k.nftKeeper.GetClass(ctx, classId)

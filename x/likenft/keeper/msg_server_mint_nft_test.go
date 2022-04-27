@@ -875,7 +875,7 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1028,7 +1028,7 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1160,7 +1160,7 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1239,7 +1239,7 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
+func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -1278,9 +1278,9 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 		}
 	}
 }`)
-	firstClaimPeriodPrice := uint64(10000000000)
-	secondClaimPeriodPrice := uint64(20000000000)
-	thirdClaimPeriodPrice := uint64(30000000000)
+	firstMintPeriodPrice := uint64(10000000000)
+	secondMintPeriodPrice := uint64(20000000000)
+	thirdMintPeriodPrice := uint64(30000000000)
 
 	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
@@ -1298,21 +1298,21 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
 			// Assume sorted descending when creating/updating class
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
 					AllowedAddresses: []string{},
-					MintPrice:        thirdClaimPeriodPrice,
+					MintPrice:        thirdMintPeriodPrice,
 				},
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
 					AllowedAddresses: []string{},
-					MintPrice:        secondClaimPeriodPrice,
+					MintPrice:        secondMintPeriodPrice,
 				},
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
-					MintPrice:        firstClaimPeriodPrice,
+					MintPrice:        firstMintPeriodPrice,
 				},
 			},
 			RevealTime: revealTime,
@@ -1375,7 +1375,7 @@ func TestMintBlindBoxNFTChangingClaimPeriodPrice(t *testing.T) {
 		gomock.Eq(wrappedOwnerAddress),
 		gomock.Eq(sdk.Coins{sdk.Coin{
 			Denom:  "nanolike",
-			Amount: sdk.NewInt(int64(secondClaimPeriodPrice)),
+			Amount: sdk.NewInt(int64(secondMintPeriodPrice)),
 		}}),
 	)
 
@@ -1462,7 +1462,7 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1595,7 +1595,7 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},
@@ -1944,7 +1944,7 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 			Burnable:       false,
 			MaxSupply:      uint64(500),
 			EnableBlindBox: true,
-			ClaimPeriods: []types.ClaimPeriod{
+			MintPeriods: []types.MintPeriod{
 				{
 					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 					AllowedAddresses: []string{},

@@ -7,33 +7,33 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) UpdateClaimableNFT(goCtx context.Context, msg *types.MsgUpdateClaimableNFT) (*types.MsgUpdateClaimableNFTResponse, error) {
+func (k msgServer) UpdateMintableNFT(goCtx context.Context, msg *types.MsgUpdateMintableNFT) (*types.MsgUpdateMintableNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateClaimableNFT(ctx, msg.Creator, msg.ClassId)
+	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateMintableNFT(ctx, msg.Creator, msg.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
 	// check id already exists
-	if _, exists := k.GetClaimableNFT(ctx, msg.ClassId, msg.Id); !exists {
-		return nil, types.ErrClaimableNftNotFound
+	if _, exists := k.GetMintableNFT(ctx, msg.ClassId, msg.Id); !exists {
+		return nil, types.ErrMintableNftNotFound
 	}
 
 	// set record
-	k.SetClaimableNFT(ctx, types.ClaimableNFT{
+	k.SetMintableNFT(ctx, types.MintableNFT{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
 	})
 
 	// Emit event
-	ctx.EventManager().EmitTypedEvent(&types.EventUpdateClaimableNFT{
+	ctx.EventManager().EmitTypedEvent(&types.EventUpdateMintableNFT{
 		ClassId:                 msg.ClassId,
-		ClaimableNFTId:          msg.Id,
+		MintableNFTId:           msg.Id,
 		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
 		ClassParentAccount:      parentAndOwner.ClassParent.Account,
 	})
 
-	return &types.MsgUpdateClaimableNFTResponse{}, nil
+	return &types.MsgUpdateMintableNFTResponse{}, nil
 }
