@@ -9,9 +9,9 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k Keeper) resolveValidMintPeriod(ctx sdk.Context, classId string, classData types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.MintPeriod, error) {
+func (k Keeper) resolveValidMintPeriod(ctx sdk.Context, classId string, blindBoxConfig types.BlindBoxConfig, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress) (*types.MintPeriod, error) {
 
-	mintPeriods := classData.Config.MintPeriods
+	mintPeriods := blindBoxConfig.MintPeriods
 	if len(mintPeriods) == 0 {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf(fmt.Sprintf("No mint period is configured for class %s", classId))
 	}

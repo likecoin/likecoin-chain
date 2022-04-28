@@ -1209,7 +1209,6 @@ func TestUpdateClassEnableBlindBox(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1239,22 +1238,22 @@ func TestUpdateClassEnableBlindBox(t *testing.T) {
 
 	mintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
 			MintPrice:        uint64(20000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
 			MintPrice:        uint64(30000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
 			MintPrice:        uint64(90000),
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
 
 	nftKeeper.
 		EXPECT().
@@ -1297,11 +1296,12 @@ func TestUpdateClassEnableBlindBox(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    mintPeriods,
-				RevealTime:     revealTime,
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+				BlindBoxConfig: &types.BlindBoxConfig{
+					MintPeriods: mintPeriods,
+					RevealTime:  revealTime,
+				},
 			},
 		},
 	})
@@ -1323,11 +1323,10 @@ func TestUpdateClassEnableBlindBox(t *testing.T) {
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 	require.Equal(t, maxSupply, classData.Config.MaxSupply)
-	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
-	require.Equal(t, revealTime, classData.Config.RevealTime)
+	require.Equal(t, revealTime, classData.Config.BlindBoxConfig.RevealTime)
 
-	require.Equal(t, len(mintPeriods), len(classData.Config.MintPeriods))
-	for i, mintPeriod := range classData.Config.MintPeriods {
+	require.Equal(t, len(mintPeriods), len(classData.Config.BlindBoxConfig.MintPeriods))
+	for i, mintPeriod := range classData.Config.BlindBoxConfig.MintPeriods {
 		require.Equal(t, mintPeriod.StartTime, mintPeriods[i].StartTime)
 		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
 		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
@@ -1337,7 +1336,7 @@ func TestUpdateClassEnableBlindBox(t *testing.T) {
 	revealQueue = keeper.GetClassRevealQueue(ctx)
 	require.Contains(t, revealQueue, types.ClassRevealQueueEntry{
 		ClassId:    classId,
-		RevealTime: *revealTime,
+		RevealTime: revealTime,
 	})
 
 	// Check mock was called as expected
@@ -1383,10 +1382,8 @@ func TestUpdateClassDisableBlindBox(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
-
 	// Mock keeper calls
-	revealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
 	oldClassData := types.ClassData{
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 		Parent: types.ClassParent{
@@ -1394,27 +1391,28 @@ func TestUpdateClassDisableBlindBox(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: enableBlindBox,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
-					AllowedAddresses: []string{ownerAddress},
-					MintPrice:        uint64(20000),
+			Burnable:  false,
+			MaxSupply: uint64(500),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+						AllowedAddresses: []string{ownerAddress},
+						MintPrice:        uint64(20000),
+					},
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+						AllowedAddresses: []string{ownerAddress},
+						MintPrice:        uint64(30000),
+					},
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+						AllowedAddresses: make([]string, 0),
+						MintPrice:        uint64(90000),
+					},
 				},
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
-					AllowedAddresses: []string{ownerAddress},
-					MintPrice:        uint64(30000),
-				},
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-					AllowedAddresses: make([]string, 0),
-					MintPrice:        uint64(90000),
-				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -1459,11 +1457,8 @@ func TestUpdateClassDisableBlindBox(t *testing.T) {
 	// Assume entry is inserted
 	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		ClassId:    classId,
-		RevealTime: *revealTime,
+		RevealTime: revealTime,
 	})
-
-	updatedEnableBlindBox := false
-
 	// Run
 	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
 		Creator: ownerAddress,
@@ -1478,7 +1473,7 @@ func TestUpdateClassDisableBlindBox(t *testing.T) {
 			Config: types.ClassConfig{
 				Burnable:       burnable,
 				MaxSupply:      maxSupply,
-				EnableBlindBox: updatedEnableBlindBox,
+				BlindBoxConfig: nil,
 			},
 		},
 	})
@@ -1500,7 +1495,7 @@ func TestUpdateClassDisableBlindBox(t *testing.T) {
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 	require.Equal(t, maxSupply, classData.Config.MaxSupply)
-	require.Equal(t, updatedEnableBlindBox, classData.Config.EnableBlindBox)
+	require.Nil(t, classData.Config.BlindBoxConfig)
 
 	// Check class is now enqueued
 	revealQueue := keeper.GetClassRevealQueue(ctx)
@@ -1549,17 +1544,16 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
 
 	// Mock keeper calls
 	oldMintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
 			MintPrice:        uint64(2048),
 		},
 	}
-	oldRevealTime := testutil.MustParseTime(time.RFC3339, "2022-05-01T00:00:00Z")
+	oldRevealTime := *testutil.MustParseTime(time.RFC3339, "2022-05-01T00:00:00Z")
 	oldClassData := types.ClassData{
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 		Parent: types.ClassParent{
@@ -1567,11 +1561,12 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: true,
-			MintPeriods:    oldMintPeriods,
-			RevealTime:     oldRevealTime,
+			Burnable:  false,
+			MaxSupply: uint64(500),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: oldMintPeriods,
+				RevealTime:  oldRevealTime,
+			},
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -1591,27 +1586,27 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 	// Assume entry is inserted
 	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		ClassId:    classId,
-		RevealTime: *oldRevealTime,
+		RevealTime: oldRevealTime,
 	})
 
 	updatedMintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
 			MintPrice:        uint64(20000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-20T00:00:00Z"),
 			AllowedAddresses: []string{ownerAddress},
 			MintPrice:        uint64(30000),
 		},
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
 			MintPrice:        uint64(90000),
 		},
 	}
-	updatedRevealTime := testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
+	updatedRevealTime := *testutil.MustParseTime(time.RFC3339, "2022-04-28T00:00:00Z")
 
 	nftKeeper.
 		EXPECT().
@@ -1650,11 +1645,12 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    updatedMintPeriods,
-				RevealTime:     updatedRevealTime,
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+				BlindBoxConfig: &types.BlindBoxConfig{
+					MintPeriods: updatedMintPeriods,
+					RevealTime:  updatedRevealTime,
+				},
 			},
 		},
 	})
@@ -1676,11 +1672,10 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 	require.Equal(t, iscnLatestVersion, classData.Parent.IscnVersionAtMint)
 	require.Equal(t, burnable, classData.Config.Burnable)
 	require.Equal(t, maxSupply, classData.Config.MaxSupply)
-	require.Equal(t, enableBlindBox, classData.Config.EnableBlindBox)
-	require.Equal(t, updatedRevealTime, classData.Config.RevealTime)
+	require.Equal(t, updatedRevealTime, classData.Config.BlindBoxConfig.RevealTime)
 
-	require.Equal(t, len(updatedMintPeriods), len(classData.Config.MintPeriods))
-	for i, mintPeriod := range classData.Config.MintPeriods {
+	require.Equal(t, len(updatedMintPeriods), len(classData.Config.BlindBoxConfig.MintPeriods))
+	for i, mintPeriod := range classData.Config.BlindBoxConfig.MintPeriods {
 		require.Equal(t, mintPeriod.StartTime, updatedMintPeriods[i].StartTime)
 		require.ElementsMatch(t, mintPeriod.AllowedAddresses, updatedMintPeriods[i].AllowedAddresses)
 		require.Equal(t, mintPeriod.MintPrice, updatedMintPeriods[i].MintPrice)
@@ -1690,7 +1685,7 @@ func TestUpdateClassUpdateMintPeriod(t *testing.T) {
 	revealQueue := keeper.GetClassRevealQueue(ctx)
 	require.Contains(t, revealQueue, types.ClassRevealQueueEntry{
 		ClassId:    classId,
-		RevealTime: *updatedRevealTime,
+		RevealTime: updatedRevealTime,
 	})
 
 	// Check mock was called as expected
@@ -1735,16 +1730,15 @@ func TestUpdateClassInvalidMintPeriod(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
 
 	mintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1754,11 +1748,12 @@ func TestUpdateClassInvalidMintPeriod(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: true,
-			MintPeriods:    mintPeriods,
-			RevealTime:     revealTime,
+			Burnable:  false,
+			MaxSupply: uint64(500),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: mintPeriods,
+				RevealTime:  revealTime,
+			},
 		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
@@ -1782,7 +1777,7 @@ func TestUpdateClassInvalidMintPeriod(t *testing.T) {
 
 	newMintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2922-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
@@ -1800,11 +1795,12 @@ func TestUpdateClassInvalidMintPeriod(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    newMintPeriods,
-				RevealTime:     revealTime,
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+				BlindBoxConfig: &types.BlindBoxConfig{
+					MintPeriods: newMintPeriods,
+					RevealTime:  revealTime,
+				},
 			},
 		},
 	})
@@ -1856,16 +1852,15 @@ func TestUpdateClassMintPeriodInvalidAllowListAddress(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
 
 	mintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-19T00:00:00Z"),
 			AllowedAddresses: []string{"invalid address"},
 			MintPrice:        0,
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1910,11 +1905,12 @@ func TestUpdateClassMintPeriodInvalidAllowListAddress(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    mintPeriods,
-				RevealTime:     revealTime,
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+				BlindBoxConfig: &types.BlindBoxConfig{
+					MintPeriods: mintPeriods,
+					RevealTime:  revealTime,
+				},
 			},
 		},
 	})
@@ -1966,16 +1962,15 @@ func TestUpdateClassNoMintPeriod(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
-	enableBlindBox := true
 
 	mintPeriods := []types.MintPeriod{
 		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
+			StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
 			AllowedAddresses: make([]string, 0),
 			MintPrice:        0,
 		},
 	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	oldClassData := types.ClassData{
@@ -1985,125 +1980,13 @@ func TestUpdateClassNoMintPeriod(t *testing.T) {
 			IscnIdPrefix: iscnId.Prefix.String(),
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: true,
-			MintPeriods:    mintPeriods,
-			RevealTime:     revealTime,
-		},
-	}
-	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
-	nftKeeper.
-		EXPECT().
-		GetClass(gomock.Any(), classId).
-		Return(nft.Class{
-			Id:          classId,
-			Name:        "Old Name",
-			Symbol:      "OLD",
-			Description: "Old Class 234",
-			Uri:         "ipfs://11223344",
-			UriHash:     "11223344",
-			Data:        oldClassDataInAny,
-		}, true)
-
-	nftKeeper.
-		EXPECT().
-		GetTotalSupply(gomock.Any(), classId).
-		Return(uint64(0))
-
-	// Run
-	res, err := msgServer.UpdateClass(goCtx, &types.MsgUpdateClass{
-		Creator: ownerAddress,
-		ClassId: classId,
-		Input: types.ClassInput{
-			Name:        name,
-			Symbol:      symbol,
-			Description: description,
-			Uri:         uri,
-			UriHash:     uriHash,
-			Metadata:    metadata,
-			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    nil,
-				RevealTime:     revealTime,
+			Burnable:  false,
+			MaxSupply: uint64(500),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: mintPeriods,
+				RevealTime:  revealTime,
 			},
 		},
-	})
-
-	// Check output
-	require.Error(t, err)
-	require.Contains(t, err.Error(), types.ErrInvalidNftClassConfig.Error())
-	require.Nil(t, res)
-
-	// Check mock was called as expected
-	ctrl.Finish()
-}
-
-func TestUpdateClassNoRevealTime(t *testing.T) {
-	// Setup
-	ctrl := gomock.NewController(t)
-	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
-	bankKeeper := testutil.NewMockBankKeeper(ctrl)
-	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
-	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
-		AccountKeeper: accountKeeper,
-		BankKeeper:    bankKeeper,
-		IscnKeeper:    iscnKeeper,
-		NftKeeper:     nftKeeper,
-	})
-
-	// Test Input
-	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
-	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
-	classId := "likenft1aabbccddeeff"
-	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
-	name := "Class Name"
-	symbol := "ABC"
-	description := "Testing Class 123"
-	uri := "ipfs://abcdef"
-	uriHash := "abcdef"
-	metadata := types.JsonInput(
-		`{
-	"abc": "def",
-	"qwerty": 1234,
-	"bool": false,
-	"null": null,
-	"nested": {
-		"object": {
-			"abc": "def"
-		}
-	}
-}`)
-	burnable := true
-	maxSupply := uint64(5)
-	enableBlindBox := true
-
-	mintPeriods := []types.MintPeriod{
-		{
-			StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-21T00:00:00Z"),
-			AllowedAddresses: make([]string, 0),
-			MintPrice:        0,
-		},
-	}
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
-
-	// Mock keeper calls
-	oldClassData := types.ClassData{
-		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
-		Parent: types.ClassParent{
-			Type:         types.ClassParentType_ISCN,
-			IscnIdPrefix: iscnId.Prefix.String(),
-		},
-		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: true,
-			MintPeriods:    mintPeriods,
-			RevealTime:     revealTime,
-		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
 	nftKeeper.
@@ -2136,11 +2019,12 @@ func TestUpdateClassNoRevealTime(t *testing.T) {
 			UriHash:     uriHash,
 			Metadata:    metadata,
 			Config: types.ClassConfig{
-				Burnable:       burnable,
-				MaxSupply:      maxSupply,
-				EnableBlindBox: enableBlindBox,
-				MintPeriods:    mintPeriods,
-				RevealTime:     nil,
+				Burnable:  burnable,
+				MaxSupply: maxSupply,
+				BlindBoxConfig: &types.BlindBoxConfig{
+					MintPeriods: nil,
+					RevealTime:  revealTime,
+				},
 			},
 		},
 	})

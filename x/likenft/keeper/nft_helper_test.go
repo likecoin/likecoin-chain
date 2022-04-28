@@ -14,27 +14,27 @@ func TestMintPeriodSorter(t *testing.T) {
 	// Setup
 
 	mintPeriod1 := types.MintPeriod{
-		StartTime:        testutil.MustParseTime(time.RFC3339, "2019-01-01T00:00:00Z"),
+		StartTime:        *testutil.MustParseTime(time.RFC3339, "2019-01-01T00:00:00Z"),
 		MintPrice:        uint64(0),
 		AllowedAddresses: []string{},
 	}
 	mintPeriod2 := types.MintPeriod{
-		StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+		StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 		MintPrice:        uint64(0),
 		AllowedAddresses: []string{},
 	}
 	mintPeriod3 := types.MintPeriod{
-		StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+		StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
 		MintPrice:        uint64(400),
 		AllowedAddresses: []string{},
 	}
 	mintPeriod4 := types.MintPeriod{
-		StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+		StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
 		MintPrice:        uint64(0),
 		AllowedAddresses: []string{},
 	}
 	mintPeriod5 := types.MintPeriod{
-		StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+		StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
 		MintPrice:        uint64(100),
 		AllowedAddresses: []string{},
 	}

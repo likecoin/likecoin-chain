@@ -332,7 +332,7 @@ func TestMintNFTOwnerInvalidTokenID(t *testing.T) {
 		Config: types.ClassConfig{
 			Burnable:       false,
 			MaxSupply:      uint64(5),
-			EnableBlindBox: false,
+			BlindBoxConfig: nil,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -860,7 +860,7 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(5000000000)
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -872,17 +872,18 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        mintPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        mintPrice,
+					},
 				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1013,7 +1014,7 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(5000000000)
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1025,17 +1026,18 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        mintPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        mintPrice,
+					},
 				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1145,7 +1147,7 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(5000000000)
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1157,17 +1159,18 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        mintPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        mintPrice,
+					},
 				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1282,7 +1285,7 @@ func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 	secondMintPeriodPrice := uint64(20000000000)
 	thirdMintPeriodPrice := uint64(30000000000)
 
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1294,28 +1297,29 @@ func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			// Assume sorted descending when creating/updating class
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        thirdMintPeriodPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				// Assume sorted descending when creating/updating class
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2048-04-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        thirdMintPeriodPrice,
+					},
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        secondMintPeriodPrice,
+					},
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        firstMintPeriodPrice,
+					},
 				},
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-04-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        secondMintPeriodPrice,
-				},
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2022-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        firstMintPeriodPrice,
-				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1447,7 +1451,7 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 	}
 }`)
 	mintPrice := uint64(0)
-	revealTime := testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1459,17 +1463,18 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        mintPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        mintPrice,
+					},
 				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1592,17 +1597,18 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        mintPrice,
+			Burnable:  false,
+			MaxSupply: uint64(5000000000),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        mintPrice,
+					},
 				},
+				RevealTime: *revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1724,7 +1730,7 @@ func TestMintNFTNotOwnerNoBlindBox(t *testing.T) {
 		Config: types.ClassConfig{
 			Burnable:       false,
 			MaxSupply:      uint64(5000000000),
-			EnableBlindBox: false,
+			BlindBoxConfig: nil,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
@@ -1929,7 +1935,7 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 		}
 	}
 }`)
-	revealTime := testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z")
+	revealTime := *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z")
 
 	// Mock keeper calls
 	classIscnVersionAtMint := uint64(1)
@@ -1941,17 +1947,18 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 			IscnVersionAtMint: classIscnVersionAtMint,
 		},
 		Config: types.ClassConfig{
-			Burnable:       false,
-			MaxSupply:      uint64(500),
-			EnableBlindBox: true,
-			MintPeriods: []types.MintPeriod{
-				{
-					StartTime:        testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-					AllowedAddresses: []string{},
-					MintPrice:        uint64(0),
+			Burnable:  false,
+			MaxSupply: uint64(500),
+			BlindBoxConfig: &types.BlindBoxConfig{
+				MintPeriods: []types.MintPeriod{
+					{
+						StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
+						AllowedAddresses: []string{},
+						MintPrice:        uint64(0),
+					},
 				},
+				RevealTime: revealTime,
 			},
-			RevealTime: revealTime,
 		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
