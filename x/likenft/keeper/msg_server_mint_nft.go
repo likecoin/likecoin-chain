@@ -13,7 +13,7 @@ import (
 
 func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *types.ClassData, ownerAddress sdk.AccAddress, userAddress sdk.AccAddress, totalSupply uint64, msg *types.MsgMintNFT) (*nft.NFT, error) {
 	params := k.GetParams(ctx)
-	tokenId := fmt.Sprintf("%s-%d", classId, totalSupply+1)
+	tokenId := fmt.Sprintf("nft%d", totalSupply+1)
 
 	// Check if the class has already been revealed or not
 	if !classData.ToBeRevealed {
@@ -36,7 +36,6 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	}
 
 	nftData := types.NFTData{
-		Metadata:     types.JsonInput{}, // TODO: add metadata template
 		ClassParent:  classData.Parent,
 		ToBeRevealed: true,
 	}
@@ -48,8 +47,6 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	nft := nft.NFT{
 		ClassId: classId,
 		Id:      tokenId,
-		Uri:     msg.Input.Uri,
-		UriHash: msg.Input.UriHash,
 		Data:    nftDataInAny,
 	}
 

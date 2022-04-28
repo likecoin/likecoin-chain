@@ -964,13 +964,14 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 	// Check output
 	require.NoError(t, err)
 	require.Equal(t, classId, res.Nft.ClassId)
-	require.Equal(t, uri, res.Nft.Uri)
-	require.Equal(t, uriHash, res.Nft.UriHash)
+	// content should be empty, ignoring user input
+	require.Empty(t, res.Nft.Uri)
+	require.Empty(t, res.Nft.UriHash)
 
 	var nftData types.NFTData
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
-	require.Equal(t, types.JsonInput(nil), nftData.Metadata) // TODO: update metadata to support templates
+	require.Equal(t, types.JsonInput(nil), nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
 	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
@@ -1099,13 +1100,14 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 	// Check output
 	require.NoError(t, err)
 	require.Equal(t, classId, res.Nft.ClassId)
-	require.Equal(t, uri, res.Nft.Uri)
-	require.Equal(t, uriHash, res.Nft.UriHash)
+	// content should be empty, ignoring user input
+	require.Empty(t, res.Nft.Uri)
+	require.Empty(t, res.Nft.UriHash)
 
 	var nftData types.NFTData
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
-	require.Equal(t, types.JsonInput(nil), nftData.Metadata) // TODO: update metadata to support templates
+	require.Equal(t, types.JsonInput(nil), nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
 	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
@@ -1234,13 +1236,14 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 	// Check output
 	require.NoError(t, err)
 	require.Equal(t, classId, res.Nft.ClassId)
-	require.Equal(t, uri, res.Nft.Uri)
-	require.Equal(t, uriHash, res.Nft.UriHash)
+	// content should be empty, ignoring user input
+	require.Empty(t, res.Nft.Uri)
+	require.Empty(t, res.Nft.UriHash)
 
 	var nftData types.NFTData
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
-	require.Equal(t, types.JsonInput(nil), nftData.Metadata) // TODO: update metadata to support templates
+	require.Equal(t, types.JsonInput(nil), nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
 	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
@@ -1406,13 +1409,14 @@ func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 	// Check output
 	require.NoError(t, err)
 	require.Equal(t, classId, res.Nft.ClassId)
-	require.Equal(t, uri, res.Nft.Uri)
-	require.Equal(t, uriHash, res.Nft.UriHash)
+	// content should be empty, ignoring user input
+	require.Empty(t, res.Nft.Uri)
+	require.Empty(t, res.Nft.UriHash)
 
 	var nftData types.NFTData
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
-	require.Equal(t, types.JsonInput(nil), nftData.Metadata) // TODO: update metadata to support templates
+	require.Equal(t, types.JsonInput(nil), nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
 	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
@@ -1542,13 +1546,14 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 	// Check output
 	require.NoError(t, err)
 	require.Equal(t, classId, res.Nft.ClassId)
-	require.Equal(t, uri, res.Nft.Uri)
-	require.Equal(t, uriHash, res.Nft.UriHash)
+	// content should be empty, ignoring user input
+	require.Empty(t, res.Nft.Uri)
+	require.Empty(t, res.Nft.UriHash)
 
 	var nftData types.NFTData
 	err = nftData.Unmarshal(res.Nft.Data.Value)
 	require.NoErrorf(t, err, "Error unmarshal class data")
-	require.Equal(t, types.JsonInput(nil), nftData.Metadata) // TODO: update metadata to support templates
+	require.Equal(t, types.JsonInput(nil), nftData.Metadata)
 	require.Equal(t, iscnId.Prefix.String(), nftData.ClassParent.IscnIdPrefix)
 	require.Equal(t, classIscnVersionAtMint, nftData.ClassParent.IscnVersionAtMint)
 
