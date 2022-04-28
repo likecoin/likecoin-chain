@@ -885,6 +885,8 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1039,6 +1041,8 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1172,6 +1176,8 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1321,6 +1327,8 @@ func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1476,6 +1484,8 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1610,6 +1620,8 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 				RevealTime: *revealTime,
 			},
 		},
+		MintableCount: uint64(5000000000),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -1960,6 +1972,8 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 				RevealTime: revealTime,
 			},
 		},
+		MintableCount: uint64(500),
+		ToBeRevealed: false,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.
@@ -2068,6 +2082,8 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 			Burnable:  false,
 			MaxSupply: uint64(0),
 		},
+		MintableCount: uint64(500),
+		ToBeRevealed: true,
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.

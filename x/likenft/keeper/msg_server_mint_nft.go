@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"time"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +16,7 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	tokenId := fmt.Sprintf("%s-%d", classId, totalSupply+1)
 
 	// Check if the class has already been revealed or not
-	revealTime := classData.Config.BlindBoxConfig.RevealTime
-	if revealTime.Before(time.Now()) {
+	if !classData.ToBeRevealed {
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
 	}
 
