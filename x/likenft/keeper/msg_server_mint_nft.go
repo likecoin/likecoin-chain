@@ -78,8 +78,9 @@ func (k msgServer) mintRegularNFT(ctx sdk.Context, classId string, classData *ty
 	}
 
 	nftData := types.NFTData{
-		Metadata:    msg.Input.Metadata,
-		ClassParent: classData.Parent,
+		Metadata:     msg.Input.Metadata,
+		ClassParent:  classData.Parent,
+		ToBeRevealed: false,
 	}
 	nftDataInAny, err := cdctypes.NewAnyWithValue(&nftData)
 	if err != nil {

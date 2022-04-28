@@ -60,11 +60,10 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	updatedConfig := msg.Input.Config
 
 	// Update class
-	classData = types.ClassData{
-		Metadata: msg.Input.Metadata,
-		Parent:   parent.ClassParent,
-		Config:   msg.Input.Config,
-	}
+	classData.Metadata = msg.Input.Metadata
+	classData.Parent = parent.ClassParent
+	classData.Config = msg.Input.Config
+	classData.ToBeRevealed = msg.Input.Config.IsBlindBox()
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
 		return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
