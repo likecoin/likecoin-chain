@@ -82,18 +82,17 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 	}
 
-	if !originalConfig.IsBlindBox() && updatedConfig.IsBlindBox() {
-		// Enqueue class if enabled after update
+	// Dequeue original reveal schedule
+	if originalConfig.IsBlindBox() {
+		k.RemoveClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id)
+	}
+
+	// Enqueue new reveal schedule
+	if updatedConfig.IsBlindBox() {
 		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 			ClassId:    class.Id,
 			RevealTime: updatedConfig.BlindBoxConfig.RevealTime,
 		})
-	} else if originalConfig.IsBlindBox() && updatedConfig.IsBlindBox() {
-		// Update reveal queue entry if it is config update
-		k.UpdateClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id, updatedConfig.BlindBoxConfig.RevealTime)
-	} else if originalConfig.IsBlindBox() && !updatedConfig.IsBlindBox() {
-		// Remove reveal queue entry if it is disabled
-		k.RemoveClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id)
 	}
 
 	// Emit event
