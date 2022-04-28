@@ -102,7 +102,7 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	}
 
 	// Enqueue class for reveal
-	if classData.Config.BlindBoxConfig != nil {
+	if classData.Config.IsBlindBox() {
 		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 			ClassId:    newClassId,
 			RevealTime: classData.Config.BlindBoxConfig.RevealTime,

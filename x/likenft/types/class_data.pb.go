@@ -580,7 +580,7 @@ func (m *ClassConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.BlindBoxConfig != nil {
+	if m.IsBlindBox() {
 		{
 			size, err := m.BlindBoxConfig.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
@@ -739,7 +739,7 @@ func (m *ClassConfig) Size() (n int) {
 	if m.MaxSupply != 0 {
 		n += 1 + sovClassData(uint64(m.MaxSupply))
 	}
-	if m.BlindBoxConfig != nil {
+	if m.IsBlindBox() {
 		l = m.BlindBoxConfig.Size()
 		n += 1 + l + sovClassData(uint64(l))
 	}

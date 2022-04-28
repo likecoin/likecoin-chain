@@ -149,7 +149,7 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	// Mint NFT
 	var nft *nft.NFT
-	if classData.Config.BlindBoxConfig != nil {
+	if classData.Config.IsBlindBox() {
 		nft, err = k.mintBlindBoxNFT(ctx, class.Id, &classData, parent.Owner, userAddress, totalSupply, msg)
 		if err != nil {
 			return nil, err
