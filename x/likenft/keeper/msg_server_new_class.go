@@ -27,10 +27,12 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
-	// Verify class config
-	if err := k.validateClassConfig(&msg.Input.Config); err != nil {
+	// Sanitize class config
+	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config)
+	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}
+	msg.Input.Config = *cleanClassConfig
 
 	// Make class id
 	var existingClassIds []string
@@ -58,9 +60,6 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	} else {
 		panic(fmt.Sprintf("Unsupported parent type %s after initial check", parent.Type.String()))
 	}
-
-	// Sort the mint period by start time
-	msg.Input.Config.MintPeriods = SortMintPeriod(msg.Input.Config.MintPeriods, true)
 
 	// Create Class
 	classData := types.ClassData{
@@ -103,10 +102,10 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	}
 
 	// Enqueue class for reveal
-	if classData.Config.EnableBlindBox {
+	if classData.Config.BlindBoxConfig != nil {
 		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 			ClassId:    newClassId,
-			RevealTime: *classData.Config.RevealTime,
+			RevealTime: classData.Config.BlindBoxConfig.RevealTime,
 		})
 	}
 

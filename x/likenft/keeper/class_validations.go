@@ -93,36 +93,36 @@ func (k msgServer) validateAndGetClassParentAndOwner(ctx sdk.Context, classId st
 	return &parent, nil
 }
 
-func (k msgServer) validateMintPeriods(classConfig *types.ClassConfig) error {
-	for _, mintPeriod := range classConfig.MintPeriods {
+func (k msgServer) sanitizeBlindBoxConfig(blindBoxConfig *types.BlindBoxConfig) (*types.BlindBoxConfig, error) {
+	if blindBoxConfig == nil {
+		return nil, nil
+	}
+	if len(blindBoxConfig.MintPeriods) <= 0 {
+		return nil, types.ErrInvalidNftClassConfig.Wrapf("Mint period cannot be empty")
+	}
+	// Sort the mint period by start time
+	blindBoxConfig.MintPeriods = SortMintPeriod(blindBoxConfig.MintPeriods, true)
+	for _, mintPeriod := range blindBoxConfig.MintPeriods {
 		// Ensure all mint period start time is before reveal time
-		if mintPeriod.StartTime.After(*classConfig.RevealTime) {
-			return types.ErrInvalidNftClassConfig.Wrapf("One of the mint periods' start time %s is after reveal time %s", mintPeriod.StartTime.String(), classConfig.RevealTime.String())
+		if mintPeriod.StartTime.After(blindBoxConfig.RevealTime) {
+			return nil, types.ErrInvalidNftClassConfig.Wrapf("One of the mint periods' start time %s is after reveal time %s", mintPeriod.StartTime.String(), blindBoxConfig.RevealTime.String())
 		}
 		// Ensure all the addresses in allow list is valid
 		for _, allowedAddress := range mintPeriod.AllowedAddresses {
 			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
-				return sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
+				return nil, sdkerrors.ErrInvalidAddress.Wrapf("One of the allowed addresses %s is invalid", allowedAddress)
 			}
 		}
 	}
-	return nil
+	return blindBoxConfig, nil
 }
 
-func (k msgServer) validateClassConfig(classConfig *types.ClassConfig) error {
+func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig) (*types.ClassConfig, error) {
 	// Ensure mint periods and reveal time are set when blind box mode is enabled
-	if classConfig.EnableBlindBox {
-		if len(classConfig.MintPeriods) == 0 {
-			return types.ErrInvalidNftClassConfig.Wrapf("Mint periods are enabled but no mint periods are provided")
-		}
-
-		if classConfig.RevealTime == nil {
-			return types.ErrInvalidNftClassConfig.Wrapf("Mint periods are enabled but no reveal time is provided")
-		}
-
-		if err := k.validateMintPeriods(classConfig); err != nil {
-			return err
-		}
+	cleanBlindBoxConfig, err := k.sanitizeBlindBoxConfig(classConfig.BlindBoxConfig)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	classConfig.BlindBoxConfig = cleanBlindBoxConfig
+	return &classConfig, nil
 }

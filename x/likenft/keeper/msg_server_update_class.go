@@ -25,10 +25,12 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
 
-	// Verify class config
-	if err := k.validateClassConfig(&msg.Input.Config); err != nil {
+	// Verify and Cleanup class config
+	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config)
+	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}
+	msg.Input.Config = *cleanClassConfig
 
 	// Check class parent relation is valid and current user is owner
 
@@ -53,9 +55,6 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	if !parent.Owner.Equals(userAddress) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
-
-	// Sort the mint period by start time
-	msg.Input.Config.MintPeriods = SortMintPeriod(msg.Input.Config.MintPeriods, true)
 
 	originalConfig := classData.Config
 	updatedConfig := msg.Input.Config
@@ -83,18 +82,18 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 	}
 
-	if !originalConfig.EnableBlindBox && updatedConfig.EnableBlindBox {
+	if originalConfig.BlindBoxConfig == nil && updatedConfig.BlindBoxConfig != nil {
 		// Enqueue class if enabled after update
 		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 			ClassId:    class.Id,
-			RevealTime: *updatedConfig.RevealTime,
+			RevealTime: updatedConfig.BlindBoxConfig.RevealTime,
 		})
-	} else if originalConfig.EnableBlindBox && updatedConfig.EnableBlindBox {
+	} else if originalConfig.BlindBoxConfig != nil && updatedConfig.BlindBoxConfig != nil {
 		// Update reveal queue entry if it is config update
-		k.UpdateClassRevealQueueEntry(ctx, *originalConfig.RevealTime, class.Id, *updatedConfig.RevealTime)
-	} else if originalConfig.EnableBlindBox && !updatedConfig.EnableBlindBox {
+		k.UpdateClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id, updatedConfig.BlindBoxConfig.RevealTime)
+	} else if originalConfig.BlindBoxConfig != nil && updatedConfig.BlindBoxConfig == nil {
 		// Remove reveal queue entry if it is disabled
-		k.RemoveClassRevealQueueEntry(ctx, *originalConfig.RevealTime, class.Id)
+		k.RemoveClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id)
 	}
 
 	// Emit event
