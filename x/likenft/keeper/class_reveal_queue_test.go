@@ -6,7 +6,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/x/likenft/keeper"
 	"github.com/likecoin/likechain/x/likenft/types"
@@ -103,14 +102,10 @@ func TestClassRevealQueueRemove(t *testing.T) {
 	})
 
 	// Remove valid entry
-	err = keeper.RemoveClassRevealQueueEntry(ctx, revealTime2, classId2)
+	keeper.RemoveClassRevealQueueEntry(ctx, revealTime2, classId2)
 	require.NoError(t, err)
 	validClassIds := getAllClassIdsFromQueue(ctx, keeper)
 	require.Equal(t, 3, len(validClassIds))
-
-	// Remove invalid entry
-	err = keeper.RemoveClassRevealQueueEntry(ctx, revealTime3, classId4)
-	require.Contains(t, err.Error(), sdkerrors.ErrKeyNotFound.Error())
 }
 
 func TestClassRevealQueueUpdate(t *testing.T) {
@@ -153,8 +148,7 @@ func TestClassRevealQueueUpdate(t *testing.T) {
 	updatedRevealTime, err := time.Parse(time.RFC3339, "2099-01-01T00:00:00Z")
 	require.NoError(t, err)
 
-	err = keeper.UpdateClassRevealQueueEntry(ctx, revealTime4, classId4, updatedRevealTime)
-	require.NoError(t, err)
+	keeper.UpdateClassRevealQueueEntry(ctx, revealTime4, classId4, updatedRevealTime)
 
 	classIds := getAllClassIdsFromQueue(ctx, keeper)
 	require.Equal(t, []string{
@@ -163,10 +157,6 @@ func TestClassRevealQueueUpdate(t *testing.T) {
 		classId3,
 		classId4,
 	}, classIds)
-
-	// Update invalid entry
-	err = keeper.UpdateClassRevealQueueEntry(ctx, revealTime3, classId2, updatedRevealTime)
-	require.Contains(t, err.Error(), sdkerrors.ErrKeyNotFound.Error())
 }
 
 func TestClassRevealQueueSorting(t *testing.T) {

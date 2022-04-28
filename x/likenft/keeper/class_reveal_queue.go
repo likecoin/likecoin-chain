@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -25,29 +24,21 @@ func (k Keeper) RemoveClassRevealQueueEntry(
 	revealTime time.Time,
 	classId string,
 
-) error {
+) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
-	if !store.Has(types.ClassRevealQueueKey(revealTime, classId)) {
-		return sdkerrors.ErrKeyNotFound.Wrapf("classRevealQueueEntry not found: classId: %s, revealTime: %s", classId, revealTime)
-	}
 	store.Delete(types.ClassRevealQueueKey(
 		revealTime,
 		classId,
 	))
-	return nil
 }
 
 // UpdateClassRevealQueueEntry updates a classRevealQueueEntry in the store
-func (k Keeper) UpdateClassRevealQueueEntry(ctx sdk.Context, originalRevealTime time.Time, classId string, updatedRevealTime time.Time) error {
-	err := k.RemoveClassRevealQueueEntry(ctx, originalRevealTime, classId)
-	if err != nil {
-		return err
-	}
+func (k Keeper) UpdateClassRevealQueueEntry(ctx sdk.Context, originalRevealTime time.Time, classId string, updatedRevealTime time.Time) {
+	k.RemoveClassRevealQueueEntry(ctx, originalRevealTime, classId)
 	k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
 		RevealTime: updatedRevealTime,
 		ClassId:    classId,
 	})
-	return nil
 }
 
 func (k Keeper) ClassRevealQueueIterator(ctx sdk.Context) sdk.Iterator {
