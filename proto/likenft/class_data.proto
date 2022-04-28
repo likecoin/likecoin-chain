@@ -30,7 +30,7 @@ message ClassParent {
 }
 
 message MintPeriod {
-  google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   repeated string allowedAddresses = 2 ;
   uint64 mintPrice = 3;
 }
@@ -38,7 +38,10 @@ message MintPeriod {
 message ClassConfig {
   bool burnable = 1;
   uint64 maxSupply = 2;
-  bool enableBlindBox = 3;
-  repeated MintPeriod mintPeriods = 4 [(gogoproto.nullable) = false];
-  google.protobuf.Timestamp revealTime = 5 [(gogoproto.stdtime) = true];
+  BlindBoxConfig blindBoxConfig = 3 [(gogoproto.nullable) = true];
+}
+
+message BlindBoxConfig {
+  repeated MintPeriod mintPeriods = 1 [(gogoproto.nullable) = false];
+  google.protobuf.Timestamp revealTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }

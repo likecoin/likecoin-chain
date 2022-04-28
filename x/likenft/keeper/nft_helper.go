@@ -50,11 +50,11 @@ func SortMintPeriod(mintPeriods []types.MintPeriod, descending bool) []types.Min
 			i, j = j, i
 		}
 
-		if mintPeriods[j].StartTime.Equal(*mintPeriods[i].StartTime) {
+		if mintPeriods[j].StartTime.Equal(mintPeriods[i].StartTime) {
 			return mintPeriods[j].MintPrice > mintPeriods[i].MintPrice
 		}
 
-		return mintPeriods[j].StartTime.After(*mintPeriods[i].StartTime)
+		return mintPeriods[j].StartTime.After(mintPeriods[i].StartTime)
 	})
 
 	return mintPeriods
