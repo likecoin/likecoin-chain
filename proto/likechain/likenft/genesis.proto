@@ -2,11 +2,11 @@ syntax = "proto3";
 package likechain.likenft;
 
 import "gogoproto/gogo.proto";
-import "likenft/params.proto";
-import "likenft/classes_by_iscn.proto";
-import "likenft/classes_by_account.proto";
-import "likenft/mintable_nft.proto";
-import "likenft/class_reveal_queue.proto";
+import "likechain/likenft/params.proto";
+import "likechain/likenft/classes_by_iscn.proto";
+import "likechain/likenft/classes_by_account.proto";
+import "likechain/likenft/mintable_nft.proto";
+import "likechain/likenft/class_reveal_queue.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";

@@ -3,7 +3,7 @@ syntax = "proto3";
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
-import "iscn/params.proto";
+import "likechain/iscn/params.proto";
 
 option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
 

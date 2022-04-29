@@ -3,8 +3,8 @@ package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
-import "likenft/class_input.proto";
-import "likenft/nft_input.proto";
+import "likechain/likenft/class_input.proto";
+import "likechain/likenft/nft_input.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 

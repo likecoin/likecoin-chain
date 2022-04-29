@@ -2,7 +2,7 @@ syntax = "proto3";
 package likechain.likenft;
 
 import "gogoproto/gogo.proto";
-import "likenft/class_data.proto";
+import "likechain/likenft/class_data.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
