@@ -30,7 +30,7 @@ func (k msgServer) UpdateMintableNFT(goCtx context.Context, msg *types.MsgUpdate
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateMintableNFT{
 		ClassId:                 msg.ClassId,
-		MintableNFTId:           msg.Id,
+		MintableNftId:           msg.Id,
 		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
 		ClassParentAccount:      parentAndOwner.ClassParent.Account,
 	})

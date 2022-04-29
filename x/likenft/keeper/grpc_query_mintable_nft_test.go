@@ -36,7 +36,7 @@ func TestMintableNFTQuerySingle(t *testing.T) {
 				ClassId: msgs[0].ClassId,
 				Id:      msgs[0].Id,
 			},
-			response: &types.QueryMintableNFTResponse{MintableNFT: msgs[0]},
+			response: &types.QueryMintableNFTResponse{MintableNft: msgs[0]},
 		},
 		{
 			desc: "Second",
@@ -44,7 +44,7 @@ func TestMintableNFTQuerySingle(t *testing.T) {
 				ClassId: msgs[1].ClassId,
 				Id:      msgs[1].Id,
 			},
-			response: &types.QueryMintableNFTResponse{MintableNFT: msgs[1]},
+			response: &types.QueryMintableNFTResponse{MintableNft: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
@@ -99,10 +99,10 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 			for i := 0; i < nItem; i += step {
 				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), nil, uint64(i), uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.MintableNFTs), step)
+				require.LessOrEqual(t, len(resp.MintableNfts), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.MintableNFTs),
+					nullify.Fill(resp.MintableNfts),
 				)
 			}
 		}
@@ -115,10 +115,10 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 			for i := 0; i < nItem; i += step {
 				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), next, 0, uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.MintableNFTs), step)
+				require.LessOrEqual(t, len(resp.MintableNfts), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.MintableNFTs),
+					nullify.Fill(resp.MintableNfts),
 				)
 				next = resp.Pagination.NextKey
 			}
@@ -131,7 +131,7 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 			require.Equal(t, nItem, int(resp.Pagination.Total))
 			require.ElementsMatch(t,
 				nullify.Fill(msgs[classId*nItem:classId*nItem+nItem]),
-				nullify.Fill(resp.MintableNFTs),
+				nullify.Fill(resp.MintableNfts),
 			)
 		}
 	})
@@ -163,10 +163,10 @@ func TestMintableNFTQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.MintableNFTIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.MintableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNfts), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.MintableNFT),
+				nullify.Fill(resp.MintableNfts),
 			)
 		}
 	})
@@ -176,10 +176,10 @@ func TestMintableNFTQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.MintableNFTIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.MintableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNfts), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.MintableNFT),
+				nullify.Fill(resp.MintableNfts),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -190,7 +190,7 @@ func TestMintableNFTQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.MintableNFT),
+			nullify.Fill(resp.MintableNfts),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

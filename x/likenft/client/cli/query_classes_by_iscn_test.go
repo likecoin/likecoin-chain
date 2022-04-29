@@ -39,12 +39,12 @@ func networkWithClassesByISCNObjects(t *testing.T, n int) (*network.Network, []t
 			IscnIdPrefix: fmt.Sprintf("iscn://likecoin-chain/%s", strconv.Itoa(i)),
 			ClassIds:     classIds,
 		}
-		state.ClassesByISCNList = append(state.ClassesByISCNList, classesByISCN)
+		state.ClassesByIscnList = append(state.ClassesByIscnList, classesByISCN)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.ClassesByISCNList
+	return network.New(t, cfg), state.ClassesByIscnList
 }
 
 func TestShowClassesByISCN(t *testing.T) {
@@ -148,10 +148,10 @@ func TestListClassesByISCN(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByISCN),
+				nullify.Fill(resp.ClassesByIscn),
 			)
 		}
 	})
@@ -164,10 +164,10 @@ func TestListClassesByISCN(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByISCN), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByISCN),
+				nullify.Fill(resp.ClassesByIscn),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -182,7 +182,7 @@ func TestListClassesByISCN(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.ClassesByISCN),
+			nullify.Fill(resp.ClassesByIscn),
 		)
 	})
 }

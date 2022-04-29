@@ -12,9 +12,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		ClassesByISCNList:    []ClassesByISCN{},
+		ClassesByIscnList:    []ClassesByISCN{},
 		ClassesByAccountList: []ClassesByAccount{},
-		MintableNFTList:      []MintableNFT{},
+		MintableNftList:      []MintableNFT{},
 		ClassRevealQueue:     []ClassRevealQueueEntry{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
@@ -27,7 +27,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated index in classesByISCN
 	classesByISCNIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.ClassesByISCNList {
+	for _, elem := range gs.ClassesByIscnList {
 		index := string(ClassesByISCNKey(elem.IscnIdPrefix))
 		if _, ok := classesByISCNIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for classesByISCN")
@@ -53,7 +53,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated index in mintableNFT
 	mintableNFTIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.MintableNFTList {
+	for _, elem := range gs.MintableNftList {
 		index := string(MintableNFTKey(elem.ClassId, elem.Id))
 		if _, ok := mintableNFTIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for mintableNFT")

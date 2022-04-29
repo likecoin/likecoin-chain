@@ -48,7 +48,7 @@ func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []typ
 			ClassId: strconv.Itoa(i),
 			Id:      strconv.Itoa(i),
 		}
-		state.MintableNFTList = append(state.MintableNFTList, mintableNFT)
+		state.MintableNftList = append(state.MintableNftList, mintableNFT)
 	}
 	// seed nft class
 	nftBuf, err := cfg.Codec.MarshalJSON(&nftState)
@@ -58,7 +58,7 @@ func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []typ
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.MintableNFTList
+	return network.New(t, cfg), state.MintableNftList
 }
 
 func TestShowMintableNFT(t *testing.T) {
@@ -110,10 +110,10 @@ func TestShowMintableNFT(t *testing.T) {
 				require.NoError(t, err)
 				var resp types.QueryMintableNFTResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.MintableNFT)
+				require.NotNil(t, resp.MintableNft)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.MintableNFT),
+					nullify.Fill(&resp.MintableNft),
 				)
 			}
 		})
@@ -147,10 +147,10 @@ func TestListMintableNFT(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryMintableNFTIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.MintableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNfts), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.MintableNFT),
+				nullify.Fill(resp.MintableNfts),
 			)
 		}
 	})
@@ -163,10 +163,10 @@ func TestListMintableNFT(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryMintableNFTIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.MintableNFT), step)
+			require.LessOrEqual(t, len(resp.MintableNfts), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.MintableNFT),
+				nullify.Fill(resp.MintableNfts),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -181,7 +181,7 @@ func TestListMintableNFT(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.MintableNFT),
+			nullify.Fill(resp.MintableNfts),
 		)
 	})
 }

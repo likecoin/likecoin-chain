@@ -14,15 +14,15 @@ func parseEventCreateClass(res sdk.TxResponse) types.EventNewClass {
 ParseEventCreateClass:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likecoin.likechain.likenft.EventNewClass" {
+			if event.Type == "likechain.likenft.EventNewClass" {
 				for _, attr := range event.Attributes {
-					if attr.Key == "classId" {
+					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "parentIscnIdPrefix" {
+					if attr.Key == "parent_iscn_id_prefix" {
 						actualEvent.ParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "parentAccount" {
+					if attr.Key == "parent_account" {
 						actualEvent.ParentAccount = strings.Trim(attr.Value, "\"")
 					}
 				}
@@ -40,15 +40,15 @@ func parseEventUpdateClass(res sdk.TxResponse) types.EventUpdateClass {
 ParseEventUpdateClass:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likecoin.likechain.likenft.EventUpdateClass" {
+			if event.Type == "likechain.likenft.EventUpdateClass" {
 				for _, attr := range event.Attributes {
-					if attr.Key == "classId" {
+					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "parentIscnIdPrefix" {
+					if attr.Key == "parent_iscn_id_prefix" {
 						actualEvent.ParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "parentAccount" {
+					if attr.Key == "parent_account" {
 						actualEvent.ParentAccount = strings.Trim(attr.Value, "\"")
 					}
 				}
@@ -66,21 +66,21 @@ func parseEventMintNFT(res sdk.TxResponse) types.EventMintNFT {
 ParseEventMintNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likecoin.likechain.likenft.EventMintNFT" {
+			if event.Type == "likechain.likenft.EventMintNFT" {
 				for _, attr := range event.Attributes {
-					if attr.Key == "classId" {
+					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "nftId" {
+					if attr.Key == "nft_id" {
 						actualEvent.NftId = strings.Trim(attr.Value, "\"")
 					}
 					if attr.Key == "owner" {
 						actualEvent.Owner = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "classParentIscnIdPrefix" {
+					if attr.Key == "class_parent_iscn_id_prefix" {
 						actualEvent.ClassParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "classParentAccount" {
+					if attr.Key == "class_parent_account" {
 						actualEvent.ClassParentAccount = strings.Trim(attr.Value, "\"")
 					}
 				}
@@ -98,21 +98,21 @@ func parseEventBurnNFT(res sdk.TxResponse) types.EventBurnNFT {
 ParseEventBurnNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likecoin.likechain.likenft.EventBurnNFT" {
+			if event.Type == "likechain.likenft.EventBurnNFT" {
 				for _, attr := range event.Attributes {
-					if attr.Key == "classId" {
+					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "nftId" {
+					if attr.Key == "nft_id" {
 						actualEvent.NftId = strings.Trim(attr.Value, "\"")
 					}
 					if attr.Key == "owner" {
 						actualEvent.Owner = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "classParentIscnIdPrefix" {
+					if attr.Key == "class_parent_iscn_id_prefix" {
 						actualEvent.ClassParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
 					}
-					if attr.Key == "classParentAccount" {
+					if attr.Key == "class_parent_account" {
 						actualEvent.ClassParentAccount = strings.Trim(attr.Value, "\"")
 					}
 				}

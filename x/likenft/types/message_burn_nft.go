@@ -12,8 +12,8 @@ var _ sdk.Msg = &MsgBurnNFT{}
 func NewMsgBurnNFT(creator string, classID string, nftID string) *MsgBurnNFT {
 	return &MsgBurnNFT{
 		Creator: creator,
-		ClassID: classID,
-		NftID:   nftID,
+		ClassId: classID,
+		NftId:   nftID,
 	}
 }
 

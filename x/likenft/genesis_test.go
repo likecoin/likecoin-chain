@@ -19,7 +19,7 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		ClassesByISCNList: []types.ClassesByISCN{
+		ClassesByIscnList: []types.ClassesByISCN{
 			{
 				IscnIdPrefix: "0",
 			},
@@ -35,7 +35,7 @@ func TestGenesis(t *testing.T) {
 				Account: accounts[1].String(),
 			},
 		},
-		MintableNFTList: []types.MintableNFT{
+		MintableNftList: []types.MintableNFT{
 			{
 				ClassId: "0",
 				Id:      "0",
@@ -68,9 +68,9 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.ClassesByISCNList, got.ClassesByISCNList)
+	require.ElementsMatch(t, genesisState.ClassesByIscnList, got.ClassesByIscnList)
 	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
-	require.ElementsMatch(t, genesisState.MintableNFTList, got.MintableNFTList)
+	require.ElementsMatch(t, genesisState.MintableNftList, got.MintableNftList)
 	require.ElementsMatch(t, genesisState.ClassRevealQueue, got.ClassRevealQueue)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

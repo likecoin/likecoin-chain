@@ -26,7 +26,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
-				ClassesByISCNList: []types.ClassesByISCN{
+				ClassesByIscnList: []types.ClassesByISCN{
 					{
 						IscnIdPrefix: "0",
 					},
@@ -43,7 +43,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.DefaultParams(),
-				MintableNFTList: []types.MintableNFT{
+				MintableNftList: []types.MintableNFT{
 					{
 						ClassId: "0",
 						Id:      "0",
@@ -70,7 +70,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated classesByISCN",
 			genState: &types.GenesisState{
-				ClassesByISCNList: []types.ClassesByISCN{
+				ClassesByIscnList: []types.ClassesByISCN{
 					{
 						IscnIdPrefix: "0",
 					},
@@ -134,7 +134,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated mintableNFT",
 			genState: &types.GenesisState{
-				MintableNFTList: []types.MintableNFT{
+				MintableNftList: []types.MintableNFT{
 					{
 						ClassId: "0",
 						Id:      "0",

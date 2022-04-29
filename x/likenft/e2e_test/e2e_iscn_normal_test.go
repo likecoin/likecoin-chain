@@ -103,7 +103,7 @@ func TestEndToEndIscnNormal(t *testing.T) {
 	"symbol": "CLS",
 	"description": "Testing New Class",
 	"uri": "ipfs://aabbcc",
-	"uriHash": "aabbcc",
+	"uri_hash": "aabbcc",
 	"metadata": {
 		"abc": "def"
 	},
@@ -124,7 +124,7 @@ func TestEndToEndIscnNormal(t *testing.T) {
 	"symbol": "Meowgear",
 	"description": "Photos of our beloved bosses.",
 	"uri": "https://www.facebook.com/chima.fasang",
-	"uriHash": "",
+	"uri_hash": "",
 	"metadata": {
 		"name": "Oursky Cat Photos",
 		"description": "Photos of our beloved bosses.",
@@ -145,7 +145,7 @@ func TestEndToEndIscnNormal(t *testing.T) {
 	require.NotNil(t, mintNftFile)
 	_, err = mintNftFile.WriteString(`{
 	"uri": "ipfs://QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
-	"uriHash": "QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
+	"uri_hash": "QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
 	"metadata": {
 		"name": "Sleepy Coffee #1",
 		"description": "Coffee is very sleepy", 

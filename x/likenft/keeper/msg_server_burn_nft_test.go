@@ -79,8 +79,8 @@ func TestBurnNFTNormal(t *testing.T) {
 	// Run
 	res, err := msgServer.BurnNFT(goCtx, &types.MsgBurnNFT{
 		Creator: ownerAddress,
-		ClassID: classId,
-		NftID:   tokenId,
+		ClassId: classId,
+		NftId:   tokenId,
 	})
 
 	// Check output
@@ -120,8 +120,8 @@ func TestBurnNFTTokenNotFound(t *testing.T) {
 	// Run
 	res, err := msgServer.BurnNFT(goCtx, &types.MsgBurnNFT{
 		Creator: ownerAddress,
-		ClassID: classId,
-		NftID:   tokenId,
+		ClassId: classId,
+		NftId:   tokenId,
 	})
 
 	// Check output
@@ -166,8 +166,8 @@ func TestBurnNFTInvalidUserAddress(t *testing.T) {
 	// Run
 	res, err := msgServer.BurnNFT(goCtx, &types.MsgBurnNFT{
 		Creator: "not a valid address",
-		ClassID: classId,
-		NftID:   tokenId,
+		ClassId: classId,
+		NftId:   tokenId,
 	})
 
 	// Check output
@@ -215,8 +215,8 @@ func TestBurnNFTUserNotOwner(t *testing.T) {
 	// Run
 	res, err := msgServer.BurnNFT(goCtx, &types.MsgBurnNFT{
 		Creator: ownerAddress,
-		ClassID: classId,
-		NftID:   tokenId,
+		ClassId: classId,
+		NftId:   tokenId,
 	})
 
 	// Check output
@@ -287,8 +287,8 @@ func TestBurnNFTNotBurnable(t *testing.T) {
 	// Run
 	res, err := msgServer.BurnNFT(goCtx, &types.MsgBurnNFT{
 		Creator: ownerAddress,
-		ClassID: classId,
-		NftID:   tokenId,
+		ClassId: classId,
+		NftId:   tokenId,
 	})
 
 	// Check output

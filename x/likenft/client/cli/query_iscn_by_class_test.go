@@ -86,7 +86,7 @@ func networkWithISCNByClass(t *testing.T, n int) (*network.Network, []ISCNByClas
 			IscnIdPrefix: iscnIdPrefix,
 			ClassIds:     []string{classId},
 		}
-		likenftState.ClassesByISCNList = append(likenftState.ClassesByISCNList, classesByIscn)
+		likenftState.ClassesByIscnList = append(likenftState.ClassesByIscnList, classesByIscn)
 
 		iscnByClass := ISCNByClass{
 			ClassId:      classId,

@@ -12,13 +12,13 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check nft exists
-	exists := k.nftKeeper.HasNFT(ctx, msg.ClassID, msg.NftID)
+	exists := k.nftKeeper.HasNFT(ctx, msg.ClassId, msg.NftId)
 	if !exists {
-		return nil, types.ErrNftNotFound.Wrapf("Class %s NFT %s does not exist", msg.ClassID, msg.NftID)
+		return nil, types.ErrNftNotFound.Wrapf("Class %s NFT %s does not exist", msg.ClassId, msg.NftId)
 	}
 
 	// Check user is owner
-	owner := k.nftKeeper.GetOwner(ctx, msg.ClassID, msg.NftID)
+	owner := k.nftKeeper.GetOwner(ctx, msg.ClassId, msg.NftId)
 	user, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
@@ -28,9 +28,9 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	}
 
 	// Check class is set to burnable
-	class, found := k.nftKeeper.GetClass(ctx, msg.ClassID)
+	class, found := k.nftKeeper.GetClass(ctx, msg.ClassId)
 	if !found {
-		return nil, types.ErrNftClassNotFound.Wrapf("NFT Class %s not found", msg.ClassID)
+		return nil, types.ErrNftClassNotFound.Wrapf("NFT Class %s not found", msg.ClassId)
 	}
 	var classData types.ClassData
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
@@ -41,7 +41,7 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	}
 
 	// Burn NFT
-	err = k.nftKeeper.Burn(ctx, msg.ClassID, msg.NftID)
+	err = k.nftKeeper.Burn(ctx, msg.ClassId, msg.NftId)
 	if err != nil {
 		return nil, types.ErrFailedToBurnNFT.Wrapf("%s", err.Error())
 	}
@@ -49,7 +49,7 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventBurnNFT{
 		ClassId:                 class.Id,
-		NftId:                   msg.NftID,
+		NftId:                   msg.NftId,
 		Owner:                   owner.String(),
 		ClassParentIscnIdPrefix: classData.Parent.IscnIdPrefix,
 		ClassParentAccount:      classData.Parent.Account,

@@ -36,7 +36,7 @@ func (k Keeper) MintableNFTIndex(c context.Context, req *types.QueryMintableNFTI
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryMintableNFTIndexResponse{MintableNFT: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryMintableNFTIndexResponse{MintableNfts: mintableNFTs, Pagination: pageRes}, nil
 }
 
 func (k Keeper) MintableNFTs(c context.Context, req *types.QueryMintableNFTsRequest) (*types.QueryMintableNFTsResponse, error) {
@@ -64,7 +64,7 @@ func (k Keeper) MintableNFTs(c context.Context, req *types.QueryMintableNFTsRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryMintableNFTsResponse{MintableNFTs: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryMintableNFTsResponse{MintableNfts: mintableNFTs, Pagination: pageRes}, nil
 }
 
 func (k Keeper) MintableNFT(c context.Context, req *types.QueryMintableNFTRequest) (*types.QueryMintableNFTResponse, error) {
@@ -82,5 +82,5 @@ func (k Keeper) MintableNFT(c context.Context, req *types.QueryMintableNFTReques
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryMintableNFTResponse{MintableNFT: val}, nil
+	return &types.QueryMintableNFTResponse{MintableNft: val}, nil
 }

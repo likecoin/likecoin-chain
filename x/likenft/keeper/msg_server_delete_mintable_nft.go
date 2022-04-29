@@ -26,7 +26,7 @@ func (k msgServer) DeleteMintableNFT(goCtx context.Context, msg *types.MsgDelete
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventDeleteMintableNFT{
 		ClassId:                 msg.ClassId,
-		MintableNFTId:           msg.Id,
+		MintableNftId:           msg.Id,
 		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
 		ClassParentAccount:      parentAndOwner.ClassParent.Account,
 	})

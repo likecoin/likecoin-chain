@@ -22,20 +22,20 @@ func CmdUpdateClass() *cobra.Command {
 	"symbol": "",
 	"description": "",
 	"uri": "",
-	"uriHash": "",
+	"uri_hash": "",
 	"metadata": {},
 	"config": {
 		"burnable": true,
-		"maxSupply": 0, // 0 = unlimited
-		"enableBlindBox": true,
-		"mintPeriods": [
+		"max_supply": 0, // 0 = unlimited
+		"enable_blind_box": true,
+		"mint_periods": [
 			{
-				"startTime": "2022-01-01T00:00:00Z",
-				"allowedAddresses"; ["cosmos1"], // null = public, [] = owner only
-				"mintPrice": 0 // 0 = free
+				"start_time": "2022-01-01T00:00:00Z",
+				"allowed_addresses"; ["cosmos1"], // null = public, [] = owner only
+				"mint_price": 0 // 0 = free
 			}
 		],
-		"revealTime": "2022-01-01T00:00:00Z"
+		"reveal_time": "2022-01-01T00:00:00Z"
 	}
 }`,
 		Args: cobra.ExactArgs(2),

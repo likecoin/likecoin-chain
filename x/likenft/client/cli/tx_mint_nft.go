@@ -19,7 +19,7 @@ func CmdMintNFT() *cobra.Command {
 		Example: `JSON file content:
 {
 	"uri": "",
-	"uriHash": "",
+	"uri_hash": "",
 	"metadata": {}
 }`,
 		Args: cobra.ExactArgs(3),
