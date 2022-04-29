@@ -16,6 +16,8 @@ lint:
     - COMMENT_MESSAGE
     - COMMENT_ENUM
     - COMMENT_ENUM_VALUE
+    - ENUM_VALUE_PREFIX
+    - ENUM_ZERO_VALUE_SUFFIX
   ignore:
     - iscn
 breaking:
