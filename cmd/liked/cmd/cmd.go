@@ -45,6 +45,7 @@ import (
 	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
 	"github.com/likecoin/likechain/ip"
+	stakingwithindex "github.com/likecoin/likechain/x/staking"
 
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 )
@@ -88,9 +89,14 @@ func addCrisisFlag(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
 }
 
+func addEnableCustomIndexFlag(startCmd *cobra.Command) {
+	stakingwithindex.AddEnableCustomIndexFlag(startCmd)
+}
+
 func addStartFlags(startCmd *cobra.Command) {
 	addCrisisFlag(startCmd)
 	addGetIpFlag(startCmd)
+	addEnableCustomIndexFlag(startCmd)
 }
 
 func queryCommand() *cobra.Command {

@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -316,24 +315,13 @@ func NewLikeApp(
 	app.registerUpgradeHandlers()
 	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
 
-	stakingIndexDB, err := dbm.NewGoLevelDB("index", path.Join(homePath, "data"))
-	if err != nil {
-		panic(fmt.Errorf("failed to create indexing DB for staking module: %s", err))
-	}
-	// TODO: When to close this DB?
-	// This should be handled by the finalizer set in runtime so should not be a problem.
-	// But we still want to do something in code
-	stakingQuerier := stakingwithindex.NewQuerier(&stakingKeeper, appCodec, stakingIndexDB)
-
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(
-			app.DistrKeeper.Hooks(),
-			app.SlashingKeeper.Hooks(),
-			stakingwithindex.NewHooks(stakingQuerier),
-		),
+	hookedStakingKeeper, stakingAppModule := stakingwithindex.SetupStakingModule(
+		homePath, appCodec,
+		&stakingKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.SlashingKeeper,
+		appOpts,
 	)
+
+	app.StakingKeeper = *hookedStakingKeeper
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -397,7 +385,7 @@ func NewLikeApp(
 		distr.NewAppModule(
 			appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		),
-		stakingwithindex.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, stakingQuerier),
+		stakingAppModule,
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
