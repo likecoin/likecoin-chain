@@ -95,6 +95,8 @@ import (
 	iscnkeeper "github.com/likecoin/likechain/x/iscn/keeper"
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
 
+	stakingwithindex "github.com/likecoin/likechain/x/staking"
+
 	bech32authmigration "github.com/likecoin/likechain/bech32-migration/auth"
 	bech32govmigration "github.com/likecoin/likechain/bech32-migration/gov"
 	bech32slashingmigration "github.com/likecoin/likechain/bech32-migration/slashing"
@@ -313,11 +315,13 @@ func NewLikeApp(
 	app.registerUpgradeHandlers()
 	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
 
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+	hookedStakingKeeper, stakingAppModule := stakingwithindex.SetupStakingModule(
+		homePath, appCodec,
+		&stakingKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.SlashingKeeper,
+		appOpts,
 	)
+
+	app.StakingKeeper = *hookedStakingKeeper
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -381,7 +385,7 @@ func NewLikeApp(
 		distr.NewAppModule(
 			appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		stakingAppModule,
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
