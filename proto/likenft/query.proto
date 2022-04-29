@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
@@ -23,7 +23,7 @@ service Query {
   }
   // Queries a ClassesByISCN by index.
   rpc ClassesByISCN(QueryClassesByISCNRequest) returns (QueryClassesByISCNResponse) {
-    option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn/{iscnIdPrefix}";
+    option (google.api.http).get = "/likecoin/likechain/likenft/classes_by_iscn/{iscn_id_prefix}";
   }
 
   // Queries a list of ClassesByISCN items.
@@ -33,7 +33,7 @@ service Query {
 
 // Queries a list of ISCNByClass items.
   rpc ISCNByClass(QueryISCNByClassRequest) returns (QueryISCNByClassResponse) {
-    option (google.api.http).get = "/likecoin/likechain/likenft/iscn_by_class/{classId}";
+    option (google.api.http).get = "/likecoin/likechain/likenft/iscn_by_class/{class_id}";
   }
 
 // Queries a ClassesByAccount by index.
@@ -48,12 +48,12 @@ service Query {
 
 // Queries a list of AccountByClass items.
 	rpc AccountByClass(QueryAccountByClassRequest) returns (QueryAccountByClassResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/account_by_class/{classId}";
+		option (google.api.http).get = "/likecoin/likechain/likenft/account_by_class/{class_id}";
 	}
 
 // Queries a MintableNFT by index.
 	rpc MintableNFT(QueryMintableNFTRequest) returns (QueryMintableNFTResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{classId}/{id}";
+		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{class_id}/{id}";
 	}
 
 	// Queries a list of MintableNFT items.
@@ -61,9 +61,9 @@ service Query {
 		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft";
 	}
 
-// Queries a list of MintableNFTs by classId
+// Queries a list of MintableNFTs by class_id
 	rpc MintableNFTs(QueryMintableNFTsRequest) returns (QueryMintableNFTsResponse) {
-		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{classId}";
+		option (google.api.http).get = "/likecoin/likechain/likenft/mintable_nft/{class_id}";
 	}
     
 // this line is used by starport scaffolding # 2
@@ -79,12 +79,12 @@ message QueryParamsResponse {
 }
 
 message QueryClassesByISCNRequest {
-  string iscnIdPrefix = 1;
+  string iscn_id_prefix = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryClassesByISCNResponse {
-  string iscnIdPrefix = 1;
+  string iscn_id_prefix = 1;
   repeated cosmos.nft.v1beta1.Class classes = 2 [(gogoproto.nullable) = false]; 
   cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
@@ -94,19 +94,19 @@ message QueryClassesByISCNIndexRequest {
 }
 
 message QueryClassesByISCNIndexResponse {
-  repeated ClassesByISCN classesByISCN = 1 [(gogoproto.nullable) = false];
+  repeated ClassesByISCN classes_by_iscn = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryISCNByClassRequest {
-  string classId = 1;
+  string class_id = 1;
 }
 
 message QueryISCNByClassResponse {
-  string iscnIdPrefix = 1;
+  string iscn_id_prefix = 1;
   string owner = 2;
-  uint64 latestVersion = 3;
-  .likechain.iscn.QueryResponseRecord latestRecord = 4 [(gogoproto.nullable) = false];
+  uint64 latest_version = 3;
+  .likechain.iscn.QueryResponseRecord latest_record = 4 [(gogoproto.nullable) = false];
 }
 
 message QueryClassesByAccountRequest {
@@ -125,12 +125,12 @@ message QueryClassesByAccountIndexRequest {
 }
 
 message QueryClassesByAccountIndexResponse {
-	repeated ClassesByAccount classesByAccount = 1 [(gogoproto.nullable) = false];
+	repeated ClassesByAccount classes_by_account = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryAccountByClassRequest {
-  string classId = 1;
+  string class_id = 1;
 }
 
 message QueryAccountByClassResponse {
@@ -138,13 +138,13 @@ message QueryAccountByClassResponse {
 }
 
 message QueryMintableNFTRequest {
-	string classId = 1;
+	string class_id = 1;
   string id = 2;
 
 }
 
 message QueryMintableNFTResponse {
-	MintableNFT mintableNFT = 1 [(gogoproto.nullable) = false];
+	MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryMintableNFTIndexRequest {
@@ -152,17 +152,17 @@ message QueryMintableNFTIndexRequest {
 }
 
 message QueryMintableNFTIndexResponse {
-	repeated MintableNFT mintableNFT = 1 [(gogoproto.nullable) = false];
+	repeated MintableNFT mintable_nfts = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryMintableNFTsRequest {
-  string classId = 1;
+  string class_id = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryMintableNFTsResponse {
-  repeated MintableNFT mintableNFTs = 1 [(gogoproto.nullable) = false];
+  repeated MintableNFT mintable_nfts = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

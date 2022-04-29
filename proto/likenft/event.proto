@@ -1,61 +1,61 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message EventNewClass {
-  string classId = 1; 
-  string parentIscnIdPrefix = 2;
-  string parentAccount = 3;
+  string class_id = 1; 
+  string parent_iscn_id_prefix = 2;
+  string parent_account = 3;
 }
 
 message EventUpdateClass {
-  string classId = 1; 
-  string parentIscnIdPrefix = 2;
-  string parentAccount = 3;
+  string class_id = 1; 
+  string parent_iscn_id_prefix = 2;
+  string parent_account = 3;
 }
 
 message EventRevealClass {
-  string classId = 1; 
-  string parentIscnIdPrefix = 2;
-  string parentAccount = 3;
+  string class_id = 1; 
+  string parent_iscn_id_prefix = 2;
+  string parent_account = 3;
   bool success = 4;
   string error = 5;
 }
 
 message EventMintNFT {
-  string classId = 1;
-  string nftId = 2;
+  string class_id = 1;
+  string nft_id = 2;
   string owner = 3;
-  string classParentIscnIdPrefix = 4;
-  string classParentAccount = 5;
+  string class_parent_iscn_id_prefix = 4;
+  string class_parent_account = 5;
 }
 
 message EventBurnNFT {
-  string classId = 1;
-  string nftId = 2;
+  string class_id = 1;
+  string nft_id = 2;
   string owner = 3;
-  string classParentIscnIdPrefix = 4;
-  string classParentAccount = 5;
+  string class_parent_iscn_id_prefix = 4;
+  string class_parent_account = 5;
 }
 
 message EventCreateMintableNFT {
-  string classId = 1;
-  string mintableNFTId = 2;
-  string classParentIscnIdPrefix = 3;
-  string classParentAccount = 4;
+  string class_id = 1;
+  string mintable_nft_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
 }
 
 message EventUpdateMintableNFT {
-  string classId = 1;
-  string mintableNFTId = 2;
-  string classParentIscnIdPrefix = 3;
-  string classParentAccount = 4;
+  string class_id = 1;
+  string mintable_nft_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
 }
 
 message EventDeleteMintableNFT {
-  string classId = 1;
-  string mintableNFTId = 2;
-  string classParentIscnIdPrefix = 3;
-  string classParentAccount = 4;
+  string class_id = 1;
+  string mintable_nft_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
 }

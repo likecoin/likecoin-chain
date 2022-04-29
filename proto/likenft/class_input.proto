@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "likenft/class_data.proto";
@@ -11,7 +11,7 @@ message ClassInput {
   string symbol = 2;
   string description = 3;
   string uri = 4;
-  string uriHash = 5;
+  string uri_hash = 5;
   bytes metadata = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "JsonInput"
@@ -21,6 +21,6 @@ message ClassInput {
 
 message ClassParentInput {
   ClassParentType type = 1;
-  string iscnIdPrefix = 2 [(gogoproto.nullable) = true];
+  string iscn_id_prefix = 2 [(gogoproto.nullable) = true];
   // for account, infers to use message sender's address
 }

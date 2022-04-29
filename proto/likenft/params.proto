@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 
@@ -9,5 +9,5 @@ option go_package = "github.com/likecoin/likechain/x/likenft/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
 
-  string mintPriceDenom = 1;
+  string mint_price_denom = 1;
 }

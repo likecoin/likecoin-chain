@@ -1,14 +1,14 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message ClassesByAccount {
   string account = 1; 
-  repeated string classIds = 2; 
+  repeated string class_ids = 2; 
 }
 
 message ClassesByAccountStoreRecord {
-  bytes accAddress = 1; 
-  repeated string classIds = 2; 
+  bytes acc_address = 1; 
+  repeated string class_ids = 2; 
 }

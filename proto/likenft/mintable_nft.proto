@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "likenft/nft_input.proto";
@@ -7,7 +7,7 @@ import "likenft/nft_input.proto";
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message MintableNFT {
-  string classId = 1; 
+  string class_id = 1; 
   string id = 2; 
   NFTInput input = 3 [(gogoproto.nullable) = false];
 }

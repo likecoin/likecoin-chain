@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -13,8 +13,8 @@ message ClassData {
   ];
   ClassParent parent = 2 [(gogoproto.nullable) = false];
   ClassConfig config = 3 [(gogoproto.nullable) = false];
-  uint64 mintableCount = 4;
-  bool toBeRevealed = 5;
+  uint64 mintable_count = 4;
+  bool to_be_revealed = 5;
 }
 
 enum ClassParentType {
@@ -25,24 +25,24 @@ enum ClassParentType {
 
 message ClassParent {
   ClassParentType type = 1;
-  string iscnIdPrefix = 2 [(gogoproto.nullable) = true];
-  uint64 iscnVersionAtMint = 3 [(gogoproto.nullable) = true];
+  string iscn_id_prefix = 2 [(gogoproto.nullable) = true];
+  uint64 iscn_version_at_mint = 3 [(gogoproto.nullable) = true];
   string account = 4 [(gogoproto.nullable) = true];
 }
 
 message MintPeriod {
-  google.protobuf.Timestamp startTime = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-  repeated string allowedAddresses = 2 ;
-  uint64 mintPrice = 3;
+  google.protobuf.Timestamp start_time = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  repeated string allowed_addresses = 2 ;
+  uint64 mint_price = 3;
 }
 
 message ClassConfig {
   bool burnable = 1;
-  uint64 maxSupply = 2;
-  BlindBoxConfig blindBoxConfig = 3 [(gogoproto.nullable) = true];
+  uint64 max_supply = 2;
+  BlindBoxConfig blind_box_config = 3 [(gogoproto.nullable) = true];
 }
 
 message BlindBoxConfig {
-  repeated MintPeriod mintPeriods = 1 [(gogoproto.nullable) = false];
-  google.protobuf.Timestamp revealTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  repeated MintPeriod mint_periods = 1 [(gogoproto.nullable) = false];
+  google.protobuf.Timestamp reveal_time = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }

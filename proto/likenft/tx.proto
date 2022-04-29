@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
@@ -34,7 +34,7 @@ message MsgNewClassResponse {
 
 message MsgUpdateClass {
   string creator = 1;
-  string classId = 2;
+  string class_id = 2;
   ClassInput input = 3 [(gogoproto.nullable) = false];
 }
 
@@ -44,7 +44,7 @@ message MsgUpdateClassResponse {
 
 message MsgMintNFT {
   string creator = 1;
-  string classId = 2;
+  string class_id = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
@@ -55,8 +55,8 @@ message MsgMintNFTResponse {
 
 message MsgBurnNFT {
   string creator = 1;
-  string classID = 2;
-  string nftID = 3;
+  string class_id = 2;
+  string nft_id = 3;
 }
 
 message MsgBurnNFTResponse {
@@ -64,7 +64,7 @@ message MsgBurnNFTResponse {
 
 message MsgCreateMintableNFT {
   string creator = 1;
-  string classId = 2;
+  string class_id = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
@@ -74,7 +74,7 @@ message MsgCreateMintableNFTResponse {
 
 message MsgUpdateMintableNFT {
   string creator = 1;
-  string classId = 2;
+  string class_id = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
@@ -84,7 +84,7 @@ message MsgUpdateMintableNFTResponse {
 
 message MsgDeleteMintableNFT {
   string creator = 1;
-  string classId = 2;
+  string class_id = 2;
   string id = 3;
 }
 

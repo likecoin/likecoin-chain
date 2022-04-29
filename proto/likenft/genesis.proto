@@ -1,5 +1,5 @@
 syntax = "proto3";
-package likecoin.likechain.likenft;
+package likechain.likenft;
 
 import "gogoproto/gogo.proto";
 import "likenft/params.proto";
@@ -14,9 +14,9 @@ option go_package = "github.com/likecoin/likechain/x/likenft/types";
 // GenesisState defines the likenft module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated ClassesByISCN classesByISCNList = 2 [(gogoproto.nullable) = false];
-  repeated ClassesByAccount classesByAccountList = 3 [(gogoproto.nullable) = false];
-  repeated MintableNFT mintableNFTList = 4 [(gogoproto.nullable) = false];
-  repeated ClassRevealQueueEntry classRevealQueue = 5 [(gogoproto.nullable) = false];
+  repeated ClassesByISCN classes_by_iscn_list = 2 [(gogoproto.nullable) = false];
+  repeated ClassesByAccount classes_by_account_list = 3 [(gogoproto.nullable) = false];
+  repeated MintableNFT mintable_nft_list = 4 [(gogoproto.nullable) = false];
+  repeated ClassRevealQueueEntry class_reveal_queue = 5 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

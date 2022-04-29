@@ -23,9 +23,9 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type EventNewClass struct {
-	ClassId            string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parentIscnIdPrefix,proto3" json:"parentIscnIdPrefix,omitempty"`
-	ParentAccount      string `protobuf:"bytes,3,opt,name=parentAccount,proto3" json:"parentAccount,omitempty"`
+	ClassId            string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parent_iscn_id_prefix,json=parentIscnIdPrefix,proto3" json:"parent_iscn_id_prefix,omitempty"`
+	ParentAccount      string `protobuf:"bytes,3,opt,name=parent_account,json=parentAccount,proto3" json:"parent_account,omitempty"`
 }
 
 func (m *EventNewClass) Reset()         { *m = EventNewClass{} }
@@ -83,9 +83,9 @@ func (m *EventNewClass) GetParentAccount() string {
 }
 
 type EventUpdateClass struct {
-	ClassId            string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parentIscnIdPrefix,proto3" json:"parentIscnIdPrefix,omitempty"`
-	ParentAccount      string `protobuf:"bytes,3,opt,name=parentAccount,proto3" json:"parentAccount,omitempty"`
+	ClassId            string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parent_iscn_id_prefix,json=parentIscnIdPrefix,proto3" json:"parent_iscn_id_prefix,omitempty"`
+	ParentAccount      string `protobuf:"bytes,3,opt,name=parent_account,json=parentAccount,proto3" json:"parent_account,omitempty"`
 }
 
 func (m *EventUpdateClass) Reset()         { *m = EventUpdateClass{} }
@@ -143,9 +143,9 @@ func (m *EventUpdateClass) GetParentAccount() string {
 }
 
 type EventRevealClass struct {
-	ClassId            string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parentIscnIdPrefix,proto3" json:"parentIscnIdPrefix,omitempty"`
-	ParentAccount      string `protobuf:"bytes,3,opt,name=parentAccount,proto3" json:"parentAccount,omitempty"`
+	ClassId            string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ParentIscnIdPrefix string `protobuf:"bytes,2,opt,name=parent_iscn_id_prefix,json=parentIscnIdPrefix,proto3" json:"parent_iscn_id_prefix,omitempty"`
+	ParentAccount      string `protobuf:"bytes,3,opt,name=parent_account,json=parentAccount,proto3" json:"parent_account,omitempty"`
 	Success            bool   `protobuf:"varint,4,opt,name=success,proto3" json:"success,omitempty"`
 	Error              string `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
 }
@@ -219,11 +219,11 @@ func (m *EventRevealClass) GetError() string {
 }
 
 type EventMintNFT struct {
-	ClassId                 string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	NftId                   string `protobuf:"bytes,2,opt,name=nftId,proto3" json:"nftId,omitempty"`
+	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	NftId                   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
 	Owner                   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
-	ClassParentIscnIdPrefix string `protobuf:"bytes,4,opt,name=classParentIscnIdPrefix,proto3" json:"classParentIscnIdPrefix,omitempty"`
-	ClassParentAccount      string `protobuf:"bytes,5,opt,name=classParentAccount,proto3" json:"classParentAccount,omitempty"`
+	ClassParentIscnIdPrefix string `protobuf:"bytes,4,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
+	ClassParentAccount      string `protobuf:"bytes,5,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
 func (m *EventMintNFT) Reset()         { *m = EventMintNFT{} }
@@ -295,11 +295,11 @@ func (m *EventMintNFT) GetClassParentAccount() string {
 }
 
 type EventBurnNFT struct {
-	ClassId                 string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	NftId                   string `protobuf:"bytes,2,opt,name=nftId,proto3" json:"nftId,omitempty"`
+	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	NftId                   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
 	Owner                   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
-	ClassParentIscnIdPrefix string `protobuf:"bytes,4,opt,name=classParentIscnIdPrefix,proto3" json:"classParentIscnIdPrefix,omitempty"`
-	ClassParentAccount      string `protobuf:"bytes,5,opt,name=classParentAccount,proto3" json:"classParentAccount,omitempty"`
+	ClassParentIscnIdPrefix string `protobuf:"bytes,4,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
+	ClassParentAccount      string `protobuf:"bytes,5,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
 func (m *EventBurnNFT) Reset()         { *m = EventBurnNFT{} }
@@ -371,10 +371,10 @@ func (m *EventBurnNFT) GetClassParentAccount() string {
 }
 
 type EventCreateMintableNFT struct {
-	ClassId                 string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	MintableNFTId           string `protobuf:"bytes,2,opt,name=mintableNFTId,proto3" json:"mintableNFTId,omitempty"`
-	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=classParentIscnIdPrefix,proto3" json:"classParentIscnIdPrefix,omitempty"`
-	ClassParentAccount      string `protobuf:"bytes,4,opt,name=classParentAccount,proto3" json:"classParentAccount,omitempty"`
+	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
+	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
 func (m *EventCreateMintableNFT) Reset()         { *m = EventCreateMintableNFT{} }
@@ -417,9 +417,9 @@ func (m *EventCreateMintableNFT) GetClassId() string {
 	return ""
 }
 
-func (m *EventCreateMintableNFT) GetMintableNFTId() string {
+func (m *EventCreateMintableNFT) GetMintableNftId() string {
 	if m != nil {
-		return m.MintableNFTId
+		return m.MintableNftId
 	}
 	return ""
 }
@@ -439,10 +439,10 @@ func (m *EventCreateMintableNFT) GetClassParentAccount() string {
 }
 
 type EventUpdateMintableNFT struct {
-	ClassId                 string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	MintableNFTId           string `protobuf:"bytes,2,opt,name=mintableNFTId,proto3" json:"mintableNFTId,omitempty"`
-	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=classParentIscnIdPrefix,proto3" json:"classParentIscnIdPrefix,omitempty"`
-	ClassParentAccount      string `protobuf:"bytes,4,opt,name=classParentAccount,proto3" json:"classParentAccount,omitempty"`
+	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
+	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
 func (m *EventUpdateMintableNFT) Reset()         { *m = EventUpdateMintableNFT{} }
@@ -485,9 +485,9 @@ func (m *EventUpdateMintableNFT) GetClassId() string {
 	return ""
 }
 
-func (m *EventUpdateMintableNFT) GetMintableNFTId() string {
+func (m *EventUpdateMintableNFT) GetMintableNftId() string {
 	if m != nil {
-		return m.MintableNFTId
+		return m.MintableNftId
 	}
 	return ""
 }
@@ -507,10 +507,10 @@ func (m *EventUpdateMintableNFT) GetClassParentAccount() string {
 }
 
 type EventDeleteMintableNFT struct {
-	ClassId                 string `protobuf:"bytes,1,opt,name=classId,proto3" json:"classId,omitempty"`
-	MintableNFTId           string `protobuf:"bytes,2,opt,name=mintableNFTId,proto3" json:"mintableNFTId,omitempty"`
-	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=classParentIscnIdPrefix,proto3" json:"classParentIscnIdPrefix,omitempty"`
-	ClassParentAccount      string `protobuf:"bytes,4,opt,name=classParentAccount,proto3" json:"classParentAccount,omitempty"`
+	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
+	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
 func (m *EventDeleteMintableNFT) Reset()         { *m = EventDeleteMintableNFT{} }
@@ -553,9 +553,9 @@ func (m *EventDeleteMintableNFT) GetClassId() string {
 	return ""
 }
 
-func (m *EventDeleteMintableNFT) GetMintableNFTId() string {
+func (m *EventDeleteMintableNFT) GetMintableNftId() string {
 	if m != nil {
-		return m.MintableNFTId
+		return m.MintableNftId
 	}
 	return ""
 }
@@ -575,45 +575,47 @@ func (m *EventDeleteMintableNFT) GetClassParentAccount() string {
 }
 
 func init() {
-	proto.RegisterType((*EventNewClass)(nil), "likecoin.likechain.likenft.EventNewClass")
-	proto.RegisterType((*EventUpdateClass)(nil), "likecoin.likechain.likenft.EventUpdateClass")
-	proto.RegisterType((*EventRevealClass)(nil), "likecoin.likechain.likenft.EventRevealClass")
-	proto.RegisterType((*EventMintNFT)(nil), "likecoin.likechain.likenft.EventMintNFT")
-	proto.RegisterType((*EventBurnNFT)(nil), "likecoin.likechain.likenft.EventBurnNFT")
-	proto.RegisterType((*EventCreateMintableNFT)(nil), "likecoin.likechain.likenft.EventCreateMintableNFT")
-	proto.RegisterType((*EventUpdateMintableNFT)(nil), "likecoin.likechain.likenft.EventUpdateMintableNFT")
-	proto.RegisterType((*EventDeleteMintableNFT)(nil), "likecoin.likechain.likenft.EventDeleteMintableNFT")
+	proto.RegisterType((*EventNewClass)(nil), "likechain.likenft.EventNewClass")
+	proto.RegisterType((*EventUpdateClass)(nil), "likechain.likenft.EventUpdateClass")
+	proto.RegisterType((*EventRevealClass)(nil), "likechain.likenft.EventRevealClass")
+	proto.RegisterType((*EventMintNFT)(nil), "likechain.likenft.EventMintNFT")
+	proto.RegisterType((*EventBurnNFT)(nil), "likechain.likenft.EventBurnNFT")
+	proto.RegisterType((*EventCreateMintableNFT)(nil), "likechain.likenft.EventCreateMintableNFT")
+	proto.RegisterType((*EventUpdateMintableNFT)(nil), "likechain.likenft.EventUpdateMintableNFT")
+	proto.RegisterType((*EventDeleteMintableNFT)(nil), "likechain.likenft.EventDeleteMintableNFT")
 }
 
 func init() { proto.RegisterFile("likenft/event.proto", fileDescriptor_698f0ef91de0afd3) }
 
 var fileDescriptor_698f0ef91de0afd3 = []byte{
-	// 392 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x94, 0x3f, 0x4f, 0xfa, 0x40,
-	0x1c, 0xc6, 0xb9, 0x1f, 0xf0, 0x53, 0x2f, 0x92, 0x98, 0x4a, 0xb4, 0x71, 0x68, 0x08, 0x61, 0x60,
-	0xb1, 0x1d, 0x5c, 0x5c, 0x05, 0xff, 0xa4, 0x83, 0x84, 0x10, 0x5d, 0xdc, 0xca, 0xf5, 0x5b, 0x69,
-	0x2c, 0xd7, 0xe6, 0xee, 0x0a, 0x38, 0x99, 0xf8, 0x0a, 0x7c, 0x2d, 0xbe, 0x00, 0x07, 0x27, 0x47,
-	0x46, 0x47, 0x03, 0x6f, 0xc4, 0xdc, 0x95, 0x82, 0x44, 0xc4, 0xc4, 0x85, 0xb0, 0xdd, 0xf3, 0x7c,
-	0x9f, 0x4b, 0x9f, 0x4f, 0x9b, 0x7e, 0xf1, 0x6e, 0xe0, 0xdf, 0x01, 0xf5, 0x84, 0x05, 0x3d, 0xa0,
-	0xc2, 0x8c, 0x58, 0x28, 0x42, 0xed, 0x40, 0x9a, 0x24, 0xf4, 0xa9, 0xa9, 0x0e, 0x1d, 0x67, 0x72,
-	0xa2, 0x9e, 0x28, 0x3f, 0xe0, 0xc2, 0x99, 0x8c, 0x36, 0xa0, 0x5f, 0x0f, 0x1c, 0xce, 0x35, 0x1d,
-	0x6f, 0x10, 0x79, 0xb0, 0x5d, 0x1d, 0x95, 0x50, 0x75, 0xab, 0x95, 0x4a, 0xcd, 0xc4, 0x5a, 0xe4,
-	0x30, 0xa0, 0xc2, 0xe6, 0x84, 0xda, 0x6e, 0x93, 0x81, 0xe7, 0x0f, 0xf4, 0x7f, 0x2a, 0xb4, 0x60,
-	0xa2, 0x55, 0x70, 0x21, 0x71, 0x4f, 0x08, 0x09, 0x63, 0x2a, 0xf4, 0xac, 0x8a, 0xce, 0x9b, 0xe5,
-	0x47, 0x84, 0x77, 0x54, 0x83, 0xeb, 0xc8, 0x75, 0x04, 0xac, 0xa6, 0xc4, 0x73, 0x5a, 0xa2, 0x05,
-	0x3d, 0x70, 0x82, 0x95, 0x94, 0x90, 0xcf, 0xe3, 0x31, 0x21, 0xc0, 0xb9, 0x9e, 0x2b, 0xa1, 0xea,
-	0x66, 0x2b, 0x95, 0x5a, 0x11, 0xe7, 0x81, 0xb1, 0x90, 0xe9, 0x79, 0x75, 0x2f, 0x11, 0xe5, 0x17,
-	0x84, 0xb7, 0x55, 0xe9, 0x4b, 0x9f, 0x8a, 0xc6, 0xf9, 0xd5, 0x92, 0xc2, 0x45, 0x9c, 0xa7, 0x9e,
-	0xb0, 0xdd, 0x49, 0xc7, 0x44, 0x48, 0x37, 0xec, 0x53, 0x60, 0x93, 0x3a, 0x89, 0xd0, 0x8e, 0xf1,
-	0xbe, 0xba, 0xd6, 0xfc, 0x4e, 0x98, 0x53, 0xb9, 0x9f, 0xc6, 0xf2, 0xb5, 0x7c, 0x19, 0xa5, 0xac,
-	0x49, 0xe7, 0x05, 0x93, 0x19, 0x40, 0x2d, 0x66, 0x74, 0x1d, 0x01, 0x5e, 0x11, 0xde, 0x53, 0x00,
-	0x75, 0x06, 0x8e, 0x00, 0xf9, 0x1d, 0x9c, 0x76, 0x00, 0xcb, 0x51, 0x2a, 0xb8, 0xd0, 0x9d, 0x05,
-	0xa7, 0x48, 0xf3, 0xe6, 0x32, 0x88, 0xec, 0x5f, 0x20, 0x72, 0xbf, 0x43, 0x24, 0x3f, 0xe0, 0x9a,
-	0x43, 0x9c, 0x42, 0x00, 0x6b, 0x0a, 0x51, 0xbb, 0x78, 0x1b, 0x19, 0x68, 0x38, 0x32, 0xd0, 0xc7,
-	0xc8, 0x40, 0x4f, 0x63, 0x23, 0x33, 0x1c, 0x1b, 0x99, 0xf7, 0xb1, 0x91, 0xb9, 0x39, 0xbc, 0xf5,
-	0x45, 0x27, 0x6e, 0x9b, 0x24, 0xec, 0x5a, 0xe9, 0x32, 0xb7, 0xa6, 0xcb, 0xdc, 0x1a, 0x58, 0xe9,
-	0xda, 0x17, 0xf7, 0x11, 0xf0, 0xf6, 0x7f, 0xb5, 0xf7, 0x8f, 0x3e, 0x03, 0x00, 0x00, 0xff, 0xff,
-	0xfb, 0xa1, 0xc0, 0x40, 0x0e, 0x06, 0x00, 0x00,
+	// 425 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x95, 0xcf, 0xaa, 0xd3, 0x40,
+	0x14, 0xc6, 0x3b, 0xde, 0xf6, 0xb6, 0x0e, 0xd6, 0x3f, 0x63, 0xab, 0x11, 0x21, 0x94, 0x82, 0xd2,
+	0x8d, 0x8d, 0xe2, 0xd6, 0x8d, 0xad, 0x7f, 0xc8, 0xc2, 0x52, 0x8a, 0x6e, 0xdc, 0x84, 0xe9, 0xe4,
+	0xc4, 0x0e, 0xa6, 0x93, 0x30, 0x33, 0x69, 0xeb, 0x5e, 0x70, 0xeb, 0xdb, 0xf8, 0x06, 0x22, 0xb8,
+	0xe9, 0xd2, 0xa5, 0xb4, 0x2f, 0x22, 0x99, 0x49, 0x8a, 0x45, 0xb1, 0xe0, 0xa6, 0xf4, 0xee, 0x72,
+	0xce, 0xf9, 0xbe, 0xe1, 0xfb, 0x31, 0x64, 0x0e, 0xbe, 0x19, 0xf3, 0xf7, 0x20, 0x22, 0xed, 0xc1,
+	0x02, 0x84, 0xee, 0xa7, 0x32, 0xd1, 0x09, 0xb9, 0x91, 0x37, 0xd9, 0x8c, 0x72, 0xd1, 0x2f, 0xc6,
+	0xdd, 0x8f, 0x08, 0x37, 0x9f, 0xe7, 0x92, 0x11, 0x2c, 0x87, 0x31, 0x55, 0x8a, 0xdc, 0xc1, 0x0d,
+	0x96, 0x7f, 0x04, 0x3c, 0x74, 0x50, 0x07, 0xf5, 0x2e, 0x4f, 0xea, 0xa6, 0xf6, 0x43, 0xf2, 0x08,
+	0xb7, 0x53, 0x2a, 0x41, 0xe8, 0x80, 0x2b, 0x26, 0x02, 0x1e, 0x06, 0xa9, 0x84, 0x88, 0xaf, 0x9c,
+	0x4b, 0x46, 0x47, 0xec, 0xd0, 0x57, 0x4c, 0xf8, 0xe1, 0xd8, 0x4c, 0xc8, 0x3d, 0x7c, 0xb5, 0xb0,
+	0x50, 0xc6, 0x92, 0x4c, 0x68, 0xe7, 0xcc, 0x68, 0x9b, 0xb6, 0xfb, 0xd4, 0x36, 0xbb, 0x9f, 0x10,
+	0xbe, 0x6e, 0x62, 0xbc, 0x49, 0x43, 0xaa, 0xe1, 0x88, 0x49, 0xbe, 0x94, 0x49, 0x26, 0xb0, 0x00,
+	0x1a, 0x1f, 0x2f, 0x09, 0x71, 0x70, 0x5d, 0x65, 0x8c, 0x81, 0x52, 0x4e, 0xb5, 0x83, 0x7a, 0x8d,
+	0x49, 0x59, 0x92, 0x16, 0xae, 0x81, 0x94, 0x89, 0x74, 0x6a, 0xc6, 0x67, 0x8b, 0xee, 0x57, 0x84,
+	0xaf, 0x98, 0xe4, 0xaf, 0xb8, 0xd0, 0xa3, 0x17, 0xaf, 0xff, 0x95, 0xba, 0x8d, 0xcf, 0x45, 0xa4,
+	0xf3, 0x81, 0x8d, 0x59, 0x13, 0x91, 0xf6, 0xc3, 0xfc, 0xe0, 0x64, 0x29, 0x40, 0x16, 0x81, 0x6c,
+	0x41, 0x9e, 0xe0, 0xbb, 0xf6, 0x9c, 0xbf, 0x83, 0x56, 0x8d, 0xf6, 0xb6, 0x91, 0x8c, 0xff, 0xa4,
+	0x7d, 0x88, 0x5b, 0x7b, 0xee, 0x92, 0xd9, 0x66, 0x27, 0xbf, 0xd9, 0xca, 0x2b, 0xd8, 0x81, 0x0c,
+	0x32, 0x29, 0x4e, 0x19, 0xe4, 0x3b, 0xc2, 0xb7, 0x0c, 0xc8, 0x50, 0x02, 0xd5, 0x90, 0xdf, 0x0b,
+	0x9d, 0xc6, 0x70, 0x00, 0xe9, 0x3e, 0xbe, 0x36, 0x2f, 0x94, 0xc1, 0x1e, 0x5b, 0xb3, 0x6c, 0x8f,
+	0x0c, 0xe3, 0x01, 0x9a, 0xb3, 0xff, 0xa3, 0xa9, 0x1e, 0xa6, 0xb1, 0xff, 0xe8, 0x45, 0xa1, 0x79,
+	0x06, 0x31, 0x9c, 0x3a, 0xcd, 0xe0, 0xe5, 0xb7, 0x8d, 0x8b, 0xd6, 0x1b, 0x17, 0xfd, 0xdc, 0xb8,
+	0xe8, 0xf3, 0xd6, 0xad, 0xac, 0xb7, 0x6e, 0xe5, 0xc7, 0xd6, 0xad, 0xbc, 0x7d, 0xf0, 0x8e, 0xeb,
+	0x59, 0x36, 0xed, 0xb3, 0x64, 0xee, 0x99, 0xe7, 0x3f, 0xe1, 0xc2, 0xdb, 0xed, 0x01, 0x6f, 0xe5,
+	0x95, 0x8b, 0x42, 0x7f, 0x48, 0x41, 0x4d, 0xcf, 0xcd, 0xa6, 0x78, 0xfc, 0x2b, 0x00, 0x00, 0xff,
+	0xff, 0x32, 0x06, 0xd1, 0x5e, 0x40, 0x06, 0x00, 0x00,
 }
 
 func (m *EventNewClass) Marshal() (dAtA []byte, err error) {
@@ -915,10 +917,10 @@ func (m *EventCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNFTId) > 0 {
-		i -= len(m.MintableNFTId)
-		copy(dAtA[i:], m.MintableNFTId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNFTId)))
+	if len(m.MintableNftId) > 0 {
+		i -= len(m.MintableNftId)
+		copy(dAtA[i:], m.MintableNftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -966,10 +968,10 @@ func (m *EventUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNFTId) > 0 {
-		i -= len(m.MintableNFTId)
-		copy(dAtA[i:], m.MintableNFTId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNFTId)))
+	if len(m.MintableNftId) > 0 {
+		i -= len(m.MintableNftId)
+		copy(dAtA[i:], m.MintableNftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1017,10 +1019,10 @@ func (m *EventDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNFTId) > 0 {
-		i -= len(m.MintableNFTId)
-		copy(dAtA[i:], m.MintableNFTId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNFTId)))
+	if len(m.MintableNftId) > 0 {
+		i -= len(m.MintableNftId)
+		copy(dAtA[i:], m.MintableNftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1183,7 +1185,7 @@ func (m *EventCreateMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNFTId)
+	l = len(m.MintableNftId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -1208,7 +1210,7 @@ func (m *EventUpdateMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNFTId)
+	l = len(m.MintableNftId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -1233,7 +1235,7 @@ func (m *EventDeleteMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNFTId)
+	l = len(m.MintableNftId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -2227,7 +2229,7 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFTId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2255,7 +2257,7 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNFTId = string(dAtA[iNdEx:postIndex])
+			m.MintableNftId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2405,7 +2407,7 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFTId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2433,7 +2435,7 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNFTId = string(dAtA[iNdEx:postIndex])
+			m.MintableNftId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2583,7 +2585,7 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNFTId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2611,7 +2613,7 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNFTId = string(dAtA[iNdEx:postIndex])
+			m.MintableNftId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
