@@ -106,7 +106,7 @@ message QueryISCNByClassResponse {
   string iscn_id_prefix = 1;
   string owner = 2;
   uint64 latest_version = 3;
-  .likechain.iscn.QueryResponseRecord latest_record = 4 [(gogoproto.nullable) = false];
+  likechain.iscn.QueryResponseRecord latest_record = 4 [(gogoproto.nullable) = false];
 }
 
 message QueryClassesByAccountRequest {
