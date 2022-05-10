@@ -216,7 +216,7 @@ func TestEndToEndAccountNormal(t *testing.T) {
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdMintNFT(),
-		append([]string{class.Id, "token1", mintNftFile.Name()}, txArgs...),
+		append([]string{class.Id, "--id", "token1", "--input", mintNftFile.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 

@@ -14,23 +14,34 @@ var _ = strconv.Itoa(0)
 
 func CmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mint-nft [class-id] [id] [json-file-input]",
+		Use:   "mint-nft [class-id] (--id [id] --input [json-file-input])",
 		Short: "Mint NFT under a class",
-		Example: `JSON file content:
+		Example: `--id and --input required for minting under normal class, ignored for blind box class
+JSON file content:
 {
 	"uri": "",
 	"uri_hash": "",
 	"metadata": {}
 }`,
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
-			argId := args[1]
-			nftInput, err := readNFTInputJsonFile(args[2])
-			if nftInput == nil || err != nil {
+			argId, err := cmd.Flags().GetString("id")
+			if err != nil {
 				return err
 			}
 
+			argInput, err := cmd.Flags().GetString("input")
+			if err != nil {
+				return err
+			}
+			var nftInput *types.NFTInput
+			if argInput != "" {
+				nftInput, err = readNFTInputJsonFile(argInput)
+				if nftInput == nil || err != nil {
+					return err
+				}
+			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -40,7 +51,7 @@ func CmdMintNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,
-				*nftInput,
+				nftInput,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -49,6 +60,8 @@ func CmdMintNFT() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String("id", "", "NFT ID")
+	cmd.Flags().String("input", "", "Path to json file containing NFT Input data")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
