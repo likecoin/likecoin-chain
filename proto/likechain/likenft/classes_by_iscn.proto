@@ -1,9 +1,10 @@
 syntax = "proto3";
+
 package likechain.likenft;
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message ClassesByISCN {
-  string iscn_id_prefix = 1; 
-  repeated string class_ids = 2; 
+  string iscn_id_prefix = 1;
+  repeated string class_ids = 2;
 }

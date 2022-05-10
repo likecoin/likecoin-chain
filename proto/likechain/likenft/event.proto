@@ -1,22 +1,23 @@
 syntax = "proto3";
+
 package likechain.likenft;
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message EventNewClass {
-  string class_id = 1; 
+  string class_id = 1;
   string parent_iscn_id_prefix = 2;
   string parent_account = 3;
 }
 
 message EventUpdateClass {
-  string class_id = 1; 
+  string class_id = 1;
   string parent_iscn_id_prefix = 2;
   string parent_account = 3;
 }
 
 message EventRevealClass {
-  string class_id = 1; 
+  string class_id = 1;
   string parent_iscn_id_prefix = 2;
   string parent_account = 3;
   bool success = 4;

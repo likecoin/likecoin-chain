@@ -1,13 +1,13 @@
 syntax = "proto3";
+
 package likechain.likenft;
 
-import "gogoproto/gogo.proto";
 import "cosmos/nft/v1beta1/nft.proto";
+import "gogoproto/gogo.proto";
 import "likechain/likenft/class_input.proto";
 import "likechain/likenft/nft_input.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
-
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 // Msg defines the Msg service.
@@ -19,7 +19,7 @@ service Msg {
   rpc CreateMintableNFT(MsgCreateMintableNFT) returns (MsgCreateMintableNFTResponse);
   rpc UpdateMintableNFT(MsgUpdateMintableNFT) returns (MsgUpdateMintableNFTResponse);
   rpc DeleteMintableNFT(MsgDeleteMintableNFT) returns (MsgDeleteMintableNFTResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgNewClass {
@@ -59,8 +59,7 @@ message MsgBurnNFT {
   string nft_id = 3;
 }
 
-message MsgBurnNFTResponse {
-}
+message MsgBurnNFTResponse {}
 
 message MsgCreateMintableNFT {
   string creator = 1;
@@ -69,8 +68,7 @@ message MsgCreateMintableNFT {
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgCreateMintableNFTResponse {
-}
+message MsgCreateMintableNFTResponse {}
 
 message MsgUpdateMintableNFT {
   string creator = 1;
@@ -79,8 +77,7 @@ message MsgUpdateMintableNFT {
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateMintableNFTResponse {
-}
+message MsgUpdateMintableNFTResponse {}
 
 message MsgDeleteMintableNFT {
   string creator = 1;
@@ -88,7 +85,6 @@ message MsgDeleteMintableNFT {
   string id = 3;
 }
 
-message MsgDeleteMintableNFTResponse {
-}
+message MsgDeleteMintableNFTResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message

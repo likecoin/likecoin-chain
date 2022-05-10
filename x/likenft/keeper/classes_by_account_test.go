@@ -43,7 +43,7 @@ func TestClassesByAccountGet(t *testing.T) {
 func TestClassesByAccountRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, accounts := createNClassesByAccount(keeper, ctx, 10)
-	for i, _ := range items {
+	for i := range items {
 		keeper.RemoveClassesByAccount(ctx,
 			accounts[i],
 		)

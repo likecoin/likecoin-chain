@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.likenft;
 
 import "gogoproto/gogo.proto";
@@ -31,8 +32,11 @@ message ClassParent {
 }
 
 message MintPeriod {
-  google.protobuf.Timestamp start_time = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-  repeated string allowed_addresses = 2 ;
+  google.protobuf.Timestamp start_time = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  repeated string allowed_addresses = 2;
   uint64 mint_price = 3;
 }
 
@@ -44,5 +48,8 @@ message ClassConfig {
 
 message BlindBoxConfig {
   repeated MintPeriod mint_periods = 1 [(gogoproto.nullable) = false];
-  google.protobuf.Timestamp reveal_time = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp reveal_time = 2 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
 }
