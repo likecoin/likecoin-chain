@@ -46,7 +46,7 @@ message MsgMintNFT {
   string creator = 1;
   string class_id = 2;
   string id = 3;
-  NFTInput input = 4 [(gogoproto.nullable) = false];
+  NFTInput input = 4 [(gogoproto.nullable) = true];
 }
 
 message MsgMintNFTResponse {

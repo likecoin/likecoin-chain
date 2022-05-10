@@ -113,7 +113,7 @@ func TestMintOwnerNFTNormal(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -261,7 +261,7 @@ func TestMintNFTFirstToken(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -381,7 +381,7 @@ func TestMintNFTOwnerInvalidTokenID(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      "123456", // x/nft requires token id to start with letter
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -442,7 +442,7 @@ func TestMintNFTClassNotFound(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -525,7 +525,7 @@ func TestMintNFTMissingIscnRelation(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -535,6 +535,194 @@ func TestMintNFTMissingIscnRelation(t *testing.T) {
 	// Check output
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrNftClassNotRelatedToAnyIscn.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestMintNFTEmptyID(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, keeper := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	classId := "likenft1aabbccddeeff"
+	tokenId := ""
+	uri := "ipfs://a1b2c3"
+	uriHash := "a1b2c3"
+	metadata := types.JsonInput(
+		`{
+	"abc": "def",
+	"qwerty": 1234,
+	"bool": false,
+	"null": null,
+	"nested": {
+		"object": {
+			"abc": "def"
+		}
+	}
+}`)
+
+	// Mock keeper calls
+	classIscnVersionAtMint := uint64(1)
+	classData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: classIscnVersionAtMint,
+		},
+		Config: types.ClassConfig{
+			Burnable:  false,
+			MaxSupply: uint64(5),
+		},
+	}
+	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), gomock.Eq(classId)).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Class Name",
+			Symbol:      "ABC",
+			Description: "Testing Class 123",
+			Uri:         "ipfs://abcdef",
+			UriHash:     "abcdef",
+			Data:        classDataInAny,
+		}, true)
+
+	keeper.SetClassesByISCN(ctx, types.ClassesByISCN{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassIds:     []string{classId},
+	})
+
+	iscnLatestVersion := uint64(2)
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     iscnLatestVersion,
+		})
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), gomock.Eq(classId)).
+		Return(uint64(1))
+
+	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input: &types.NFTInput{
+			Uri:      uri,
+			UriHash:  uriHash,
+			Metadata: metadata,
+		},
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), types.ErrInvalidTokenId.Error())
+	require.Nil(t, res)
+
+	// Check mock was called as expected
+	ctrl.Finish()
+}
+
+func TestMintNFTNullInput(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, keeper := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Test Input
+	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
+	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
+	classId := "likenft1aabbccddeeff"
+	tokenId := "token1"
+
+	// Mock keeper calls
+	classIscnVersionAtMint := uint64(1)
+	classData := types.ClassData{
+		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
+		Parent: types.ClassParent{
+			Type:              types.ClassParentType_ISCN,
+			IscnIdPrefix:      iscnId.Prefix.String(),
+			IscnVersionAtMint: classIscnVersionAtMint,
+		},
+		Config: types.ClassConfig{
+			Burnable:  false,
+			MaxSupply: uint64(5),
+		},
+	}
+	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
+	nftKeeper.
+		EXPECT().
+		GetClass(gomock.Any(), gomock.Eq(classId)).
+		Return(nft.Class{
+			Id:          classId,
+			Name:        "Class Name",
+			Symbol:      "ABC",
+			Description: "Testing Class 123",
+			Uri:         "ipfs://abcdef",
+			UriHash:     "abcdef",
+			Data:        classDataInAny,
+		}, true)
+
+	keeper.SetClassesByISCN(ctx, types.ClassesByISCN{
+		IscnIdPrefix: iscnId.Prefix.String(),
+		ClassIds:     []string{classId},
+	})
+
+	iscnLatestVersion := uint64(2)
+	iscnKeeper.
+		EXPECT().
+		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
+		Return(&iscntypes.ContentIdRecord{
+			OwnerAddressBytes: ownerAddressBytes,
+			LatestVersion:     iscnLatestVersion,
+		})
+
+	nftKeeper.
+		EXPECT().
+		GetTotalSupply(gomock.Any(), gomock.Eq(classId)).
+		Return(uint64(1))
+
+	res, err := msgServer.MintNFT(goCtx, &types.MsgMintNFT{
+		Creator: ownerAddress,
+		ClassId: classId,
+		Id:      tokenId,
+		Input:   nil,
+	})
+
+	// Check output
+	require.Error(t, err)
+	require.Contains(t, err.Error(), sdkerrors.ErrInvalidRequest.Error())
 	require.Nil(t, res)
 
 	// Check mock was called as expected
@@ -614,7 +802,7 @@ func TestMintNFTNotRelatedToIscn(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -708,7 +896,7 @@ func TestMintNFTIscnNotFound(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -804,7 +992,7 @@ func TestMintNFTInvalidUserAddress(t *testing.T) {
 		Creator: "not a valid address",
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -954,7 +1142,7 @@ func TestMintBlindBoxNFTNormal(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1090,7 +1278,7 @@ func TestMintBlindBoxNFTOwnerNoPay(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1226,7 +1414,7 @@ func TestMintBlindBoxNFTOwnerIgnoreAllowList(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1399,7 +1587,7 @@ func TestMintBlindBoxNFTChangingMintPeriodPrice(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1536,7 +1724,7 @@ func TestMintBlindBoxNFTFree(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1680,7 +1868,7 @@ func TestMintBlindBoxNFTInsufficientFunds(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1790,7 +1978,7 @@ func TestMintNFTNotOwnerNoBlindBox(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -1898,7 +2086,7 @@ func TestMintNFTNoSupply(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -2020,7 +2208,7 @@ func TestMintBlindBoxNFTAfterRevealTime(t *testing.T) {
 		Creator: minterAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -2135,7 +2323,7 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,
@@ -2267,7 +2455,7 @@ func TestMintBlindBoxNFTNoMintableSupply(t *testing.T) {
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      tokenId,
-		Input: types.NFTInput{
+		Input: &types.NFTInput{
 			Uri:      uri,
 			UriHash:  uriHash,
 			Metadata: metadata,

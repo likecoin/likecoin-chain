@@ -72,6 +72,11 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 }
 
 func (k msgServer) mintRegularNFT(ctx sdk.Context, classId string, classData *types.ClassData, userAddress sdk.AccAddress, msg *types.MsgMintNFT) (*nft.NFT, error) {
+	// Validate NFTInput not null
+	if msg.Input == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("NFTInput cannot be null")
+	}
+
 	// Validate token id
 	if err := nft.ValidateNFTID(msg.Id); err != nil {
 		return nil, types.ErrInvalidTokenId.Wrapf("%s", err)

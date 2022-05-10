@@ -9,7 +9,7 @@ const TypeMsgMintNFT = "mint_nft"
 
 var _ sdk.Msg = &MsgMintNFT{}
 
-func NewMsgMintNFT(creator string, classId string, id string, input NFTInput) *MsgMintNFT {
+func NewMsgMintNFT(creator string, classId string, id string, input *NFTInput) *MsgMintNFT {
 	return &MsgMintNFT{
 		Creator: creator,
 		ClassId: classId,
