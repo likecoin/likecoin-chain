@@ -23,9 +23,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
-	likeapp "github.com/likecoin/likechain/app"
+	likeapp "github.com/likecoin/likecoin-chain/v2/app"
 
-	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 )
 
 const DefaultNodeHome = "/tmp/.liked-test"

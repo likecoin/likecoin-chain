@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/likecoin/likechain/x/iscn/client/cli"
-	"github.com/likecoin/likechain/x/iscn/keeper"
-	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/client/cli"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/keeper"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 )
 
 var (

@@ -4,7 +4,7 @@ package likechain.iscn;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/likecoin/likechain/x/iscn/types";
+option go_package = "github.com/likecoin/likecoin-chain/v2/x/iscn/types";
 
 message Params {
   option (gogoproto.equal)            = false;

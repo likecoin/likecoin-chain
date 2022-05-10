@@ -15,10 +15,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
-	"github.com/likecoin/likechain/x/iscn/keeper"
-	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/keeper"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 
-	testutil "github.com/likecoin/likechain/testutil"
+	testutil "github.com/likecoin/likecoin-chain/v2/testutil"
 )
 
 var (

@@ -17,7 +17,7 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	"github.com/likecoin/likechain/app"
+	"github.com/likecoin/likecoin-chain/v2/app"
 )
 
 type (
