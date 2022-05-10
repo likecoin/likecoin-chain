@@ -15,5 +15,7 @@ jobs:
       - uses: actions/checkout@v2.4.0
       - name: update proto dependency
         run: make proto-update-deps
+      - name: format-check
+        run: make proto-format-check
       - name: lint
         run: make proto-lint

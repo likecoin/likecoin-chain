@@ -135,8 +135,10 @@ gen-proto: x/
 	ignite generate proto-go
 
 proto-format:
-	@echo "Formatting Protobuf files"
-	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
+	@$(DOCKER_BUF) format -w
+
+proto-format-check:
+	@$(DOCKER_BUF) format --diff --exit-code
 
 proto-lint:
 	@$(DOCKER_BUF) lint --error-format=json
@@ -144,4 +146,4 @@ proto-lint:
 proto-update-deps:
 	@$(DOCKER_BUF) mod update proto
 
-.PHONY: proto-all gen-proto proto-format proto-lint proto-update-deps
+.PHONY: proto-all gen-proto proto-format proto-format-check proto-lint proto-update-deps
