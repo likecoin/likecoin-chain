@@ -91,14 +91,14 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 
-	"github.com/likecoin/likechain/x/iscn"
-	iscnkeeper "github.com/likecoin/likechain/x/iscn/keeper"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn"
+	iscnkeeper "github.com/likecoin/likecoin-chain/v2/x/iscn/keeper"
+	iscntypes "github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 
-	bech32authmigration "github.com/likecoin/likechain/bech32-migration/auth"
-	bech32govmigration "github.com/likecoin/likechain/bech32-migration/gov"
-	bech32slashingmigration "github.com/likecoin/likechain/bech32-migration/slashing"
-	bech32stakingmigration "github.com/likecoin/likechain/bech32-migration/staking"
+	bech32authmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/auth"
+	bech32govmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/gov"
+	bech32slashingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/slashing"
+	bech32stakingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/staking"
 )
 
 var (

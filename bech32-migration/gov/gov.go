@@ -8,7 +8,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/likecoin/likechain/bech32-migration/utils"
+	"github.com/likecoin/likecoin-chain/v2/bech32-migration/utils"
 )
 
 func MigrateAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) {

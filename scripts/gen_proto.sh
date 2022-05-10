@@ -28,7 +28,7 @@ for module in "${MODULES[@]}"; do
       --swagger_out ${SWAGGER_DIR} \
       --swagger_opt logtostderr=true --swagger_opt fqn_for_swagger_name=true --swagger_opt simple_operation_ids=true
 
-    mv github.com/likecoin/likechain/x/${module}/types/* x/${module}/types/
+    mv github.com/likecoin/likecoin-chain/v2/x/${module}/types/* x/${module}/types/
 done
 
 popd > /dev/null 2>&1

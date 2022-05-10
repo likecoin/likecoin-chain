@@ -13,7 +13,7 @@ import (
 
 	gocid "github.com/ipfs/go-cid"
 
-	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 )
 
 const (

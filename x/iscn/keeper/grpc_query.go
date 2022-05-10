@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/likecoin/likechain/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
 )
 
 const FingerprintRecordsPageLimit = 100
