@@ -10,7 +10,7 @@ import (
 func (k msgServer) DeleteMintableNFT(goCtx context.Context, msg *types.MsgDeleteMintableNFT) (*types.MsgDeleteMintableNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateMintableNFT(ctx, msg.Creator, msg.ClassId)
+	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateMintableNFT(ctx, msg.Creator, msg.ClassId, false)
 	if err != nil {
 		return nil, err
 	}

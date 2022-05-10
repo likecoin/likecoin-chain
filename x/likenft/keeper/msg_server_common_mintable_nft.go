@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string) (*types.ClassParentAndOwner, error) {
+func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string, willCreate bool) (*types.ClassParentAndOwner, error) {
 
 	// Verify class exists
 	class, found := k.nftKeeper.GetClass(ctx, classId)
@@ -20,12 +20,17 @@ func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Conte
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
 
-	// Check class parent relation is valid and current user is owner
 	var classData types.ClassData
 	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
 		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
 
+	// Check max supply vs existing mintable count
+	if willCreate && classData.Config.MaxSupply > 0 && classData.MintableCount >= classData.Config.MaxSupply {
+		return nil, types.ErrNftNoSupply.Wrapf("NFT Class has reached its maximum supply: %d", classData.Config.MaxSupply)
+	}
+
+	// Check class parent relation is valid and current user is owner
 	parentAndOwner, err := k.validateAndGetClassParentAndOwner(ctx, class.Id, &classData)
 	if err != nil {
 		return nil, err
