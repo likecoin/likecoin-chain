@@ -111,10 +111,10 @@ func TestClassesByAccountQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClassesByAccountIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
+			require.LessOrEqual(t, len(resp.ClassesByAccounts), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClassesByAccount),
+				nullify.Fill(resp.ClassesByAccounts),
 			)
 		}
 	})
@@ -124,10 +124,10 @@ func TestClassesByAccountQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClassesByAccountIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
+			require.LessOrEqual(t, len(resp.ClassesByAccounts), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClassesByAccount),
+				nullify.Fill(resp.ClassesByAccounts),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -138,7 +138,7 @@ func TestClassesByAccountQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.ClassesByAccount),
+			nullify.Fill(resp.ClassesByAccounts),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

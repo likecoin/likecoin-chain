@@ -148,10 +148,10 @@ func TestListClassesByISCN(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscns), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByIscn),
+				nullify.Fill(resp.ClassesByIscns),
 			)
 		}
 	})
@@ -164,10 +164,10 @@ func TestListClassesByISCN(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByISCNIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscns), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByIscn),
+				nullify.Fill(resp.ClassesByIscns),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -182,7 +182,7 @@ func TestListClassesByISCN(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.ClassesByIscn),
+			nullify.Fill(resp.ClassesByIscns),
 		)
 	})
 }

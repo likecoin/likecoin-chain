@@ -37,7 +37,7 @@ func (k Keeper) ClassesByAccountIndex(c context.Context, req *types.QueryClasses
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClassesByAccountIndexResponse{ClassesByAccount: classesByAccounts, Pagination: pageRes}, nil
+	return &types.QueryClassesByAccountIndexResponse{ClassesByAccounts: classesByAccounts, Pagination: pageRes}, nil
 }
 
 func (k Keeper) ClassesByAccount(c context.Context, req *types.QueryClassesByAccountRequest) (*types.QueryClassesByAccountResponse, error) {

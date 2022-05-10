@@ -132,10 +132,10 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClassesByISCNIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscns), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClassesByIscn),
+				nullify.Fill(resp.ClassesByIscns),
 			)
 		}
 	})
@@ -145,10 +145,10 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClassesByISCNIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClassesByIscn), step)
+			require.LessOrEqual(t, len(resp.ClassesByIscns), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClassesByIscn),
+				nullify.Fill(resp.ClassesByIscns),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -159,7 +159,7 @@ func TestClassesByISCNQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.ClassesByIscn),
+			nullify.Fill(resp.ClassesByIscns),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

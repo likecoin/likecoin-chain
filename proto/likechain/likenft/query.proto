@@ -94,7 +94,7 @@ message QueryClassesByISCNIndexRequest {
 }
 
 message QueryClassesByISCNIndexResponse {
-  repeated ClassesByISCN classes_by_iscn = 1 [(gogoproto.nullable) = false];
+  repeated ClassesByISCN classes_by_iscns = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -125,7 +125,7 @@ message QueryClassesByAccountIndexRequest {
 }
 
 message QueryClassesByAccountIndexResponse {
-	repeated ClassesByAccount classes_by_account = 1 [(gogoproto.nullable) = false];
+	repeated ClassesByAccount classes_by_accounts = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

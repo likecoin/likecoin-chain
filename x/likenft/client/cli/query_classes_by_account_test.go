@@ -121,10 +121,10 @@ func TestListClassesByAccount(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByAccountIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
+			require.LessOrEqual(t, len(resp.ClassesByAccounts), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByAccount),
+				nullify.Fill(resp.ClassesByAccounts),
 			)
 		}
 	})
@@ -137,10 +137,10 @@ func TestListClassesByAccount(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryClassesByAccountIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClassesByAccount), step)
+			require.LessOrEqual(t, len(resp.ClassesByAccounts), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClassesByAccount),
+				nullify.Fill(resp.ClassesByAccounts),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -155,7 +155,7 @@ func TestListClassesByAccount(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.ClassesByAccount),
+			nullify.Fill(resp.ClassesByAccounts),
 		)
 	})
 }

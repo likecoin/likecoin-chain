@@ -39,7 +39,7 @@ func (k Keeper) ClassesByISCNIndex(c context.Context, req *types.QueryClassesByI
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClassesByISCNIndexResponse{ClassesByIscn: classesByISCNs, Pagination: pageRes}, nil
+	return &types.QueryClassesByISCNIndexResponse{ClassesByIscns: classesByISCNs, Pagination: pageRes}, nil
 }
 
 func (k Keeper) ClassesByISCN(c context.Context, req *types.QueryClassesByISCNRequest) (*types.QueryClassesByISCNResponse, error) {
