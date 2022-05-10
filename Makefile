@@ -137,7 +137,7 @@ release:
 proto-all: proto-format proto-lint gen-proto
 
 gen-proto: x/
-	./scripts/gen_proto.sh
+	ignite generate proto-go
 
 proto-format:
 	@echo "Formatting Protobuf files"
