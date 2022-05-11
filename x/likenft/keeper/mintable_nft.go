@@ -67,6 +67,26 @@ func (k Keeper) RemoveMintableNFT(
 	store.Delete(key)
 }
 
+// RemoveMintableNFT removes a mintableNFT from the store
+func (k Keeper) RemoveMintableNFTs(
+	ctx sdk.Context,
+	classId string,
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.MintableNFTsKey(classId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		store.Delete(iterator.Key())
+	}
+
+	// reset count to 0
+	if err := k.setMintableCount(ctx, classId, 0); err != nil {
+		panic(fmt.Errorf("Failed to reset mintable count: %s", err.Error()))
+	}
+}
+
 // GetMintableNFTs returns all mintableNFT of a class
 func (k Keeper) GetMintableNFTs(ctx sdk.Context, classId string) (list []types.MintableNFT) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))

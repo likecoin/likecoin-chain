@@ -65,6 +65,20 @@ func TestMintableNFTRemove(t *testing.T) {
 	}
 }
 
+func TestMintableNFTRemoveMultiple(t *testing.T) {
+	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	defer ctrl.Finish()
+
+	items := createNMintableNFT(keeper, ctx, 1, 5)
+	keeper.RemoveMintableNFTs(ctx,
+		items[0].ClassId,
+	)
+	foundItems := keeper.GetMintableNFTs(ctx,
+		items[0].ClassId,
+	)
+	require.Empty(t, foundItems)
+}
+
 func TestMintableNFTGetByClass(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
