@@ -10,7 +10,7 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 	if parent.Type == types.ClassParentType_ISCN {
 		classesByISCN, found := k.GetClassesByISCN(ctx, parent.IscnIdPrefix)
 		if !found {
-			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT mints it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
+			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
 		}
 		isRelated := false
 		for _, validClassId := range classesByISCN.ClassIds {
@@ -21,7 +21,7 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 			}
 		}
 		if !isRelated {
-			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT mints it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
+			return types.ErrNftClassNotRelatedToAnyIscn.Wrapf("NFT claims it is related to ISCN %s but no mapping is found", parent.IscnIdPrefix)
 		}
 	} else if parent.Type == types.ClassParentType_ACCOUNT {
 		acc, err := sdk.AccAddressFromBech32(parent.Account)
@@ -30,7 +30,7 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 		}
 		classesByAccount, found := k.GetClassesByAccount(ctx, acc)
 		if !found {
-			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT mints it is related to account %s but no mapping is found", parent.Account)
+			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT claims it is related to account %s but no mapping is found", parent.Account)
 		}
 		isRelated := false
 		for _, validClassId := range classesByAccount.ClassIds {
@@ -41,7 +41,7 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 			}
 		}
 		if !isRelated {
-			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT mints it is related to account %s but no mapping is found", parent.Account)
+			return types.ErrNftClassNotRelatedToAnyAccount.Wrapf("NFT claims it is related to account %s but no mapping is found", parent.Account)
 		}
 	} else {
 		return sdkerrors.ErrInvalidRequest.Wrapf("Unsupported parent type %s in nft class", parent.Type.String())
