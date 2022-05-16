@@ -41,6 +41,37 @@ func (k Keeper) UpdateClassRevealQueueEntry(ctx sdk.Context, originalRevealTime 
 	})
 }
 
+func (k Keeper) ClassRevealQueueByTimeIterator(ctx sdk.Context, endTime time.Time) sdk.Iterator {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
+	iterator := store.Iterator(types.ClassRevealByTimeKey(time.Time{}), types.ClassRevealByTimeKey(endTime))
+	return iterator
+}
+
+func (k Keeper) IterateClassRevealQueueByTime(ctx sdk.Context, endTime time.Time, cb func(val types.ClassRevealQueueEntry) (stop bool)) {
+	iterator := k.ClassRevealQueueByTimeIterator(ctx, endTime)
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.ClassRevealQueueEntry
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if cb(val) {
+			break
+		}
+	}
+
+	return
+}
+
+func (k Keeper) GetClassRevealQueueByTime(ctx sdk.Context, endTime time.Time) (list []types.ClassRevealQueueEntry) {
+	k.IterateClassRevealQueueByTime(ctx, endTime, func(val types.ClassRevealQueueEntry) (stop bool) {
+		list = append(list, val)
+		return false
+	})
+	return
+}
+
 func (k Keeper) ClassRevealQueueIterator(ctx sdk.Context) sdk.Iterator {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
@@ -67,16 +98,9 @@ func (k Keeper) IterateClassRevealQueue(ctx sdk.Context, cb func(val types.Class
 
 // GetClassRevealQueue returns all classRevealQueueEntry
 func (k Keeper) GetClassRevealQueue(ctx sdk.Context) (list []types.ClassRevealQueueEntry) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClassRevealQueueKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClassRevealQueueEntry
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
+	k.IterateClassRevealQueue(ctx, func(val types.ClassRevealQueueEntry) (stop bool) {
 		list = append(list, val)
-	}
-
+		return false
+	})
 	return
 }

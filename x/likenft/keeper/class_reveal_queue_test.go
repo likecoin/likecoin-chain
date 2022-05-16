@@ -17,10 +17,19 @@ var _ = strconv.IntSize
 
 func getAllClassIdsFromQueue(ctx sdk.Context, keeper *keeper.Keeper) []string {
 	var resultClassIds []string
-	keeper.IterateClassRevealQueue(ctx, func(val types.ClassRevealQueueEntry) (stop bool) {
-		resultClassIds = append(resultClassIds, val.ClassId)
-		return false
-	})
+	entries := keeper.GetClassRevealQueue(ctx) // wrapper that uses iterator
+	for _, entry := range entries {
+		resultClassIds = append(resultClassIds, entry.ClassId)
+	}
+	return resultClassIds
+}
+
+func getPendingIdsFromQueue(ctx sdk.Context, keeper *keeper.Keeper, endTime time.Time) []string {
+	var resultClassIds []string
+	entries := keeper.GetClassRevealQueueByTime(ctx, endTime) // wrapper that uses iterator
+	for _, entry := range entries {
+		resultClassIds = append(resultClassIds, entry.ClassId)
+	}
 	return resultClassIds
 }
 
@@ -203,5 +212,50 @@ func TestClassRevealQueueSorting(t *testing.T) {
 		classId1,
 		classId2,
 		classId3,
+	}, classIds)
+}
+
+func TestClassRevealQueueByTimeIterator(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+
+	classId1 := "likenft10"
+	revealTime1, err := time.Parse(time.RFC3339, "2020-01-01T00:00:00Z")
+	require.NoError(t, err)
+
+	classId2 := "likenft11"
+	revealTime2, err := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
+	require.NoError(t, err)
+
+	classId3 := "likenft12"
+	revealTime3, err := time.Parse(time.RFC3339, "2027-01-01T00:00:00Z")
+	require.NoError(t, err)
+
+	classId4 := "likenft13"
+	revealTime4, err := time.Parse(time.RFC3339, "2009-01-01T00:00:00Z")
+	require.NoError(t, err)
+
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		RevealTime: revealTime1,
+		ClassId:    classId1,
+	})
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		RevealTime: revealTime2,
+		ClassId:    classId2,
+	})
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		RevealTime: revealTime3,
+		ClassId:    classId3,
+	})
+	keeper.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
+		RevealTime: revealTime4,
+		ClassId:    classId4,
+	})
+
+	classIds := getPendingIdsFromQueue(ctx, keeper, revealTime2) // up to 2023-01-01T00:00:00Z exclusive
+	require.Equal(t, 2, len(classIds))
+
+	require.Equal(t, []string{
+		classId4,
+		classId1,
 	}, classIds)
 }

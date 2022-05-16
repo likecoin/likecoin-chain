@@ -24,13 +24,8 @@ func tryRevealClassCatchPanic(ctx sdk.Context, keeper keeper.Keeper, classId str
 func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
-	// Reveal class when its reveal time is reached.
-	keeper.IterateClassRevealQueue(ctx, func(entry types.ClassRevealQueueEntry) bool {
-		if entry.RevealTime.After(ctx.BlockHeader().Time) {
-			// Processed all pending entries already, stop
-			return true
-		}
-
+	// Reveal classes with reveal time < current block header time
+	keeper.IterateClassRevealQueueByTime(ctx, ctx.BlockHeader().Time, func(entry types.ClassRevealQueueEntry) (stop bool) {
 		err := tryRevealClassCatchPanic(ctx, keeper, entry.ClassId)
 
 		if err != nil {
