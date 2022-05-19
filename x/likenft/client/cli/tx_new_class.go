@@ -28,15 +28,16 @@ func CmdNewClass() *cobra.Command {
 	"config": {
 		"burnable": true,
 		"max_supply": 0, // 0 = unlimited
-		"enable_blind_box": true,
-		"mint_periods": [
-			{
-				"start_time": "2022-01-01T00:00:00Z",
-				"allowed_addresses": ["cosmos1"], // null = public, [] = owner only
-				"mint_price": 0 // 0 = free
-			}
-		],
-		"reveal_time": "2022-01-01T00:00:00Z"
+		"blind_box_config": { // null = not using blind box feature
+			"mint_periods": [
+				{
+					"start_time": "2022-01-01T00:00:00Z",
+					"allowed_addresses": ["like1..."], // [] = public
+					"mint_price": 0 // 0 = free
+				}
+			],
+			"reveal_time": "2022-02-01T00:00:00Z"
+		}
 	}
 }
 `,
