@@ -28,7 +28,7 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 	}
 
 	// Sanitize class config
-	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config)
+	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config, 0)
 	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}

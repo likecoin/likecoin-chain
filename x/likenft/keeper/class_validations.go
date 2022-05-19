@@ -117,12 +117,17 @@ func (k msgServer) sanitizeBlindBoxConfig(blindBoxConfig *types.BlindBoxConfig) 
 	return blindBoxConfig, nil
 }
 
-func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig) (*types.ClassConfig, error) {
+func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig, mintableCount uint64) (*types.ClassConfig, error) {
 	// Ensure mint periods and reveal time are set when blind box mode is enabled
 	cleanBlindBoxConfig, err := k.sanitizeBlindBoxConfig(classConfig.BlindBoxConfig)
 	if err != nil {
 		return nil, err
 	}
 	classConfig.BlindBoxConfig = cleanBlindBoxConfig
+
+	// Assert new max supply >= mintable count
+	if classConfig.IsBlindBox() && classConfig.MaxSupply < mintableCount {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("New max supply %d is less than mintable count %d", classConfig.MaxSupply, mintableCount)
+	}
 	return &classConfig, nil
 }

@@ -25,20 +25,19 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
 
+	var classData types.ClassData
+	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
+		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
+	}
+
 	// Verify and Cleanup class config
-	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config)
+	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config, classData.MintableCount)
 	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}
 	msg.Input.Config = *cleanClassConfig
 
 	// Check class parent relation is valid and current user is owner
-
-	var classData types.ClassData
-	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
-		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
-	}
-
 	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
 		return nil, err
 	}
