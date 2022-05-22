@@ -10,8 +10,15 @@ import (
 func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreateMintableNFT) (*types.MsgCreateMintableNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	parentAndOwner, err := k.getParentOwnerAndValidateReqToMutateMintableNFT(ctx, msg.Creator, msg.ClassId, true)
+	class, classData, err := k.GetClass(ctx, msg.ClassId)
 	if err != nil {
+		return nil, err
+	}
+	parent, err := k.ValidateAndRefreshClassParent(ctx, msg.ClassId, classData.Parent)
+	if err != nil {
+		return nil, err
+	}
+	if err := k.validateReqToMutateMintableNFT(ctx, msg.Creator, class, classData, parent, true); err != nil {
 		return nil, err
 	}
 
@@ -31,8 +38,8 @@ func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreate
 	ctx.EventManager().EmitTypedEvent(&types.EventCreateMintableNFT{
 		ClassId:                 msg.ClassId,
 		MintableNftId:           msg.Id,
-		ClassParentIscnIdPrefix: parentAndOwner.ClassParent.IscnIdPrefix,
-		ClassParentAccount:      parentAndOwner.ClassParent.Account,
+		ClassParentIscnIdPrefix: parent.IscnIdPrefix,
+		ClassParentAccount:      parent.Account,
 	})
 
 	return &types.MsgCreateMintableNFTResponse{}, nil
