@@ -9,20 +9,15 @@ import (
 func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string, willCreate bool) (*types.ClassParentAndOwner, error) {
 
 	// Verify class exists
-	class, found := k.nftKeeper.GetClass(ctx, classId)
-	if !found {
-		return nil, types.ErrNftClassNotFound.Wrapf("Class id %s not found", classId)
+	class, classData, err := k.GetClass(ctx, classId)
+	if err != nil {
+		return nil, err
 	}
 
 	// Verify no tokens minted under class
 	totalSupply := k.nftKeeper.GetTotalSupply(ctx, class.Id)
 	if totalSupply > 0 {
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
-	}
-
-	var classData types.ClassData
-	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
-		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
 	}
 
 	// Check max supply vs existing mintable count

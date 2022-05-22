@@ -18,15 +18,9 @@ func (k Keeper) ISCNByClass(goCtx context.Context, req *types.QueryISCNByClassRe
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Get iscn id from class data
-	class, found := k.nftKeeper.GetClass(ctx, req.ClassId)
-	if !found {
-		return nil, types.ErrNftClassNotFound.Wrapf("Class id %s not found", req.ClassId)
-	}
-
-	// Validate iscn and nft class is related
-	var classData types.ClassData
-	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
-		return nil, types.ErrFailedToUnmarshalData.Wrapf(err.Error())
+	class, classData, err := k.GetClass(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
 	}
 	// Check parent is iscn
 	if classData.Parent.Type != types.ClassParentType_ISCN {

@@ -25,13 +25,9 @@ func (k Keeper) setMintableCount(ctx sdk.Context, classId string, count uint64) 
 }
 
 func (k Keeper) _setMintableCount(ctx sdk.Context, classId string, edit func(uint64) uint64) error {
-	class, found := k.nftKeeper.GetClass(ctx, classId)
-	if !found {
-		return types.ErrNftClassNotFound
-	}
-	var classData types.ClassData
-	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
-		return types.ErrFailedToUnmarshalData.Wrapf(err.Error())
+	class, classData, err := k.GetClass(ctx, classId)
+	if err != nil {
+		return err
 	}
 	classData.MintableCount = edit(classData.MintableCount)
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)

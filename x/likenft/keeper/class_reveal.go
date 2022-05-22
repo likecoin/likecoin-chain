@@ -13,13 +13,9 @@ import (
 
 func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	// check if class is using blindbox
-	class, found := k.nftKeeper.GetClass(ctx, classId)
-	if !found {
-		return types.ErrNftClassNotFound
-	}
-	var classData types.ClassData
-	if err := k.cdc.Unmarshal(class.Data.Value, &classData); err != nil {
-		return types.ErrFailedToUnmarshalData.Wrapf(err.Error())
+	class, classData, err := k.GetClass(ctx, classId)
+	if err != nil {
+		return err
 	}
 	if !classData.Config.IsBlindBox() {
 		return types.ErrClassIsNotBlindBox
