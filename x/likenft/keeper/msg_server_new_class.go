@@ -14,7 +14,7 @@ import (
 func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*types.MsgNewClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	parent, err := k.resolveClassParentAndOwner(ctx, msg.Parent, msg.Creator)
+	parent, err := k.NewClassParentFromInput(ctx, msg.Parent, msg.Creator)
 	if err != nil {
 		return nil, err
 	}

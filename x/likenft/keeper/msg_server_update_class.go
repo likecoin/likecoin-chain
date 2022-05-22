@@ -33,15 +33,12 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	msg.Input.Config = *cleanClassConfig
 
 	// Check class parent relation is valid and current user is owner
-	if err := k.validateClassParentRelation(ctx, class.Id, classData.Parent); err != nil {
-		return nil, err
-	}
-
-	// refresh parent info (e.g. iscn latest version) & check ownership
-	parent, err := k.resolveClassParentAndOwner(ctx, classData.Parent.ToInput(), classData.Parent.Account)
+	// also refresh parent info (e.g. iscn latest version)
+	parent, err := k.ValidateAndRefreshClassParent(ctx, class.Id, classData.Parent)
 	if err != nil {
 		return nil, err
 	}
+
 	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())

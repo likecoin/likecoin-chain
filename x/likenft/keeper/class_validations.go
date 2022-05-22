@@ -49,50 +49,6 @@ func (k Keeper) validateClassParentRelation(ctx sdk.Context, classId string, par
 	return nil
 }
 
-func (k Keeper) resolveClassParentAndOwner(ctx sdk.Context, parentInput types.ClassParentInput, ownerBech32 string) (types.ClassParentAndOwner, error) {
-	if parentInput.Type == types.ClassParentType_ISCN {
-		iscnId, iscnRecord, err := k.resolveIscnIdAndRecord(ctx, parentInput.IscnIdPrefix)
-		if err != nil {
-			return types.ClassParentAndOwner{}, err
-		}
-		return types.ClassParentAndOwner{
-			ClassParent: types.ClassParent{
-				Type:              types.ClassParentType_ISCN,
-				IscnIdPrefix:      iscnId.Prefix.String(),
-				IscnVersionAtMint: iscnRecord.LatestVersion,
-			},
-			Owner: iscnRecord.OwnerAddress(),
-		}, nil
-	} else if parentInput.Type == types.ClassParentType_ACCOUNT {
-		owner, err := sdk.AccAddressFromBech32(ownerBech32)
-		if err != nil {
-			return types.ClassParentAndOwner{}, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-		}
-		return types.ClassParentAndOwner{
-			ClassParent: types.ClassParent{
-				Type:    types.ClassParentType_ACCOUNT,
-				Account: owner.String(),
-			},
-			Owner: owner,
-		}, nil
-	} else {
-		return types.ClassParentAndOwner{}, sdkerrors.ErrInvalidRequest.Wrapf("Unsupported parent type %s in nft class", parentInput.Type.String())
-	}
-}
-
-func (k Keeper) validateAndGetClassParentAndOwner(ctx sdk.Context, classId string, classData *types.ClassData) (*types.ClassParentAndOwner, error) {
-	if err := k.validateClassParentRelation(ctx, classId, classData.Parent); err != nil {
-		return nil, err
-	}
-
-	// refresh parent info (e.g. iscn latest version) & check ownership
-	parent, err := k.resolveClassParentAndOwner(ctx, classData.Parent.ToInput(), classData.Parent.Account)
-	if err != nil {
-		return nil, err
-	}
-	return &parent, nil
-}
-
 func (k msgServer) sanitizeBlindBoxConfig(blindBoxConfig *types.BlindBoxConfig) (*types.BlindBoxConfig, error) {
 	if blindBoxConfig == nil {
 		return nil, nil

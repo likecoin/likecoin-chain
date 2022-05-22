@@ -20,9 +20,9 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	if !classData.Config.IsBlindBox() {
 		return types.ErrClassIsNotBlindBox
 	}
-	// resolve owner
-	parentAndOwner, err := k.validateAndGetClassParentAndOwner(ctx, classId, &classData)
-	if parentAndOwner == nil || err != nil {
+	// validate class parent relation and resolve owner
+	parentAndOwner, err := k.ValidateAndRefreshClassParent(ctx, classId, classData.Parent)
+	if err != nil {
 		return err
 	}
 	// mint all remaining supply to owner

@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type ClassParentAndOwner struct {
+type ClassParentWithOwner struct {
 	ClassParent
 	Owner sdk.AccAddress
 }

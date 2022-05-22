@@ -114,7 +114,9 @@ func (k msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 		return nil, err
 	}
 
-	parent, err := k.validateAndGetClassParentAndOwner(ctx, class.Id, &classData)
+	// validate class parent relation & resolve owner
+	// also refresh parent info (e.g. iscn latest version)
+	parent, err := k.ValidateAndRefreshClassParent(ctx, class.Id, classData.Parent)
 	if err != nil {
 		return nil, err
 	}

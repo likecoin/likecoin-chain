@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string, willCreate bool) (*types.ClassParentAndOwner, error) {
+func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Context, creator string, classId string, willCreate bool) (*types.ClassParentWithOwner, error) {
 
 	// Verify class exists
 	class, classData, err := k.GetClass(ctx, classId)
@@ -26,11 +26,10 @@ func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Conte
 	}
 
 	// Check class parent relation is valid and current user is owner
-	parentAndOwner, err := k.validateAndGetClassParentAndOwner(ctx, class.Id, &classData)
+	parentAndOwner, err := k.ValidateAndRefreshClassParent(ctx, classId, classData.Parent)
 	if err != nil {
 		return nil, err
 	}
-
 	userAddress, err := sdk.AccAddressFromBech32(creator)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
@@ -39,5 +38,5 @@ func (k msgServer) getParentOwnerAndValidateReqToMutateMintableNFT(ctx sdk.Conte
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
 	}
 
-	return parentAndOwner, nil
+	return &parentAndOwner, nil
 }
