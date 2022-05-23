@@ -2,7 +2,6 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
@@ -21,12 +20,8 @@ func (k msgServer) validateReqToMutateMintableNFT(ctx sdk.Context, creator strin
 	}
 
 	// Check class parent relation is valid and current user is owner
-	userAddress, err := sdk.AccAddressFromBech32(creator)
-	if err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-	}
-	if !parent.Owner.Equals(userAddress) {
-		return sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
+	if err := k.assertBech32EqualsAccAddress(creator, parent.Owner); err != nil {
+		return err
 	}
 
 	return nil

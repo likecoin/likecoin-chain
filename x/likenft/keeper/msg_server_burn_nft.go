@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -19,12 +18,8 @@ func (k msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 
 	// Check user is owner
 	owner := k.nftKeeper.GetOwner(ctx, msg.ClassId, msg.NftId)
-	user, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-	}
-	if !owner.Equals(user) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("User %s is not owner of the NFT", msg.Creator)
+	if err := k.assertBech32EqualsAccAddress(msg.Creator, owner); err != nil {
+		return nil, err
 	}
 
 	// Check class is set to burnable

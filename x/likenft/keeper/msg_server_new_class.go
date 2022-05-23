@@ -6,7 +6,6 @@ import (
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
@@ -19,12 +18,9 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		return nil, err
 	}
 
-	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err.Error())
-	}
-	if !parent.Owner.Equals(userAddress) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not authorized", userAddress.String())
+	// check user is parent owner
+	if err := k.assertBech32EqualsAccAddress(msg.Creator, parent.Owner); err != nil {
+		return nil, err
 	}
 
 	// Sanitize class config
