@@ -28,11 +28,12 @@ func (k msgServer) UpdateMintableNFT(goCtx context.Context, msg *types.MsgUpdate
 	}
 
 	// set record
-	k.SetMintableNFT(ctx, types.MintableNFT{
+	mintableNFT := types.MintableNFT{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
-	})
+	}
+	k.SetMintableNFT(ctx, mintableNFT)
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateMintableNFT{
@@ -42,5 +43,7 @@ func (k msgServer) UpdateMintableNFT(goCtx context.Context, msg *types.MsgUpdate
 		ClassParentAccount:      parent.Account,
 	})
 
-	return &types.MsgUpdateMintableNFTResponse{}, nil
+	return &types.MsgUpdateMintableNFTResponse{
+		MintableNft: mintableNFT,
+	}, nil
 }

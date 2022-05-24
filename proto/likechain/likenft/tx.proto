@@ -5,6 +5,7 @@ package likechain.likenft;
 import "cosmos/nft/v1beta1/nft.proto";
 import "gogoproto/gogo.proto";
 import "likechain/likenft/class_input.proto";
+import "likechain/likenft/mintable_nft.proto";
 import "likechain/likenft/nft_input.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
@@ -68,7 +69,9 @@ message MsgCreateMintableNFT {
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgCreateMintableNFTResponse {}
+message MsgCreateMintableNFTResponse {
+  MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
+}
 
 message MsgUpdateMintableNFT {
   string creator = 1;
@@ -77,7 +80,9 @@ message MsgUpdateMintableNFT {
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateMintableNFTResponse {}
+message MsgUpdateMintableNFTResponse {
+  MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
+}
 
 message MsgDeleteMintableNFT {
   string creator = 1;
