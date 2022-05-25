@@ -123,3 +123,90 @@ ParseEventBurnNFT:
 
 	return actualEvent
 }
+
+func parseEventCreateMintableNFT(res sdk.TxResponse) types.EventCreateMintableNFT {
+	actualEvent := types.EventCreateMintableNFT{}
+
+ParseEventCreateMintableNFT:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventCreateMintableNFT" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "mintable_nft_id" {
+						actualEvent.MintableNftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_iscn_id_prefix" {
+						actualEvent.ClassParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_account" {
+						actualEvent.ClassParentAccount = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventCreateMintableNFT
+			}
+		}
+	}
+
+	return actualEvent
+}
+
+func parseEventUpdateMintableNFT(res sdk.TxResponse) types.EventUpdateMintableNFT {
+	actualEvent := types.EventUpdateMintableNFT{}
+
+ParseEventUpdateMintableNFT:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventUpdateMintableNFT" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "mintable_nft_id" {
+						actualEvent.MintableNftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_iscn_id_prefix" {
+						actualEvent.ClassParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_account" {
+						actualEvent.ClassParentAccount = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventUpdateMintableNFT
+			}
+		}
+	}
+
+	return actualEvent
+}
+
+func parseEventDeleteMintableNFT(res sdk.TxResponse) types.EventDeleteMintableNFT {
+	actualEvent := types.EventDeleteMintableNFT{}
+
+ParseEventDeleteMintableNFT:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventDeleteMintableNFT" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "mintable_nft_id" {
+						actualEvent.MintableNftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_iscn_id_prefix" {
+						actualEvent.ClassParentIscnIdPrefix = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "class_parent_account" {
+						actualEvent.ClassParentAccount = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventDeleteMintableNFT
+			}
+		}
+	}
+
+	return actualEvent
+}
