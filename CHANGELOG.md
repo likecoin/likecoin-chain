@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.0.2](https://github.com/likecoin/likecoin-chain/releases/v2.0.2)
+
+- Further hotfix on panic when unbonding unbonded validator
+
+Please read https://github.com/likecoin/likecoin-chain/pull/75 for more info on the issue
+
 ## [v2.0.1](https://github.com/likecoin/likecoin-chain/releases/v2.0.1)
 
 - Patch chain halt due to double unbounding validator
