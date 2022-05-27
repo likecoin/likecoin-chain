@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.0.1](https://github.com/likecoin/likecoin-chain/releases/v2.0.1)
+
+- Patch chain halt due to double unbounding validator
+- Rename go package to likecoin/likecoin-chain/v2
+
 ## [v2.0.0](https://github.com/likecoin/likecoin-chain/releases/v2.0.0)
 
 - Upgrade cosmos-sdk to 0.44.8, ibc-go to 2.1.0
