@@ -11,15 +11,20 @@ import (
 func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer) (*types.MsgCreateOfferResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value already exists
 	_, isFound := k.GetOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
+		return nil, types.ErrOfferAlreadyExists
 	}
 
 	var offer = types.Offer{
@@ -40,20 +45,20 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer) (*types.MsgUpdateOfferResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value exists
-	valFound, isFound := k.GetOffer(
+	_, isFound := k.GetOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if !isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
-	}
-
-	// Checks if the the msg creator is the same as the current owner
-	if msg.Creator != valFound.Buyer {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
+		return nil, types.ErrOfferNotFound
 	}
 
 	var offer = types.Offer{
@@ -72,27 +77,27 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer) (*types.MsgDeleteOfferResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value exists
-	valFound, isFound := k.GetOffer(
+	_, isFound := k.GetOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if !isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
-	}
-
-	// Checks if the the msg creator is the same as the current owner
-	if msg.Creator != valFound.Buyer {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
+		return nil, types.ErrOfferNotFound
 	}
 
 	k.RemoveOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 
 	return &types.MsgDeleteOfferResponse{}, nil

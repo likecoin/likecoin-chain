@@ -23,12 +23,12 @@ func (k Keeper) OfferIndex(c context.Context, req *types.QueryOfferIndexRequest)
 	offerStore := prefix.NewStore(store, types.KeyPrefix(types.OfferKeyPrefix))
 
 	pageRes, err := query.Paginate(offerStore, req.Pagination, func(key []byte, value []byte) error {
-		var offer types.Offer
+		var offer types.OfferStoreRecord
 		if err := k.cdc.Unmarshal(value, &offer); err != nil {
 			return err
 		}
 
-		offers = append(offers, offer)
+		offers = append(offers, offer.ToPublicRecord())
 		return nil
 	})
 
@@ -45,11 +45,16 @@ func (k Keeper) Offer(c context.Context, req *types.QueryOfferRequest) (*types.Q
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
+	buyer, err := sdk.AccAddressFromBech32(req.Buyer)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	val, found := k.GetOffer(
 		ctx,
 		req.ClassId,
 		req.NftId,
-		req.Buyer,
+		buyer,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")

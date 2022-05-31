@@ -76,7 +76,11 @@ func (gs GenesisState) Validate() error {
 	offerIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.OfferList {
-		index := string(OfferKey(elem.ClassId, elem.NftId, elem.Buyer))
+		acc, err := sdk.AccAddressFromBech32(elem.Buyer)
+		if err != nil {
+			return fmt.Errorf("Invalid account address: %s", err.Error())
+		}
+		index := string(OfferKey(elem.ClassId, elem.NftId, acc))
 		if _, ok := offerIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for offer")
 		}

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -17,8 +19,8 @@ func NewMsgCreateOffer(
 	creator string,
 	classId string,
 	nftId string,
-	price string,
-	expiration string,
+	price uint64,
+	expiration time.Time,
 
 ) *MsgCreateOffer {
 	return &MsgCreateOffer{
@@ -65,8 +67,8 @@ func NewMsgUpdateOffer(
 	creator string,
 	classId string,
 	nftId string,
-	price string,
-	expiration string,
+	price uint64,
+	expiration time.Time,
 
 ) *MsgUpdateOffer {
 	return &MsgUpdateOffer{

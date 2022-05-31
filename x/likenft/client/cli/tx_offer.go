@@ -1,6 +1,9 @@
 package cli
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -12,15 +15,22 @@ func CmdCreateOffer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-offer [class-id] [nft-id] [price] [expiration]",
 		Short: "Create a new offer",
-		Args:  cobra.ExactArgs(4),
+		// todo add example
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexClassId := args[0]
 			indexNftId := args[1]
 
 			// Get value arguments
-			argPrice := args[2]
-			argExpiration := args[3]
+			argPrice, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+			argExpiration, err := time.Parse(time.RFC3339, args[3])
+			if err != nil {
+				return nil
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -56,8 +66,14 @@ func CmdUpdateOffer() *cobra.Command {
 			indexClassId := args[0]
 			indexNftId := args[1]
 			// Get value arguments
-			argPrice := args[2]
-			argExpiration := args[3]
+			argPrice, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+			argExpiration, err := time.Parse(time.RFC3339, args[3])
+			if err != nil {
+				return nil
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

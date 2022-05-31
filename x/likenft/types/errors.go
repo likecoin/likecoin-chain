@@ -33,4 +33,6 @@ var (
 	ErrClaimableNftNotFound              = sdkerrors.Register(ModuleName, 23, "Claimable NFT not found")
 	ErrClassIsNotBlindBox                = sdkerrors.Register(ModuleName, 24, "Class is not using the blind box feature")
 	ErrFailedToUpdateNFT                 = sdkerrors.Register(ModuleName, 25, "Failed to update NFT")
+	ErrOfferNotFound                     = sdkerrors.Register(ModuleName, 26, "Existing offer not found")
+	ErrOfferAlreadyExists                = sdkerrors.Register(ModuleName, 27, "Offer already exists")
 )

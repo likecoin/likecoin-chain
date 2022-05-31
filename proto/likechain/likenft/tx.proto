@@ -4,6 +4,7 @@ package likechain.likenft;
 
 import "cosmos/nft/v1beta1/nft.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 import "likechain/likenft/class_input.proto";
 import "likechain/likenft/mintable_nft.proto";
 import "likechain/likenft/nft_input.proto";
@@ -100,8 +101,11 @@ message MsgCreateOffer {
   string creator = 1;
   string class_id = 2;
   string nft_id = 3;
-  string price = 4;
-  string expiration = 5;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
 }
 message MsgCreateOfferResponse {
   Offer offer = 1 [(gogoproto.nullable) = false];
@@ -111,8 +115,11 @@ message MsgUpdateOffer {
   string creator = 1;
   string class_id = 2;
   string nft_id = 3;
-  string price = 4;
-  string expiration = 5;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
 }
 message MsgUpdateOfferResponse {
   Offer offer = 1 [(gogoproto.nullable) = false];

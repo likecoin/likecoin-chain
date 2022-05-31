@@ -1,6 +1,10 @@
 package types
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 var _ binary.ByteOrder
 
@@ -13,7 +17,7 @@ const (
 func OfferKey(
 	classId string,
 	nftId string,
-	buyer string,
+	buyer sdk.AccAddress,
 ) []byte {
 	var key []byte
 
@@ -25,7 +29,7 @@ func OfferKey(
 	key = append(key, nftIdBytes...)
 	key = append(key, []byte("/")...)
 
-	buyerBytes := []byte(buyer)
+	buyerBytes := buyer
 	key = append(key, buyerBytes...)
 	key = append(key, []byte("/")...)
 
