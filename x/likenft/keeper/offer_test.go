@@ -3,8 +3,10 @@ package keeper_test
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/likecoin/likechain/testutil"
 	keepertest "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/testutil/nullify"
 	"github.com/likecoin/likechain/x/likenft/keeper"
@@ -15,26 +17,30 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Offer {
+func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) ([]types.Offer, []sdk.AccAddress) {
 	items := make([]types.Offer, n)
+	accounts := testutil.CreateIncrementalAccounts(n)
 	for i := range items {
-		items[i].ClassId = strconv.Itoa(i)
-		items[i].NftId = strconv.Itoa(i)
-		items[i].Buyer = strconv.Itoa(i)
-
+		items[i] = types.Offer{
+			ClassId:    strconv.Itoa(i),
+			NftId:      strconv.Itoa(i),
+			Buyer:      accounts[i].String(),
+			Price:      uint64(i),
+			Expiration: time.Date(2022, 1, 1+i, 0, 0, 0, 0, time.UTC),
+		}
 		keeper.SetOffer(ctx, items[i])
 	}
-	return items
+	return items, accounts
 }
 
 func TestOfferGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNOffer(keeper, ctx, 10)
-	for _, item := range items {
+	items, accs := createNOffer(keeper, ctx, 10)
+	for i, item := range items {
 		rst, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			item.Buyer,
+			accs[i],
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -45,17 +51,17 @@ func TestOfferGet(t *testing.T) {
 }
 func TestOfferRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNOffer(keeper, ctx, 10)
-	for _, item := range items {
+	items, accs := createNOffer(keeper, ctx, 10)
+	for i, item := range items {
 		keeper.RemoveOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			item.Buyer,
+			accs[i],
 		)
 		_, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			item.Buyer,
+			accs[i],
 		)
 		require.False(t, found)
 	}
@@ -63,7 +69,7 @@ func TestOfferRemove(t *testing.T) {
 
 func TestOfferGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items := createNOffer(keeper, ctx, 10)
+	items, _ := createNOffer(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetAllOffer(ctx)),

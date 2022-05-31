@@ -32,7 +32,7 @@ func SimulateMsgCreateOffer(
 			NftId:   strconv.Itoa(i),
 		}
 
-		_, found := k.GetOffer(ctx, msg.ClassId, msg.NftId, msg.Creator)
+		_, found := k.GetOffer(ctx, msg.ClassId, msg.NftId, simAccount.Address)
 		if found {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Offer already exist"), nil, nil
 		}

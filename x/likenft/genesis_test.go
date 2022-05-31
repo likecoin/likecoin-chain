@@ -59,12 +59,12 @@ func TestGenesis(t *testing.T) {
 			{
 				ClassId: "0",
 				NftId:   "0",
-				Buyer:   "0",
+				Buyer:   accounts[0].String(),
 			},
 			{
 				ClassId: "1",
 				NftId:   "1",
-				Buyer:   "1",
+				Buyer:   accounts[1].String(),
 			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state

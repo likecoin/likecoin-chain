@@ -8,11 +8,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 
 	"github.com/likecoin/likechain/testutil/network"
 	"github.com/likecoin/likechain/x/likenft/client/cli"
+	"github.com/likecoin/likechain/x/likenft/types"
 )
 
 // Prevent strconv unused error
@@ -23,7 +23,7 @@ func TestCreateOffer(t *testing.T) {
 	val := net.Validators[0]
 	ctx := val.ClientCtx
 
-	fields := []string{"xyz", "xyz"}
+	fields := []string{"1000", "2022-01-01T12:34:00Z"}
 	for _, tc := range []struct {
 		desc      string
 		idClassId string
@@ -72,7 +72,7 @@ func TestUpdateOffer(t *testing.T) {
 	val := net.Validators[0]
 	ctx := val.ClientCtx
 
-	fields := []string{"xyz", "xyz"}
+	fields := []string{"1000", "2022-01-01T12:34:00Z"}
 	common := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -109,7 +109,7 @@ func TestUpdateOffer(t *testing.T) {
 			idNftId:   strconv.Itoa(100000),
 
 			args: common,
-			code: sdkerrors.ErrKeyNotFound.ABCICode(),
+			code: types.ErrOfferNotFound.ABCICode(),
 		},
 	} {
 		tc := tc
@@ -139,7 +139,7 @@ func TestDeleteOffer(t *testing.T) {
 	val := net.Validators[0]
 	ctx := val.ClientCtx
 
-	fields := []string{"xyz", "xyz"}
+	fields := []string{"1000", "2022-01-01T12:34:00Z"}
 	common := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -177,7 +177,7 @@ func TestDeleteOffer(t *testing.T) {
 			idNftId:   strconv.Itoa(100000),
 
 			args: common,
-			code: sdkerrors.ErrKeyNotFound.ABCICode(),
+			code: types.ErrOfferNotFound.ABCICode(),
 		},
 	} {
 		tc := tc

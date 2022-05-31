@@ -21,7 +21,7 @@ var _ = strconv.IntSize
 func TestOfferQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNOffer(keeper, ctx, 2)
+	msgs, _ := createNOffer(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryOfferRequest
@@ -51,7 +51,7 @@ func TestOfferQuerySingle(t *testing.T) {
 			request: &types.QueryOfferRequest{
 				ClassId: strconv.Itoa(100000),
 				NftId:   strconv.Itoa(100000),
-				Buyer:   strconv.Itoa(100000),
+				Buyer:   msgs[0].Buyer,
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -78,7 +78,7 @@ func TestOfferQuerySingle(t *testing.T) {
 func TestOfferQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNOffer(keeper, ctx, 5)
+	msgs, _ := createNOffer(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryOfferIndexRequest {
 		return &types.QueryOfferIndexRequest{
