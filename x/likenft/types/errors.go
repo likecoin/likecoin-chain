@@ -35,4 +35,5 @@ var (
 	ErrFailedToUpdateNFT                 = sdkerrors.Register(ModuleName, 25, "Failed to update NFT")
 	ErrOfferNotFound                     = sdkerrors.Register(ModuleName, 26, "Existing offer not found")
 	ErrOfferAlreadyExists                = sdkerrors.Register(ModuleName, 27, "Offer already exists")
+	ErrFailedToCreateOffer               = sdkerrors.Register(ModuleName, 28, "Failed to create offer")
 )

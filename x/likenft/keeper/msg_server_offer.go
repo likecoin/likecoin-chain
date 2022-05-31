@@ -27,7 +27,12 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		return nil, types.ErrOfferAlreadyExists
 	}
 
-	var offer = types.Offer{
+	// Check nft exists
+	if isFound := k.nftKeeper.HasNFT(ctx, msg.ClassId, msg.NftId); !isFound {
+		return nil, types.ErrNftNotFound
+	}
+
+	offer := types.Offer{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
 		Buyer:      msg.Creator,
@@ -35,11 +40,29 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		Expiration: msg.Expiration,
 	}
 
+	// Take deposit if needed
+	if offer.Price > 0 {
+		// TODO: rename mint price denom
+		denom := k.MintPriceDenom(ctx)
+		coins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(offer.Price))))
+		if k.bankKeeper.GetBalance(ctx, userAddress, denom).Amount.Uint64() < offer.Price {
+			return nil, types.ErrInsufficientFunds
+		}
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, coins); err != nil {
+			return nil, types.ErrFailedToCreateOffer.Wrapf(err.Error())
+		}
+	}
+
 	k.SetOffer(
 		ctx,
 		offer,
 	)
-	return &types.MsgCreateOfferResponse{}, nil
+
+	// TODO emit event
+
+	return &types.MsgCreateOfferResponse{
+		Offer: offer,
+	}, nil
 }
 
 func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer) (*types.MsgUpdateOfferResponse, error) {
