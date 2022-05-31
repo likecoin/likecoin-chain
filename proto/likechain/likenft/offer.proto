@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package likechain.likenft;
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message Offer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+  string price = 4;
+  string expiration = 5;
+}

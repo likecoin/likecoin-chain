@@ -10,6 +10,7 @@ import "likechain/iscn/query.proto";
 import "likechain/likenft/classes_by_account.proto";
 import "likechain/likenft/classes_by_iscn.proto";
 import "likechain/likenft/mintable_nft.proto";
+import "likechain/likenft/offer.proto";
 // this line is used by starport scaffolding # 1
 
 import "likechain/likenft/params.proto";
@@ -65,6 +66,16 @@ service Query {
   // Queries a list of MintableNFTs by class_id
   rpc MintableNFTs(QueryMintableNFTsRequest) returns (QueryMintableNFTsResponse) {
     option (google.api.http).get = "/likenft/mintable_nft/{class_id}";
+  }
+
+  // Queries a Offer by index.
+  rpc Offer(QueryOfferRequest) returns (QueryOfferResponse) {
+    option (google.api.http).get = "/likenft/offer/{class_id}/{nft_id}/{buyer}";
+  }
+
+  // Queries a list of Offer items.
+  rpc OfferIndex(QueryOfferIndexRequest) returns (QueryOfferIndexResponse) {
+    option (google.api.http).get = "/likenft/offer";
   }
 
 // this line is used by starport scaffolding # 2
@@ -163,6 +174,25 @@ message QueryMintableNFTsRequest {
 
 message QueryMintableNFTsResponse {
   repeated MintableNFT mintable_nfts = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOfferRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message QueryOfferResponse {
+  Offer offer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryOfferIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryOfferIndexResponse {
+  repeated Offer offer = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

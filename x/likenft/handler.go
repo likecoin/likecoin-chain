@@ -38,6 +38,15 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDeleteMintableNFT:
 			res, err := msgServer.DeleteMintableNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCreateOffer:
+			res, err := msgServer.CreateOffer(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUpdateOffer:
+			res, err := msgServer.UpdateOffer(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDeleteOffer:
+			res, err := msgServer.DeleteOffer(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)

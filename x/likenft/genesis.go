@@ -26,6 +26,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.ClassRevealQueue {
 		k.SetClassRevealQueueEntry(ctx, elem)
 	}
+	// Set all the offer
+	for _, elem := range genState.OfferList {
+		k.SetOffer(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -39,6 +43,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.ClassesByAccountList = k.GetAllClassesByAccount(ctx)
 	genesis.MintableNftList = k.GetAllMintableNFT(ctx)
 	genesis.ClassRevealQueue = k.GetClassRevealQueue(ctx)
+	genesis.OfferList = k.GetAllOffer(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

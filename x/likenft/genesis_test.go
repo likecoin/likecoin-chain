@@ -55,6 +55,18 @@ func TestGenesis(t *testing.T) {
 				ClassId:    "1",
 			},
 		},
+		OfferList: []types.Offer{
+			{
+				ClassId: "0",
+				NftId:   "0",
+				Buyer:   "0",
+			},
+			{
+				ClassId: "1",
+				NftId:   "1",
+				Buyer:   "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -72,5 +84,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
 	require.ElementsMatch(t, genesisState.MintableNftList, got.MintableNftList)
 	require.ElementsMatch(t, genesisState.ClassRevealQueue, got.ClassRevealQueue)
+	require.ElementsMatch(t, genesisState.OfferList, got.OfferList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
