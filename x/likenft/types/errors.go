@@ -37,4 +37,5 @@ var (
 	ErrOfferAlreadyExists                = sdkerrors.Register(ModuleName, 27, "Offer already exists")
 	ErrFailedToCreateOffer               = sdkerrors.Register(ModuleName, 28, "Failed to create offer")
 	ErrFailedToUpdateOffer               = sdkerrors.Register(ModuleName, 29, "Failed to update offer")
+	ErrFailedToDeleteOffer               = sdkerrors.Register(ModuleName, 30, "Failed to delete offer")
 )

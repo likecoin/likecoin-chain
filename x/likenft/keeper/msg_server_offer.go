@@ -134,7 +134,7 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 	}
 
 	// Check if the value exists
-	_, isFound := k.GetOffer(
+	offer, isFound := k.GetOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
@@ -144,12 +144,23 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 		return nil, types.ErrOfferNotFound
 	}
 
+	// Refund deposit if needed
+	if offer.Price > 0 {
+		denom := k.MintPriceDenom(ctx)
+		coins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(offer.Price))))
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, coins); err != nil {
+			return nil, types.ErrFailedToDeleteOffer.Wrapf(err.Error())
+		}
+	}
+
 	k.RemoveOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
 		userAddress,
 	)
+
+	// TODO emit event
 
 	return &types.MsgDeleteOfferResponse{}, nil
 }
