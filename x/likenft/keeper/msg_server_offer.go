@@ -74,7 +74,7 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 	}
 
 	// Check if the value exists
-	_, isFound := k.GetOffer(
+	oldOffer, isFound := k.GetOffer(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
@@ -84,7 +84,9 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 		return nil, types.ErrOfferNotFound
 	}
 
-	var offer = types.Offer{
+	// Assume data in store is valid; i.e. nft exists
+
+	newOffer := types.Offer{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
 		Buyer:      msg.Creator,
@@ -92,9 +94,35 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 		Expiration: msg.Expiration,
 	}
 
-	k.SetOffer(ctx, offer)
+	// Update deposit if needed
+	if oldOffer.Price != newOffer.Price {
+		// Check user has enough fund to pay extra
+		denom := k.MintPriceDenom(ctx)
+		priceDiff := int64(newOffer.Price) - int64(oldOffer.Price)
+		if priceDiff > 0 && k.bankKeeper.GetBalance(ctx, userAddress, denom).Amount.Int64() < priceDiff {
+			return nil, types.ErrInsufficientFunds
+		}
 
-	return &types.MsgUpdateOfferResponse{}, nil
+		// Refund old deposit
+		oldCoins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(oldOffer.Price))))
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, oldCoins); err != nil {
+			return nil, types.ErrFailedToUpdateOffer.Wrapf(err.Error())
+		}
+
+		// Take new deposit
+		newCoins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(newOffer.Price))))
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, newCoins); err != nil {
+			return nil, types.ErrFailedToUpdateOffer.Wrapf(err.Error())
+		}
+	}
+
+	k.SetOffer(ctx, newOffer)
+
+	// TODO emit event
+
+	return &types.MsgUpdateOfferResponse{
+		Offer: newOffer,
+	}, nil
 }
 
 func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer) (*types.MsgDeleteOfferResponse, error) {
