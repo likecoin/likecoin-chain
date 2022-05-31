@@ -558,6 +558,186 @@ func (m *EventDeleteMintableNFT) GetClassParentAccount() string {
 	return ""
 }
 
+type EventCreateOffer struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
+	Buyer   string `protobuf:"bytes,3,opt,name=buyer,proto3" json:"buyer,omitempty"`
+}
+
+func (m *EventCreateOffer) Reset()         { *m = EventCreateOffer{} }
+func (m *EventCreateOffer) String() string { return proto.CompactTextString(m) }
+func (*EventCreateOffer) ProtoMessage()    {}
+func (*EventCreateOffer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ed07ad415525b8f5, []int{8}
+}
+func (m *EventCreateOffer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventCreateOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventCreateOffer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventCreateOffer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCreateOffer.Merge(m, src)
+}
+func (m *EventCreateOffer) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventCreateOffer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCreateOffer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventCreateOffer proto.InternalMessageInfo
+
+func (m *EventCreateOffer) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *EventCreateOffer) GetNftId() string {
+	if m != nil {
+		return m.NftId
+	}
+	return ""
+}
+
+func (m *EventCreateOffer) GetBuyer() string {
+	if m != nil {
+		return m.Buyer
+	}
+	return ""
+}
+
+type EventUpdateOffer struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
+	Buyer   string `protobuf:"bytes,3,opt,name=buyer,proto3" json:"buyer,omitempty"`
+}
+
+func (m *EventUpdateOffer) Reset()         { *m = EventUpdateOffer{} }
+func (m *EventUpdateOffer) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateOffer) ProtoMessage()    {}
+func (*EventUpdateOffer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ed07ad415525b8f5, []int{9}
+}
+func (m *EventUpdateOffer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventUpdateOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventUpdateOffer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventUpdateOffer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateOffer.Merge(m, src)
+}
+func (m *EventUpdateOffer) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventUpdateOffer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateOffer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventUpdateOffer proto.InternalMessageInfo
+
+func (m *EventUpdateOffer) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *EventUpdateOffer) GetNftId() string {
+	if m != nil {
+		return m.NftId
+	}
+	return ""
+}
+
+func (m *EventUpdateOffer) GetBuyer() string {
+	if m != nil {
+		return m.Buyer
+	}
+	return ""
+}
+
+type EventDeleteOffer struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
+	Buyer   string `protobuf:"bytes,3,opt,name=buyer,proto3" json:"buyer,omitempty"`
+}
+
+func (m *EventDeleteOffer) Reset()         { *m = EventDeleteOffer{} }
+func (m *EventDeleteOffer) String() string { return proto.CompactTextString(m) }
+func (*EventDeleteOffer) ProtoMessage()    {}
+func (*EventDeleteOffer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ed07ad415525b8f5, []int{10}
+}
+func (m *EventDeleteOffer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventDeleteOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventDeleteOffer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventDeleteOffer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventDeleteOffer.Merge(m, src)
+}
+func (m *EventDeleteOffer) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventDeleteOffer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventDeleteOffer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventDeleteOffer proto.InternalMessageInfo
+
+func (m *EventDeleteOffer) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *EventDeleteOffer) GetNftId() string {
+	if m != nil {
+		return m.NftId
+	}
+	return ""
+}
+
+func (m *EventDeleteOffer) GetBuyer() string {
+	if m != nil {
+		return m.Buyer
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*EventNewClass)(nil), "likechain.likenft.EventNewClass")
 	proto.RegisterType((*EventUpdateClass)(nil), "likechain.likenft.EventUpdateClass")
@@ -567,39 +747,44 @@ func init() {
 	proto.RegisterType((*EventCreateMintableNFT)(nil), "likechain.likenft.EventCreateMintableNFT")
 	proto.RegisterType((*EventUpdateMintableNFT)(nil), "likechain.likenft.EventUpdateMintableNFT")
 	proto.RegisterType((*EventDeleteMintableNFT)(nil), "likechain.likenft.EventDeleteMintableNFT")
+	proto.RegisterType((*EventCreateOffer)(nil), "likechain.likenft.EventCreateOffer")
+	proto.RegisterType((*EventUpdateOffer)(nil), "likechain.likenft.EventUpdateOffer")
+	proto.RegisterType((*EventDeleteOffer)(nil), "likechain.likenft.EventDeleteOffer")
 }
 
 func init() { proto.RegisterFile("likechain/likenft/event.proto", fileDescriptor_ed07ad415525b8f5) }
 
 var fileDescriptor_ed07ad415525b8f5 = []byte{
-	// 422 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x94, 0xcf, 0x8b, 0xd3, 0x40,
-	0x14, 0xc7, 0x3b, 0xf6, 0xa7, 0x83, 0xf5, 0x47, 0x68, 0x35, 0x22, 0x06, 0x29, 0x28, 0x5e, 0x6c,
-	0x15, 0xaf, 0x5e, 0x6c, 0xfd, 0x41, 0x0e, 0x96, 0x52, 0xf4, 0x22, 0x48, 0x98, 0x4e, 0x5e, 0xec,
-	0x60, 0x3a, 0x09, 0x33, 0x93, 0xb6, 0xde, 0x05, 0xaf, 0xfe, 0x55, 0x22, 0x78, 0xe9, 0x71, 0x8f,
-	0x4b, 0xfb, 0x8f, 0x2c, 0x99, 0x49, 0xc2, 0x96, 0x5d, 0x36, 0xb0, 0x97, 0xa5, 0x7b, 0x9b, 0x37,
-	0xef, 0xfb, 0xde, 0xbc, 0xcf, 0x0b, 0xf9, 0xe2, 0xc7, 0x21, 0xfb, 0x01, 0x74, 0x4e, 0x18, 0x1f,
-	0xa4, 0x27, 0x1e, 0xa8, 0x01, 0x2c, 0x81, 0xab, 0x7e, 0x2c, 0x22, 0x15, 0x59, 0xf7, 0x8a, 0x74,
-	0x3f, 0x4b, 0xf7, 0x7e, 0x21, 0xdc, 0x7e, 0x9f, 0x4a, 0xc6, 0xb0, 0x1a, 0x85, 0x44, 0x4a, 0xeb,
-	0x21, 0x6e, 0xd1, 0xf4, 0xe0, 0x31, 0xdf, 0x46, 0x4f, 0xd0, 0xf3, 0x9b, 0xd3, 0xa6, 0x8e, 0x5d,
-	0xdf, 0x7a, 0x85, 0xbb, 0x31, 0x11, 0xc0, 0x95, 0xc7, 0x24, 0xe5, 0x1e, 0xf3, 0xbd, 0x58, 0x40,
-	0xc0, 0xd6, 0xf6, 0x0d, 0xad, 0xb3, 0x4c, 0xd2, 0x95, 0x94, 0xbb, 0xfe, 0x44, 0x67, 0xac, 0xa7,
-	0xf8, 0x76, 0x56, 0x42, 0x28, 0x8d, 0x12, 0xae, 0xec, 0xaa, 0xd6, 0xb6, 0xcd, 0xed, 0x5b, 0x73,
-	0xd9, 0xfb, 0x8d, 0xf0, 0x5d, 0x3d, 0xc6, 0x97, 0xd8, 0x27, 0x0a, 0xae, 0x70, 0x92, 0x6f, 0xd9,
-	0x20, 0x53, 0x58, 0x02, 0x09, 0x4b, 0x07, 0xb1, 0x71, 0x53, 0x26, 0x94, 0x82, 0x94, 0xfa, 0xe9,
-	0xd6, 0x34, 0x0f, 0xad, 0x0e, 0xae, 0x83, 0x10, 0x91, 0xc8, 0x9e, 0x31, 0x41, 0xef, 0x2f, 0xc2,
-	0xb7, 0x74, 0xff, 0x4f, 0x8c, 0xab, 0xf1, 0x87, 0xcf, 0x17, 0xf5, 0xee, 0xe2, 0x06, 0x0f, 0x54,
-	0x9a, 0x30, 0x54, 0x75, 0x1e, 0x28, 0xd7, 0x4f, 0x1b, 0x47, 0x2b, 0x0e, 0x45, 0x63, 0x1d, 0x58,
-	0x6f, 0xf0, 0x23, 0xd3, 0xe7, 0xfc, 0xbd, 0xd4, 0xb4, 0xf6, 0x81, 0x96, 0x4c, 0xce, 0x2e, 0xe7,
-	0x25, 0xee, 0xec, 0x55, 0xe7, 0x2b, 0xaa, 0x9b, 0x75, 0x9e, 0x2a, 0xcb, 0xf7, 0x54, 0x80, 0x0c,
-	0x13, 0xc1, 0x0f, 0x19, 0xe4, 0x3f, 0xc2, 0xf7, 0x35, 0xc8, 0x48, 0x00, 0x51, 0x90, 0x7e, 0x17,
-	0x32, 0x0b, 0xa1, 0x04, 0xe9, 0x19, 0xbe, 0xb3, 0xc8, 0x94, 0xde, 0x1e, 0x5b, 0x3b, 0xbf, 0x1e,
-	0x6b, 0xc6, 0x12, 0x9a, 0xea, 0xe5, 0x68, 0x6a, 0xe5, 0x34, 0xe6, 0x47, 0xba, 0x2e, 0x34, 0xef,
-	0x20, 0x84, 0x43, 0xa7, 0x19, 0x7e, 0xfc, 0xb7, 0x75, 0xd0, 0x66, 0xeb, 0xa0, 0xe3, 0xad, 0x83,
-	0xfe, 0xec, 0x9c, 0xca, 0x66, 0xe7, 0x54, 0x8e, 0x76, 0x4e, 0xe5, 0xeb, 0x8b, 0xef, 0x4c, 0xcd,
-	0x93, 0x59, 0x9f, 0x46, 0x0b, 0x6d, 0xdc, 0x34, 0xca, 0x1c, 0xdc, 0x78, 0xf9, 0xba, 0x70, 0x73,
-	0xf5, 0x33, 0x06, 0x39, 0x6b, 0x68, 0x3b, 0x7f, 0x7d, 0x12, 0x00, 0x00, 0xff, 0xff, 0x81, 0x0f,
-	0xdf, 0x46, 0xef, 0x05, 0x00, 0x00,
+	// 454 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x95, 0xcf, 0xab, 0xd3, 0x40,
+	0x10, 0xc7, 0xbb, 0xbe, 0xd7, 0xf7, 0xea, 0x62, 0xfd, 0x11, 0x5a, 0x8d, 0x88, 0x41, 0x0a, 0x8a,
+	0x17, 0x5b, 0xc5, 0xab, 0x17, 0x5b, 0x7f, 0x90, 0x83, 0xb5, 0x14, 0xbd, 0x14, 0x24, 0x6c, 0x36,
+	0x13, 0xbb, 0x98, 0x6e, 0xc2, 0xee, 0xa6, 0x3f, 0xee, 0x82, 0x57, 0xff, 0x2a, 0x11, 0xbc, 0xf4,
+	0xe8, 0x51, 0xda, 0x7f, 0x44, 0xb2, 0x9b, 0x44, 0x8b, 0x62, 0xa0, 0x28, 0xd2, 0x77, 0xdb, 0xd9,
+	0x99, 0xfd, 0xee, 0x7c, 0x66, 0x33, 0x19, 0x7c, 0x33, 0x62, 0xef, 0x80, 0x4e, 0x09, 0xe3, 0xbd,
+	0x6c, 0xc5, 0x43, 0xd5, 0x83, 0x39, 0x70, 0xd5, 0x4d, 0x44, 0xac, 0x62, 0xeb, 0x4a, 0xe9, 0xee,
+	0xe6, 0xee, 0xce, 0x7b, 0x84, 0x9b, 0x4f, 0xb3, 0x90, 0x21, 0x2c, 0x06, 0x11, 0x91, 0xd2, 0xba,
+	0x8e, 0x1b, 0x34, 0x5b, 0x78, 0x2c, 0xb0, 0xd1, 0x2d, 0x74, 0xf7, 0xfc, 0xf8, 0x54, 0xdb, 0x6e,
+	0x60, 0x3d, 0xc0, 0xed, 0x84, 0x08, 0xe0, 0xca, 0x63, 0x92, 0x72, 0x8f, 0x05, 0x5e, 0x22, 0x20,
+	0x64, 0x4b, 0xfb, 0x9c, 0x8e, 0xb3, 0x8c, 0xd3, 0x95, 0x94, 0xbb, 0xc1, 0x48, 0x7b, 0xac, 0xdb,
+	0xf8, 0x62, 0x7e, 0x84, 0x50, 0x1a, 0xa7, 0x5c, 0xd9, 0x47, 0x3a, 0xb6, 0x69, 0x76, 0x1f, 0x9b,
+	0xcd, 0xce, 0x07, 0x84, 0x2f, 0xeb, 0x34, 0x5e, 0x27, 0x01, 0x51, 0xf0, 0x1f, 0x33, 0x79, 0x93,
+	0x27, 0x32, 0x86, 0x39, 0x90, 0xa8, 0x32, 0x11, 0x1b, 0x9f, 0xca, 0x94, 0x52, 0x90, 0x52, 0x5f,
+	0xdd, 0x18, 0x17, 0xa6, 0xd5, 0xc2, 0x75, 0x10, 0x22, 0x16, 0xf9, 0x35, 0xc6, 0xe8, 0x7c, 0x42,
+	0xf8, 0x82, 0xd6, 0x7f, 0xc1, 0xb8, 0x1a, 0x3e, 0x7b, 0xf5, 0x27, 0xed, 0x36, 0x3e, 0xe1, 0xa1,
+	0xca, 0x1c, 0x86, 0xaa, 0xce, 0x43, 0xe5, 0x06, 0x99, 0x70, 0xbc, 0xe0, 0x50, 0x0a, 0x6b, 0xc3,
+	0x7a, 0x84, 0x6f, 0x18, 0x9d, 0xdf, 0xd7, 0xe5, 0x58, 0xc7, 0x5e, 0xd3, 0x21, 0xa3, 0x5f, 0x8b,
+	0x73, 0x1f, 0xb7, 0x76, 0x4e, 0x17, 0x25, 0xaa, 0x9b, 0x72, 0xfe, 0x74, 0xac, 0xa8, 0x53, 0x09,
+	0xd2, 0x4f, 0x05, 0x3f, 0x64, 0x90, 0x2f, 0x08, 0x5f, 0xd5, 0x20, 0x03, 0x01, 0x44, 0x41, 0xf6,
+	0x2e, 0xc4, 0x8f, 0xa0, 0x02, 0xe9, 0x0e, 0xbe, 0x34, 0xcb, 0x23, 0xbd, 0x1d, 0xb6, 0x66, 0xb1,
+	0x3d, 0xd4, 0x8c, 0x15, 0x34, 0x47, 0xfb, 0xd1, 0x1c, 0x57, 0xd3, 0x98, 0x46, 0x3a, 0x2b, 0x34,
+	0x4f, 0x20, 0x82, 0x83, 0xa7, 0x99, 0xe4, 0xbf, 0x16, 0xf3, 0xa1, 0xbd, 0x0c, 0x43, 0x10, 0xfb,
+	0x75, 0x8d, 0x9f, 0xae, 0x7e, 0x74, 0x8d, 0x36, 0x4a, 0x6d, 0xf3, 0xec, 0xff, 0x46, 0xdb, 0x3c,
+	0xc2, 0x5f, 0xd5, 0xee, 0x3f, 0xff, 0xbc, 0x71, 0xd0, 0x7a, 0xe3, 0xa0, 0x6f, 0x1b, 0x07, 0x7d,
+	0xdc, 0x3a, 0xb5, 0xf5, 0xd6, 0xa9, 0x7d, 0xdd, 0x3a, 0xb5, 0xc9, 0xbd, 0xb7, 0x4c, 0x4d, 0x53,
+	0xbf, 0x4b, 0xe3, 0x99, 0x1e, 0x66, 0x34, 0xce, 0xa7, 0x9a, 0x99, 0x6f, 0xcb, 0x72, 0xc2, 0xa9,
+	0x55, 0x02, 0xd2, 0x3f, 0xd1, 0x23, 0xee, 0xe1, 0xf7, 0x00, 0x00, 0x00, 0xff, 0xff, 0x81, 0xf7,
+	0xcf, 0x1c, 0x03, 0x07, 0x00, 0x00,
 }
 
 func (m *EventNewClass) Marshal() (dAtA []byte, err error) {
@@ -1006,6 +1191,138 @@ func (m *EventDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *EventCreateOffer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventCreateOffer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventCreateOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Buyer) > 0 {
+		i -= len(m.Buyer)
+		copy(dAtA[i:], m.Buyer)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.Buyer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.NftId) > 0 {
+		i -= len(m.NftId)
+		copy(dAtA[i:], m.NftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.NftId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventUpdateOffer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventUpdateOffer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventUpdateOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Buyer) > 0 {
+		i -= len(m.Buyer)
+		copy(dAtA[i:], m.Buyer)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.Buyer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.NftId) > 0 {
+		i -= len(m.NftId)
+		copy(dAtA[i:], m.NftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.NftId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventDeleteOffer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventDeleteOffer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventDeleteOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Buyer) > 0 {
+		i -= len(m.Buyer)
+		copy(dAtA[i:], m.Buyer)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.Buyer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.NftId) > 0 {
+		i -= len(m.NftId)
+		copy(dAtA[i:], m.NftId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.NftId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintEvent(dAtA []byte, offset int, v uint64) int {
 	offset -= sovEvent(v)
 	base := offset
@@ -1206,6 +1523,69 @@ func (m *EventDeleteMintableNFT) Size() (n int) {
 		n += 1 + l + sovEvent(uint64(l))
 	}
 	l = len(m.ClassParentAccount)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	return n
+}
+
+func (m *EventCreateOffer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.NftId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.Buyer)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	return n
+}
+
+func (m *EventUpdateOffer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.NftId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.Buyer)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	return n
+}
+
+func (m *EventDeleteOffer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.NftId)
+	if l > 0 {
+		n += 1 + l + sovEvent(uint64(l))
+	}
+	l = len(m.Buyer)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -2576,6 +2956,444 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ClassParentAccount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvent(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventCreateOffer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventCreateOffer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventCreateOffer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NftId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NftId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Buyer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Buyer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvent(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventUpdateOffer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventUpdateOffer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventUpdateOffer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NftId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NftId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Buyer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Buyer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvent(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventDeleteOffer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventDeleteOffer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventDeleteOffer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NftId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NftId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Buyer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Buyer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

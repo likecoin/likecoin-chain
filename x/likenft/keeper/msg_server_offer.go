@@ -58,7 +58,11 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		offer,
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventCreateOffer{
+		ClassId: offer.ClassId,
+		NftId:   offer.NftId,
+		Buyer:   offer.Buyer,
+	})
 
 	return &types.MsgCreateOfferResponse{
 		Offer: offer,
@@ -118,7 +122,11 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 
 	k.SetOffer(ctx, newOffer)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventUpdateOffer{
+		ClassId: newOffer.ClassId,
+		NftId:   newOffer.NftId,
+		Buyer:   newOffer.Buyer,
+	})
 
 	return &types.MsgUpdateOfferResponse{
 		Offer: newOffer,
@@ -160,7 +168,11 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 		userAddress,
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventDeleteOffer{
+		ClassId: offer.ClassId,
+		NftId:   offer.NftId,
+		Buyer:   offer.Buyer,
+	})
 
 	return &types.MsgDeleteOfferResponse{}, nil
 }

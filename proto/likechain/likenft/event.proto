@@ -58,3 +58,21 @@ message EventDeleteMintableNFT {
   string class_parent_iscn_id_prefix = 3;
   string class_parent_account = 4;
 }
+
+message EventCreateOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message EventUpdateOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message EventDeleteOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
