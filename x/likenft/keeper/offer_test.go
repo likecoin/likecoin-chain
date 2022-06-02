@@ -17,20 +17,22 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) ([]types.Offer, []sdk.AccAddress) {
+func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nOffer int) ([]types.Offer, []sdk.AccAddress) {
 	var items []types.Offer
-	accounts := testutil.CreateIncrementalAccounts(nClass * nNFT)
+	accounts := testutil.CreateIncrementalAccounts(nClass * nNFT * nOffer)
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
-			offer := types.Offer{
-				ClassId:    strconv.Itoa(i),
-				NftId:      strconv.Itoa(j),
-				Buyer:      accounts[i*j].String(),
-				Price:      uint64(i * j),
-				Expiration: time.Date(2022, 1, 1+i*j, 0, 0, 0, 0, time.UTC),
+			for k := 0; k < nOffer; k++ {
+				offer := types.Offer{
+					ClassId:    strconv.Itoa(i),
+					NftId:      strconv.Itoa(j),
+					Buyer:      accounts[i+j+k].String(),
+					Price:      uint64(k),
+					Expiration: time.Date(2022, 1, 1+i+j+k, 0, 0, 0, 0, time.UTC),
+				}
+				items = append(items, offer)
+				keeper.SetOffer(ctx, offer)
 			}
-			items = append(items, offer)
-			keeper.SetOffer(ctx, offer)
 		}
 	}
 	return items, accounts
@@ -38,12 +40,14 @@ func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) 
 
 func TestOfferGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, accs := createNOffer(keeper, ctx, 3, 3)
-	for i, item := range items {
+	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	for _, item := range items {
+		buyer, err := sdk.AccAddressFromBech32(item.Buyer)
+		require.NoError(t, err)
 		rst, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			accs[i],
+			buyer,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -54,7 +58,7 @@ func TestOfferGet(t *testing.T) {
 }
 func TestOfferRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, accs := createNOffer(keeper, ctx, 3, 3)
+	items, accs := createNOffer(keeper, ctx, 3, 3, 1)
 	for i, item := range items {
 		keeper.RemoveOffer(ctx,
 			item.ClassId,
@@ -72,7 +76,7 @@ func TestOfferRemove(t *testing.T) {
 
 func TestOfferGetByClass(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, _ := createNOffer(keeper, ctx, 3, 3)
+	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
 	require.ElementsMatch(t,
 		nullify.Fill(items[0:3]),
 		nullify.Fill(keeper.GetOffersByClass(ctx, "0")),
@@ -89,7 +93,7 @@ func TestOfferGetByClass(t *testing.T) {
 
 func TestOfferGetByNFT(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, _ := createNOffer(keeper, ctx, 1, 3)
+	items, _ := createNOffer(keeper, ctx, 1, 3, 1)
 	require.ElementsMatch(t,
 		nullify.Fill([]types.Offer{items[0]}),
 		nullify.Fill(keeper.GetOffersByNFT(ctx, "0", "0")),
@@ -106,7 +110,7 @@ func TestOfferGetByNFT(t *testing.T) {
 
 func TestOfferGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, _ := createNOffer(keeper, ctx, 3, 3)
+	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetAllOffer(ctx)),

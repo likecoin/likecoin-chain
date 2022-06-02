@@ -21,7 +21,7 @@ var _ = strconv.IntSize
 func TestOfferQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3)
+	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryOfferRequest
@@ -78,7 +78,7 @@ func TestOfferQuerySingle(t *testing.T) {
 func TestOfferQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3)
+	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryOfferIndexRequest {
 		return &types.QueryOfferIndexRequest{
@@ -134,7 +134,7 @@ func TestOfferQueryPaginated(t *testing.T) {
 func TestOfferByClassQuery(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3)
+	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
 
 	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryOffersByClassRequest {
 		return &types.QueryOffersByClassRequest{
@@ -175,6 +175,64 @@ func TestOfferByClassQuery(t *testing.T) {
 	})
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.OffersByClass(wctx, request("1", nil, 0, 0, true))
+		require.NoError(t, err)
+		require.Equal(t, len(msgs[3:6]), int(resp.Pagination.Total))
+		require.ElementsMatch(t,
+			nullify.Fill(msgs[3:6]),
+			nullify.Fill(resp.Offers),
+		)
+	})
+	t.Run("InvalidRequest", func(t *testing.T) {
+		_, err := keeper.OfferIndex(wctx, nil)
+		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
+	})
+}
+
+func TestOfferByNftQuery(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	msgs, _ := createNOffer(keeper, ctx, 1, 3, 3)
+
+	request := func(classId string, nftId string, next []byte, offset, limit uint64, total bool) *types.QueryOffersByNFTRequest {
+		return &types.QueryOffersByNFTRequest{
+			ClassId: classId,
+			NftId:   nftId,
+			Pagination: &query.PageRequest{
+				Key:        next,
+				Offset:     offset,
+				Limit:      limit,
+				CountTotal: total,
+			},
+		}
+	}
+	t.Run("ByOffset", func(t *testing.T) {
+		step := 2
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.OffersByNFT(wctx, request("0", "1", nil, uint64(i), uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Offers), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Offers),
+			)
+		}
+	})
+	t.Run("ByKey", func(t *testing.T) {
+		step := 2
+		var next []byte
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.OffersByNFT(wctx, request("0", "1", next, 0, uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Offers), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Offers),
+			)
+			next = resp.Pagination.NextKey
+		}
+	})
+	t.Run("Total", func(t *testing.T) {
+		resp, err := keeper.OffersByNFT(wctx, request("0", "1", nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs[3:6]), int(resp.Pagination.Total))
 		require.ElementsMatch(t,

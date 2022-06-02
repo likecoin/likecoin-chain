@@ -83,6 +83,11 @@ service Query {
     option (google.api.http).get = "/likenft/offer/{class_id}";
   }
 
+  // Queries a list of OffersByNFT items.
+  rpc OffersByNFT(QueryOffersByNFTRequest) returns (QueryOffersByNFTResponse) {
+    option (google.api.http).get = "/likenft/offer/{class_id}/{nft_id}";
+  }
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -207,6 +212,17 @@ message QueryOffersByClassRequest {
 }
 
 message QueryOffersByClassResponse {
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOffersByNFTRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryOffersByNFTResponse {
   repeated Offer offers = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
