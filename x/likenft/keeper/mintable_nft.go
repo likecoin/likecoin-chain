@@ -89,16 +89,9 @@ func (k Keeper) RemoveMintableNFTs(
 
 // GetMintableNFTs returns all mintableNFT of a class
 func (k Keeper) GetMintableNFTs(ctx sdk.Context, classId string) (list []types.MintableNFT) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, types.MintableNFTsKey(classId))
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.MintableNFT
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
+	k.IterateMintableNFTs(ctx, classId, func(mn types.MintableNFT) {
+		list = append(list, mn)
+	})
 
 	return
 }
