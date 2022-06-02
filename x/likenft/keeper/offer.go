@@ -42,6 +42,68 @@ func (k Keeper) GetOffer(
 	return storeRecord.ToPublicRecord(), true
 }
 
+func (k Keeper) GetOffersByClass(
+	ctx sdk.Context,
+	classId string,
+) (list []types.Offer) {
+	k.IterateOffersByClass(ctx, classId, func(o types.Offer) {
+		list = append(list, o)
+	})
+
+	return
+}
+
+func (k Keeper) IterateOffersByClass(
+	ctx sdk.Context,
+	classId string,
+	callback func(types.Offer),
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OfferKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.OffersByClassKey(classId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.OfferStoreRecord
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		callback(val.ToPublicRecord())
+	}
+
+	return
+}
+
+func (k Keeper) GetOffersByNFT(
+	ctx sdk.Context,
+	classId string,
+	nftId string,
+) (list []types.Offer) {
+	k.IterateOffersByNFT(ctx, classId, nftId, func(o types.Offer) {
+		list = append(list, o)
+	})
+
+	return
+}
+
+func (k Keeper) IterateOffersByNFT(
+	ctx sdk.Context,
+	classId string,
+	nftId string,
+	callback func(types.Offer),
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OfferKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.OffersByNFTKey(classId, nftId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.OfferStoreRecord
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		callback(val.ToPublicRecord())
+	}
+
+	return
+}
+
 // RemoveOffer removes a offer from the store
 func (k Keeper) RemoveOffer(
 	ctx sdk.Context,

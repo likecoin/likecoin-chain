@@ -13,11 +13,8 @@ const (
 	OfferKeyPrefix = "Offer/value/"
 )
 
-// OfferKey returns the store key to retrieve a Offer from the index fields
-func OfferKey(
+func OffersByClassKey(
 	classId string,
-	nftId string,
-	buyer sdk.AccAddress,
 ) []byte {
 	var key []byte
 
@@ -25,9 +22,29 @@ func OfferKey(
 	key = append(key, classIdBytes...)
 	key = append(key, []byte("/")...)
 
+	return key
+}
+
+func OffersByNFTKey(
+	classId string,
+	nftId string,
+) []byte {
+	key := OffersByClassKey(classId)
+
 	nftIdBytes := []byte(nftId)
 	key = append(key, nftIdBytes...)
 	key = append(key, []byte("/")...)
+
+	return key
+}
+
+// OfferKey returns the store key to retrieve a Offer from the index fields
+func OfferKey(
+	classId string,
+	nftId string,
+	buyer sdk.AccAddress,
+) []byte {
+	key := OffersByNFTKey(classId, nftId)
 
 	buyerBytes := buyer
 	key = append(key, buyerBytes...)
