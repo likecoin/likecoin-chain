@@ -11,7 +11,7 @@ import (
 
 func CmdListOffer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-offer",
+		Use:   "offer-index",
 		Short: "list all offer",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -44,7 +44,7 @@ func CmdListOffer() *cobra.Command {
 
 func CmdShowOffer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-offer [class-id] [nft-id] [buyer]",
+		Use:   "offer [class-id] [nft-id] [buyer]",
 		Short: "shows a offer",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -63,6 +63,46 @@ func CmdShowOffer() *cobra.Command {
 			}
 
 			res, err := queryClient.Offer(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdOffersByClass() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "class-offers [class-id]",
+		Short: "Query offers by class",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			reqClassId := args[0]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryOffersByClassRequest{
+
+				ClassId: reqClassId,
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			params.Pagination = pageReq
+
+			res, err := queryClient.OffersByClass(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

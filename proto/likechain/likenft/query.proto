@@ -78,6 +78,11 @@ service Query {
     option (google.api.http).get = "/likenft/offer";
   }
 
+  // Queries a list of OffersByClass items.
+  rpc OffersByClass(QueryOffersByClassRequest) returns (QueryOffersByClassResponse) {
+    option (google.api.http).get = "/likenft/offer/{class_id}";
+  }
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -192,6 +197,16 @@ message QueryOfferIndexRequest {
 }
 
 message QueryOfferIndexResponse {
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOffersByClassRequest {
+  string class_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryOffersByClassResponse {
   repeated Offer offers = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

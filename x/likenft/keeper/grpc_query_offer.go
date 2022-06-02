@@ -62,3 +62,34 @@ func (k Keeper) Offer(c context.Context, req *types.QueryOfferRequest) (*types.Q
 
 	return &types.QueryOfferResponse{Offer: val}, nil
 }
+
+func (k Keeper) OffersByClass(goCtx context.Context, req *types.QueryOffersByClassRequest) (*types.QueryOffersByClassResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var offers []types.Offer
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.OfferKeyPrefix), types.OffersByClassKey(req.ClassId)...))
+
+	pageRes, err := query.Paginate(subStore, req.Pagination, func(key []byte, value []byte) error {
+		var offer types.OfferStoreRecord
+		if err := k.cdc.Unmarshal(value, &offer); err != nil {
+			return err
+		}
+
+		offers = append(offers, offer.ToPublicRecord())
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryOffersByClassResponse{
+		Offers:     offers,
+		Pagination: pageRes,
+	}, nil
+}
