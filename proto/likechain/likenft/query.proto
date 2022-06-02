@@ -192,7 +192,7 @@ message QueryOfferIndexRequest {
 }
 
 message QueryOfferIndexResponse {
-  repeated Offer offer = 1 [(gogoproto.nullable) = false];
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

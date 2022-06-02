@@ -140,10 +140,10 @@ func TestListOffer(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryOfferIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Offer), step)
+			require.LessOrEqual(t, len(resp.Offers), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Offer),
+				nullify.Fill(resp.Offers),
 			)
 		}
 	})
@@ -156,10 +156,10 @@ func TestListOffer(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryOfferIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Offer), step)
+			require.LessOrEqual(t, len(resp.Offers), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Offer),
+				nullify.Fill(resp.Offers),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -174,7 +174,7 @@ func TestListOffer(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.Offer),
+			nullify.Fill(resp.Offers),
 		)
 	})
 }

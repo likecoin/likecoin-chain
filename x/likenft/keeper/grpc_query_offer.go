@@ -36,7 +36,7 @@ func (k Keeper) OfferIndex(c context.Context, req *types.QueryOfferIndexRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryOfferIndexResponse{Offer: offers, Pagination: pageRes}, nil
+	return &types.QueryOfferIndexResponse{Offers: offers, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Offer(c context.Context, req *types.QueryOfferRequest) (*types.QueryOfferResponse, error) {
