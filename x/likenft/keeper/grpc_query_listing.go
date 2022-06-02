@@ -23,12 +23,12 @@ func (k Keeper) ListingAll(c context.Context, req *types.QueryAllListingRequest)
 	listingStore := prefix.NewStore(store, types.KeyPrefix(types.ListingKeyPrefix))
 
 	pageRes, err := query.Paginate(listingStore, req.Pagination, func(key []byte, value []byte) error {
-		var listing types.Listing
-		if err := k.cdc.Unmarshal(value, &listing); err != nil {
+		var storeRecord types.ListingStoreRecord
+		if err := k.cdc.Unmarshal(value, &storeRecord); err != nil {
 			return err
 		}
 
-		listings = append(listings, listing)
+		listings = append(listings, storeRecord.ToPublicRecord())
 		return nil
 	})
 
@@ -45,11 +45,16 @@ func (k Keeper) Listing(c context.Context, req *types.QueryGetListingRequest) (*
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
+	seller, err := sdk.AccAddressFromBech32(req.Seller)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	val, found := k.GetListing(
 		ctx,
 		req.ClassId,
 		req.NftId,
-		req.Seller,
+		seller,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")

@@ -11,12 +11,17 @@ import (
 func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateListing) (*types.MsgCreateListingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value already exists
 	_, isFound := k.GetListing(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
@@ -40,20 +45,20 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateListing) (*types.MsgUpdateListingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value exists
-	valFound, isFound := k.GetListing(
+	_, isFound := k.GetListing(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
-	}
-
-	// Checks if the the msg creator is the same as the current owner
-	if msg.Creator != valFound.Seller {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
 	var listing = types.Listing{
@@ -72,27 +77,27 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteListing) (*types.MsgDeleteListingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+
 	// Check if the value exists
-	valFound, isFound := k.GetListing(
+	_, isFound := k.GetListing(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
-	}
-
-	// Checks if the the msg creator is the same as the current owner
-	if msg.Creator != valFound.Seller {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
 	k.RemoveListing(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
-		msg.Creator,
+		userAddress,
 	)
 
 	return &types.MsgDeleteListingResponse{}, nil

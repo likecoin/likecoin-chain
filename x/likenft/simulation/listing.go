@@ -32,7 +32,7 @@ func SimulateMsgCreateListing(
 			NftId:   strconv.Itoa(i),
 		}
 
-		_, found := k.GetListing(ctx, msg.ClassId, msg.NftId, msg.Creator)
+		_, found := k.GetListing(ctx, msg.ClassId, msg.NftId, simAccount.Address)
 		if found {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Listing already exist"), nil, nil
 		}

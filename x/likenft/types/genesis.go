@@ -91,7 +91,11 @@ func (gs GenesisState) Validate() error {
 	listingIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.ListingList {
-		index := string(ListingKey(elem.ClassId, elem.NftId, elem.Seller))
+		acc, err := sdk.AccAddressFromBech32(elem.Seller)
+		if err != nil {
+			return fmt.Errorf("Invalid account address: %s", err.Error())
+		}
+		index := string(ListingKey(elem.ClassId, elem.NftId, acc))
 		if _, ok := listingIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for listing")
 		}
