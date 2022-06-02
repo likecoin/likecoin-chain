@@ -75,6 +75,18 @@ func TestGenesisState_Validate(t *testing.T) {
 						Buyer:   accounts[1].String(),
 					},
 				},
+				ListingList: []types.Listing{
+					{
+						ClassId: "0",
+						NftId:   "0",
+						Seller:  "0",
+					},
+					{
+						ClassId: "1",
+						NftId:   "1",
+						Seller:  "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -187,6 +199,24 @@ func TestGenesisState_Validate(t *testing.T) {
 						ClassId: "0",
 						NftId:   "0",
 						Buyer:   accounts[0].String(),
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated listing",
+			genState: &types.GenesisState{
+				ListingList: []types.Listing{
+					{
+						ClassId: "0",
+						NftId:   "0",
+						Seller:  "0",
+					},
+					{
+						ClassId: "0",
+						NftId:   "0",
+						Seller:  "0",
 					},
 				},
 			},

@@ -19,6 +19,9 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateOffer{}, "likenft/CreateOffer", nil)
 	cdc.RegisterConcrete(&MsgUpdateOffer{}, "likenft/UpdateOffer", nil)
 	cdc.RegisterConcrete(&MsgDeleteOffer{}, "likenft/DeleteOffer", nil)
+	cdc.RegisterConcrete(&MsgCreateListing{}, "likenft/CreateListing", nil)
+	cdc.RegisterConcrete(&MsgUpdateListing{}, "likenft/UpdateListing", nil)
+	cdc.RegisterConcrete(&MsgDeleteListing{}, "likenft/DeleteListing", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&ClassData{}, "likenft/ClassData", nil)
 	cdc.RegisterConcrete(&ClassParent{}, "likenft/ClassParent", nil)
@@ -52,6 +55,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateOffer{},
 		&MsgUpdateOffer{},
 		&MsgDeleteOffer{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateListing{},
+		&MsgUpdateListing{},
+		&MsgDeleteListing{},
 	)
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*proto.Message)(nil), &ClassData{})

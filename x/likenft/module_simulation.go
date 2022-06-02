@@ -64,6 +64,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteOffer int = 100
 
+	opWeightMsgCreateListing = "op_weight_msg_listing"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateListing int = 100
+
+	opWeightMsgUpdateListing = "op_weight_msg_listing"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateListing int = 100
+
+	opWeightMsgDeleteListing = "op_weight_msg_listing"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteListing int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -84,6 +96,18 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				ClassId: "1",
 				NftId:   "1",
 				Buyer:   sample.AccAddress(),
+			},
+		},
+		ListingList: []types.Listing{
+			{
+				ClassId: "0",
+				NftId:   "0",
+				Seller:  "0",
+			},
+			{
+				ClassId: "1",
+				NftId:   "1",
+				Seller:  "1",
 			},
 		},
 		// this line is used by starport scaffolding # simapp/module/genesisState
@@ -217,6 +241,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgDeleteOffer,
 		likenftsimulation.SimulateMsgDeleteOffer(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateListing int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateListing, &weightMsgCreateListing, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateListing = defaultWeightMsgCreateListing
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateListing,
+		likenftsimulation.SimulateMsgCreateListing(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateListing int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateListing, &weightMsgUpdateListing, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateListing = defaultWeightMsgUpdateListing
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateListing,
+		likenftsimulation.SimulateMsgUpdateListing(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteListing int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteListing, &weightMsgDeleteListing, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteListing = defaultWeightMsgDeleteListing
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteListing,
+		likenftsimulation.SimulateMsgDeleteListing(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

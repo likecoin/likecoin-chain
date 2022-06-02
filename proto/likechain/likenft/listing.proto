@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package likechain.likenft;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message Listing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+
+message ListingStoreRecord {
+  string class_id = 1;
+  string nft_id = 2;
+  bytes seller = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}

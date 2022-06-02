@@ -6,6 +6,7 @@ import "cosmos/nft/v1beta1/nft.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "likechain/likenft/class_input.proto";
+import "likechain/likenft/listing.proto";
 import "likechain/likenft/mintable_nft.proto";
 import "likechain/likenft/nft_input.proto";
 import "likechain/likenft/offer.proto";
@@ -25,6 +26,9 @@ service Msg {
   rpc CreateOffer(MsgCreateOffer) returns (MsgCreateOfferResponse);
   rpc UpdateOffer(MsgUpdateOffer) returns (MsgUpdateOfferResponse);
   rpc DeleteOffer(MsgDeleteOffer) returns (MsgDeleteOfferResponse);
+  rpc CreateListing(MsgCreateListing) returns (MsgCreateListingResponse);
+  rpc UpdateListing(MsgUpdateListing) returns (MsgUpdateListingResponse);
+  rpc DeleteListing(MsgDeleteListing) returns (MsgDeleteListingResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -131,5 +135,36 @@ message MsgDeleteOffer {
   string nft_id = 3;
 }
 message MsgDeleteOfferResponse {}
+
+message MsgCreateListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgCreateListingResponse {}
+
+message MsgUpdateListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgUpdateListingResponse {}
+
+message MsgDeleteListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+}
+message MsgDeleteListingResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message
