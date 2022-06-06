@@ -147,6 +147,11 @@ func (k Keeper) PruneInvalidListingsForNFT(ctx sdk.Context, classId string, nftI
 		if !seller.Equals(nftOwner) {
 			k.RemoveListing(ctx, l.ClassId, l.NftId, seller)
 			// TODO dequeue listing as well
+			ctx.EventManager().EmitTypedEvent(&types.EventDeleteListing{
+				ClassId: l.ClassId,
+				NftId:   l.NftId,
+				Seller:  l.Seller,
+			})
 		}
 	})
 }

@@ -49,7 +49,11 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		listing,
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventCreateListing{
+		ClassId: listing.ClassId,
+		NftId:   listing.NftId,
+		Seller:  listing.Seller,
+	})
 
 	return &types.MsgCreateListingResponse{
 		Listing: listing,
@@ -85,7 +89,11 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 
 	k.SetListing(ctx, listing)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventUpdateListing{
+		ClassId: listing.ClassId,
+		NftId:   listing.NftId,
+		Seller:  listing.Seller,
+	})
 
 	return &types.MsgUpdateListingResponse{
 		Listing: listing,
@@ -101,7 +109,7 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 	}
 
 	// Check if the value exists
-	_, isFound := k.GetListing(
+	listing, isFound := k.GetListing(
 		ctx,
 		msg.ClassId,
 		msg.NftId,
@@ -118,7 +126,11 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 		userAddress,
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventDeleteListing{
+		ClassId: listing.ClassId,
+		NftId:   listing.NftId,
+		Seller:  listing.Seller,
+	})
 
 	return &types.MsgDeleteListingResponse{}, nil
 }
