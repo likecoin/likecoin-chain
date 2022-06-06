@@ -146,7 +146,9 @@ message MsgCreateListing {
     (gogoproto.nullable) = false
   ];
 }
-message MsgCreateListingResponse {}
+message MsgCreateListingResponse {
+  Listing listing = 1 [(gogoproto.nullable) = false];
+}
 
 message MsgUpdateListing {
   string creator = 1;
@@ -158,7 +160,9 @@ message MsgUpdateListing {
     (gogoproto.nullable) = false
   ];
 }
-message MsgUpdateListingResponse {}
+message MsgUpdateListingResponse {
+  Listing listing = 1 [(gogoproto.nullable) = false];
+}
 
 message MsgDeleteListing {
   string creator = 1;

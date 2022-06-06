@@ -135,3 +135,18 @@ func (k Keeper) GetAllListing(ctx sdk.Context) (list []types.Listing) {
 
 	return
 }
+
+func (k Keeper) PruneInvalidListingsForNFT(ctx sdk.Context, classId string, nftId string) {
+	nftOwner := k.nftKeeper.GetOwner(ctx, classId, nftId)
+
+	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.Listing) {
+		seller, err := sdk.AccAddressFromBech32(l.Seller)
+		if err != nil {
+			return
+		}
+		if !seller.Equals(nftOwner) {
+			k.RemoveListing(ctx, l.ClassId, l.NftId, seller)
+			// TODO dequeue listing as well
+		}
+	})
+}

@@ -16,6 +16,11 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 	}
 
+	// check user own the nft
+	if !k.nftKeeper.GetOwner(ctx, msg.ClassId, msg.NftId).Equals(userAddress) {
+		return nil, types.ErrFailedToCreateListing.Wrapf("User do not own the NFT")
+	}
+
 	// Check if the value already exists
 	_, isFound := k.GetListing(
 		ctx,
@@ -24,9 +29,13 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		userAddress,
 	)
 	if isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
+		return nil, types.ErrListingAlreadyExists
 	}
 
+	// Prune listings by non-owners
+	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)
+
+	// Create new listing
 	var listing = types.Listing{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
@@ -39,7 +48,12 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		ctx,
 		listing,
 	)
-	return &types.MsgCreateListingResponse{}, nil
+
+	// TODO emit event
+
+	return &types.MsgCreateListingResponse{
+		Listing: listing,
+	}, nil
 }
 
 func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateListing) (*types.MsgUpdateListingResponse, error) {
@@ -58,7 +72,7 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 		userAddress,
 	)
 	if !isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, types.ErrListingNotFound
 	}
 
 	var listing = types.Listing{
@@ -71,7 +85,11 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 
 	k.SetListing(ctx, listing)
 
-	return &types.MsgUpdateListingResponse{}, nil
+	// TODO emit event
+
+	return &types.MsgUpdateListingResponse{
+		Listing: listing,
+	}, nil
 }
 
 func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteListing) (*types.MsgDeleteListingResponse, error) {
@@ -90,7 +108,7 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 		userAddress,
 	)
 	if !isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, types.ErrListingNotFound
 	}
 
 	k.RemoveListing(
@@ -99,6 +117,8 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 		msg.NftId,
 		userAddress,
 	)
+
+	// TODO emit event
 
 	return &types.MsgDeleteListingResponse{}, nil
 }
