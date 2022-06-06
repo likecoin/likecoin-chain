@@ -42,6 +42,68 @@ func (k Keeper) GetListing(
 	return storeRecord.ToPublicRecord(), true
 }
 
+func (k Keeper) GetListingsByClass(
+	ctx sdk.Context,
+	classId string,
+) (list []types.Listing) {
+	k.IterateListingsByClass(ctx, classId, func(l types.Listing) {
+		list = append(list, l)
+	})
+
+	return
+}
+
+func (k Keeper) IterateListingsByClass(
+	ctx sdk.Context,
+	classId string,
+	callback func(types.Listing),
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.ListingsByClassKey(classId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.ListingStoreRecord
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		callback(val.ToPublicRecord())
+	}
+
+	return
+}
+
+func (k Keeper) GetListingsByNFT(
+	ctx sdk.Context,
+	classId string,
+	nftId string,
+) (list []types.Listing) {
+	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.Listing) {
+		list = append(list, l)
+	})
+
+	return
+}
+
+func (k Keeper) IterateListingsByNFT(
+	ctx sdk.Context,
+	classId string,
+	nftId string,
+	callback func(types.Listing),
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.ListingsByNFTKey(classId, nftId))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.ListingStoreRecord
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		callback(val.ToPublicRecord())
+	}
+
+	return
+}
+
 // RemoveListing removes a listing from the store
 func (k Keeper) RemoveListing(
 	ctx sdk.Context,

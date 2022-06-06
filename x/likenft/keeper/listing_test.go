@@ -76,6 +76,40 @@ func TestListingRemove(t *testing.T) {
 	}
 }
 
+func TestListingGetByClass(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	items, _ := createNListing(keeper, ctx, 3, 3, 1)
+	require.ElementsMatch(t,
+		nullify.Fill(items[0:3]),
+		nullify.Fill(keeper.GetListingsByClass(ctx, "0")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill(items[3:6]),
+		nullify.Fill(keeper.GetListingsByClass(ctx, "1")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill(items[6:9]),
+		nullify.Fill(keeper.GetListingsByClass(ctx, "2")),
+	)
+}
+
+func TestListingGetByNFT(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	items, _ := createNListing(keeper, ctx, 1, 3, 1)
+	require.ElementsMatch(t,
+		nullify.Fill([]types.Listing{items[0]}),
+		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "0")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill([]types.Listing{items[1]}),
+		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "1")),
+	)
+	require.ElementsMatch(t,
+		nullify.Fill([]types.Listing{items[2]}),
+		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "2")),
+	)
+}
+
 func TestListingGetAll(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNListing(keeper, ctx, 2, 2, 2)

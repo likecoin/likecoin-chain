@@ -13,11 +13,8 @@ const (
 	ListingKeyPrefix = "Listing/value/"
 )
 
-// ListingKey returns the store key to retrieve a Listing from the index fields
-func ListingKey(
+func ListingsByClassKey(
 	classId string,
-	nftId string,
-	seller sdk.AccAddress,
 ) []byte {
 	var key []byte
 
@@ -25,9 +22,29 @@ func ListingKey(
 	key = append(key, classIdBytes...)
 	key = append(key, []byte("/")...)
 
+	return key
+}
+
+func ListingsByNFTKey(
+	classId string,
+	nftId string,
+) []byte {
+	key := ListingsByClassKey(classId)
+
 	nftIdBytes := []byte(nftId)
 	key = append(key, nftIdBytes...)
 	key = append(key, []byte("/")...)
+
+	return key
+}
+
+// ListingKey returns the store key to retrieve a Listing from the index fields
+func ListingKey(
+	classId string,
+	nftId string,
+	seller sdk.AccAddress,
+) []byte {
+	key := ListingsByNFTKey(classId, nftId)
 
 	sellerBytes := seller
 	key = append(key, sellerBytes...)
