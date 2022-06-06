@@ -19,16 +19,16 @@ var _ = strconv.IntSize
 
 func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nOffer int) ([]types.Offer, []sdk.AccAddress) {
 	var items []types.Offer
-	accounts := testutil.CreateIncrementalAccounts(nClass * nNFT * nOffer)
+	accounts := testutil.CreateIncrementalAccounts(nOffer)
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
 			for k := 0; k < nOffer; k++ {
 				offer := types.Offer{
 					ClassId:    strconv.Itoa(i),
 					NftId:      strconv.Itoa(j),
-					Buyer:      accounts[i+j+k].String(),
+					Buyer:      accounts[k].String(),
 					Price:      uint64(k),
-					Expiration: time.Date(2022, 1, 1+i+j+k, 0, 0, 0, 0, time.UTC),
+					Expiration: time.Date(2022, 1, 1+k, 0, 0, 0, 0, time.UTC),
 				}
 				items = append(items, offer)
 				keeper.SetOffer(ctx, offer)
@@ -58,17 +58,19 @@ func TestOfferGet(t *testing.T) {
 }
 func TestOfferRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
-	items, accs := createNOffer(keeper, ctx, 3, 3, 1)
-	for i, item := range items {
+	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	for _, item := range items {
+		buyer, err := sdk.AccAddressFromBech32(item.Buyer)
+		require.NoError(t, err)
 		keeper.RemoveOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			accs[i],
+			buyer,
 		)
 		_, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			accs[i],
+			buyer,
 		)
 		require.False(t, found)
 	}

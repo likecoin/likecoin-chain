@@ -21,7 +21,7 @@ var _ = strconv.IntSize
 func TestListingQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNListing(keeper, ctx, 2)
+	msgs, _ := createNListing(keeper, ctx, 2, 1, 1)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetListingRequest
@@ -51,7 +51,7 @@ func TestListingQuerySingle(t *testing.T) {
 			request: &types.QueryGetListingRequest{
 				ClassId: strconv.Itoa(100000),
 				NftId:   strconv.Itoa(100000),
-				Seller:  strconv.Itoa(100000),
+				Seller:  msgs[0].Seller,
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -78,7 +78,7 @@ func TestListingQuerySingle(t *testing.T) {
 func TestListingQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNListing(keeper, ctx, 5)
+	msgs, _ := createNListing(keeper, ctx, 2, 2, 2)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllListingRequest {
 		return &types.QueryAllListingRequest{

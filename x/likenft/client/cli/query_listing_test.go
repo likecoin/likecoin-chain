@@ -1,12 +1,15 @@
 package cli_test
 
 import (
+	"crypto/rand"
 	"fmt"
 	"strconv"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
@@ -28,10 +31,15 @@ func networkWithListingObjects(t *testing.T, n int) (*network.Network, []types.L
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
+		// Create random address
+		pubBz := make([]byte, ed25519.PubKeySize)
+		rand.Read(pubBz)
+		pub := &ed25519.PubKey{Key: pubBz}
+		address, _ := sdk.Bech32ifyAddressBytes("like", pub.Address())
 		listing := types.Listing{
 			ClassId: strconv.Itoa(i),
 			NftId:   strconv.Itoa(i),
-			Seller:  strconv.Itoa(i),
+			Seller:  address,
 		}
 		nullify.Fill(&listing)
 		state.ListingList = append(state.ListingList, listing)

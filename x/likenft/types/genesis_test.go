@@ -79,12 +79,12 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						ClassId: "0",
 						NftId:   "0",
-						Seller:  "0",
+						Seller:  accounts[0].String(),
 					},
 					{
 						ClassId: "1",
 						NftId:   "1",
-						Seller:  "1",
+						Seller:  accounts[1].String(),
 					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
@@ -211,12 +211,12 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						ClassId: "0",
 						NftId:   "0",
-						Seller:  "0",
+						Seller:  accounts[0].String(),
 					},
 					{
 						ClassId: "0",
 						NftId:   "0",
-						Seller:  "0",
+						Seller:  accounts[0].String(),
 					},
 				},
 			},
