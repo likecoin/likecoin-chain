@@ -25,31 +25,31 @@ func TestListingQuerySingle(t *testing.T) {
 	msgs := types.MapListingsToPublicRecords(_msgs)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetListingRequest
-		response *types.QueryGetListingResponse
+		request  *types.QueryListingRequest
+		response *types.QueryListingResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetListingRequest{
+			request: &types.QueryListingRequest{
 				ClassId: msgs[0].ClassId,
 				NftId:   msgs[0].NftId,
 				Seller:  msgs[0].Seller,
 			},
-			response: &types.QueryGetListingResponse{Listing: msgs[0]},
+			response: &types.QueryListingResponse{Listing: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetListingRequest{
+			request: &types.QueryListingRequest{
 				ClassId: msgs[1].ClassId,
 				NftId:   msgs[1].NftId,
 				Seller:  msgs[1].Seller,
 			},
-			response: &types.QueryGetListingResponse{Listing: msgs[1]},
+			response: &types.QueryListingResponse{Listing: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetListingRequest{
+			request: &types.QueryListingRequest{
 				ClassId: strconv.Itoa(100000),
 				NftId:   strconv.Itoa(100000),
 				Seller:  msgs[0].Seller,
@@ -82,8 +82,8 @@ func TestListingQueryPaginated(t *testing.T) {
 	_msgs, _ := createNListing(keeper, ctx, 2, 2, 2)
 	msgs := types.MapListingsToPublicRecords(_msgs)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllListingRequest {
-		return &types.QueryAllListingRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryListingIndexRequest {
+		return &types.QueryListingIndexRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -95,7 +95,7 @@ func TestListingQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ListingAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.ListingIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.Listings), step)
 			require.Subset(t,
@@ -108,7 +108,7 @@ func TestListingQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ListingAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.ListingIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.Listings), step)
 			require.Subset(t,
@@ -119,7 +119,7 @@ func TestListingQueryPaginated(t *testing.T) {
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.ListingAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.ListingIndex(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
@@ -128,7 +128,7 @@ func TestListingQueryPaginated(t *testing.T) {
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.ListingAll(wctx, nil)
+		_, err := keeper.ListingIndex(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

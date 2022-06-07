@@ -11,7 +11,7 @@ import (
 
 func CmdListListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-listing",
+		Use:   "listing-index",
 		Short: "list all listing",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -23,11 +23,11 @@ func CmdListListing() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllListingRequest{
+			params := &types.QueryListingIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ListingAll(context.Background(), params)
+			res, err := queryClient.ListingIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func CmdListListing() *cobra.Command {
 
 func CmdShowListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-listing [class-id] [nft-id] [seller]",
+		Use:   "listing [class-id] [nft-id] [seller]",
 		Short: "shows a listing",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -56,7 +56,7 @@ func CmdShowListing() *cobra.Command {
 			argNftId := args[1]
 			argSeller := args[2]
 
-			params := &types.QueryGetListingRequest{
+			params := &types.QueryListingRequest{
 				ClassId: argClassId,
 				NftId:   argNftId,
 				Seller:  argSeller,

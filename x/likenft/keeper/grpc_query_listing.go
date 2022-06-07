@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ListingAll(c context.Context, req *types.QueryAllListingRequest) (*types.QueryAllListingResponse, error) {
+func (k Keeper) ListingIndex(c context.Context, req *types.QueryListingIndexRequest) (*types.QueryListingIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,10 +36,10 @@ func (k Keeper) ListingAll(c context.Context, req *types.QueryAllListingRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllListingResponse{Listings: listings, Pagination: pageRes}, nil
+	return &types.QueryListingIndexResponse{Listings: listings, Pagination: pageRes}, nil
 }
 
-func (k Keeper) Listing(c context.Context, req *types.QueryGetListingRequest) (*types.QueryGetListingResponse, error) {
+func (k Keeper) Listing(c context.Context, req *types.QueryListingRequest) (*types.QueryListingResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -60,5 +60,5 @@ func (k Keeper) Listing(c context.Context, req *types.QueryGetListingRequest) (*
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetListingResponse{Listing: val.ToPublicRecord()}, nil
+	return &types.QueryListingResponse{Listing: val.ToPublicRecord()}, nil
 }

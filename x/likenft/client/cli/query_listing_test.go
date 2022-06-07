@@ -101,7 +101,7 @@ func TestShowListing(t *testing.T) {
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetListingResponse
+				var resp types.QueryListingResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.Listing)
 				require.Equal(t,
@@ -138,7 +138,7 @@ func TestListListing(t *testing.T) {
 			args := request(nil, uint64(i), uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListListing(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllListingResponse
+			var resp types.QueryListingIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.Listings), step)
 			require.Subset(t,
@@ -154,7 +154,7 @@ func TestListListing(t *testing.T) {
 			args := request(next, 0, uint64(step), false)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListListing(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllListingResponse
+			var resp types.QueryListingIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 			require.LessOrEqual(t, len(resp.Listings), step)
 			require.Subset(t,
@@ -168,7 +168,7 @@ func TestListListing(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
 		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListListing(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllListingResponse
+		var resp types.QueryListingIndexResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))

@@ -90,12 +90,12 @@ service Query {
   }
 
   // Queries a Listing by index.
-  rpc Listing(QueryGetListingRequest) returns (QueryGetListingResponse) {
+  rpc Listing(QueryListingRequest) returns (QueryListingResponse) {
     option (google.api.http).get = "/likenft/listing/{class_id}/{nft_id}/{seller}";
   }
 
   // Queries a list of Listing items.
-  rpc ListingAll(QueryAllListingRequest) returns (QueryAllListingResponse) {
+  rpc ListingIndex(QueryListingIndexRequest) returns (QueryListingIndexResponse) {
     option (google.api.http).get = "/likenft/listing";
   }
 
@@ -238,21 +238,21 @@ message QueryOffersByNFTResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryGetListingRequest {
+message QueryListingRequest {
   string class_id = 1;
   string nft_id = 2;
   string seller = 3;
 }
 
-message QueryGetListingResponse {
+message QueryListingResponse {
   Listing listing = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllListingRequest {
+message QueryListingIndexRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllListingResponse {
+message QueryListingIndexResponse {
   repeated Listing listings = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
