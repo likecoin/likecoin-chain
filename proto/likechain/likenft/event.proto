@@ -94,3 +94,11 @@ message EventDeleteListing {
   string nft_id = 2;
   string seller = 3;
 }
+
+message EventSellNFT {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  string buyer = 4;
+  uint64 price = 5;
+}
