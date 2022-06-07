@@ -23,6 +23,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateListing{}, "likenft/UpdateListing", nil)
 	cdc.RegisterConcrete(&MsgDeleteListing{}, "likenft/DeleteListing", nil)
 	cdc.RegisterConcrete(&MsgSellNFT{}, "likenft/SellNFT", nil)
+	cdc.RegisterConcrete(&MsgBuyNFT{}, "likenft/BuyNFT", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&ClassData{}, "likenft/ClassData", nil)
 	cdc.RegisterConcrete(&ClassParent{}, "likenft/ClassParent", nil)
@@ -64,6 +65,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSellNFT{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgBuyNFT{},
 	)
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*proto.Message)(nil), &ClassData{})
