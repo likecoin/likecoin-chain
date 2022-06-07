@@ -27,6 +27,7 @@ type NftKeeper interface {
 	Burn(ctx sdk.Context, classID string, nftID string) error
 	GetNFTsOfClass(ctx sdk.Context, classID string) (nfts []nft.NFT)
 	Update(ctx sdk.Context, token nft.NFT) error
+	Transfer(ctx sdk.Context, classID string, nftID string, receiver sdk.AccAddress) error
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
