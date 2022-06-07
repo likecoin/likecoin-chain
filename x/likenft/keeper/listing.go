@@ -135,14 +135,13 @@ func (k Keeper) PruneInvalidListingsForNFT(ctx sdk.Context, classId string, nftI
 	nftOwner := k.nftKeeper.GetOwner(ctx, classId, nftId)
 
 	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.ListingStoreRecord) {
-		seller := sdk.AccAddress(l.Seller)
-		if !seller.Equals(nftOwner) {
-			k.RemoveListing(ctx, l.ClassId, l.NftId, seller)
+		if !l.Seller.Equals(nftOwner) {
+			k.RemoveListing(ctx, l.ClassId, l.NftId, l.Seller)
 			// TODO dequeue listing as well
 			ctx.EventManager().EmitTypedEvent(&types.EventDeleteListing{
 				ClassId: l.ClassId,
 				NftId:   l.NftId,
-				Seller:  seller.String(),
+				Seller:  l.Seller.String(),
 			})
 		}
 	})

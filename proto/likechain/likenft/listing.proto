@@ -21,7 +21,7 @@ message Listing {
 message ListingStoreRecord {
   string class_id = 1;
   string nft_id = 2;
-  bytes seller = 3;
+  bytes seller = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   uint64 price = 4;
   google.protobuf.Timestamp expiration = 5 [
     (gogoproto.stdtime) = true,

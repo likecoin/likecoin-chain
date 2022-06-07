@@ -18,7 +18,7 @@ func (m *ClassesByAccount) ToStoreRecord() ClassesByAccountStoreRecord {
 
 func (m *ClassesByAccountStoreRecord) ToPublicRecord() ClassesByAccount {
 	return ClassesByAccount{
-		Account:  sdk.AccAddress(m.AccAddress).String(),
+		Account:  m.AccAddress.String(),
 		ClassIds: m.ClassIds,
 	}
 }

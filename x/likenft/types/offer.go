@@ -21,7 +21,7 @@ func (r OfferStoreRecord) ToPublicRecord() Offer {
 	return Offer{
 		ClassId:    r.ClassId,
 		NftId:      r.NftId,
-		Buyer:      sdk.AccAddress(r.Buyer).String(),
+		Buyer:      r.Buyer.String(),
 		Price:      r.Price,
 		Expiration: r.Expiration,
 	}

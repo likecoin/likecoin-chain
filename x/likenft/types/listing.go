@@ -21,7 +21,7 @@ func (r ListingStoreRecord) ToPublicRecord() Listing {
 	return Listing{
 		ClassId:    r.ClassId,
 		NftId:      r.NftId,
-		Seller:     sdk.AccAddress(r.Seller).String(),
+		Seller:     r.Seller.String(),
 		Price:      r.Price,
 		Expiration: r.Expiration,
 	}

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package likechain.likenft;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
 message ClassesByAccount {
@@ -10,6 +12,6 @@ message ClassesByAccount {
 }
 
 message ClassesByAccountStoreRecord {
-  bytes acc_address = 1;
+  bytes acc_address = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   repeated string class_ids = 2;
 }
