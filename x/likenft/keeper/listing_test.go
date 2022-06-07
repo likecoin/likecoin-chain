@@ -17,16 +17,16 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNListing(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nListing int) ([]types.Listing, []sdk.AccAddress) {
-	var items []types.Listing
+func createNListing(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nListing int) ([]types.ListingStoreRecord, []sdk.AccAddress) {
+	var items []types.ListingStoreRecord
 	accounts := testutil.CreateIncrementalAccounts(nListing)
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
 			for k := 0; k < nListing; k++ {
-				listing := types.Listing{
+				listing := types.ListingStoreRecord{
 					ClassId:    strconv.Itoa(i),
 					NftId:      strconv.Itoa(j),
-					Seller:     accounts[k].String(),
+					Seller:     accounts[k],
 					Price:      uint64(k),
 					Expiration: time.Date(2022, 1, 1+k, 0, 0, 0, 0, time.UTC),
 				}
@@ -42,12 +42,10 @@ func TestListingGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNListing(keeper, ctx, 2, 2, 2)
 	for _, item := range items {
-		acc, err := sdk.AccAddressFromBech32(item.Seller)
-		require.NoError(t, err)
 		rst, found := keeper.GetListing(ctx,
 			item.ClassId,
 			item.NftId,
-			acc,
+			item.Seller,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -60,17 +58,15 @@ func TestListingRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNListing(keeper, ctx, 2, 2, 2)
 	for _, item := range items {
-		acc, err := sdk.AccAddressFromBech32(item.Seller)
-		require.NoError(t, err)
 		keeper.RemoveListing(ctx,
 			item.ClassId,
 			item.NftId,
-			acc,
+			item.Seller,
 		)
 		_, found := keeper.GetListing(ctx,
 			item.ClassId,
 			item.NftId,
-			acc,
+			item.Seller,
 		)
 		require.False(t, found)
 	}
@@ -97,15 +93,15 @@ func TestListingGetByNFT(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNListing(keeper, ctx, 1, 3, 1)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Listing{items[0]}),
+		nullify.Fill([]types.ListingStoreRecord{items[0]}),
 		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "0")),
 	)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Listing{items[1]}),
+		nullify.Fill([]types.ListingStoreRecord{items[1]}),
 		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "1")),
 	)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Listing{items[2]}),
+		nullify.Fill([]types.ListingStoreRecord{items[2]}),
 		nullify.Fill(keeper.GetListingsByNFT(ctx, "0", "2")),
 	)
 }

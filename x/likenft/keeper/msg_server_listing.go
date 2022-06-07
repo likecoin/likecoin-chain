@@ -36,10 +36,10 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)
 
 	// Create new listing
-	var listing = types.Listing{
+	var listing = types.ListingStoreRecord{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
-		Seller:     msg.Creator,
+		Seller:     userAddress,
 		Price:      msg.Price,
 		Expiration: msg.Expiration,
 	}
@@ -49,14 +49,16 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		listing,
 	)
 
+	pubListing := listing.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventCreateListing{
-		ClassId: listing.ClassId,
-		NftId:   listing.NftId,
-		Seller:  listing.Seller,
+		ClassId: pubListing.ClassId,
+		NftId:   pubListing.NftId,
+		Seller:  pubListing.Seller,
 	})
 
 	return &types.MsgCreateListingResponse{
-		Listing: listing,
+		Listing: pubListing,
 	}, nil
 }
 
@@ -79,24 +81,26 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 		return nil, types.ErrListingNotFound
 	}
 
-	var listing = types.Listing{
+	var listing = types.ListingStoreRecord{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
-		Seller:     msg.Creator,
+		Seller:     userAddress,
 		Price:      msg.Price,
 		Expiration: msg.Expiration,
 	}
 
 	k.SetListing(ctx, listing)
 
+	pubListing := listing.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateListing{
-		ClassId: listing.ClassId,
-		NftId:   listing.NftId,
-		Seller:  listing.Seller,
+		ClassId: pubListing.ClassId,
+		NftId:   pubListing.NftId,
+		Seller:  pubListing.Seller,
 	})
 
 	return &types.MsgUpdateListingResponse{
-		Listing: listing,
+		Listing: pubListing,
 	}, nil
 }
 
@@ -121,15 +125,17 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 
 	k.RemoveListing(
 		ctx,
-		msg.ClassId,
-		msg.NftId,
-		userAddress,
+		listing.ClassId,
+		listing.NftId,
+		listing.Seller,
 	)
 
+	pubListing := listing.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventDeleteListing{
-		ClassId: listing.ClassId,
-		NftId:   listing.NftId,
-		Seller:  listing.Seller,
+		ClassId: pubListing.ClassId,
+		NftId:   pubListing.NftId,
+		Seller:  pubListing.Seller,
 	})
 
 	return &types.MsgDeleteListingResponse{}, nil

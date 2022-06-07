@@ -66,7 +66,7 @@ func SimulateMsgUpdateOffer(
 			simAccount = simtypes.Account{}
 			offer      = types.Offer{}
 			msg        = &types.MsgUpdateOffer{}
-			allOffer   = k.GetAllOffer(ctx)
+			allOffer   = types.MapOffersToPublicRecords(k.GetAllOffer(ctx))
 			found      = false
 		)
 		for _, obj := range allOffer {
@@ -113,7 +113,7 @@ func SimulateMsgDeleteOffer(
 			simAccount = simtypes.Account{}
 			offer      = types.Offer{}
 			msg        = &types.MsgUpdateOffer{}
-			allOffer   = k.GetAllOffer(ctx)
+			allOffer   = types.MapOffersToPublicRecords(k.GetAllOffer(ctx))
 			found      = false
 		)
 		for _, obj := range allOffer {

@@ -66,7 +66,7 @@ func SimulateMsgUpdateListing(
 			simAccount = simtypes.Account{}
 			listing    = types.Listing{}
 			msg        = &types.MsgUpdateListing{}
-			allListing = k.GetAllListing(ctx)
+			allListing = types.MapListingsToPublicRecords(k.GetAllListing(ctx))
 			found      = false
 		)
 		for _, obj := range allListing {
@@ -113,7 +113,7 @@ func SimulateMsgDeleteListing(
 			simAccount = simtypes.Account{}
 			listing    = types.Listing{}
 			msg        = &types.MsgUpdateListing{}
-			allListing = k.GetAllListing(ctx)
+			allListing = types.MapListingsToPublicRecords(k.GetAllListing(ctx))
 			found      = false
 		)
 		for _, obj := range allListing {

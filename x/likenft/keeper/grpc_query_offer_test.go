@@ -21,7 +21,8 @@ var _ = strconv.IntSize
 func TestOfferQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	_msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	msgs := types.MapOffersToPublicRecords(_msgs)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryOfferRequest
@@ -78,7 +79,8 @@ func TestOfferQuerySingle(t *testing.T) {
 func TestOfferQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	_msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	msgs := types.MapOffersToPublicRecords(_msgs)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryOfferIndexRequest {
 		return &types.QueryOfferIndexRequest{
@@ -134,7 +136,8 @@ func TestOfferQueryPaginated(t *testing.T) {
 func TestOfferByClassQuery(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	_msgs, _ := createNOffer(keeper, ctx, 3, 3, 1)
+	msgs := types.MapOffersToPublicRecords(_msgs)
 
 	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryOffersByClassRequest {
 		return &types.QueryOffersByClassRequest{
@@ -191,7 +194,8 @@ func TestOfferByClassQuery(t *testing.T) {
 func TestOfferByNftQuery(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNOffer(keeper, ctx, 1, 3, 3)
+	_msgs, _ := createNOffer(keeper, ctx, 1, 3, 3)
+	msgs := types.MapOffersToPublicRecords(_msgs)
 
 	request := func(classId string, nftId string, next []byte, offset, limit uint64, total bool) *types.QueryOffersByNFTRequest {
 		return &types.QueryOffersByNFTRequest{

@@ -60,7 +60,7 @@ func (k Keeper) Offer(c context.Context, req *types.QueryOfferRequest) (*types.Q
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryOfferResponse{Offer: val}, nil
+	return &types.QueryOfferResponse{Offer: val.ToPublicRecord()}, nil
 }
 
 func (k Keeper) OffersByClass(goCtx context.Context, req *types.QueryOffersByClassRequest) (*types.QueryOffersByClassResponse, error) {

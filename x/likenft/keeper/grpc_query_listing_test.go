@@ -21,7 +21,8 @@ var _ = strconv.IntSize
 func TestListingQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNListing(keeper, ctx, 2, 1, 1)
+	_msgs, _ := createNListing(keeper, ctx, 2, 1, 1)
+	msgs := types.MapListingsToPublicRecords(_msgs)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetListingRequest
@@ -78,7 +79,8 @@ func TestListingQuerySingle(t *testing.T) {
 func TestListingQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs, _ := createNListing(keeper, ctx, 2, 2, 2)
+	_msgs, _ := createNListing(keeper, ctx, 2, 2, 2)
+	msgs := types.MapListingsToPublicRecords(_msgs)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllListingRequest {
 		return &types.QueryAllListingRequest{

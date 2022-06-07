@@ -17,16 +17,16 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nOffer int) ([]types.Offer, []sdk.AccAddress) {
-	var items []types.Offer
+func createNOffer(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int, nOffer int) ([]types.OfferStoreRecord, []sdk.AccAddress) {
+	var items []types.OfferStoreRecord
 	accounts := testutil.CreateIncrementalAccounts(nOffer)
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
 			for k := 0; k < nOffer; k++ {
-				offer := types.Offer{
+				offer := types.OfferStoreRecord{
 					ClassId:    strconv.Itoa(i),
 					NftId:      strconv.Itoa(j),
-					Buyer:      accounts[k].String(),
+					Buyer:      accounts[k],
 					Price:      uint64(k),
 					Expiration: time.Date(2022, 1, 1+k, 0, 0, 0, 0, time.UTC),
 				}
@@ -42,12 +42,10 @@ func TestOfferGet(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
 	for _, item := range items {
-		buyer, err := sdk.AccAddressFromBech32(item.Buyer)
-		require.NoError(t, err)
 		rst, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			buyer,
+			item.Buyer,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -60,17 +58,15 @@ func TestOfferRemove(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNOffer(keeper, ctx, 3, 3, 1)
 	for _, item := range items {
-		buyer, err := sdk.AccAddressFromBech32(item.Buyer)
-		require.NoError(t, err)
 		keeper.RemoveOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			buyer,
+			item.Buyer,
 		)
 		_, found := keeper.GetOffer(ctx,
 			item.ClassId,
 			item.NftId,
-			buyer,
+			item.Buyer,
 		)
 		require.False(t, found)
 	}
@@ -97,15 +93,15 @@ func TestOfferGetByNFT(t *testing.T) {
 	keeper, ctx := keepertest.LikenftKeeper(t)
 	items, _ := createNOffer(keeper, ctx, 1, 3, 1)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Offer{items[0]}),
+		nullify.Fill([]types.OfferStoreRecord{items[0]}),
 		nullify.Fill(keeper.GetOffersByNFT(ctx, "0", "0")),
 	)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Offer{items[1]}),
+		nullify.Fill([]types.OfferStoreRecord{items[1]}),
 		nullify.Fill(keeper.GetOffersByNFT(ctx, "0", "1")),
 	)
 	require.ElementsMatch(t,
-		nullify.Fill([]types.Offer{items[2]}),
+		nullify.Fill([]types.OfferStoreRecord{items[2]}),
 		nullify.Fill(keeper.GetOffersByNFT(ctx, "0", "2")),
 	)
 }

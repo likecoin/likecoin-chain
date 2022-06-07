@@ -7,14 +7,13 @@ import (
 )
 
 // SetListing set a specific listing in the store from its index
-func (k Keeper) SetListing(ctx sdk.Context, listing types.Listing) {
-	storeRecord := listing.ToStoreRecord()
+func (k Keeper) SetListing(ctx sdk.Context, listing types.ListingStoreRecord) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
-	b := k.cdc.MustMarshal(&storeRecord)
+	b := k.cdc.MustMarshal(&listing)
 	store.Set(types.ListingKey(
-		storeRecord.ClassId,
-		storeRecord.NftId,
-		storeRecord.Seller,
+		listing.ClassId,
+		listing.NftId,
+		listing.Seller,
 	), b)
 }
 
@@ -25,7 +24,7 @@ func (k Keeper) GetListing(
 	nftId string,
 	seller sdk.AccAddress,
 
-) (val types.Listing, found bool) {
+) (val types.ListingStoreRecord, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
 
 	b := store.Get(types.ListingKey(
@@ -39,14 +38,14 @@ func (k Keeper) GetListing(
 
 	var storeRecord types.ListingStoreRecord
 	k.cdc.MustUnmarshal(b, &storeRecord)
-	return storeRecord.ToPublicRecord(), true
+	return storeRecord, true
 }
 
 func (k Keeper) GetListingsByClass(
 	ctx sdk.Context,
 	classId string,
-) (list []types.Listing) {
-	k.IterateListingsByClass(ctx, classId, func(l types.Listing) {
+) (list []types.ListingStoreRecord) {
+	k.IterateListingsByClass(ctx, classId, func(l types.ListingStoreRecord) {
 		list = append(list, l)
 	})
 
@@ -56,7 +55,7 @@ func (k Keeper) GetListingsByClass(
 func (k Keeper) IterateListingsByClass(
 	ctx sdk.Context,
 	classId string,
-	callback func(types.Listing),
+	callback func(types.ListingStoreRecord),
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, types.ListingsByClassKey(classId))
@@ -66,18 +65,16 @@ func (k Keeper) IterateListingsByClass(
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.ListingStoreRecord
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		callback(val.ToPublicRecord())
+		callback(val)
 	}
-
-	return
 }
 
 func (k Keeper) GetListingsByNFT(
 	ctx sdk.Context,
 	classId string,
 	nftId string,
-) (list []types.Listing) {
-	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.Listing) {
+) (list []types.ListingStoreRecord) {
+	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.ListingStoreRecord) {
 		list = append(list, l)
 	})
 
@@ -88,7 +85,7 @@ func (k Keeper) IterateListingsByNFT(
 	ctx sdk.Context,
 	classId string,
 	nftId string,
-	callback func(types.Listing),
+	callback func(types.ListingStoreRecord),
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, types.ListingsByNFTKey(classId, nftId))
@@ -98,10 +95,8 @@ func (k Keeper) IterateListingsByNFT(
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.ListingStoreRecord
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		callback(val.ToPublicRecord())
+		callback(val)
 	}
-
-	return
 }
 
 // RemoveListing removes a listing from the store
@@ -121,7 +116,7 @@ func (k Keeper) RemoveListing(
 }
 
 // GetAllListing returns all listing
-func (k Keeper) GetAllListing(ctx sdk.Context) (list []types.Listing) {
+func (k Keeper) GetAllListing(ctx sdk.Context) (list []types.ListingStoreRecord) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -130,7 +125,7 @@ func (k Keeper) GetAllListing(ctx sdk.Context) (list []types.Listing) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.ListingStoreRecord
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val.ToPublicRecord())
+		list = append(list, val)
 	}
 
 	return
@@ -139,18 +134,15 @@ func (k Keeper) GetAllListing(ctx sdk.Context) (list []types.Listing) {
 func (k Keeper) PruneInvalidListingsForNFT(ctx sdk.Context, classId string, nftId string) {
 	nftOwner := k.nftKeeper.GetOwner(ctx, classId, nftId)
 
-	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.Listing) {
-		seller, err := sdk.AccAddressFromBech32(l.Seller)
-		if err != nil {
-			return
-		}
+	k.IterateListingsByNFT(ctx, classId, nftId, func(l types.ListingStoreRecord) {
+		seller := sdk.AccAddress(l.Seller)
 		if !seller.Equals(nftOwner) {
 			k.RemoveListing(ctx, l.ClassId, l.NftId, seller)
 			// TODO dequeue listing as well
 			ctx.EventManager().EmitTypedEvent(&types.EventDeleteListing{
 				ClassId: l.ClassId,
 				NftId:   l.NftId,
-				Seller:  l.Seller,
+				Seller:  seller.String(),
 			})
 		}
 	})

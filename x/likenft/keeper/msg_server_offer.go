@@ -32,10 +32,10 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		return nil, types.ErrNftNotFound
 	}
 
-	offer := types.Offer{
+	offer := types.OfferStoreRecord{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
-		Buyer:      msg.Creator,
+		Buyer:      userAddress,
 		Price:      msg.Price,
 		Expiration: msg.Expiration,
 	}
@@ -58,14 +58,16 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		offer,
 	)
 
+	pubOffer := offer.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventCreateOffer{
-		ClassId: offer.ClassId,
-		NftId:   offer.NftId,
-		Buyer:   offer.Buyer,
+		ClassId: pubOffer.ClassId,
+		NftId:   pubOffer.NftId,
+		Buyer:   pubOffer.Buyer,
 	})
 
 	return &types.MsgCreateOfferResponse{
-		Offer: offer,
+		Offer: pubOffer,
 	}, nil
 }
 
@@ -90,10 +92,10 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 
 	// Assume data in store is valid; i.e. nft exists
 
-	newOffer := types.Offer{
+	newOffer := types.OfferStoreRecord{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
-		Buyer:      msg.Creator,
+		Buyer:      userAddress,
 		Price:      msg.Price,
 		Expiration: msg.Expiration,
 	}
@@ -122,14 +124,16 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 
 	k.SetOffer(ctx, newOffer)
 
+	pubOffer := newOffer.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateOffer{
-		ClassId: newOffer.ClassId,
-		NftId:   newOffer.NftId,
-		Buyer:   newOffer.Buyer,
+		ClassId: pubOffer.ClassId,
+		NftId:   pubOffer.NftId,
+		Buyer:   pubOffer.Buyer,
 	})
 
 	return &types.MsgUpdateOfferResponse{
-		Offer: newOffer,
+		Offer: pubOffer,
 	}, nil
 }
 
@@ -163,15 +167,17 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 
 	k.RemoveOffer(
 		ctx,
-		msg.ClassId,
-		msg.NftId,
-		userAddress,
+		offer.ClassId,
+		offer.NftId,
+		offer.Buyer,
 	)
 
+	pubOffer := offer.ToPublicRecord()
+
 	ctx.EventManager().EmitTypedEvent(&types.EventDeleteOffer{
-		ClassId: offer.ClassId,
-		NftId:   offer.NftId,
-		Buyer:   offer.Buyer,
+		ClassId: pubOffer.ClassId,
+		NftId:   pubOffer.NftId,
+		Buyer:   pubOffer.Buyer,
 	})
 
 	return &types.MsgDeleteOfferResponse{}, nil

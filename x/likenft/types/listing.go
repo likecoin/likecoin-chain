@@ -26,3 +26,17 @@ func (r ListingStoreRecord) ToPublicRecord() Listing {
 		Expiration: r.Expiration,
 	}
 }
+
+func MapListingsToStoreRecords(listings []Listing) (records []ListingStoreRecord) {
+	for _, listing := range listings {
+		records = append(records, listing.ToStoreRecord())
+	}
+	return
+}
+
+func MapListingsToPublicRecords(records []ListingStoreRecord) (listings []Listing) {
+	for _, record := range records {
+		listings = append(listings, record.ToPublicRecord())
+	}
+	return
+}

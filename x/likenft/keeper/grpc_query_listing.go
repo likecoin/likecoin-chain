@@ -60,5 +60,5 @@ func (k Keeper) Listing(c context.Context, req *types.QueryGetListingRequest) (*
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetListingResponse{Listing: val}, nil
+	return &types.QueryGetListingResponse{Listing: val.ToPublicRecord()}, nil
 }
