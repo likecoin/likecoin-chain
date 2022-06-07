@@ -132,3 +132,120 @@ func TestListingQueryPaginated(t *testing.T) {
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }
+
+func TestListingByClassQuery(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	_msgs, _ := createNListing(keeper, ctx, 3, 3, 1)
+	msgs := types.MapListingsToPublicRecords(_msgs)
+
+	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryListingsByClassRequest {
+		return &types.QueryListingsByClassRequest{
+			ClassId: classId,
+			Pagination: &query.PageRequest{
+				Key:        next,
+				Offset:     offset,
+				Limit:      limit,
+				CountTotal: total,
+			},
+		}
+	}
+	t.Run("ByOffset", func(t *testing.T) {
+		step := 2
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.ListingsByClass(wctx, request("1", nil, uint64(i), uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Listings), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Listings),
+			)
+		}
+	})
+	t.Run("ByKey", func(t *testing.T) {
+		step := 2
+		var next []byte
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.ListingsByClass(wctx, request("1", next, 0, uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Listings), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Listings),
+			)
+			next = resp.Pagination.NextKey
+		}
+	})
+	t.Run("Total", func(t *testing.T) {
+		resp, err := keeper.ListingsByClass(wctx, request("1", nil, 0, 0, true))
+		require.NoError(t, err)
+		require.Equal(t, len(msgs[3:6]), int(resp.Pagination.Total))
+		require.ElementsMatch(t,
+			nullify.Fill(msgs[3:6]),
+			nullify.Fill(resp.Listings),
+		)
+	})
+	t.Run("InvalidRequest", func(t *testing.T) {
+		_, err := keeper.ListingsByClass(wctx, nil)
+		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
+	})
+}
+
+func TestListingByNftQuery(t *testing.T) {
+	keeper, ctx := keepertest.LikenftKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	_msgs, _ := createNListing(keeper, ctx, 1, 3, 3)
+	msgs := types.MapListingsToPublicRecords(_msgs)
+
+	request := func(classId string, nftId string, next []byte, offset, limit uint64, total bool) *types.QueryListingsByNFTRequest {
+		return &types.QueryListingsByNFTRequest{
+			ClassId: classId,
+			NftId:   nftId,
+			Pagination: &query.PageRequest{
+				Key:        next,
+				Offset:     offset,
+				Limit:      limit,
+				CountTotal: total,
+			},
+		}
+	}
+	t.Run("ByOffset", func(t *testing.T) {
+		step := 2
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.ListingsByNFT(wctx, request("0", "1", nil, uint64(i), uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Listings), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Listings),
+			)
+		}
+	})
+	t.Run("ByKey", func(t *testing.T) {
+		step := 2
+		var next []byte
+		for i := 0; i < len(msgs[3:6]); i += step {
+			resp, err := keeper.ListingsByNFT(wctx, request("0", "1", next, 0, uint64(step), false))
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Listings), step)
+			require.Subset(t,
+				nullify.Fill(msgs[3:6]),
+				nullify.Fill(resp.Listings),
+			)
+			next = resp.Pagination.NextKey
+		}
+	})
+	t.Run("Total", func(t *testing.T) {
+		resp, err := keeper.ListingsByNFT(wctx, request("0", "1", nil, 0, 0, true))
+		require.NoError(t, err)
+		require.Equal(t, len(msgs[3:6]), int(resp.Pagination.Total))
+		require.ElementsMatch(t,
+			nullify.Fill(msgs[3:6]),
+			nullify.Fill(resp.Listings),
+		)
+	})
+	t.Run("InvalidRequest", func(t *testing.T) {
+		_, err := keeper.ListingsByClass(wctx, nil)
+		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
+	})
+}
