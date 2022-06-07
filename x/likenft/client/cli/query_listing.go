@@ -75,3 +75,85 @@ func CmdShowListing() *cobra.Command {
 
 	return cmd
 }
+
+func CmdListingsByClass() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "class-listings [class-id]",
+		Short: "Query listings by class",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			reqClassId := args[0]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryListingsByClassRequest{
+
+				ClassId: reqClassId,
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			params.Pagination = pageReq
+
+			res, err := queryClient.ListingsByClass(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdListingsByNFT() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "nft-listings [class-id] [nft-id]",
+		Short: "Query listings by nft",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			reqClassId := args[0]
+			reqNftId := args[1]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryListingsByNFTRequest{
+
+				ClassId: reqClassId,
+				NftId:   reqNftId,
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			params.Pagination = pageReq
+
+			res, err := queryClient.ListingsByNFT(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

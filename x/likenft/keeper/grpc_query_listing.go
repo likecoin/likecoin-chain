@@ -62,3 +62,29 @@ func (k Keeper) Listing(c context.Context, req *types.QueryListingRequest) (*typ
 
 	return &types.QueryListingResponse{Listing: val.ToPublicRecord()}, nil
 }
+
+func (k Keeper) ListingsByClass(goCtx context.Context, req *types.QueryListingsByClassRequest) (*types.QueryListingsByClassResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Process the query
+	_ = ctx
+
+	return &types.QueryListingsByClassResponse{}, nil
+}
+
+func (k Keeper) ListingsByNFT(goCtx context.Context, req *types.QueryListingsByNFTRequest) (*types.QueryListingsByNFTResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Process the query
+	_ = ctx
+
+	return &types.QueryListingsByNFTResponse{}, nil
+}
