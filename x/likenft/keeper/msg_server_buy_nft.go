@@ -47,13 +47,38 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 	}
 
 	// transact
+	// calculate royalty
+	_, classData, err := k.GetClass(ctx, msg.ClassId)
+	if err != nil {
+		return nil, err
+	}
+	if classData.Config.RoyaltyBasisPoints > 1000 {
+		return nil, types.ErrInvalidNftClassConfig.Wrapf("Royalty basis points cannot be greater than 1000 (10%%)")
+	}
+	royaltyAmount := msg.Price / 10000 * classData.Config.RoyaltyBasisPoints
+	// pay royalty if needed, could be 0 if price < 10000
+	if royaltyAmount > 0 {
+		classParent, err := k.ValidateAndRefreshClassParent(ctx, msg.ClassId, classData.Parent)
+		if err != nil {
+			return nil, err
+		}
+		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(royaltyAmount))))
+		err = k.bankKeeper.SendCoins(ctx, buyerAddress, classParent.Owner, royaltyAmountCoins)
+		if err != nil {
+			return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
+		}
+	}
 	// pay seller
-	priceCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(msg.Price))))
-	err = k.bankKeeper.SendCoins(ctx, buyerAddress, sellerAddress, priceCoins)
+	netAmount := msg.Price - royaltyAmount
+	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(netAmount))))
+	err = k.bankKeeper.SendCoins(ctx, buyerAddress, sellerAddress, netAmountCoins)
 	if err != nil {
 		return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
 	}
-	// TODO: pay royalty to class parent owner
+	// sanity check
+	if royaltyAmount+netAmount != msg.Price {
+		return nil, types.ErrFailedToBuyNFT.Wrapf("Price split calculation error")
+	}
 	// transfer nft to buyer
 	err = k.nftKeeper.Transfer(ctx, msg.ClassId, msg.NftId, buyerAddress)
 	if err != nil {
