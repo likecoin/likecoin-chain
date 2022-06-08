@@ -85,5 +85,11 @@ func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig, mintableCo
 	if classConfig.IsBlindBox() && classConfig.MaxSupply < mintableCount {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("New max supply %d is less than mintable count %d", classConfig.MaxSupply, mintableCount)
 	}
+
+	// Assert royalty <= 10%
+	if classConfig.RoyaltyBasisPoints > 1000 {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Royalty basis points %d cannot be greater than 1000 (10%%)", classConfig.RoyaltyBasisPoints)
+	}
+
 	return &classConfig, nil
 }
