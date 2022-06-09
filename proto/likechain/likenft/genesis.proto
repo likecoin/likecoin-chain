@@ -7,10 +7,11 @@ import "likechain/likenft/class_reveal_queue.proto";
 import "likechain/likenft/classes_by_account.proto";
 import "likechain/likenft/classes_by_iscn.proto";
 import "likechain/likenft/listing.proto";
-// this line is used by starport scaffolding # genesis/proto/import
-
 import "likechain/likenft/mintable_nft.proto";
 import "likechain/likenft/offer.proto";
+import "likechain/likenft/offer_expire_queue.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
 import "likechain/likenft/params.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
@@ -24,5 +25,6 @@ message GenesisState {
   repeated ClassRevealQueueEntry class_reveal_queue = 5 [(gogoproto.nullable) = false];
   repeated Offer offer_list = 6 [(gogoproto.nullable) = false];
   repeated Listing listing_list = 7 [(gogoproto.nullable) = false];
+  repeated OfferExpireQueueEntry offer_expire_queue = 8 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

@@ -15,7 +15,7 @@ import (
 
 func TestGenesis(t *testing.T) {
 	accounts := testutil.CreateIncrementalAccounts(2)
-	revealTime := time.Now()
+	nowTime := time.Now()
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
@@ -47,11 +47,11 @@ func TestGenesis(t *testing.T) {
 		},
 		ClassRevealQueue: []types.ClassRevealQueueEntry{
 			{
-				RevealTime: revealTime,
+				RevealTime: nowTime,
 				ClassId:    "0",
 			},
 			{
-				RevealTime: revealTime,
+				RevealTime: nowTime,
 				ClassId:    "1",
 			},
 		},
@@ -79,6 +79,16 @@ func TestGenesis(t *testing.T) {
 				Seller:  accounts[1].String(),
 			},
 		},
+		OfferExpireQueue: []types.OfferExpireQueueEntry{
+			{
+				ExpireTime: nowTime,
+				OfferKey:   []byte("0"),
+			},
+			{
+				ExpireTime: nowTime,
+				OfferKey:   []byte("1"),
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -98,5 +108,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.ClassRevealQueue, got.ClassRevealQueue)
 	require.ElementsMatch(t, genesisState.OfferList, got.OfferList)
 	require.ElementsMatch(t, genesisState.ListingList, got.ListingList)
+	require.ElementsMatch(t, genesisState.OfferExpireQueue, got.OfferExpireQueue)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

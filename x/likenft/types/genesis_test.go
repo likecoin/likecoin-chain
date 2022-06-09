@@ -11,7 +11,7 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	accounts := testutil.CreateIncrementalAccounts(2)
-	revealTime := time.Now()
+	nowTime := time.Now()
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -55,11 +55,11 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				ClassRevealQueue: []types.ClassRevealQueueEntry{
 					{
-						RevealTime: revealTime,
+						RevealTime: nowTime,
 						ClassId:    "0",
 					},
 					{
-						RevealTime: revealTime,
+						RevealTime: nowTime,
 						ClassId:    "1",
 					},
 				},
@@ -85,6 +85,16 @@ func TestGenesisState_Validate(t *testing.T) {
 						ClassId: "1",
 						NftId:   "1",
 						Seller:  accounts[1].String(),
+					},
+				},
+				OfferExpireQueue: []types.OfferExpireQueueEntry{
+					{
+						ExpireTime: nowTime,
+						OfferKey:   []byte("0"),
+					},
+					{
+						ExpireTime: nowTime,
+						OfferKey:   []byte("1"),
 					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
@@ -175,11 +185,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				ClassRevealQueue: []types.ClassRevealQueueEntry{
 					{
-						RevealTime: revealTime,
+						RevealTime: nowTime,
 						ClassId:    "0",
 					},
 					{
-						RevealTime: revealTime,
+						RevealTime: nowTime,
 						ClassId:    "0",
 					},
 				},
@@ -217,6 +227,22 @@ func TestGenesisState_Validate(t *testing.T) {
 						ClassId: "0",
 						NftId:   "0",
 						Seller:  accounts[0].String(),
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated offerExpireQueueEntry",
+			genState: &types.GenesisState{
+				OfferExpireQueue: []types.OfferExpireQueueEntry{
+					{
+						ExpireTime: nowTime,
+						OfferKey:   []byte("0"),
+					},
+					{
+						ExpireTime: nowTime,
+						OfferKey:   []byte("0"),
 					},
 				},
 			},
