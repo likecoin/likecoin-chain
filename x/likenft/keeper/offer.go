@@ -25,13 +25,16 @@ func (k Keeper) GetOffer(
 	buyer sdk.AccAddress,
 
 ) (val types.OfferStoreRecord, found bool) {
+	return k.GetOfferByKeyBytes(ctx, types.OfferKey(classId, nftId, buyer))
+}
+
+func (k Keeper) GetOfferByKeyBytes(
+	ctx sdk.Context,
+	key []byte,
+) (val types.OfferStoreRecord, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OfferKeyPrefix))
 
-	b := store.Get(types.OfferKey(
-		classId,
-		nftId,
-		buyer,
-	))
+	b := store.Get(key)
 	if b == nil {
 		return val, false
 	}
