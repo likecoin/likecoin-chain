@@ -58,6 +58,11 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		offer,
 	)
 
+	k.SetOfferExpireQueueEntry(ctx, types.OfferExpireQueueEntry{
+		ExpireTime: offer.Expiration,
+		OfferKey:   types.OfferKey(offer.ClassId, offer.NftId, offer.Buyer),
+	})
+
 	pubOffer := offer.ToPublicRecord()
 
 	ctx.EventManager().EmitTypedEvent(&types.EventCreateOffer{
@@ -124,6 +129,13 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 
 	k.SetOffer(ctx, newOffer)
 
+	k.UpdateOfferExpireQueueEntry(
+		ctx,
+		oldOffer.Expiration,
+		types.OfferKey(oldOffer.ClassId, oldOffer.NftId, oldOffer.Buyer),
+		newOffer.Expiration,
+	)
+
 	pubOffer := newOffer.ToPublicRecord()
 
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateOffer{
@@ -170,6 +182,12 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 		offer.ClassId,
 		offer.NftId,
 		offer.Buyer,
+	)
+
+	k.RemoveOfferExpireQueueEntry(
+		ctx,
+		offer.Expiration,
+		types.OfferKey(offer.ClassId, offer.NftId, offer.Buyer),
 	)
 
 	pubOffer := offer.ToPublicRecord()
