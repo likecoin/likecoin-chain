@@ -43,8 +43,53 @@ func processClassRevealQueue(ctx sdk.Context, keeper keeper.Keeper) {
 	})
 }
 
+func tryExpireOfferCatchPanic(ctx sdk.Context, keeper keeper.Keeper, offer types.OfferStoreRecord) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%s", r)
+		}
+	}()
+	err = keeper.ExpireOffer(ctx, offer)
+	return
+}
+
+func processOfferExpireQueue(ctx sdk.Context, keeper keeper.Keeper) {
+	// Expire offers with expiration time < current block header time
+	keeper.IterateOfferExpireQueueByTime(ctx, ctx.BlockHeader().Time, func(val types.OfferExpireQueueEntry) (stop bool) {
+		// Get offer
+		offer, found := keeper.GetOfferByKeyBytes(ctx, val.OfferKey)
+		if !found {
+			// offer not found, dequeue and continue
+			keeper.RemoveOfferExpireQueueEntry(ctx, val.ExpireTime, val.OfferKey)
+			return false
+		}
+
+		err := tryExpireOfferCatchPanic(ctx, keeper, offer)
+		if err != nil {
+			ctx.EventManager().EmitTypedEvent(&types.EventExpireOffer{
+				ClassId: offer.ClassId,
+				NftId:   offer.NftId,
+				Buyer:   offer.Buyer.String(),
+				Success: false,
+				Error:   err.Error(),
+			})
+		} else {
+			ctx.EventManager().EmitTypedEvent(&types.EventExpireOffer{
+				ClassId: offer.ClassId,
+				NftId:   offer.NftId,
+				Buyer:   offer.Buyer.String(),
+				Success: true,
+			})
+		}
+
+		keeper.RemoveOfferExpireQueueEntry(ctx, val.ExpireTime, val.OfferKey)
+		return false
+	})
+}
+
 // EndBlocker called every block, process class reveal queue.
 func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 	processClassRevealQueue(ctx, keeper)
+	processOfferExpireQueue(ctx, keeper)
 }
