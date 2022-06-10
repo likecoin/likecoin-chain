@@ -118,3 +118,11 @@ message EventExpireOffer {
   bool success = 4;
   string error = 5;
 }
+
+message EventExpireListing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  bool success = 4;
+  string error = 5;
+}
