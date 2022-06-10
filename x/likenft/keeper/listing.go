@@ -25,13 +25,20 @@ func (k Keeper) GetListing(
 	seller sdk.AccAddress,
 
 ) (val types.ListingStoreRecord, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
-
-	b := store.Get(types.ListingKey(
+	return k.GetListingByKeyBytes(ctx, types.ListingKey(
 		classId,
 		nftId,
 		seller,
 	))
+}
+
+func (k Keeper) GetListingByKeyBytes(
+	ctx sdk.Context,
+	key []byte,
+) (val types.ListingStoreRecord, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ListingKeyPrefix))
+
+	b := store.Get(key)
 	if b == nil {
 		return val, false
 	}
