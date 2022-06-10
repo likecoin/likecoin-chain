@@ -89,6 +89,16 @@ func TestGenesis(t *testing.T) {
 				OfferKey:   []byte("1"),
 			},
 		},
+		ListingExpireQueue: []types.ListingExpireQueueEntry{
+			{
+				ExpireTime: nowTime,
+				ListingKey: []byte("0"),
+			},
+			{
+				ExpireTime: nowTime,
+				ListingKey: []byte("1"),
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -109,5 +119,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.OfferList, got.OfferList)
 	require.ElementsMatch(t, genesisState.ListingList, got.ListingList)
 	require.ElementsMatch(t, genesisState.OfferExpireQueue, got.OfferExpireQueue)
+	require.ElementsMatch(t, genesisState.ListingExpireQueue, got.ListingExpireQueue)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

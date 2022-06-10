@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package likechain.likenft;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message ListingExpireQueueEntry {
+  google.protobuf.Timestamp expire_time = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  bytes listing_key = 2;
+}

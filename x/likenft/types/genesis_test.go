@@ -97,6 +97,16 @@ func TestGenesisState_Validate(t *testing.T) {
 						OfferKey:   []byte("1"),
 					},
 				},
+				ListingExpireQueue: []types.ListingExpireQueueEntry{
+					{
+						ExpireTime: nowTime,
+						ListingKey: []byte("0"),
+					},
+					{
+						ExpireTime: nowTime,
+						ListingKey: []byte("1"),
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -243,6 +253,22 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						ExpireTime: nowTime,
 						OfferKey:   []byte("0"),
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated listingExpireQueueEntry",
+			genState: &types.GenesisState{
+				ListingExpireQueue: []types.ListingExpireQueueEntry{
+					{
+						ExpireTime: nowTime,
+						ListingKey: []byte("0"),
+					},
+					{
+						ExpireTime: nowTime,
+						ListingKey: []byte("0"),
 					},
 				},
 			},
