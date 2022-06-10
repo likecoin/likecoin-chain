@@ -110,3 +110,11 @@ message EventBuyNFT {
   string buyer = 4;
   uint64 price = 5;
 }
+
+message EventExpireOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+  bool success = 4;
+  string error = 5;
+}
