@@ -48,4 +48,5 @@ var (
 	ErrListingExpired                    = sdkerrors.Register(ModuleName, 38, "Listing expired")
 	ErrFailedToBuyNFT                    = sdkerrors.Register(ModuleName, 39, "Failed to buy NFT")
 	ErrFailedToExpireOffer               = sdkerrors.Register(ModuleName, 40, "Failed to expire offer")
+	ErrFailedToExpireListing             = sdkerrors.Register(ModuleName, 41, "Failed to expire listing")
 )
