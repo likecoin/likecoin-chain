@@ -20,33 +20,85 @@ func TestClassRevealQueueProcessing(t *testing.T) {
 	app.BeginBlock(abci.RequestBeginBlock{Header: header})
 
 	// Check queue is not a valid one without any entries at height 0
-	pendingQueue := app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, header.Time)
-	require.False(t, pendingQueue.Valid())
-	pendingQueue.Close()
+	pendingClassQueue := app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingClassQueue.Valid())
+	pendingClassQueue.Close()
+
+	pendingOfferQueue := app.LikeNftKeeper.OfferExpireQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingOfferQueue.Valid())
+	pendingOfferQueue.Close()
+
+	pendingListingQueue := app.LikeNftKeeper.ListingExpireQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingListingQueue.Valid())
+	pendingListingQueue.Close()
 
 	// Seed queue entries, expect to cause class not found / bad class id error
-	entry0 := types.ClassRevealQueueEntry{
+	classEntry0 := types.ClassRevealQueueEntry{
 		RevealTime: header.Time,
 		ClassId:    "1",
 	}
-	entry1 := types.ClassRevealQueueEntry{
+	classEntry1 := types.ClassRevealQueueEntry{
 		RevealTime: header.Time.Add(time.Duration(1) * time.Second),
 		ClassId:    "2",
 	}
-	entry2 := types.ClassRevealQueueEntry{
+	classEntry2 := types.ClassRevealQueueEntry{
 		RevealTime: header.Time.Add(time.Duration(2) * time.Second),
 		ClassId:    "3",
 	}
-	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, entry0)
-	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, entry1)
-	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, entry2)
+	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, classEntry0)
+	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, classEntry1)
+	app.LikeNftKeeper.SetClassRevealQueueEntry(ctx, classEntry2)
+
+	offerEntry0 := types.OfferExpireQueueEntry{
+		ExpireTime: header.Time,
+		OfferKey:   []byte("1"),
+	}
+	offerEntry1 := types.OfferExpireQueueEntry{
+		ExpireTime: header.Time.Add(time.Duration(1) * time.Second),
+		OfferKey:   []byte("2"),
+	}
+	offerEntry2 := types.OfferExpireQueueEntry{
+		ExpireTime: header.Time.Add(time.Duration(2) * time.Second),
+		OfferKey:   []byte("3"),
+	}
+	app.LikeNftKeeper.SetOfferExpireQueueEntry(ctx, offerEntry0)
+	app.LikeNftKeeper.SetOfferExpireQueueEntry(ctx, offerEntry1)
+	app.LikeNftKeeper.SetOfferExpireQueueEntry(ctx, offerEntry2)
+
+	listingEntry0 := types.ListingExpireQueueEntry{
+		ExpireTime: header.Time,
+		ListingKey: []byte("1"),
+	}
+	listingEntry1 := types.ListingExpireQueueEntry{
+		ExpireTime: header.Time.Add(time.Duration(1) * time.Second),
+		ListingKey: []byte("2"),
+	}
+	listingEntry2 := types.ListingExpireQueueEntry{
+		ExpireTime: header.Time.Add(time.Duration(2) * time.Second),
+		ListingKey: []byte("3"),
+	}
+	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, listingEntry0)
+	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, listingEntry1)
+	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, listingEntry2)
 
 	// Double check queue is still not valid after insert since no height increase
-	pendingQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, header.Time)
-	require.False(t, pendingQueue.Valid())
-	pendingQueue.Close()
-	pendingEntries := app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, header.Time)
-	require.Empty(t, pendingEntries)
+	pendingClassQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingClassQueue.Valid())
+	pendingClassQueue.Close()
+	pendingClassEntries := app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, header.Time)
+	require.Empty(t, pendingClassEntries)
+
+	pendingOfferQueue = app.LikeNftKeeper.OfferExpireQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingOfferQueue.Valid())
+	pendingOfferQueue.Close()
+	pendingOfferEntries := app.LikeNftKeeper.GetOfferExpireQueueByTime(ctx, header.Time)
+	require.Empty(t, pendingOfferEntries)
+
+	pendingListingQueue = app.LikeNftKeeper.ListingExpireQueueByTimeIterator(ctx, header.Time)
+	require.False(t, pendingListingQueue.Valid())
+	pendingListingQueue.Close()
+	pendingListingEntries := app.LikeNftKeeper.GetListingExpireQueueByTime(ctx, header.Time)
+	require.Empty(t, pendingListingEntries)
 
 	// Increase height
 	newHeader := ctx.BlockHeader()
@@ -54,11 +106,23 @@ func TestClassRevealQueueProcessing(t *testing.T) {
 	ctx = ctx.WithBlockHeader(newHeader)
 
 	// Check pending entries after height increase
-	pendingQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, newHeader.Time)
-	require.True(t, pendingQueue.Valid())
-	pendingQueue.Close()
-	pendingEntries = app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, newHeader.Time)
-	require.Equal(t, []types.ClassRevealQueueEntry{entry0}, pendingEntries)
+	pendingClassQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, newHeader.Time)
+	require.True(t, pendingClassQueue.Valid())
+	pendingClassQueue.Close()
+	pendingClassEntries = app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, newHeader.Time)
+	require.Equal(t, []types.ClassRevealQueueEntry{classEntry0}, pendingClassEntries)
+
+	pendingOfferQueue = app.LikeNftKeeper.OfferExpireQueueByTimeIterator(ctx, newHeader.Time)
+	require.True(t, pendingOfferQueue.Valid())
+	pendingOfferQueue.Close()
+	pendingOfferEntries = app.LikeNftKeeper.GetOfferExpireQueueByTime(ctx, newHeader.Time)
+	require.Equal(t, []types.OfferExpireQueueEntry{offerEntry0}, pendingOfferEntries)
+
+	pendingListingQueue = app.LikeNftKeeper.ListingExpireQueueByTimeIterator(ctx, newHeader.Time)
+	require.True(t, pendingListingQueue.Valid())
+	pendingListingQueue.Close()
+	pendingListingEntries = app.LikeNftKeeper.GetListingExpireQueueByTime(ctx, newHeader.Time)
+	require.Equal(t, []types.ListingExpireQueueEntry{listingEntry0}, pendingListingEntries)
 
 	// Process queue, should process entry 0 only
 	require.NotPanics(t, func() {
@@ -66,13 +130,31 @@ func TestClassRevealQueueProcessing(t *testing.T) {
 	})
 
 	// Check if queue has been digested
-	pendingQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, newHeader.Time)
-	require.False(t, pendingQueue.Valid())
-	pendingQueue.Close()
-	pendingEntries = app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, newHeader.Time)
-	require.Empty(t, pendingEntries)
+	pendingClassQueue = app.LikeNftKeeper.ClassRevealQueueByTimeIterator(ctx, newHeader.Time)
+	require.False(t, pendingClassQueue.Valid())
+	pendingClassQueue.Close()
+	pendingClassEntries = app.LikeNftKeeper.GetClassRevealQueueByTime(ctx, newHeader.Time)
+	require.Empty(t, pendingClassEntries)
+
+	pendingOfferQueue = app.LikeNftKeeper.OfferExpireQueueByTimeIterator(ctx, newHeader.Time)
+	require.False(t, pendingOfferQueue.Valid())
+	pendingOfferQueue.Close()
+	pendingOfferEntries = app.LikeNftKeeper.GetOfferExpireQueueByTime(ctx, newHeader.Time)
+	require.Empty(t, pendingOfferEntries)
+
+	pendingListingQueue = app.LikeNftKeeper.ListingExpireQueueByTimeIterator(ctx, newHeader.Time)
+	require.False(t, pendingListingQueue.Valid())
+	pendingListingQueue.Close()
+	pendingListingEntries = app.LikeNftKeeper.GetListingExpireQueueByTime(ctx, newHeader.Time)
+	require.Empty(t, pendingListingEntries)
 
 	// Check future entries still on queue after digest
-	remainingEntries := app.LikeNftKeeper.GetClassRevealQueue(ctx)
-	require.Equal(t, []types.ClassRevealQueueEntry{entry1, entry2}, remainingEntries)
+	remainingClassEntries := app.LikeNftKeeper.GetClassRevealQueue(ctx)
+	require.Equal(t, []types.ClassRevealQueueEntry{classEntry1, classEntry2}, remainingClassEntries)
+
+	remainingOfferEntries := app.LikeNftKeeper.GetOfferExpireQueue(ctx)
+	require.Equal(t, []types.OfferExpireQueueEntry{offerEntry1, offerEntry2}, remainingOfferEntries)
+
+	remainingListingEntries := app.LikeNftKeeper.GetListingExpireQueue(ctx)
+	require.Equal(t, []types.ListingExpireQueueEntry{listingEntry1, listingEntry2}, remainingListingEntries)
 }
