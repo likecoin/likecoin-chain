@@ -20,10 +20,7 @@ func tryRevealClassCatchPanic(ctx sdk.Context, keeper keeper.Keeper, classId str
 	return
 }
 
-// EndBlocker called every block, process class reveal queue.
-func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
-
+func processClassRevealQueue(ctx sdk.Context, keeper keeper.Keeper) {
 	// Reveal classes with reveal time < current block header time
 	keeper.IterateClassRevealQueueByTime(ctx, ctx.BlockHeader().Time, func(entry types.ClassRevealQueueEntry) (stop bool) {
 		err := tryRevealClassCatchPanic(ctx, keeper, entry.ClassId)
@@ -44,4 +41,10 @@ func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 		keeper.RemoveClassRevealQueueEntry(ctx, entry.RevealTime, entry.ClassId)
 		return false
 	})
+}
+
+// EndBlocker called every block, process class reveal queue.
+func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
+	processClassRevealQueue(ctx, keeper)
 }
