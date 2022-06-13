@@ -56,7 +56,7 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 		if err != nil {
 			return nil, err
 		}
-		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(royaltyAmount))))
+		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, classParent.Owner, royaltyAmountCoins)
 		if err != nil {
 			return nil, types.ErrFailedToSellNFT.Wrapf(err.Error())
@@ -64,7 +64,7 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 	}
 	// pay seller
 	netAmount := msg.Price - royaltyAmount
-	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(netAmount))))
+	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddress, netAmountCoins)
 	if err != nil {
 		return nil, types.ErrFailedToSellNFT.Wrapf(err.Error())
@@ -72,7 +72,7 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 	// refund remainder to buyer
 	remainder := offer.Price - msg.Price
 	if remainder > 0 {
-		remainCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(remainder))))
+		remainCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(remainder))))
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyerAddress, remainCoins)
 		if err != nil {
 			return nil, types.ErrFailedToSellNFT.Wrapf(err.Error())

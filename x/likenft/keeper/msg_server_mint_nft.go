@@ -52,12 +52,12 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 
 	// Pay price to owner if mintPrice is not zero and the minter is not the owner
 	if !ownerAddress.Equals(userAddress) && mintPeriod.MintPrice > 0 {
-		spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetMintPriceDenom())
+		spentableTokens := k.bankKeeper.GetBalance(ctx, userAddress, params.GetPriceDenom())
 		if spentableTokens.Amount.Uint64() < mintPeriod.MintPrice {
 			return nil, types.ErrInsufficientFunds.Wrapf("insufficient funds to mint tokenId %s", tokenId)
 		}
 
-		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetMintPriceDenom(), sdk.NewInt(int64(mintPeriod.MintPrice)))))
+		err = k.bankKeeper.SendCoins(ctx, userAddress, ownerAddress, sdk.NewCoins(sdk.NewCoin(params.GetPriceDenom(), sdk.NewInt(int64(mintPeriod.MintPrice)))))
 		if err != nil {
 			return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
 		}

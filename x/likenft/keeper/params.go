@@ -8,12 +8,12 @@ import (
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.Params{
-		MintPriceDenom: k.MintPriceDenom(ctx),
+		PriceDenom: k.PriceDenom(ctx),
 	}
 }
 
-func (k Keeper) MintPriceDenom(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.ParamKeyMintPriceDenom, &res)
+func (k Keeper) PriceDenom(ctx sdk.Context) (res string) {
+	k.paramstore.Get(ctx, types.ParamKeyPriceDenom, &res)
 	return
 }
 

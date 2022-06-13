@@ -42,7 +42,7 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 	}
 
 	// check user has enough balance
-	if k.bankKeeper.GetBalance(ctx, buyerAddress, k.GetParams(ctx).MintPriceDenom).Amount.Uint64() < msg.Price {
+	if k.bankKeeper.GetBalance(ctx, buyerAddress, k.GetParams(ctx).PriceDenom).Amount.Uint64() < msg.Price {
 		return nil, types.ErrFailedToBuyNFT.Wrapf("User does not have enough balance")
 	}
 
@@ -62,7 +62,7 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 		if err != nil {
 			return nil, err
 		}
-		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(royaltyAmount))))
+		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
 		err = k.bankKeeper.SendCoins(ctx, buyerAddress, classParent.Owner, royaltyAmountCoins)
 		if err != nil {
 			return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
@@ -70,7 +70,7 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 	}
 	// pay seller
 	netAmount := msg.Price - royaltyAmount
-	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).MintPriceDenom, sdk.NewInt(int64(netAmount))))
+	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
 	err = k.bankKeeper.SendCoins(ctx, buyerAddress, sellerAddress, netAmountCoins)
 	if err != nil {
 		return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())

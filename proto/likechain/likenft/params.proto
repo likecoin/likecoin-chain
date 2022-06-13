@@ -10,5 +10,5 @@ option go_package = "github.com/likecoin/likechain/x/likenft/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
 
-  string mint_price_denom = 1;
+  string price_denom = 1;
 }

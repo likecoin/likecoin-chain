@@ -8,11 +8,11 @@ import (
 )
 
 var (
-	DefaultMintPriceDenom = "nanolike"
+	DefaultPriceDenom = "nanolike"
 )
 
 var (
-	ParamKeyMintPriceDenom = []byte("MintPriceDenom")
+	ParamKeyPriceDenom = []byte("PriceDenom")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -25,18 +25,18 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
 	return Params{
-		MintPriceDenom: DefaultMintPriceDenom,
+		PriceDenom: DefaultPriceDenom,
 	}
 }
 
-// Validate Mint price denom type
-func validateMintPriceDenom(i interface{}) error {
+// Validate price denom type
+func validatePriceDenom(i interface{}) error {
 	s, ok := i.(string)
 	if !ok {
-		return fmt.Errorf("Mint price denom must be string, got type %T", i)
+		return fmt.Errorf("Price denom must be string, got type %T", i)
 	}
 	if s == "" {
-		return fmt.Errorf("Mint price denom is empty")
+		return fmt.Errorf("Price denom is empty")
 	}
 	if err := sdk.ValidateDenom(s); err != nil {
 		return err
@@ -48,14 +48,14 @@ func validateMintPriceDenom(i interface{}) error {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(ParamKeyMintPriceDenom, &p.MintPriceDenom, validateMintPriceDenom),
+		paramtypes.NewParamSetPair(ParamKeyPriceDenom, &p.PriceDenom, validatePriceDenom),
 	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
 	var err error
-	err = validateMintPriceDenom(p.MintPriceDenom)
+	err = validatePriceDenom(p.PriceDenom)
 	if err != nil {
 		return err
 	}
@@ -65,5 +65,5 @@ func (p Params) Validate() error {
 // String implements the Stringer interface.
 func (p Params) String() string {
 	return fmt.Sprintf(`Params:
-	Mint Price denom: %s`, p.MintPriceDenom)
+	Price denom: %s`, p.PriceDenom)
 }

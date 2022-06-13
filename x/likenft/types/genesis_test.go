@@ -142,7 +142,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			desc: "empty mint price denom param",
+			desc: "empty price denom param",
 			genState: &types.GenesisState{
 				ClassesByAccountList: []types.ClassesByAccount{
 					{
@@ -153,13 +153,13 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.Params{
-					MintPriceDenom: "",
+					PriceDenom: "",
 				},
 			},
 			valid: false,
 		},
 		{
-			desc: "invalid mint price denom param",
+			desc: "invalid price denom param",
 			genState: &types.GenesisState{
 				ClassesByAccountList: []types.ClassesByAccount{
 					{
@@ -170,7 +170,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.Params{
-					MintPriceDenom: "123456",
+					PriceDenom: "123456",
 				},
 			},
 			valid: false,

@@ -47,8 +47,7 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 
 	// Take deposit if needed
 	if offer.Price > 0 {
-		// TODO: rename mint price denom
-		denom := k.MintPriceDenom(ctx)
+		denom := k.PriceDenom(ctx)
 		coins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(offer.Price))))
 		if k.bankKeeper.GetBalance(ctx, userAddress, denom).Amount.Uint64() < offer.Price {
 			return nil, types.ErrInsufficientFunds
@@ -118,7 +117,7 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 	// Update deposit if needed
 	if oldOffer.Price != newOffer.Price {
 		// Check user has enough fund to pay extra
-		denom := k.MintPriceDenom(ctx)
+		denom := k.PriceDenom(ctx)
 		priceDiff := int64(newOffer.Price) - int64(oldOffer.Price)
 		if priceDiff > 0 && k.bankKeeper.GetBalance(ctx, userAddress, denom).Amount.Int64() < priceDiff {
 			return nil, types.ErrInsufficientFunds
@@ -180,7 +179,7 @@ func (k msgServer) DeleteOffer(goCtx context.Context, msg *types.MsgDeleteOffer)
 
 	// Refund deposit if needed
 	if offer.Price > 0 {
-		denom := k.MintPriceDenom(ctx)
+		denom := k.PriceDenom(ctx)
 		coins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(offer.Price))))
 		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, coins); err != nil {
 			return nil, types.ErrFailedToDeleteOffer.Wrapf(err.Error())

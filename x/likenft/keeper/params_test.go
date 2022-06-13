@@ -17,22 +17,22 @@ func TestParamsValidate(t *testing.T) {
 	require.NoError(t, err)
 
 	params = types.Params{
-		MintPriceDenom: "nanolike",
+		PriceDenom: "nanolike",
 	}
 	err = params.Validate()
 	require.NoError(t, err)
 
 	params = types.Params{
-		MintPriceDenom: "",
+		PriceDenom: "",
 	}
 	err = params.Validate()
-	require.Error(t, err, "should not accept empty mint price denom")
+	require.Error(t, err, "should not accept empty price denom")
 
 	params = types.Params{
-		MintPriceDenom: "nanolike123!!!??",
+		PriceDenom: "nanolike123!!!??",
 	}
 	err = params.Validate()
-	require.Error(t, err, "should not accept mint price denom with invalid characters")
+	require.Error(t, err, "should not accept price denom with invalid characters")
 
 	params = types.Params{}
 	err = params.Validate()

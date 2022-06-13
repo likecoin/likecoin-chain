@@ -13,7 +13,7 @@ func (k Keeper) ExpireOffer(ctx sdk.Context, offer types.OfferStoreRecord) error
 
 	// Refund deposit if needed
 	if offer.Price > 0 {
-		denom := k.MintPriceDenom(ctx)
+		denom := k.PriceDenom(ctx)
 		coins := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(int64(offer.Price))))
 		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, offer.Buyer, coins); err != nil {
 			return types.ErrFailedToExpireOffer.Wrapf(err.Error())
