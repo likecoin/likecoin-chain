@@ -46,8 +46,8 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 	if err != nil {
 		return nil, err
 	}
-	if classData.Config.RoyaltyBasisPoints > 1000 {
-		return nil, types.ErrInvalidNftClassConfig.Wrapf("Royalty basis points cannot be greater than 1000 (10%%)")
+	if classData.Config.RoyaltyBasisPoints > types.MaxRoyaltyBasisPoints {
+		return nil, types.ErrInvalidNftClassConfig.Wrapf("Royalty basis points cannot be greater than %s", types.MaxRoyaltyBasisPointsText)
 	}
 	royaltyAmount := msg.Price / 10000 * classData.Config.RoyaltyBasisPoints
 	// pay royalty if needed, could be 0 if price < 10000

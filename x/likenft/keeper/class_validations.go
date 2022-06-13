@@ -87,8 +87,8 @@ func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig, mintableCo
 	}
 
 	// Assert royalty <= 10%
-	if classConfig.RoyaltyBasisPoints > 1000 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Royalty basis points %d cannot be greater than 1000 (10%%)", classConfig.RoyaltyBasisPoints)
+	if classConfig.RoyaltyBasisPoints > types.MaxRoyaltyBasisPoints {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Royalty basis points cannot be greater than %s", types.MaxRoyaltyBasisPointsText)
 	}
 
 	return &classConfig, nil
