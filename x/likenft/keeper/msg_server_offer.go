@@ -32,6 +32,11 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 		return nil, types.ErrNftNotFound
 	}
 
+	// Check expiration range
+	if err := validateOfferExpiration(ctx, msg.Expiration); err != nil {
+		return nil, err
+	}
+
 	offer := types.OfferStoreRecord{
 		ClassId:    msg.ClassId,
 		NftId:      msg.NftId,
@@ -96,6 +101,11 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 	}
 
 	// Assume data in store is valid; i.e. nft exists
+
+	// Check expiration range
+	if err := validateOfferExpiration(ctx, msg.Expiration); err != nil {
+		return nil, err
+	}
 
 	newOffer := types.OfferStoreRecord{
 		ClassId:    msg.ClassId,

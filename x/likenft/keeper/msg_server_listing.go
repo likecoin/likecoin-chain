@@ -21,6 +21,11 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 		return nil, types.ErrFailedToCreateListing.Wrapf("User do not own the NFT")
 	}
 
+	// Validate expiration range
+	if err := validateListingExpiration(ctx, msg.Expiration); err != nil {
+		return nil, err
+	}
+
 	// Check if the value already exists
 	_, isFound := k.GetListing(
 		ctx,
@@ -84,6 +89,11 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 	)
 	if !isFound {
 		return nil, types.ErrListingNotFound
+	}
+
+	// Validate expiration range
+	if err := validateListingExpiration(ctx, msg.Expiration); err != nil {
+		return nil, err
 	}
 
 	var newListing = types.ListingStoreRecord{
