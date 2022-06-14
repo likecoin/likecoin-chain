@@ -134,6 +134,13 @@ func (k msgServer) DeleteListing(goCtx context.Context, msg *types.MsgDeleteList
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 	}
 
+	// If user is nft owner, prune all listings and return
+	// This is for new owner to remove listing of previous owner without creating new listing
+	if k.nftKeeper.GetOwner(ctx, msg.ClassId, msg.NftId).Equals(userAddress) {
+		k.PruneAllListingsForNFT(ctx, msg.ClassId, msg.NftId)
+		return &types.MsgDeleteListingResponse{}, nil
+	}
+
 	// Check if the value exists
 	listing, isFound := k.GetListing(
 		ctx,
