@@ -126,7 +126,7 @@ func processListingExpireQueue(ctx sdk.Context, keeper keeper.Keeper) {
 			})
 		}
 
-		keeper.RemoveOfferExpireQueueEntry(ctx, val.ExpireTime, val.ListingKey)
+		keeper.RemoveListingExpireQueueEntry(ctx, val.ExpireTime, val.ListingKey)
 		return false
 	})
 }
