@@ -88,7 +88,17 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 		return nil, types.ErrFailedToSellNFT.Wrapf(err.Error())
 	}
 	// remove offer
-	k.RemoveOffer(ctx, msg.ClassId, msg.NftId, buyerAddress)
+	k.RemoveOffer(
+		ctx,
+		offer.ClassId,
+		offer.NftId,
+		offer.Buyer,
+	)
+	k.RemoveOfferExpireQueueEntry(
+		ctx,
+		offer.Expiration,
+		types.OfferKey(offer.ClassId, offer.NftId, offer.Buyer),
+	)
 
 	// owner changed, prune invalid listings
 	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)

@@ -86,7 +86,17 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 	}
 
 	// remove listing
-	k.RemoveListing(ctx, msg.ClassId, msg.NftId, sellerAddress)
+	k.RemoveListing(
+		ctx,
+		listing.ClassId,
+		listing.NftId,
+		listing.Seller,
+	)
+	k.RemoveListingExpireQueueEntry(
+		ctx,
+		listing.Expiration,
+		types.OfferKey(listing.ClassId, listing.NftId, listing.Seller),
+	)
 
 	// owner changed, prune invalid listings
 	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)
