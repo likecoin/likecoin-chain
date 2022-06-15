@@ -25,6 +25,13 @@ func TestEndToEndAccountNormal(t *testing.T) {
 	// And do not want to spend time on seeding tester accounts
 	// Fix later if using nanolike is a must for testing features
 
+	likenftGenesis := types.GenesisState{}
+	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[types.StoreKey], &likenftGenesis)
+	likenftGenesis.Params.FeePerByte = sdk.NewDecCoin(
+		cfg.BondDenom, sdk.NewInt(types.DefaultFeePerByteAmount),
+	)
+	cfg.GenesisState[types.StoreKey] = cfg.Codec.MustMarshalJSON(&likenftGenesis)
+
 	// Setup network
 	net := network.New(t, cfg)
 	ctx := net.Validators[0].ClientCtx

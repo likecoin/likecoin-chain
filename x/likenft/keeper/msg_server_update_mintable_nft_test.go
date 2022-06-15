@@ -7,6 +7,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/testutil/keeper"
@@ -78,6 +79,10 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 
 	// once at seeding
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil)
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
+
 	keeper.SetMintableNFT(ctx, types.MintableNFT{
 		ClassId: classId,
 		Id:      mintableId,

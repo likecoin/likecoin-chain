@@ -37,6 +37,13 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 	)
 	cfg.GenesisState[iscntypes.StoreKey] = cfg.Codec.MustMarshalJSON(&iscnGenesis)
 
+	likenftGenesis := types.GenesisState{}
+	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[types.StoreKey], &likenftGenesis)
+	likenftGenesis.Params.FeePerByte = sdk.NewDecCoin(
+		cfg.BondDenom, sdk.NewInt(types.DefaultFeePerByteAmount),
+	)
+	cfg.GenesisState[types.StoreKey] = cfg.Codec.MustMarshalJSON(&likenftGenesis)
+
 	// Setup network
 	net := network.New(t, cfg)
 	ctx := net.Validators[0].ClientCtx

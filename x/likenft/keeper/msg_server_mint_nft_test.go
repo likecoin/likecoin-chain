@@ -8,6 +8,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
 	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/testutil/keeper"
@@ -102,6 +103,9 @@ func TestMintOwnerNFTNormal(t *testing.T) {
 		EXPECT().
 		GetTotalSupply(gomock.Any(), gomock.Eq(classId)).
 		Return(uint64(1))
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	wrappedOwnerAddress, _ := sdk.AccAddressFromBech32(ownerAddress)
 	nftKeeper.
@@ -250,6 +254,9 @@ func TestMintNFTFirstToken(t *testing.T) {
 		EXPECT().
 		UpdateClass(gomock.Any(), updateClassMatcher).
 		Return(nil)
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	wrappedOwnerAddress, _ := sdk.AccAddressFromBech32(ownerAddress)
 	nftKeeper.
@@ -2312,6 +2319,9 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 		EXPECT().
 		GetTotalSupply(gomock.Any(), gomock.Eq(classId)).
 		Return(uint64(50))
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	wrappedOwnerAddress, _ := sdk.AccAddressFromBech32(ownerAddress)
 	nftKeeper.
