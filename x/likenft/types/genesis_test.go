@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/likecoin/likechain/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
@@ -154,6 +155,25 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				Params: types.Params{
 					PriceDenom: "",
+					FeePerByte: sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "empty fee per byte",
+			genState: &types.GenesisState{
+				ClassesByAccountList: []types.ClassesByAccount{
+					{
+						Account: accounts[0].String(),
+					},
+					{
+						Account: accounts[0].String(),
+					},
+				},
+				Params: types.Params{
+					PriceDenom: "nanolike",
+					FeePerByte: sdk.DecCoin{},
 				},
 			},
 			valid: false,

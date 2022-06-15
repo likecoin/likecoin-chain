@@ -9,11 +9,17 @@ import (
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.Params{
 		PriceDenom: k.PriceDenom(ctx),
+		FeePerByte: k.FeePerByte(ctx),
 	}
 }
 
 func (k Keeper) PriceDenom(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.ParamKeyPriceDenom, &res)
+	return
+}
+
+func (k Keeper) FeePerByte(ctx sdk.Context) (res sdk.DecCoin) {
+	k.paramstore.Get(ctx, types.ParamKeyFeePerByte, &res)
 	return
 }
 

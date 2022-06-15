@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	testkeeper "github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/x/likenft/types"
 	"github.com/stretchr/testify/require"
@@ -18,18 +19,28 @@ func TestParamsValidate(t *testing.T) {
 
 	params = types.Params{
 		PriceDenom: "nanolike",
+		FeePerByte: sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
 	}
 	err = params.Validate()
 	require.NoError(t, err)
 
 	params = types.Params{
 		PriceDenom: "",
+		FeePerByte: sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
 	}
 	err = params.Validate()
 	require.Error(t, err, "should not accept empty price denom")
 
 	params = types.Params{
+		PriceDenom: "nanolike",
+		FeePerByte: sdk.DecCoin{},
+	}
+	err = params.Validate()
+	require.Error(t, err, "should not accept empty fee per byte")
+
+	params = types.Params{
 		PriceDenom: "nanolike123!!!??",
+		FeePerByte: sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
 	}
 	err = params.Validate()
 	require.Error(t, err, "should not accept price denom with invalid characters")

@@ -8,11 +8,17 @@ import (
 )
 
 var (
-	DefaultPriceDenom = "nanolike"
+	DefaultPriceDenom             = "nanolike"
+	DefaultFeePerByteDenom        = "nanolike"
+	DefaultFeePerByteAmount int64 = 10000
+	DefaultFeePerByte             = sdk.NewDecCoin(
+		DefaultFeePerByteDenom, sdk.NewInt(DefaultFeePerByteAmount),
+	)
 )
 
 var (
 	ParamKeyPriceDenom = []byte("PriceDenom")
+	ParamKeyFeePerByte = []byte("FeePerByte")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -26,6 +32,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 	return Params{
 		PriceDenom: DefaultPriceDenom,
+		FeePerByte: DefaultFeePerByte,
 	}
 }
 
@@ -45,10 +52,26 @@ func validatePriceDenom(i interface{}) error {
 	return nil
 }
 
+// Validate fee per byte
+func validateFeePerByte(i interface{}) error {
+	v, ok := i.(sdk.DecCoin)
+	if !ok {
+		return fmt.Errorf("LikeNFT fee per byte has invalid type: %T", i)
+	}
+	if v.Denom == "" {
+		return fmt.Errorf("LikeNFT fee per byte has empty denom")
+	}
+	if v.IsNegative() {
+		return fmt.Errorf("LikeNFT fee per byte must be non-negative, got %s", v.Amount.String())
+	}
+	return nil
+}
+
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(ParamKeyPriceDenom, &p.PriceDenom, validatePriceDenom),
+		paramtypes.NewParamSetPair(ParamKeyFeePerByte, &p.FeePerByte, validateFeePerByte),
 	}
 }
 
@@ -59,11 +82,19 @@ func (p Params) Validate() error {
 	if err != nil {
 		return err
 	}
+	err = validateFeePerByte(p.FeePerByte)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // String implements the Stringer interface.
 func (p Params) String() string {
 	return fmt.Sprintf(`Params:
-	Price denom: %s`, p.PriceDenom)
+	Price denom: %s,
+	Fee per byte: %s`,
+		p.PriceDenom,
+		p.FeePerByte,
+	)
 }
