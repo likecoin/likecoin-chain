@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
@@ -27,12 +28,23 @@ func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreate
 		return nil, types.ErrMintableNftAlreadyExists
 	}
 
-	// set record
 	mintableNFT := types.MintableNFT{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
 	}
+
+	// Deduct minting fee
+	userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
+	}
+	err = k.DeductFeeForMintingNFT(ctx, userAddress, mintableNFT.Size())
+	if err != nil {
+		return nil, err
+	}
+
+	// set record
 	k.SetMintableNFT(ctx, mintableNFT)
 
 	// Emit event

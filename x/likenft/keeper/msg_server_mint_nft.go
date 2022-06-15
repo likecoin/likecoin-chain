@@ -98,6 +98,11 @@ func (k msgServer) mintRegularNFT(ctx sdk.Context, classId string, classData *ty
 		UriHash: msg.Input.UriHash,
 		Data:    nftDataInAny,
 	}
+	// Deduct minting fee
+	err = k.DeductFeeForMintingNFT(ctx, userAddress, nft.Size())
+	if err != nil {
+		return nil, err
+	}
 	err = k.nftKeeper.Mint(ctx, nft, userAddress)
 	if err != nil {
 		return nil, types.ErrFailedToMintNFT.Wrapf("%s", err.Error())
