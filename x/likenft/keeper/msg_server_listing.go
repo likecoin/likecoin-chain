@@ -18,7 +18,7 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 
 	// check user own the nft
 	if !k.nftKeeper.GetOwner(ctx, msg.ClassId, msg.NftId).Equals(userAddress) {
-		return nil, types.ErrFailedToCreateListing.Wrapf("User do not own the NFT")
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("User do not own the NFT")
 	}
 
 	// Validate expiration range
