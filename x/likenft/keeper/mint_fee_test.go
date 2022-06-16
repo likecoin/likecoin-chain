@@ -51,10 +51,9 @@ func TestMintFeeNormal(t *testing.T) {
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	feePerByte := sdk.NewDecCoin("nanoekil", sdk.NewInt(987654))
-	keeper.SetParams(ctx, types.Params{
-		PriceDenom: "nanoekil",
-		FeePerByte: feePerByte,
-	})
+	params := types.DefaultParams()
+	params.FeePerByte = feePerByte
+	keeper.SetParams(ctx, params)
 
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 
@@ -91,10 +90,9 @@ func TestMintFeeFreeForEmpty(t *testing.T) {
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	feePerByte := sdk.NewDecCoin("nanoekil", sdk.NewInt(987654))
-	keeper.SetParams(ctx, types.Params{
-		PriceDenom: "nanoekil",
-		FeePerByte: feePerByte,
-	})
+	params := types.DefaultParams()
+	params.FeePerByte = feePerByte
+	keeper.SetParams(ctx, params)
 
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 
@@ -123,10 +121,9 @@ func TestMintFeeFreeForZeroRate(t *testing.T) {
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	feePerByte := sdk.NewDecCoin("nanoekil", sdk.NewInt(0))
-	keeper.SetParams(ctx, types.Params{
-		PriceDenom: "nanoekil",
-		FeePerByte: feePerByte,
-	})
+	params := types.DefaultParams()
+	params.FeePerByte = feePerByte
+	keeper.SetParams(ctx, params)
 
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 
@@ -155,10 +152,9 @@ func TestMintFeeAccNotFound(t *testing.T) {
 	})
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	feePerByte := sdk.NewDecCoin("nanoekil", sdk.NewInt(987654))
-	keeper.SetParams(ctx, types.Params{
-		PriceDenom: "nanoekil",
-		FeePerByte: feePerByte,
-	})
+	params := types.DefaultParams()
+	params.FeePerByte = feePerByte
+	keeper.SetParams(ctx, params)
 
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 

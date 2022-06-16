@@ -14,11 +14,17 @@ var (
 	DefaultFeePerByte             = sdk.NewDecCoin(
 		DefaultFeePerByteDenom, sdk.NewInt(DefaultFeePerByteAmount),
 	)
+	DefaultMaxOfferDurationDays   uint64 = 180
+	DefaultMaxListingDurationDays uint64 = 180
+	DefaultMaxRoyaltyBasisPoints  uint64 = 1000 // 10%
 )
 
 var (
-	ParamKeyPriceDenom = []byte("PriceDenom")
-	ParamKeyFeePerByte = []byte("FeePerByte")
+	ParamKeyPriceDenom             = []byte("PriceDenom")
+	ParamKeyFeePerByte             = []byte("FeePerByte")
+	ParamKeyMaxOfferDurationDays   = []byte("MaxOfferDurationDays")
+	ParamKeyMaxListingDurationDays = []byte("MaxListingDurationDays")
+	ParamKeyMaxRoyaltyBasisPoints  = []byte("MaxRoyaltyBasisPoints")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -31,8 +37,11 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
 	return Params{
-		PriceDenom: DefaultPriceDenom,
-		FeePerByte: DefaultFeePerByte,
+		PriceDenom:             DefaultPriceDenom,
+		FeePerByte:             DefaultFeePerByte,
+		MaxOfferDurationDays:   DefaultMaxOfferDurationDays,
+		MaxListingDurationDays: DefaultMaxListingDurationDays,
+		MaxRoyaltyBasisPoints:  DefaultMaxRoyaltyBasisPoints,
 	}
 }
 
@@ -67,11 +76,50 @@ func validateFeePerByte(i interface{}) error {
 	return nil
 }
 
+// Validate max offer duration
+func validateMaxOfferDurationDays(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("Max offer duration has invalid type: %T", i)
+	}
+	if v == 0 {
+		return fmt.Errorf("Max offer duration is zero")
+	}
+	return nil
+}
+
+// Validate max listing duration
+func validateMaxListingDurationDays(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("Max listing duration has invalid type: %T", i)
+	}
+	if v == 0 {
+		return fmt.Errorf("Max listing duration is zero")
+	}
+	return nil
+}
+
+// Validate max royalty basis points
+func validateMaxRoyaltyBasisPoints(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("Max royalty basis points has invalid type: %T", i)
+	}
+	if v > 10000 {
+		return fmt.Errorf("Max royalty basis points is larger than 10000 (100%%)")
+	}
+	return nil
+}
+
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(ParamKeyPriceDenom, &p.PriceDenom, validatePriceDenom),
 		paramtypes.NewParamSetPair(ParamKeyFeePerByte, &p.FeePerByte, validateFeePerByte),
+		paramtypes.NewParamSetPair(ParamKeyMaxOfferDurationDays, &p.MaxOfferDurationDays, validateMaxOfferDurationDays),
+		paramtypes.NewParamSetPair(ParamKeyMaxListingDurationDays, &p.MaxListingDurationDays, validateMaxListingDurationDays),
+		paramtypes.NewParamSetPair(ParamKeyMaxRoyaltyBasisPoints, &p.MaxRoyaltyBasisPoints, validateMaxRoyaltyBasisPoints),
 	}
 }
 
@@ -86,6 +134,18 @@ func (p Params) Validate() error {
 	if err != nil {
 		return err
 	}
+	err = validateMaxOfferDurationDays(p.MaxOfferDurationDays)
+	if err != nil {
+		return err
+	}
+	err = validateMaxListingDurationDays(p.MaxListingDurationDays)
+	if err != nil {
+		return err
+	}
+	err = validateMaxRoyaltyBasisPoints(p.MaxRoyaltyBasisPoints)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -93,8 +153,14 @@ func (p Params) Validate() error {
 func (p Params) String() string {
 	return fmt.Sprintf(`Params:
 	Price denom: %s,
-	Fee per byte: %s`,
+	Fee per byte: %s
+	Max offer duration days: %d
+	Max listing duration days: %d
+	Max royalty basis points: %d`,
 		p.PriceDenom,
 		p.FeePerByte,
+		p.MaxOfferDurationDays,
+		p.MaxListingDurationDays,
+		p.MaxRoyaltyBasisPoints,
 	)
 }

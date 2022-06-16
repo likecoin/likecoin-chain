@@ -179,6 +179,45 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
+			desc: "zero max offer duration",
+			genState: &types.GenesisState{
+				Params: types.Params{
+					PriceDenom:             "nanolike",
+					FeePerByte:             sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
+					MaxOfferDurationDays:   0,
+					MaxListingDurationDays: 180,
+					MaxRoyaltyBasisPoints:  1000,
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "zero max listing duration",
+			genState: &types.GenesisState{
+				Params: types.Params{
+					PriceDenom:             "nanolike",
+					FeePerByte:             sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
+					MaxOfferDurationDays:   180,
+					MaxListingDurationDays: 0,
+					MaxRoyaltyBasisPoints:  1000,
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "max royalty basis points > 10000",
+			genState: &types.GenesisState{
+				Params: types.Params{
+					PriceDenom:             "nanolike",
+					FeePerByte:             sdk.NewDecCoin("nanolike", sdk.NewInt(123456)),
+					MaxOfferDurationDays:   180,
+					MaxListingDurationDays: 0,
+					MaxRoyaltyBasisPoints:  100001,
+				},
+			},
+			valid: false,
+		},
+		{
 			desc: "invalid price denom param",
 			genState: &types.GenesisState{
 				ClassesByAccountList: []types.ClassesByAccount{
