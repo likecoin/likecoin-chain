@@ -73,7 +73,7 @@ func (k msgServer) sanitizeBlindBoxConfig(blindBoxConfig *types.BlindBoxConfig) 
 	return blindBoxConfig, nil
 }
 
-func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig, mintableCount uint64) (*types.ClassConfig, error) {
+func (k msgServer) sanitizeClassConfig(ctx sdk.Context, classConfig types.ClassConfig, mintableCount uint64) (*types.ClassConfig, error) {
 	// Ensure mint periods and reveal time are set when blind box mode is enabled
 	cleanBlindBoxConfig, err := k.sanitizeBlindBoxConfig(classConfig.BlindBoxConfig)
 	if err != nil {
@@ -87,8 +87,8 @@ func (k msgServer) sanitizeClassConfig(classConfig types.ClassConfig, mintableCo
 	}
 
 	// Assert royalty <= 10%
-	if classConfig.RoyaltyBasisPoints > types.MaxRoyaltyBasisPoints {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Royalty basis points cannot be greater than %s", types.MaxRoyaltyBasisPointsText)
+	if classConfig.RoyaltyBasisPoints > k.MaxRoyaltyBasisPoints(ctx) {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("Royalty basis points cannot be greater than %s", k.MaxRoyaltyBasisPointsText(ctx))
 	}
 
 	return &classConfig, nil

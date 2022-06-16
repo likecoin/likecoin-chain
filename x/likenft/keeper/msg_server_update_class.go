@@ -25,7 +25,7 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	}
 
 	// Verify and Cleanup class config
-	cleanClassConfig, err := k.sanitizeClassConfig(msg.Input.Config, classData.MintableCount)
+	cleanClassConfig, err := k.sanitizeClassConfig(ctx, msg.Input.Config, classData.MintableCount)
 	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}

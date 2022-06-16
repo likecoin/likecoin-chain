@@ -22,7 +22,7 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 	}
 
 	// Validate expiration range
-	if err := validateListingExpiration(ctx, msg.Expiration); err != nil {
+	if err := k.validateListingExpiration(ctx, msg.Expiration); err != nil {
 		return nil, err
 	}
 
@@ -92,7 +92,7 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 	}
 
 	// Validate expiration range
-	if err := validateListingExpiration(ctx, msg.Expiration); err != nil {
+	if err := k.validateListingExpiration(ctx, msg.Expiration); err != nil {
 		return nil, err
 	}
 

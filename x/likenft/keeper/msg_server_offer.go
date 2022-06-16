@@ -33,7 +33,7 @@ func (k msgServer) CreateOffer(goCtx context.Context, msg *types.MsgCreateOffer)
 	}
 
 	// Check expiration range
-	if err := validateOfferExpiration(ctx, msg.Expiration); err != nil {
+	if err := k.validateOfferExpiration(ctx, msg.Expiration); err != nil {
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func (k msgServer) UpdateOffer(goCtx context.Context, msg *types.MsgUpdateOffer)
 	// Assume data in store is valid; i.e. nft exists
 
 	// Check expiration range
-	if err := validateOfferExpiration(ctx, msg.Expiration); err != nil {
+	if err := k.validateOfferExpiration(ctx, msg.Expiration); err != nil {
 		return nil, err
 	}
 
