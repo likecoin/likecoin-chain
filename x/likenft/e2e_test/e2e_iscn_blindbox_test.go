@@ -42,6 +42,7 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 	likenftGenesis.Params.FeePerByte = sdk.NewDecCoin(
 		cfg.BondDenom, sdk.NewInt(types.DefaultFeePerByteAmount),
 	)
+	likenftGenesis.Params.PriceDenom = cfg.BondDenom
 	cfg.GenesisState[types.StoreKey] = cfg.Codec.MustMarshalJSON(&likenftGenesis)
 
 	// Setup network
