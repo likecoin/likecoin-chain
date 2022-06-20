@@ -297,3 +297,90 @@ ParseEventBuyNFT:
 	}
 	return actualEvent
 }
+
+func parseEventCreateOffer(res sdk.TxResponse) types.EventCreateOffer {
+	actualEvent := types.EventCreateOffer{}
+
+ParseEventCreateOffer:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventCreateOffer" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "nft_id" {
+						actualEvent.NftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "buyer" {
+						actualEvent.Buyer = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventCreateOffer
+			}
+		}
+	}
+
+	return actualEvent
+}
+
+func parseEventUpdateOffer(res sdk.TxResponse) types.EventUpdateOffer {
+	actualEvent := types.EventUpdateOffer{}
+
+ParseEventUpdateOffer:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventUpdateOffer" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "nft_id" {
+						actualEvent.NftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "buyer" {
+						actualEvent.Buyer = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventUpdateOffer
+			}
+		}
+	}
+
+	return actualEvent
+}
+
+func parseEventSellNFT(res sdk.TxResponse) types.EventSellNFT {
+	actualEvent := types.EventSellNFT{}
+
+ParseEventSellNFT:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventSellNFT" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "nft_id" {
+						actualEvent.NftId = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "seller" {
+						actualEvent.Seller = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "buyer" {
+						actualEvent.Buyer = strings.Trim(attr.Value, "\"")
+					}
+					if attr.Key == "price" {
+						price, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
+						if err != nil {
+							panic(err)
+						}
+						actualEvent.Price = price
+					}
+				}
+				break ParseEventSellNFT
+			}
+		}
+	}
+	return actualEvent
+}
