@@ -85,21 +85,8 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 		return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
 	}
 
-	// remove listing
-	k.RemoveListing(
-		ctx,
-		listing.ClassId,
-		listing.NftId,
-		listing.Seller,
-	)
-	k.RemoveListingExpireQueueEntry(
-		ctx,
-		listing.Expiration,
-		types.OfferKey(listing.ClassId, listing.NftId, listing.Seller),
-	)
-
-	// owner changed, prune invalid listings
-	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)
+	// owner changed, remove all listings
+	k.PruneAllListingsForNFT(ctx, msg.ClassId, msg.NftId)
 
 	// emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventBuyNFT{

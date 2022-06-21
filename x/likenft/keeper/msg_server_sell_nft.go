@@ -100,8 +100,8 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 		types.OfferKey(offer.ClassId, offer.NftId, offer.Buyer),
 	)
 
-	// owner changed, prune invalid listings
-	k.PruneInvalidListingsForNFT(ctx, msg.ClassId, msg.NftId)
+	// owner changed, remove all listings
+	k.PruneAllListingsForNFT(ctx, msg.ClassId, msg.NftId)
 
 	// emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventSellNFT{
