@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
@@ -7,9 +8,7 @@ import "iscn/iscnid.proto";
 option go_package = "github.com/likecoin/likecoin-chain/v2/x/iscn/types";
 
 message StoreRecord {
-  IscnId iscn_id = 1 [
-    (gogoproto.nullable) = false
-  ];
+  IscnId iscn_id = 1 [(gogoproto.nullable) = false];
   bytes cid_bytes = 2;
   bytes data = 3 [
     (gogoproto.nullable) = false,

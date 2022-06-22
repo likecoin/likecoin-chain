@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
@@ -6,21 +7,19 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/likecoin/likecoin-chain/v2/x/iscn/types";
 
 message IscnIdPrefix {
-  option (gogoproto.equal)            = true;
+  option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
-  option (gogoproto.stringer)         = false;
+  option (gogoproto.stringer) = false;
 
   string registry_name = 1;
   string content_id = 2;
 }
 
 message IscnId {
-  option (gogoproto.equal)            = true;
+  option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
-  option (gogoproto.stringer)         = false;
+  option (gogoproto.stringer) = false;
 
-  IscnIdPrefix prefix = 1 [
-    (gogoproto.nullable) = false
-  ];
+  IscnIdPrefix prefix = 1 [(gogoproto.nullable) = false];
   uint64 version = 2;
 }

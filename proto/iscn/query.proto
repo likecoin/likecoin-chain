@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
@@ -68,7 +69,7 @@ message QueryRecordsByIdRequest {
   uint64 to_version = 3;
 }
 
-message QueryRecordsByIdResponse  {
+message QueryRecordsByIdResponse {
   string owner = 1;
   uint64 latest_version = 2;
   repeated QueryResponseRecord records = 3 [(gogoproto.nullable) = false];
@@ -85,7 +86,7 @@ message QueryRecordsByFingerprintRequest {
   uint64 from_sequence = 2;
 }
 
-message QueryRecordsByFingerprintResponse  {
+message QueryRecordsByFingerprintResponse {
   repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
 
   // For pagination.
@@ -102,13 +103,12 @@ message QueryRecordsByOwnerRequest {
   uint64 from_sequence = 2;
 }
 
-message QueryRecordsByOwnerResponse  {
+message QueryRecordsByOwnerResponse {
   repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
   uint64 next_sequence = 2;
 }
 
-message QueryParamsRequest {
-}
+message QueryParamsRequest {}
 
 message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
