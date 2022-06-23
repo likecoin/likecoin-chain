@@ -8,10 +8,33 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
+func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator string, classId string) error {
+	// Check user is class owner
+	userAddress, err := sdk.AccAddressFromBech32(msgCreator)
+	if err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+	class, classData, err := k.GetClass(ctx, classId)
+	if err != nil {
+		return err
+	}
+	parent, err := k.ValidateAndRefreshClassParent(ctx, class.Id, classData.Parent)
+	if err != nil {
+		return err
+	}
+	if !parent.Owner.Equals(userAddress) {
+		return sdkerrors.ErrUnauthorized.Wrapf("user is not the class owner")
+	}
+	return nil
+}
+
 func (k msgServer) CreateRoyaltyConfig(goCtx context.Context, msg *types.MsgCreateRoyaltyConfig) (*types.MsgCreateRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Check user is class owner
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	if err != nil {
+		return nil, err
+	}
 
 	// Check if the value already exists
 	_, isFound := k.GetRoyaltyConfig(
@@ -19,31 +42,33 @@ func (k msgServer) CreateRoyaltyConfig(goCtx context.Context, msg *types.MsgCrea
 		msg.ClassId,
 	)
 	if isFound {
-		// TODO: customize error
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
+		return nil, types.ErrRoyaltyConfigAlreadyExists
 	}
 
-	var royaltyConfigByClass = types.RoyaltyConfigByClass{
-		ClassId:       msg.ClassId,
-		RoyaltyConfig: msg.RoyaltyConfig.ToConfig(),
-	}
-
+	// Set config
+	config := msg.RoyaltyConfig.ToConfig()
 	k.SetRoyaltyConfig(
 		ctx,
-		royaltyConfigByClass,
+		types.RoyaltyConfigByClass{
+			ClassId:       msg.ClassId,
+			RoyaltyConfig: config,
+		},
 	)
 
 	// TODO emit event
 
 	return &types.MsgCreateRoyaltyConfigResponse{
-		RoyaltyConfig: royaltyConfigByClass.RoyaltyConfig,
+		RoyaltyConfig: config,
 	}, nil
 }
 
 func (k msgServer) UpdateRoyaltyConfig(goCtx context.Context, msg *types.MsgUpdateRoyaltyConfig) (*types.MsgUpdateRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Check user is class owner
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	if err != nil {
+		return nil, err
+	}
 
 	// Check if the value exists
 	_, isFound := k.GetRoyaltyConfig(
@@ -51,28 +76,32 @@ func (k msgServer) UpdateRoyaltyConfig(goCtx context.Context, msg *types.MsgUpda
 		msg.ClassId,
 	)
 	if !isFound {
-		// TODO: customize error
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, types.ErrRoyaltyConfigNotFound
 	}
 
-	var royaltyConfigByClass = types.RoyaltyConfigByClass{
-		ClassId:       msg.ClassId,
-		RoyaltyConfig: msg.RoyaltyConfig.ToConfig(),
-	}
-
-	k.SetRoyaltyConfig(ctx, royaltyConfigByClass)
+	config := msg.RoyaltyConfig.ToConfig()
+	k.SetRoyaltyConfig(
+		ctx,
+		types.RoyaltyConfigByClass{
+			ClassId:       msg.ClassId,
+			RoyaltyConfig: config,
+		},
+	)
 
 	// TODO emit event
 
 	return &types.MsgUpdateRoyaltyConfigResponse{
-		RoyaltyConfig: royaltyConfigByClass.RoyaltyConfig,
+		RoyaltyConfig: config,
 	}, nil
 }
 
 func (k msgServer) DeleteRoyaltyConfig(goCtx context.Context, msg *types.MsgDeleteRoyaltyConfig) (*types.MsgDeleteRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Check user is class owner
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	if err != nil {
+		return nil, err
+	}
 
 	// Check if the value exists
 	_, isFound := k.GetRoyaltyConfig(
@@ -80,8 +109,7 @@ func (k msgServer) DeleteRoyaltyConfig(goCtx context.Context, msg *types.MsgDele
 		msg.ClassId,
 	)
 	if !isFound {
-		// TODO: customize error
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, types.ErrRoyaltyConfigNotFound
 	}
 
 	k.RemoveRoyaltyConfig(

@@ -49,4 +49,6 @@ var (
 	ErrFailedToBuyNFT                    = sdkerrors.Register(ModuleName, 39, "Failed to buy NFT")
 	ErrFailedToExpireOffer               = sdkerrors.Register(ModuleName, 40, "Failed to expire offer")
 	ErrFailedToExpireListing             = sdkerrors.Register(ModuleName, 41, "Failed to expire listing")
+	ErrRoyaltyConfigAlreadyExists        = sdkerrors.Register(ModuleName, 42, "Royalty config already exists")
+	ErrRoyaltyConfigNotFound             = sdkerrors.Register(ModuleName, 43, "Royalty config not found")
 )
