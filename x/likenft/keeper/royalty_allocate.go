@@ -14,8 +14,8 @@ type RoyaltyAllocation struct {
 }
 
 func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, config types.RoyaltyConfig) (royaltyAmount uint64, allocations []RoyaltyAllocation, err error) {
-	if config.RateBasisPoints > k.MaxRoyaltyBasisPoints(ctx) {
-		err = types.ErrInvalidRoyaltyConfig.Wrapf("Royalty basis points cannot be greater than %s", k.MaxRoyaltyBasisPointsText(ctx))
+	err = k.validateRoyaltyConfig(ctx, config)
+	if err != nil {
 		return
 	}
 	// max allocable amount

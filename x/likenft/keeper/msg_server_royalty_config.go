@@ -8,7 +8,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator string, classId string) error {
+func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator string, classId string, configInput *types.RoyaltyConfigInput) error {
 	// Check user is class owner
 	userAddress, err := sdk.AccAddressFromBech32(msgCreator)
 	if err != nil {
@@ -25,14 +25,19 @@ func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator 
 	if !parent.Owner.Equals(userAddress) {
 		return sdkerrors.ErrUnauthorized.Wrapf("user is not the class owner")
 	}
-	// FIXME validate max rate as well
+	// Validate royalty config
+	if configInput != nil {
+		if err := k.validateRoyaltyConfigInput(ctx, *configInput); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func (k msgServer) CreateRoyaltyConfig(goCtx context.Context, msg *types.MsgCreateRoyaltyConfig) (*types.MsgCreateRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId, &msg.RoyaltyConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +73,7 @@ func (k msgServer) CreateRoyaltyConfig(goCtx context.Context, msg *types.MsgCrea
 func (k msgServer) UpdateRoyaltyConfig(goCtx context.Context, msg *types.MsgUpdateRoyaltyConfig) (*types.MsgUpdateRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId, &msg.RoyaltyConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +108,7 @@ func (k msgServer) UpdateRoyaltyConfig(goCtx context.Context, msg *types.MsgUpda
 func (k msgServer) DeleteRoyaltyConfig(goCtx context.Context, msg *types.MsgDeleteRoyaltyConfig) (*types.MsgDeleteRoyaltyConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId)
+	err := k.validateReqToMutateRoyaltyConfig(ctx, msg.Creator, msg.ClassId, nil)
 	if err != nil {
 		return nil, err
 	}
