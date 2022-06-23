@@ -37,7 +37,7 @@ JSON file content:
 			}
 			var nftInput *types.NFTInput
 			if argInput != "" {
-				nftInput, err = readNFTInputJsonFile(argInput)
+				nftInput, err = readJsonFile[types.NFTInput](argInput)
 				if nftInput == nil || err != nil {
 					return err
 				}

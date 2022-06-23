@@ -26,7 +26,7 @@ func CmdCreateMintableNFT() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argId := args[1]
-			nftInput, err := readNFTInputJsonFile(args[2])
+			nftInput, err := readJsonFile[types.NFTInput](args[2])
 			if nftInput == nil || err != nil {
 				return err
 			}

@@ -43,7 +43,7 @@ func CmdUpdateClass() *cobra.Command {
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
-			classInput, err := readClassInputJsonFile(args[1])
+			classInput, err := readJsonFile[types.ClassInput](args[1])
 			if classInput == nil || err != nil {
 				return err
 			}

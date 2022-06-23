@@ -44,7 +44,7 @@ func CmdNewClass() *cobra.Command {
 `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			classInput, err := readClassInputJsonFile(args[0])
+			classInput, err := readJsonFile[types.ClassInput](args[0])
 			if classInput == nil || err != nil {
 				return err
 			}
