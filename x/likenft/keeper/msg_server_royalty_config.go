@@ -25,6 +25,7 @@ func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator 
 	if !parent.Owner.Equals(userAddress) {
 		return sdkerrors.ErrUnauthorized.Wrapf("user is not the class owner")
 	}
+	// FIXME validate max rate as well
 	return nil
 }
 

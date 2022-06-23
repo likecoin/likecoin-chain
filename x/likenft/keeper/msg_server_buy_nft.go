@@ -48,24 +48,20 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 
 	// transact
 	// calculate royalty
-	_, classData, err := k.GetClass(ctx, msg.ClassId)
-	if err != nil {
-		return nil, err
-	}
-	if classData.Config.RoyaltyBasisPoints > k.MaxRoyaltyBasisPoints(ctx) {
-		return nil, types.ErrInvalidNftClassConfig.Wrapf("Royalty basis points cannot be greater than %s", k.MaxRoyaltyBasisPointsText(ctx))
-	}
-	royaltyAmount := msg.Price / 10000 * classData.Config.RoyaltyBasisPoints
-	// pay royalty if needed, could be 0 if price < 10000
-	if royaltyAmount > 0 {
-		classParent, err := k.ValidateAndRefreshClassParent(ctx, msg.ClassId, classData.Parent)
+	royaltyConfig, found := k.GetRoyaltyConfig(ctx, msg.ClassId)
+	var royaltyAmount uint64
+	if found {
+		_royaltyAmount, allocations, err := k.ComputeRoyaltyAllocation(ctx, msg.Price, royaltyConfig)
 		if err != nil {
 			return nil, err
 		}
-		royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
-		err = k.bankKeeper.SendCoins(ctx, buyerAddress, classParent.Owner, royaltyAmountCoins)
-		if err != nil {
-			return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
+		royaltyAmount = _royaltyAmount
+		for _, allocation := range allocations {
+			coins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(allocation.Amount))))
+			err = k.bankKeeper.SendCoins(ctx, buyerAddress, allocation.Account, coins)
+			if err != nil {
+				return nil, types.ErrFailedToBuyNFT.Wrapf(err.Error())
+			}
 		}
 	}
 	// pay seller

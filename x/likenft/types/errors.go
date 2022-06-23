@@ -51,4 +51,5 @@ var (
 	ErrFailedToExpireListing             = sdkerrors.Register(ModuleName, 41, "Failed to expire listing")
 	ErrRoyaltyConfigAlreadyExists        = sdkerrors.Register(ModuleName, 42, "Royalty config already exists")
 	ErrRoyaltyConfigNotFound             = sdkerrors.Register(ModuleName, 43, "Royalty config not found")
+	ErrInvalidRoyaltyConfig              = sdkerrors.Register(ModuleName, 44, "Royalty config invalid")
 )
