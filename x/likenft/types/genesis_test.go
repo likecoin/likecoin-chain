@@ -108,6 +108,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						ListingKey: []byte("1"),
 					},
 				},
+				RoyaltyConfigByClassList: []types.RoyaltyConfigByClass{
+					{
+						ClassId: "0",
+					},
+					{
+						ClassId: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -328,6 +336,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						ExpireTime: nowTime,
 						ListingKey: []byte("0"),
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated royaltyConfigByClass",
+			genState: &types.GenesisState{
+				RoyaltyConfigByClassList: []types.RoyaltyConfigByClass{
+					{
+						ClassId: "0",
+					},
+					{
+						ClassId: "0",
 					},
 				},
 			},

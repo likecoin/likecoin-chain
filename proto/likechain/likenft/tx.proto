@@ -10,6 +10,7 @@ import "likechain/likenft/listing.proto";
 import "likechain/likenft/mintable_nft.proto";
 import "likechain/likenft/nft_input.proto";
 import "likechain/likenft/offer.proto";
+import "likechain/likenft/royalty_config.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
@@ -31,6 +32,9 @@ service Msg {
   rpc DeleteListing(MsgDeleteListing) returns (MsgDeleteListingResponse);
   rpc SellNFT(MsgSellNFT) returns (MsgSellNFTResponse);
   rpc BuyNFT(MsgBuyNFT) returns (MsgBuyNFTResponse);
+  rpc CreateRoyaltyConfig(MsgCreateRoyaltyConfig) returns (MsgCreateRoyaltyConfigResponse);
+  rpc UpdateRoyaltyConfig(MsgUpdateRoyaltyConfig) returns (MsgUpdateRoyaltyConfigResponse);
+  rpc DeleteRoyaltyConfig(MsgDeleteRoyaltyConfig) returns (MsgDeleteRoyaltyConfigResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -192,5 +196,29 @@ message MsgBuyNFT {
 }
 
 message MsgBuyNFTResponse {}
+
+message MsgCreateRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+  RoyaltyConfigInput royalty_config = 3 [(gogoproto.nullable) = false];
+}
+message MsgCreateRoyaltyConfigResponse {
+  RoyaltyConfig royalty_config = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+  RoyaltyConfigInput royalty_config = 3 [(gogoproto.nullable) = false];
+}
+message MsgUpdateRoyaltyConfigResponse {
+  RoyaltyConfig royalty_config = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgDeleteRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+}
+message MsgDeleteRoyaltyConfigResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message

@@ -1665,6 +1665,302 @@ func (m *MsgBuyNFTResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgBuyNFTResponse proto.InternalMessageInfo
 
+type MsgCreateRoyaltyConfig struct {
+	Creator       string             `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	ClassId       string             `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	RoyaltyConfig RoyaltyConfigInput `protobuf:"bytes,3,opt,name=royalty_config,json=royaltyConfig,proto3" json:"royalty_config"`
+}
+
+func (m *MsgCreateRoyaltyConfig) Reset()         { *m = MsgCreateRoyaltyConfig{} }
+func (m *MsgCreateRoyaltyConfig) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateRoyaltyConfig) ProtoMessage()    {}
+func (*MsgCreateRoyaltyConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{30}
+}
+func (m *MsgCreateRoyaltyConfig) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateRoyaltyConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateRoyaltyConfig.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateRoyaltyConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateRoyaltyConfig.Merge(m, src)
+}
+func (m *MsgCreateRoyaltyConfig) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateRoyaltyConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateRoyaltyConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateRoyaltyConfig proto.InternalMessageInfo
+
+func (m *MsgCreateRoyaltyConfig) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgCreateRoyaltyConfig) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *MsgCreateRoyaltyConfig) GetRoyaltyConfig() RoyaltyConfigInput {
+	if m != nil {
+		return m.RoyaltyConfig
+	}
+	return RoyaltyConfigInput{}
+}
+
+type MsgCreateRoyaltyConfigResponse struct {
+	RoyaltyConfig RoyaltyConfig `protobuf:"bytes,1,opt,name=royalty_config,json=royaltyConfig,proto3" json:"royalty_config"`
+}
+
+func (m *MsgCreateRoyaltyConfigResponse) Reset()         { *m = MsgCreateRoyaltyConfigResponse{} }
+func (m *MsgCreateRoyaltyConfigResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateRoyaltyConfigResponse) ProtoMessage()    {}
+func (*MsgCreateRoyaltyConfigResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{31}
+}
+func (m *MsgCreateRoyaltyConfigResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateRoyaltyConfigResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateRoyaltyConfigResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateRoyaltyConfigResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateRoyaltyConfigResponse.Merge(m, src)
+}
+func (m *MsgCreateRoyaltyConfigResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateRoyaltyConfigResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateRoyaltyConfigResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateRoyaltyConfigResponse proto.InternalMessageInfo
+
+func (m *MsgCreateRoyaltyConfigResponse) GetRoyaltyConfig() RoyaltyConfig {
+	if m != nil {
+		return m.RoyaltyConfig
+	}
+	return RoyaltyConfig{}
+}
+
+type MsgUpdateRoyaltyConfig struct {
+	Creator       string             `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	ClassId       string             `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	RoyaltyConfig RoyaltyConfigInput `protobuf:"bytes,3,opt,name=royalty_config,json=royaltyConfig,proto3" json:"royalty_config"`
+}
+
+func (m *MsgUpdateRoyaltyConfig) Reset()         { *m = MsgUpdateRoyaltyConfig{} }
+func (m *MsgUpdateRoyaltyConfig) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateRoyaltyConfig) ProtoMessage()    {}
+func (*MsgUpdateRoyaltyConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{32}
+}
+func (m *MsgUpdateRoyaltyConfig) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateRoyaltyConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateRoyaltyConfig.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateRoyaltyConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateRoyaltyConfig.Merge(m, src)
+}
+func (m *MsgUpdateRoyaltyConfig) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateRoyaltyConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateRoyaltyConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateRoyaltyConfig proto.InternalMessageInfo
+
+func (m *MsgUpdateRoyaltyConfig) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgUpdateRoyaltyConfig) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *MsgUpdateRoyaltyConfig) GetRoyaltyConfig() RoyaltyConfigInput {
+	if m != nil {
+		return m.RoyaltyConfig
+	}
+	return RoyaltyConfigInput{}
+}
+
+type MsgUpdateRoyaltyConfigResponse struct {
+	RoyaltyConfig RoyaltyConfig `protobuf:"bytes,1,opt,name=royalty_config,json=royaltyConfig,proto3" json:"royalty_config"`
+}
+
+func (m *MsgUpdateRoyaltyConfigResponse) Reset()         { *m = MsgUpdateRoyaltyConfigResponse{} }
+func (m *MsgUpdateRoyaltyConfigResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateRoyaltyConfigResponse) ProtoMessage()    {}
+func (*MsgUpdateRoyaltyConfigResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{33}
+}
+func (m *MsgUpdateRoyaltyConfigResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateRoyaltyConfigResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateRoyaltyConfigResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateRoyaltyConfigResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateRoyaltyConfigResponse.Merge(m, src)
+}
+func (m *MsgUpdateRoyaltyConfigResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateRoyaltyConfigResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateRoyaltyConfigResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateRoyaltyConfigResponse proto.InternalMessageInfo
+
+func (m *MsgUpdateRoyaltyConfigResponse) GetRoyaltyConfig() RoyaltyConfig {
+	if m != nil {
+		return m.RoyaltyConfig
+	}
+	return RoyaltyConfig{}
+}
+
+type MsgDeleteRoyaltyConfig struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+}
+
+func (m *MsgDeleteRoyaltyConfig) Reset()         { *m = MsgDeleteRoyaltyConfig{} }
+func (m *MsgDeleteRoyaltyConfig) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteRoyaltyConfig) ProtoMessage()    {}
+func (*MsgDeleteRoyaltyConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{34}
+}
+func (m *MsgDeleteRoyaltyConfig) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteRoyaltyConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteRoyaltyConfig.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteRoyaltyConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteRoyaltyConfig.Merge(m, src)
+}
+func (m *MsgDeleteRoyaltyConfig) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteRoyaltyConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteRoyaltyConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteRoyaltyConfig proto.InternalMessageInfo
+
+func (m *MsgDeleteRoyaltyConfig) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgDeleteRoyaltyConfig) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+type MsgDeleteRoyaltyConfigResponse struct {
+}
+
+func (m *MsgDeleteRoyaltyConfigResponse) Reset()         { *m = MsgDeleteRoyaltyConfigResponse{} }
+func (m *MsgDeleteRoyaltyConfigResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteRoyaltyConfigResponse) ProtoMessage()    {}
+func (*MsgDeleteRoyaltyConfigResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5250b68c513f087f, []int{35}
+}
+func (m *MsgDeleteRoyaltyConfigResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteRoyaltyConfigResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteRoyaltyConfigResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteRoyaltyConfigResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteRoyaltyConfigResponse.Merge(m, src)
+}
+func (m *MsgDeleteRoyaltyConfigResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteRoyaltyConfigResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteRoyaltyConfigResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteRoyaltyConfigResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgNewClass)(nil), "likechain.likenft.MsgNewClass")
 	proto.RegisterType((*MsgNewClassResponse)(nil), "likechain.likenft.MsgNewClassResponse")
@@ -1696,78 +1992,92 @@ func init() {
 	proto.RegisterType((*MsgSellNFTResponse)(nil), "likechain.likenft.MsgSellNFTResponse")
 	proto.RegisterType((*MsgBuyNFT)(nil), "likechain.likenft.MsgBuyNFT")
 	proto.RegisterType((*MsgBuyNFTResponse)(nil), "likechain.likenft.MsgBuyNFTResponse")
+	proto.RegisterType((*MsgCreateRoyaltyConfig)(nil), "likechain.likenft.MsgCreateRoyaltyConfig")
+	proto.RegisterType((*MsgCreateRoyaltyConfigResponse)(nil), "likechain.likenft.MsgCreateRoyaltyConfigResponse")
+	proto.RegisterType((*MsgUpdateRoyaltyConfig)(nil), "likechain.likenft.MsgUpdateRoyaltyConfig")
+	proto.RegisterType((*MsgUpdateRoyaltyConfigResponse)(nil), "likechain.likenft.MsgUpdateRoyaltyConfigResponse")
+	proto.RegisterType((*MsgDeleteRoyaltyConfig)(nil), "likechain.likenft.MsgDeleteRoyaltyConfig")
+	proto.RegisterType((*MsgDeleteRoyaltyConfigResponse)(nil), "likechain.likenft.MsgDeleteRoyaltyConfigResponse")
 }
 
 func init() { proto.RegisterFile("likechain/likenft/tx.proto", fileDescriptor_5250b68c513f087f) }
 
 var fileDescriptor_5250b68c513f087f = []byte{
-	// 1051 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0xcd, 0x6e, 0x1b, 0x55,
-	0x14, 0xce, 0x24, 0xb1, 0x93, 0x1c, 0xd3, 0x8a, 0x4c, 0x43, 0x71, 0x87, 0xc4, 0x69, 0xc6, 0x85,
-	0x16, 0x21, 0xc6, 0x6a, 0x00, 0x21, 0xd8, 0x91, 0x96, 0x54, 0x95, 0x62, 0x07, 0x99, 0x80, 0x10,
-	0x45, 0x54, 0x63, 0xfb, 0x7a, 0x3a, 0x62, 0x3c, 0x33, 0x9a, 0xb9, 0x86, 0x64, 0xc7, 0xa2, 0x6c,
-	0x58, 0x75, 0xc1, 0x2b, 0xf0, 0x0e, 0x88, 0x27, 0xe8, 0xb2, 0x4b, 0x56, 0x80, 0x92, 0x17, 0x41,
-	0xf7, 0xdc, 0x1f, 0x5f, 0x67, 0x7e, 0x12, 0x35, 0x46, 0x90, 0x9d, 0xc7, 0xe7, 0xe7, 0x7e, 0xdf,
-	0x77, 0xce, 0xdc, 0x73, 0x34, 0x60, 0x05, 0xfe, 0x77, 0xa4, 0xff, 0xc4, 0xf5, 0xc3, 0x16, 0xfb,
-	0x15, 0x0e, 0x69, 0x8b, 0x1e, 0x3a, 0x71, 0x12, 0xd1, 0xc8, 0x5c, 0x55, 0x36, 0x47, 0xd8, 0xac,
-	0xf5, 0x7e, 0x94, 0x8e, 0xa2, 0xb4, 0xc5, 0xfc, 0xbe, 0xbf, 0xdb, 0x23, 0xd4, 0xbd, 0xcb, 0x7e,
-	0xf3, 0x00, 0x6b, 0xcd, 0x8b, 0xbc, 0x08, 0x7f, 0xb6, 0xd8, 0x2f, 0xf1, 0xef, 0xa6, 0x17, 0x45,
-	0x5e, 0x40, 0x5a, 0xf8, 0xd4, 0x1b, 0x0f, 0x5b, 0xd4, 0x1f, 0x91, 0x94, 0xba, 0xa3, 0x58, 0x38,
-	0x34, 0xb3, 0x18, 0xfa, 0x81, 0x9b, 0xa6, 0x8f, 0xfd, 0x30, 0x1e, 0xcb, 0xdc, 0x9b, 0x59, 0xa7,
-	0xc0, 0x4f, 0xa9, 0x1f, 0x7a, 0xc2, 0xe1, 0x56, 0xd6, 0x61, 0xe4, 0x87, 0xd4, 0xed, 0x05, 0xe4,
-	0xf1, 0x04, 0xe2, 0x56, 0xd6, 0x2b, 0x1c, 0xd2, 0xa9, 0x93, 0x36, 0xb2, 0x2e, 0xd1, 0x70, 0x48,
-	0x12, 0x6e, 0xb6, 0x7f, 0x35, 0xa0, 0xd6, 0x4e, 0xbd, 0x0e, 0xf9, 0xe1, 0x1e, 0x03, 0x69, 0xd6,
-	0x61, 0xa9, 0x9f, 0x10, 0x97, 0x46, 0x49, 0xdd, 0xb8, 0x69, 0xdc, 0x59, 0xe9, 0xca, 0x47, 0xf3,
-	0x13, 0xa8, 0xc6, 0x6e, 0x42, 0x42, 0x5a, 0x9f, 0xbf, 0x69, 0xdc, 0xa9, 0x6d, 0x37, 0x9d, 0x8c,
-	0xa0, 0x0e, 0xe6, 0xf8, 0x0c, 0xbd, 0x1e, 0x32, 0x0c, 0x3b, 0x8b, 0xcf, 0xff, 0xdc, 0x9c, 0xeb,
-	0x8a, 0x40, 0xf3, 0x23, 0xa8, 0x20, 0xb4, 0xfa, 0x02, 0x66, 0xd8, 0x28, 0xca, 0xa0, 0xc7, 0xf2,
-	0x08, 0x7b, 0x0f, 0xae, 0x69, 0x30, 0xbb, 0x24, 0x8d, 0xa3, 0x30, 0x25, 0xe6, 0x07, 0x50, 0x41,
-	0x71, 0x11, 0x6c, 0x6d, 0xfb, 0x86, 0xc3, 0x2b, 0xea, 0xb0, 0x54, 0xa2, 0xa2, 0x3c, 0xa5, 0xcc,
-	0x86, 0xde, 0xf6, 0x8f, 0x06, 0x5c, 0x6d, 0xa7, 0xde, 0x17, 0xf1, 0xc0, 0xa5, 0xe4, 0x2c, 0xe2,
-	0x37, 0x60, 0x59, 0x14, 0x70, 0x80, 0xd4, 0x99, 0x09, 0x51, 0x0e, 0x2e, 0x42, 0x68, 0x1f, 0xae,
-	0x4f, 0x23, 0xb8, 0x28, 0xa7, 0x9f, 0x0d, 0x80, 0x76, 0xea, 0xb5, 0xfd, 0x90, 0x76, 0x76, 0x0f,
-	0x5e, 0x8e, 0xcf, 0x55, 0x98, 0xf7, 0x07, 0x48, 0x66, 0xa5, 0x3b, 0xef, 0x0f, 0xcc, 0x0f, 0x25,
-	0xbf, 0x45, 0x84, 0xf2, 0x46, 0x0e, 0xbf, 0xce, 0xee, 0xc1, 0x84, 0x9d, 0x21, 0xd9, 0x7d, 0x0a,
-	0xe6, 0x04, 0x8b, 0x62, 0xd6, 0x82, 0x85, 0x70, 0x48, 0x05, 0xaf, 0xd7, 0xf3, 0x78, 0x75, 0x76,
-	0x0f, 0x04, 0x2b, 0xe6, 0x69, 0x7f, 0x85, 0x94, 0x76, 0xc6, 0x49, 0xf8, 0xd2, 0x94, 0x5e, 0x83,
-	0x2a, 0xbe, 0x12, 0x92, 0x56, 0x25, 0x1c, 0xd2, 0x87, 0x03, 0x7b, 0x0d, 0x01, 0x8a, 0xcc, 0x12,
-	0xa0, 0xfd, 0x8b, 0x01, 0x6b, 0xed, 0xd4, 0xbb, 0xc7, 0xd2, 0x92, 0xb6, 0x78, 0xdf, 0xfe, 0x33,
-	0x35, 0x55, 0xaf, 0x78, 0xb0, 0x9e, 0x87, 0x4a, 0xe9, 0xfa, 0x00, 0x5e, 0xd1, 0x2f, 0x07, 0x21,
-	0x70, 0x23, 0x27, 0xbf, 0x16, 0x2d, 0x8e, 0xa8, 0xc9, 0xc8, 0xce, 0x90, 0x4a, 0xfe, 0xbc, 0x2b,
-	0xff, 0x6f, 0xfc, 0x33, 0xa8, 0x66, 0xcf, 0xff, 0x11, 0xd2, 0xbf, 0x4f, 0x02, 0x32, 0x7b, 0xfa,
-	0x76, 0x03, 0x59, 0x64, 0x92, 0xab, 0xe6, 0xfb, 0x8d, 0x5f, 0x4a, 0xbc, 0xcc, 0xfb, 0xec, 0x8e,
-	0x9e, 0x65, 0xc7, 0x9b, 0x6b, 0x50, 0x89, 0x13, 0xbf, 0x4f, 0x50, 0xfd, 0xc5, 0x2e, 0x7f, 0x30,
-	0xef, 0x03, 0x90, 0xc3, 0xd8, 0x4f, 0x5c, 0xea, 0x47, 0x61, 0xbd, 0x82, 0xc2, 0x59, 0x0e, 0x9f,
-	0x71, 0x8e, 0x9c, 0x71, 0xce, 0x81, 0x9c, 0x71, 0x3b, 0xcb, 0x4c, 0xb4, 0x67, 0x7f, 0x6d, 0x1a,
-	0x5d, 0x2d, 0xce, 0xee, 0xe0, 0x65, 0xa6, 0x21, 0x57, 0xa5, 0x79, 0x1f, 0x2a, 0x38, 0x6e, 0x44,
-	0x4d, 0xea, 0x39, 0x35, 0xc1, 0x00, 0x59, 0x70, 0x74, 0x96, 0x52, 0xf0, 0x8a, 0x5f, 0x46, 0x29,
-	0x34, 0xe4, 0x17, 0x94, 0xe2, 0x1b, 0x54, 0x82, 0x77, 0xcd, 0xcc, 0x95, 0xb0, 0xeb, 0x88, 0x56,
-	0xcb, 0xae, 0xba, 0xf1, 0x77, 0x03, 0x5e, 0x55, 0x35, 0xdd, 0xe3, 0xbb, 0xc9, 0xa5, 0x29, 0xc2,
-	0x97, 0x50, 0x3f, 0x8d, 0x5d, 0x95, 0xe1, 0x63, 0x58, 0x12, 0xab, 0x96, 0x28, 0x84, 0x95, 0x53,
-	0x08, 0x11, 0x24, 0x4a, 0x21, 0x03, 0xa4, 0x28, 0xbc, 0xba, 0x97, 0x53, 0x94, 0x29, 0xec, 0x33,
-	0x11, 0xe5, 0x5b, 0xd4, 0x84, 0xf7, 0xd0, 0xbf, 0xa0, 0x89, 0x6d, 0x21, 0xee, 0xa9, 0xfc, 0xaa,
-	0x4b, 0x9f, 0xf2, 0xa5, 0xe7, 0x73, 0x12, 0x04, 0x33, 0xde, 0x10, 0x58, 0x29, 0x7a, 0xe3, 0x23,
-	0x92, 0x60, 0x29, 0x56, 0xba, 0xfc, 0x61, 0x52, 0xa0, 0x8a, 0x56, 0x20, 0xb1, 0x4d, 0x08, 0x14,
-	0x0a, 0xdc, 0x4f, 0x06, 0xac, 0xe0, 0x92, 0x71, 0x34, 0x6b, 0x6c, 0xd7, 0xa1, 0x9a, 0x92, 0x20,
-	0x50, 0xe0, 0xc4, 0x53, 0x01, 0xba, 0x6b, 0xb0, 0xaa, 0x60, 0x48, 0x70, 0xdb, 0x4f, 0x6b, 0xb0,
-	0xd0, 0x4e, 0x3d, 0xb3, 0x0b, 0xcb, 0x6a, 0xf9, 0xcf, 0x9d, 0x98, 0x93, 0xad, 0xdb, 0x7a, 0xab,
-	0xdc, 0xae, 0xba, 0xe9, 0x11, 0xd4, 0xf4, 0xd5, 0x7a, 0x2b, 0x3f, 0x4c, 0x73, 0xb1, 0xde, 0x3e,
-	0xd3, 0x45, 0x25, 0xdf, 0x87, 0x25, 0xb9, 0xe3, 0x6e, 0xe4, 0x47, 0x09, 0xb3, 0xf5, 0x66, 0xa9,
-	0x59, 0x4f, 0x28, 0x37, 0xcc, 0x82, 0x84, 0xc2, 0x5c, 0x94, 0xf0, 0xd4, 0x16, 0x69, 0x8e, 0x60,
-	0x35, 0xbb, 0x41, 0xde, 0xce, 0x8f, 0xcd, 0x38, 0x5a, 0xad, 0x73, 0x3a, 0xea, 0xc7, 0x65, 0x17,
-	0xb6, 0xdb, 0x65, 0x82, 0x9e, 0xe3, 0xb8, 0xe2, 0x65, 0x6b, 0x04, 0xab, 0xd9, 0x05, 0xa9, 0xe0,
-	0xb8, 0x8c, 0x63, 0xd1, 0x71, 0x85, 0x5b, 0x11, 0xeb, 0x25, 0x7d, 0x23, 0xda, 0x2a, 0x53, 0x07,
-	0x5d, 0x8a, 0x7a, 0x29, 0x6f, 0x3b, 0x51, 0x8d, 0x5a, 0x9a, 0x5c, 0x73, 0x29, 0x6f, 0xd4, 0x4c,
-	0x72, 0x7d, 0x6c, 0x6f, 0x95, 0x31, 0x2f, 0x4d, 0x9e, 0x33, 0x9e, 0x4d, 0x17, 0xae, 0x4c, 0x8f,
-	0xe6, 0x66, 0x19, 0x6b, 0xe1, 0x64, 0xbd, 0x73, 0x0e, 0x27, 0xfd, 0x88, 0xe9, 0x41, 0xd7, 0x2c,
-	0xe3, 0x7e, 0xc6, 0x11, 0xf9, 0x63, 0xc7, 0x85, 0x2b, 0xd3, 0x73, 0xa3, 0x59, 0xa6, 0xc0, 0x19,
-	0x47, 0xe4, 0x4e, 0x08, 0xf6, 0x76, 0xcb, 0xe9, 0x50, 0xf0, 0x76, 0x0b, 0x73, 0xd1, 0xdb, 0x7d,
-	0xea, 0x56, 0x37, 0xf7, 0xa0, 0x2a, 0x6e, 0xf4, 0xf5, 0xa2, 0xeb, 0x80, 0x59, 0xad, 0x5b, 0x65,
-	0x56, 0x99, 0x6d, 0xe7, 0xc1, 0xf3, 0xe3, 0x86, 0xf1, 0xe2, 0xb8, 0x61, 0xfc, 0x7d, 0xdc, 0x30,
-	0x9e, 0x9d, 0x34, 0xe6, 0x5e, 0x9c, 0x34, 0xe6, 0xfe, 0x38, 0x69, 0xcc, 0x7d, 0xfd, 0xae, 0xe7,
-	0xd3, 0x27, 0xe3, 0x9e, 0xd3, 0x8f, 0x46, 0xf8, 0xe5, 0xa6, 0x1f, 0x89, 0x4f, 0x38, 0xfc, 0x63,
-	0xce, 0xe1, 0xe4, 0x0b, 0xd7, 0x51, 0x4c, 0xd2, 0x5e, 0x15, 0xf7, 0x80, 0xf7, 0xfe, 0x09, 0x00,
-	0x00, 0xff, 0xff, 0x3f, 0xb3, 0x45, 0x8a, 0x03, 0x13, 0x00, 0x00,
+	// 1183 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0xcd, 0x6e, 0xe3, 0x54,
+	0x14, 0xae, 0xdb, 0xa6, 0x3f, 0xa7, 0xb4, 0xa2, 0x6e, 0x19, 0x32, 0xa6, 0x4d, 0x5b, 0x67, 0xfe,
+	0x10, 0xc2, 0x51, 0x0b, 0x08, 0xc1, 0x8e, 0x76, 0xe8, 0x68, 0xa4, 0x26, 0x45, 0xa6, 0x20, 0xc4,
+	0x20, 0x2a, 0x27, 0xb9, 0xf1, 0x58, 0x38, 0x76, 0x64, 0xdf, 0x40, 0xb3, 0x63, 0x01, 0x1b, 0x56,
+	0xb3, 0xe0, 0x05, 0x58, 0xf0, 0x0e, 0x88, 0x27, 0x98, 0xe5, 0x2c, 0x59, 0x01, 0x6a, 0x5f, 0x04,
+	0xf9, 0xfe, 0xe5, 0xba, 0xbe, 0x76, 0xa2, 0x36, 0x23, 0xa6, 0xbb, 0x38, 0xe7, 0xef, 0xfb, 0xce,
+	0x39, 0xbe, 0xf7, 0x1c, 0x83, 0xe1, 0x7b, 0xdf, 0xa1, 0xd6, 0x53, 0xc7, 0x0b, 0x6a, 0xc9, 0xaf,
+	0xa0, 0x83, 0x6b, 0xf8, 0xcc, 0xea, 0x45, 0x21, 0x0e, 0xf5, 0x55, 0x21, 0xb3, 0x98, 0xcc, 0xd8,
+	0x68, 0x85, 0x71, 0x37, 0x8c, 0x6b, 0x89, 0xde, 0xf7, 0xbb, 0x4d, 0x84, 0x9d, 0xdd, 0xe4, 0x37,
+	0x35, 0x30, 0xd6, 0xdd, 0xd0, 0x0d, 0xc9, 0xcf, 0x5a, 0xf2, 0x8b, 0xfd, 0xbb, 0xe5, 0x86, 0xa1,
+	0xeb, 0xa3, 0x1a, 0x79, 0x6a, 0xf6, 0x3b, 0x35, 0xec, 0x75, 0x51, 0x8c, 0x9d, 0x6e, 0x8f, 0x29,
+	0x54, 0xb3, 0x18, 0x5a, 0xbe, 0x13, 0xc7, 0xa7, 0x5e, 0xd0, 0xeb, 0x73, 0xdf, 0x5b, 0x59, 0x25,
+	0xdf, 0x8b, 0xb1, 0x17, 0xb8, 0x4c, 0xe1, 0x4e, 0x56, 0xa1, 0xeb, 0x05, 0xd8, 0x69, 0xfa, 0xe8,
+	0x74, 0x08, 0x71, 0x27, 0xab, 0x15, 0x74, 0x70, 0x2a, 0xd2, 0x66, 0x56, 0x25, 0xec, 0x74, 0x50,
+	0xc4, 0xc4, 0xf7, 0xb2, 0xe2, 0x28, 0x1c, 0x38, 0x3e, 0x1e, 0x9c, 0xb6, 0xc2, 0xa0, 0xe3, 0x31,
+	0x3c, 0xe6, 0xef, 0x1a, 0x2c, 0xd5, 0x63, 0xb7, 0x81, 0x7e, 0x38, 0x48, 0xc8, 0xe8, 0x65, 0x98,
+	0x6f, 0x45, 0xc8, 0xc1, 0x61, 0x54, 0xd6, 0xb6, 0xb5, 0x07, 0x8b, 0x36, 0x7f, 0xd4, 0x3f, 0x81,
+	0xb9, 0x9e, 0x13, 0xa1, 0x00, 0x97, 0xa7, 0xb7, 0xb5, 0x07, 0x4b, 0x7b, 0x55, 0x2b, 0x93, 0x78,
+	0x8b, 0xf8, 0xf8, 0x8c, 0x68, 0x3d, 0x4e, 0xb0, 0xee, 0xcf, 0x3e, 0xff, 0x7b, 0x6b, 0xca, 0x66,
+	0x86, 0xfa, 0x47, 0x50, 0x22, 0x14, 0xca, 0x33, 0xc4, 0xc3, 0x66, 0x9e, 0x07, 0xd9, 0x96, 0x5a,
+	0x98, 0x47, 0xb0, 0x26, 0xc1, 0xb4, 0x51, 0xdc, 0x0b, 0x83, 0x18, 0xe9, 0x1f, 0x40, 0x89, 0x14,
+	0x81, 0x80, 0x5d, 0xda, 0xbb, 0x6d, 0xd1, 0xca, 0x5b, 0x89, 0x2b, 0x56, 0x79, 0xea, 0x92, 0x7b,
+	0x23, 0xda, 0xe6, 0x8f, 0x1a, 0xac, 0xd4, 0x63, 0xf7, 0x8b, 0x5e, 0xdb, 0xc1, 0x68, 0x14, 0xf1,
+	0xdb, 0xb0, 0xc0, 0x0a, 0xdd, 0x26, 0xd4, 0x13, 0x11, 0x41, 0xd9, 0xbe, 0x0e, 0xa1, 0x63, 0xb8,
+	0x95, 0x46, 0x70, 0x5d, 0x4e, 0xbf, 0x68, 0x00, 0xf5, 0xd8, 0xad, 0x7b, 0x01, 0x6e, 0x1c, 0x9e,
+	0x5c, 0x8d, 0xcf, 0x0a, 0x4c, 0x7b, 0x6d, 0x42, 0x66, 0xd1, 0x9e, 0xf6, 0xda, 0xfa, 0x87, 0x9c,
+	0xdf, 0x2c, 0x81, 0xf2, 0x96, 0x82, 0x5f, 0xe3, 0xf0, 0x64, 0xc8, 0x4e, 0xe3, 0xec, 0x3e, 0x05,
+	0x7d, 0x88, 0x45, 0x30, 0xab, 0xc1, 0x4c, 0xd0, 0xc1, 0x8c, 0xd7, 0x9b, 0x2a, 0x5e, 0x8d, 0xc3,
+	0x13, 0xc6, 0x2a, 0xd1, 0x34, 0xbf, 0x22, 0x94, 0xf6, 0xfb, 0x51, 0x70, 0x65, 0x4a, 0x6f, 0xc0,
+	0x1c, 0x79, 0x75, 0x38, 0xad, 0x52, 0xd0, 0xc1, 0x8f, 0xdb, 0xe6, 0x3a, 0x01, 0xc8, 0x3c, 0x73,
+	0x80, 0xe6, 0xaf, 0x1a, 0xac, 0xd7, 0x63, 0xf7, 0x20, 0x71, 0x8b, 0xea, 0xec, 0xbd, 0xfc, 0xdf,
+	0xb2, 0x29, 0x7a, 0xc5, 0x85, 0x0d, 0x15, 0x2a, 0x91, 0xd7, 0x47, 0xf0, 0x9a, 0x7c, 0x88, 0xb0,
+	0x04, 0x57, 0x14, 0xfe, 0x25, 0x6b, 0x16, 0x62, 0x89, 0x5b, 0x36, 0x3a, 0x98, 0xf3, 0xa7, 0x5d,
+	0xf9, 0xaa, 0xf1, 0xcf, 0xa0, 0x9a, 0x3c, 0xff, 0x27, 0x84, 0xfe, 0x43, 0xe4, 0xa3, 0xc9, 0xd3,
+	0x37, 0x2b, 0x84, 0x45, 0xc6, 0xb9, 0x68, 0xbe, 0x3f, 0xe8, 0xa1, 0x44, 0xcb, 0x7c, 0x9c, 0x9c,
+	0xe5, 0x93, 0xec, 0x78, 0x7d, 0x1d, 0x4a, 0xbd, 0xc8, 0x6b, 0x21, 0x92, 0xfd, 0x59, 0x9b, 0x3e,
+	0xe8, 0x0f, 0x01, 0xd0, 0x59, 0xcf, 0x8b, 0x1c, 0xec, 0x85, 0x41, 0xb9, 0x44, 0x12, 0x67, 0x58,
+	0xf4, 0x2e, 0xb4, 0xf8, 0x5d, 0x68, 0x9d, 0xf0, 0xbb, 0x70, 0x7f, 0x21, 0x49, 0xda, 0xb3, 0x7f,
+	0xb6, 0x34, 0x5b, 0xb2, 0x33, 0x1b, 0xe4, 0x30, 0x93, 0x90, 0x8b, 0xd2, 0xbc, 0x0f, 0x25, 0x72,
+	0x2d, 0xb1, 0x9a, 0x94, 0x15, 0x35, 0x21, 0x06, 0xbc, 0xe0, 0x44, 0x99, 0xa7, 0x82, 0x56, 0xfc,
+	0x26, 0xa6, 0x42, 0x42, 0x7e, 0xcd, 0x54, 0x7c, 0x43, 0x32, 0x41, 0xbb, 0x66, 0xe2, 0x99, 0x30,
+	0xcb, 0x04, 0xad, 0xe4, 0x5d, 0x74, 0xe3, 0x9f, 0x1a, 0xbc, 0x2e, 0x6a, 0x7a, 0x44, 0x67, 0x98,
+	0x1b, 0x53, 0x84, 0x2f, 0xa1, 0x7c, 0x19, 0xbb, 0x28, 0xc3, 0xc7, 0x30, 0xcf, 0x46, 0x32, 0x56,
+	0x08, 0x43, 0x51, 0x08, 0x66, 0xc4, 0x4a, 0xc1, 0x0d, 0x78, 0x52, 0x68, 0x75, 0x6f, 0x66, 0x52,
+	0x52, 0xd8, 0x27, 0x92, 0x94, 0x6f, 0x49, 0x4e, 0x68, 0x0f, 0xbd, 0x84, 0x9c, 0x98, 0x06, 0xc1,
+	0x9d, 0xf2, 0x2f, 0xba, 0xf4, 0x27, 0x3a, 0xf4, 0x7c, 0x8e, 0x7c, 0x7f, 0xc2, 0x13, 0x42, 0x52,
+	0x8a, 0x66, 0x7f, 0x80, 0x22, 0x52, 0x8a, 0x45, 0x9b, 0x3e, 0x0c, 0x0b, 0x54, 0x92, 0x0a, 0xc4,
+	0xa6, 0x09, 0x86, 0x42, 0x80, 0xfb, 0x59, 0x83, 0x45, 0x32, 0x64, 0x0c, 0x26, 0x8d, 0xed, 0x16,
+	0xcc, 0xc5, 0xc8, 0xf7, 0x05, 0x38, 0xf6, 0x94, 0x83, 0x6e, 0x0d, 0x56, 0x05, 0x0c, 0x01, 0xee,
+	0x37, 0x4d, 0x3a, 0xb3, 0x6d, 0xba, 0x1a, 0x1c, 0x90, 0xcd, 0xe0, 0x6a, 0x48, 0x6d, 0x58, 0x49,
+	0x2f, 0x18, 0x6c, 0x26, 0xbe, 0xab, 0x68, 0xa4, 0x54, 0x38, 0xf9, 0xbe, 0x5f, 0x8e, 0x64, 0x89,
+	0x19, 0x42, 0x45, 0x0d, 0x51, 0xf4, 0x6d, 0x3d, 0x13, 0x95, 0xb6, 0xef, 0xf6, 0xa8, 0xa8, 0xea,
+	0x80, 0x2c, 0x29, 0xf4, 0x1d, 0x79, 0xa5, 0x93, 0xa2, 0x80, 0xf8, 0xb2, 0x92, 0x52, 0x97, 0xee,
+	0x88, 0xeb, 0xe7, 0xc4, 0xdc, 0x26, 0xf8, 0x15, 0xee, 0x38, 0xfe, 0xbd, 0x8b, 0x65, 0x98, 0xa9,
+	0xc7, 0xae, 0x6e, 0xc3, 0x82, 0xd8, 0x4b, 0x95, 0xc3, 0xdc, 0x70, 0x21, 0x34, 0xee, 0x15, 0xcb,
+	0x45, 0x6e, 0x9e, 0xc0, 0x92, 0xbc, 0xf5, 0xed, 0xa8, 0xcd, 0x24, 0x15, 0xe3, 0xed, 0x91, 0x2a,
+	0xc2, 0xf9, 0x31, 0xcc, 0xf3, 0xf5, 0x6b, 0x53, 0x6d, 0xc5, 0xc4, 0xc6, 0xdd, 0x42, 0xb1, 0xec,
+	0x90, 0x2f, 0x3f, 0x39, 0x0e, 0x99, 0x38, 0xcf, 0xe1, 0xa5, 0x05, 0x47, 0xef, 0xc2, 0x6a, 0x76,
+	0xb9, 0xb9, 0xaf, 0xb6, 0xcd, 0x28, 0x1a, 0xb5, 0x31, 0x15, 0xe5, 0x70, 0xd9, 0x5d, 0xe2, 0x7e,
+	0x51, 0x42, 0xc7, 0x08, 0x97, 0xbf, 0x07, 0x74, 0x61, 0x35, 0x3b, 0xbb, 0xe7, 0x84, 0xcb, 0x28,
+	0xe6, 0x85, 0xcb, 0x1d, 0xd8, 0x93, 0x5e, 0x92, 0x87, 0xf5, 0x9d, 0xa2, 0xec, 0x10, 0x95, 0xbc,
+	0x5e, 0x52, 0x0d, 0xce, 0xa2, 0x51, 0x0b, 0x9d, 0x4b, 0x2a, 0xc5, 0x8d, 0x9a, 0x71, 0x2e, 0x4f,
+	0x94, 0x3b, 0x45, 0xcc, 0x0b, 0x9d, 0x2b, 0x26, 0x47, 0xdd, 0x81, 0xe5, 0xf4, 0xd4, 0x58, 0x2d,
+	0x62, 0xcd, 0x94, 0x8c, 0x77, 0xc6, 0x50, 0x92, 0x43, 0xa4, 0x67, 0xb0, 0x6a, 0x11, 0xf7, 0x11,
+	0x21, 0xd4, 0x13, 0x91, 0x03, 0xcb, 0xe9, 0x91, 0xa6, 0x5a, 0x94, 0x81, 0x11, 0x21, 0x94, 0xc3,
+	0x4b, 0xf2, 0x76, 0xf3, 0xc1, 0x25, 0xe7, 0xed, 0x66, 0xe2, 0xbc, 0xb7, 0xfb, 0xd2, 0xc0, 0xa1,
+	0x1f, 0xc1, 0x1c, 0x1b, 0x36, 0x36, 0xf2, 0x8e, 0x83, 0x44, 0x6a, 0xdc, 0x29, 0x92, 0x0a, 0x6f,
+	0x31, 0xac, 0xa9, 0xa6, 0x83, 0xc2, 0x1e, 0x4e, 0xa9, 0x1a, 0xbb, 0x63, 0xab, 0xca, 0x41, 0x55,
+	0xb7, 0x6f, 0x61, 0x6f, 0x8f, 0x15, 0xb4, 0xe8, 0xc2, 0x8c, 0x61, 0x4d, 0x75, 0xbd, 0x15, 0xf6,
+	0xfc, 0x58, 0x41, 0x0b, 0x6e, 0xb9, 0xfd, 0x47, 0xcf, 0xcf, 0x2b, 0xda, 0x8b, 0xf3, 0x8a, 0xf6,
+	0xef, 0x79, 0x45, 0x7b, 0x76, 0x51, 0x99, 0x7a, 0x71, 0x51, 0x99, 0xfa, 0xeb, 0xa2, 0x32, 0xf5,
+	0xf5, 0xbb, 0xae, 0x87, 0x9f, 0xf6, 0x9b, 0x56, 0x2b, 0xec, 0x92, 0x8f, 0xb7, 0xad, 0x90, 0x7d,
+	0xc5, 0xa5, 0xdf, 0x73, 0xcf, 0x86, 0xdf, 0xc0, 0x07, 0x3d, 0x14, 0x37, 0xe7, 0xc8, 0x06, 0xf0,
+	0xde, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x56, 0xa9, 0x92, 0xfa, 0x25, 0x17, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1797,6 +2107,9 @@ type MsgClient interface {
 	DeleteListing(ctx context.Context, in *MsgDeleteListing, opts ...grpc.CallOption) (*MsgDeleteListingResponse, error)
 	SellNFT(ctx context.Context, in *MsgSellNFT, opts ...grpc.CallOption) (*MsgSellNFTResponse, error)
 	BuyNFT(ctx context.Context, in *MsgBuyNFT, opts ...grpc.CallOption) (*MsgBuyNFTResponse, error)
+	CreateRoyaltyConfig(ctx context.Context, in *MsgCreateRoyaltyConfig, opts ...grpc.CallOption) (*MsgCreateRoyaltyConfigResponse, error)
+	UpdateRoyaltyConfig(ctx context.Context, in *MsgUpdateRoyaltyConfig, opts ...grpc.CallOption) (*MsgUpdateRoyaltyConfigResponse, error)
+	DeleteRoyaltyConfig(ctx context.Context, in *MsgDeleteRoyaltyConfig, opts ...grpc.CallOption) (*MsgDeleteRoyaltyConfigResponse, error)
 }
 
 type msgClient struct {
@@ -1942,6 +2255,33 @@ func (c *msgClient) BuyNFT(ctx context.Context, in *MsgBuyNFT, opts ...grpc.Call
 	return out, nil
 }
 
+func (c *msgClient) CreateRoyaltyConfig(ctx context.Context, in *MsgCreateRoyaltyConfig, opts ...grpc.CallOption) (*MsgCreateRoyaltyConfigResponse, error) {
+	out := new(MsgCreateRoyaltyConfigResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/CreateRoyaltyConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateRoyaltyConfig(ctx context.Context, in *MsgUpdateRoyaltyConfig, opts ...grpc.CallOption) (*MsgUpdateRoyaltyConfigResponse, error) {
+	out := new(MsgUpdateRoyaltyConfigResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/UpdateRoyaltyConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) DeleteRoyaltyConfig(ctx context.Context, in *MsgDeleteRoyaltyConfig, opts ...grpc.CallOption) (*MsgDeleteRoyaltyConfigResponse, error) {
+	out := new(MsgDeleteRoyaltyConfigResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/DeleteRoyaltyConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	NewClass(context.Context, *MsgNewClass) (*MsgNewClassResponse, error)
@@ -1959,6 +2299,9 @@ type MsgServer interface {
 	DeleteListing(context.Context, *MsgDeleteListing) (*MsgDeleteListingResponse, error)
 	SellNFT(context.Context, *MsgSellNFT) (*MsgSellNFTResponse, error)
 	BuyNFT(context.Context, *MsgBuyNFT) (*MsgBuyNFTResponse, error)
+	CreateRoyaltyConfig(context.Context, *MsgCreateRoyaltyConfig) (*MsgCreateRoyaltyConfigResponse, error)
+	UpdateRoyaltyConfig(context.Context, *MsgUpdateRoyaltyConfig) (*MsgUpdateRoyaltyConfigResponse, error)
+	DeleteRoyaltyConfig(context.Context, *MsgDeleteRoyaltyConfig) (*MsgDeleteRoyaltyConfigResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -2009,6 +2352,15 @@ func (*UnimplementedMsgServer) SellNFT(ctx context.Context, req *MsgSellNFT) (*M
 }
 func (*UnimplementedMsgServer) BuyNFT(ctx context.Context, req *MsgBuyNFT) (*MsgBuyNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyNFT not implemented")
+}
+func (*UnimplementedMsgServer) CreateRoyaltyConfig(ctx context.Context, req *MsgCreateRoyaltyConfig) (*MsgCreateRoyaltyConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRoyaltyConfig not implemented")
+}
+func (*UnimplementedMsgServer) UpdateRoyaltyConfig(ctx context.Context, req *MsgUpdateRoyaltyConfig) (*MsgUpdateRoyaltyConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoyaltyConfig not implemented")
+}
+func (*UnimplementedMsgServer) DeleteRoyaltyConfig(ctx context.Context, req *MsgDeleteRoyaltyConfig) (*MsgDeleteRoyaltyConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoyaltyConfig not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -2285,6 +2637,60 @@ func _Msg_BuyNFT_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_CreateRoyaltyConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateRoyaltyConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateRoyaltyConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/likechain.likenft.Msg/CreateRoyaltyConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateRoyaltyConfig(ctx, req.(*MsgCreateRoyaltyConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateRoyaltyConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateRoyaltyConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateRoyaltyConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/likechain.likenft.Msg/UpdateRoyaltyConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateRoyaltyConfig(ctx, req.(*MsgUpdateRoyaltyConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_DeleteRoyaltyConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteRoyaltyConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeleteRoyaltyConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/likechain.likenft.Msg/DeleteRoyaltyConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeleteRoyaltyConfig(ctx, req.(*MsgDeleteRoyaltyConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "likechain.likenft.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -2348,6 +2754,18 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BuyNFT",
 			Handler:    _Msg_BuyNFT_Handler,
+		},
+		{
+			MethodName: "CreateRoyaltyConfig",
+			Handler:    _Msg_CreateRoyaltyConfig_Handler,
+		},
+		{
+			MethodName: "UpdateRoyaltyConfig",
+			Handler:    _Msg_UpdateRoyaltyConfig_Handler,
+		},
+		{
+			MethodName: "DeleteRoyaltyConfig",
+			Handler:    _Msg_DeleteRoyaltyConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -3566,6 +3984,226 @@ func (m *MsgBuyNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgCreateRoyaltyConfig) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateRoyaltyConfig) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateRoyaltyConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.RoyaltyConfig.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateRoyaltyConfigResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateRoyaltyConfigResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateRoyaltyConfigResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.RoyaltyConfig.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateRoyaltyConfig) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateRoyaltyConfig) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateRoyaltyConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.RoyaltyConfig.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateRoyaltyConfigResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateRoyaltyConfigResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateRoyaltyConfigResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.RoyaltyConfig.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteRoyaltyConfig) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteRoyaltyConfig) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteRoyaltyConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteRoyaltyConfigResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteRoyaltyConfigResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteRoyaltyConfigResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -4073,6 +4711,92 @@ func (m *MsgBuyNFT) Size() (n int) {
 }
 
 func (m *MsgBuyNFTResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgCreateRoyaltyConfig) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.RoyaltyConfig.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgCreateRoyaltyConfigResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.RoyaltyConfig.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgUpdateRoyaltyConfig) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.RoyaltyConfig.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgUpdateRoyaltyConfigResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.RoyaltyConfig.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgDeleteRoyaltyConfig) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgDeleteRoyaltyConfigResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7716,6 +8440,630 @@ func (m *MsgBuyNFTResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgBuyNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateRoyaltyConfig) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateRoyaltyConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateRoyaltyConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyConfig", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateRoyaltyConfigResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateRoyaltyConfigResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateRoyaltyConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyConfig", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateRoyaltyConfig) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateRoyaltyConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateRoyaltyConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyConfig", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateRoyaltyConfigResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateRoyaltyConfigResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateRoyaltyConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyConfig", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteRoyaltyConfig) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteRoyaltyConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteRoyaltyConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteRoyaltyConfigResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteRoyaltyConfigResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteRoyaltyConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

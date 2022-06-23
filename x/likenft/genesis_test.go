@@ -99,6 +99,14 @@ func TestGenesis(t *testing.T) {
 				ListingKey: []byte("1"),
 			},
 		},
+		RoyaltyConfigByClassList: []types.RoyaltyConfigByClass{
+			{
+				ClassId: "0",
+			},
+			{
+				ClassId: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -120,5 +128,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.ListingList, got.ListingList)
 	require.ElementsMatch(t, genesisState.OfferExpireQueue, got.OfferExpireQueue)
 	require.ElementsMatch(t, genesisState.ListingExpireQueue, got.ListingExpireQueue)
+	require.ElementsMatch(t, genesisState.RoyaltyConfigByClassList, got.RoyaltyConfigByClassList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

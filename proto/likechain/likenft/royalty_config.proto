@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package likechain.likenft;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message RoyaltyConfigByClass {
+  string class_id = 1;
+  RoyaltyConfig royalty_config = 2 [(gogoproto.nullable) = false];
+}
+
+message RoyaltyConfig {
+  uint64 rate_basis_points = 1;
+  repeated RoyaltyStakeholder stakeholders = 2 [(gogoproto.nullable) = false];
+}
+
+message RoyaltyStakeholder {
+  bytes account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  uint64 weight = 2;
+}
+
+message RoyaltyConfigInput {
+  uint64 rate_basis_points = 1;
+  repeated RoyaltyStakeholderInput stakeholders = 2 [(gogoproto.nullable) = false];
+}
+
+message RoyaltyStakeholderInput {
+  string account = 1;
+  uint64 weight = 2;
+}

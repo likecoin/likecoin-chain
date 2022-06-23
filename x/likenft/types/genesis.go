@@ -12,14 +12,15 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		ClassesByIscnList:    []ClassesByISCN{},
-		ClassesByAccountList: []ClassesByAccount{},
-		MintableNftList:      []MintableNFT{},
-		ClassRevealQueue:     []ClassRevealQueueEntry{},
-		OfferList:            []Offer{},
-		ListingList:          []Listing{},
-		OfferExpireQueue:     []OfferExpireQueueEntry{},
-		ListingExpireQueue:   []ListingExpireQueueEntry{},
+		ClassesByIscnList:        []ClassesByISCN{},
+		ClassesByAccountList:     []ClassesByAccount{},
+		MintableNftList:          []MintableNFT{},
+		ClassRevealQueue:         []ClassRevealQueueEntry{},
+		OfferList:                []Offer{},
+		ListingList:              []Listing{},
+		OfferExpireQueue:         []OfferExpireQueueEntry{},
+		ListingExpireQueue:       []ListingExpireQueueEntry{},
+		RoyaltyConfigByClassList: []RoyaltyConfigByClass{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -122,6 +123,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for listingExpireQueueEntry")
 		}
 		listingExpireQueueEntryIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in royaltyConfigByClass
+	royaltyConfigByClassIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.RoyaltyConfigByClassList {
+		index := string(RoyaltyConfigByClassKey(elem.ClassId))
+		if _, ok := royaltyConfigByClassIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for royaltyConfigByClass")
+		}
+		royaltyConfigByClassIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 
