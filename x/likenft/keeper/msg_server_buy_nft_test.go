@@ -1,13 +1,12 @@
 package keeper_test
 
 import (
+	"math"
 	"testing"
 	"time"
 
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
 	"github.com/likecoin/likechain/testutil/keeper"
 	"github.com/likecoin/likechain/x/likenft/testutil"
 	"github.com/likecoin/likechain/x/likenft/types"
@@ -34,7 +33,6 @@ func TestBuyNFTNormalRoyalty(t *testing.T) {
 
 	// Data
 	creatorAddressBytes := []byte{1, 1, 1, 1, 0, 0, 0, 0}
-	creatorAddress, _ := sdk.Bech32ifyAddressBytes("like", creatorAddressBytes)
 	sellerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	sellerAddress, _ := sdk.Bech32ifyAddressBytes("like", sellerAddressBytes)
 	buyerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
@@ -55,30 +53,25 @@ func TestBuyNFTNormalRoyalty(t *testing.T) {
 		Expiration: expiration,
 	})
 
+	// Seed royalty config
+	k.SetRoyaltyConfig(ctx, types.RoyaltyConfigByClass{
+		ClassId: classId,
+		RoyaltyConfig: types.RoyaltyConfig{
+			RateBasisPoints: royaltyBasisPoints,
+			Stakeholders: []types.RoyaltyStakeholder{
+				{
+					Account: creatorAddressBytes,
+					Weight:  uint64(1),
+				},
+			},
+		},
+	})
+	royaltyAmount := uint64(math.Floor(float64(finalPrice) / 10000 * float64(royaltyBasisPoints)))
+	royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
+
 	// Mock
 	nftKeeper.EXPECT().GetOwner(gomock.Any(), classId, nftId).Return(sellerAddressBytes)
 	bankKeeper.EXPECT().GetBalance(gomock.Any(), buyerAddressBytes, "nanolike").Return(sdk.NewCoin("nanolike", sdk.NewInt(1000000)))
-	k.SetClassesByAccount(ctx, types.ClassesByAccount{
-		Account:  creatorAddress,
-		ClassIds: []string{classId},
-	})
-	classData := types.ClassData{
-		Parent: types.ClassParent{
-			Type:    types.ClassParentType_ACCOUNT,
-			Account: creatorAddress,
-		},
-		Config: types.ClassConfig{
-			RoyaltyBasisPoints: royaltyBasisPoints,
-		},
-	}
-	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
-	require.NoError(t, err)
-	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
-		Id:   classId,
-		Data: classDataInAny,
-	}, true)
-	royaltyAmount := finalPrice / 10000 * classData.Config.RoyaltyBasisPoints
-	royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
 	bankKeeper.EXPECT().SendCoins(gomock.Any(), buyerAddressBytes, creatorAddressBytes, royaltyAmountCoins).Return(nil)
 	netAmount := finalPrice - royaltyAmount
 	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
@@ -123,8 +116,6 @@ func TestBuyNFTNormalNoRoyalty(t *testing.T) {
 	goCtx = sdk.WrapSDKContext(ctx)
 
 	// Data
-	creatorAddressBytes := []byte{1, 1, 1, 1, 0, 0, 0, 0}
-	creatorAddress, _ := sdk.Bech32ifyAddressBytes("like", creatorAddressBytes)
 	sellerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	sellerAddress, _ := sdk.Bech32ifyAddressBytes("like", sellerAddressBytes)
 	buyerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
@@ -133,7 +124,6 @@ func TestBuyNFTNormalNoRoyalty(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
-	royaltyBasisPoints := uint64(0)
 	finalPrice := uint64(200000)
 
 	// Seed listing
@@ -145,28 +135,11 @@ func TestBuyNFTNormalNoRoyalty(t *testing.T) {
 		Expiration: expiration,
 	})
 
+	// no royalty config
+
 	// Mock
 	nftKeeper.EXPECT().GetOwner(gomock.Any(), classId, nftId).Return(sellerAddressBytes)
 	bankKeeper.EXPECT().GetBalance(gomock.Any(), buyerAddressBytes, "nanolike").Return(sdk.NewCoin("nanolike", sdk.NewInt(1000000)))
-	k.SetClassesByAccount(ctx, types.ClassesByAccount{
-		Account:  creatorAddress,
-		ClassIds: []string{classId},
-	})
-	classData := types.ClassData{
-		Parent: types.ClassParent{
-			Type:    types.ClassParentType_ACCOUNT,
-			Account: creatorAddress,
-		},
-		Config: types.ClassConfig{
-			RoyaltyBasisPoints: royaltyBasisPoints,
-		},
-	}
-	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
-	require.NoError(t, err)
-	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
-		Id:   classId,
-		Data: classDataInAny,
-	}, true)
 	netAmount := finalPrice
 	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
 	bankKeeper.EXPECT().SendCoins(gomock.Any(), buyerAddressBytes, sellerAddressBytes, netAmountCoins).Return(nil)
