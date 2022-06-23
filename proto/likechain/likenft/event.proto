@@ -126,3 +126,15 @@ message EventExpireListing {
   bool success = 4;
   string error = 5;
 }
+
+message EventCreateRoyaltyConfig {
+  string class_id = 1;
+}
+
+message EventUpdateRoyaltyConfig {
+  string class_id = 1;
+}
+
+message EventDeleteRoyaltyConfig {
+  string class_id = 1;
+}

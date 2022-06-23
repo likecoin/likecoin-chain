@@ -55,7 +55,9 @@ func (k msgServer) CreateRoyaltyConfig(goCtx context.Context, msg *types.MsgCrea
 		},
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventCreateRoyaltyConfig{
+		ClassId: msg.ClassId,
+	})
 
 	return &types.MsgCreateRoyaltyConfigResponse{
 		RoyaltyConfig: config,
@@ -88,7 +90,9 @@ func (k msgServer) UpdateRoyaltyConfig(goCtx context.Context, msg *types.MsgUpda
 		},
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventUpdateRoyaltyConfig{
+		ClassId: msg.ClassId,
+	})
 
 	return &types.MsgUpdateRoyaltyConfigResponse{
 		RoyaltyConfig: config,
@@ -117,7 +121,9 @@ func (k msgServer) DeleteRoyaltyConfig(goCtx context.Context, msg *types.MsgDele
 		msg.ClassId,
 	)
 
-	// TODO emit event
+	ctx.EventManager().EmitTypedEvent(&types.EventDeleteRoyaltyConfig{
+		ClassId: msg.ClassId,
+	})
 
 	return &types.MsgDeleteRoyaltyConfigResponse{}, nil
 }
