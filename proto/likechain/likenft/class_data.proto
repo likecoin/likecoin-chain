@@ -44,7 +44,6 @@ message ClassConfig {
   bool burnable = 1;
   uint64 max_supply = 2;
   BlindBoxConfig blind_box_config = 3 [(gogoproto.nullable) = true];
-  uint64 royalty_basis_points = 4;
 }
 
 message BlindBoxConfig {

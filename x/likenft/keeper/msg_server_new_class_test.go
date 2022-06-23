@@ -59,7 +59,6 @@ func TestNewClassISCNNormal(t *testing.T) {
 		},
 	}
 	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
-	royaltyBasisPoints := uint64(123)
 
 	// Mock keeper calls
 	iscnLatestVersion := uint64(2)
@@ -97,7 +96,6 @@ func TestNewClassISCNNormal(t *testing.T) {
 					MintPeriods: mintPeriods,
 					RevealTime:  revealTime,
 				},
-				RoyaltyBasisPoints: royaltyBasisPoints,
 			},
 		},
 	})
@@ -128,8 +126,6 @@ func TestNewClassISCNNormal(t *testing.T) {
 		require.ElementsMatch(t, mintPeriod.AllowedAddresses, mintPeriods[i].AllowedAddresses)
 		require.Equal(t, mintPeriod.MintPrice, mintPeriods[i].MintPrice)
 	}
-
-	require.Equal(t, royaltyBasisPoints, classData.Config.RoyaltyBasisPoints)
 
 	// Check mock was called as expected
 	ctrl.Finish()
@@ -1019,98 +1015,6 @@ func TestNewClassBlindBoxNoMintPeriod(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrInvalidNftClassConfig.Error())
 	require.Nil(t, res)
-
-	// Check mock was called as expected
-	ctrl.Finish()
-}
-
-func TestNewClassRoyaltyTooHigh(t *testing.T) {
-	// Setup
-	ctrl := gomock.NewController(t)
-	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
-	bankKeeper := testutil.NewMockBankKeeper(ctrl)
-	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
-	nftKeeper := testutil.NewMockNftKeeper(ctrl)
-	msgServer, goCtx, _ := setupMsgServer(t, keeper.LikenftDependedKeepers{
-		AccountKeeper: accountKeeper,
-		BankKeeper:    bankKeeper,
-		IscnKeeper:    iscnKeeper,
-		NftKeeper:     nftKeeper,
-	})
-
-	// Test Input
-	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
-	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
-	iscnId := iscntypes.NewIscnId("likecoin-chain", "abcdef", 1)
-	name := "Class Name"
-	symbol := "ABC"
-	description := "Testing Class 123"
-	uri := "ipfs://abcdef"
-	uriHash := "abcdef"
-	metadata := types.JsonInput(
-		`{
-	"abc": "def",
-	"qwerty": 1234,
-	"bool": false,
-	"null": null,
-	"nested": {
-		"object": {
-			"abc": "def"
-		}
-	}
-}`)
-	burnable := true
-	maxSupply := uint64(5)
-	mintPeriods := []types.MintPeriod{
-		{
-			StartTime:        *testutil.MustParseTime(time.RFC3339, "2020-01-01T00:00:00Z"),
-			AllowedAddresses: make([]string, 0),
-			MintPrice:        1000000000,
-		},
-	}
-	revealTime := *testutil.MustParseTime(time.RFC3339, "2322-04-20T00:00:00Z")
-	royaltyBasisPoints := uint64(1001)
-
-	// Mock keeper calls
-	iscnLatestVersion := uint64(2)
-	iscnKeeper.
-		EXPECT().
-		GetContentIdRecord(gomock.Any(), gomock.Eq(iscnId.Prefix)).
-		Return(&iscntypes.ContentIdRecord{
-			OwnerAddressBytes: ownerAddressBytes,
-			LatestVersion:     iscnLatestVersion,
-		})
-
-	// Run
-	res, err := msgServer.NewClass(goCtx, &types.MsgNewClass{
-		Creator: ownerAddress,
-		Parent: types.ClassParentInput{
-			Type:         types.ClassParentType_ISCN,
-			IscnIdPrefix: iscnId.Prefix.String(),
-		},
-		Input: types.ClassInput{
-			Name:        name,
-			Symbol:      symbol,
-			Description: description,
-			Uri:         uri,
-			UriHash:     uriHash,
-			Metadata:    metadata,
-			Config: types.ClassConfig{
-				Burnable:  burnable,
-				MaxSupply: maxSupply,
-				BlindBoxConfig: &types.BlindBoxConfig{
-					MintPeriods: mintPeriods,
-					RevealTime:  revealTime,
-				},
-				RoyaltyBasisPoints: royaltyBasisPoints,
-			},
-		},
-	})
-
-	// Check output
-	require.Empty(t, res)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), sdkerrors.ErrInvalidRequest.Error())
 
 	// Check mock was called as expected
 	ctrl.Finish()

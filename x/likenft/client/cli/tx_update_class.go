@@ -36,8 +36,7 @@ func CmdUpdateClass() *cobra.Command {
 				}
 			],
 			"reveal_time": "2022-02-01T00:00:00Z"
-		},
-		"royalty_basis_points": 0 // each base point is 0.01%, max 10% / 1000 bps
+		}
 	}
 }`,
 		Args: cobra.ExactArgs(2),
