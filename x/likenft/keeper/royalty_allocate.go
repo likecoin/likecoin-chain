@@ -8,12 +8,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-type RoyaltyAllocation struct {
-	Account sdk.AccAddress
-	Amount  uint64
-}
-
-func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, config types.RoyaltyConfig) (royaltyAmount uint64, allocations []RoyaltyAllocation, err error) {
+func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, config types.RoyaltyConfig) (royaltyAmount uint64, allocations []types.RoyaltyAllocation, err error) {
 	err = k.validateRoyaltyConfig(ctx, config)
 	if err != nil {
 		return
