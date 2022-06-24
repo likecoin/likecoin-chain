@@ -384,3 +384,60 @@ ParseEventSellNFT:
 	}
 	return actualEvent
 }
+
+func parseEventCreateRoyaltyConfig(res sdk.TxResponse) types.EventCreateRoyaltyConfig {
+	actualEvent := types.EventCreateRoyaltyConfig{}
+
+ParseEventCreateRoyaltyConfig:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventCreateRoyaltyConfig" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventCreateRoyaltyConfig
+			}
+		}
+	}
+	return actualEvent
+}
+
+func parseEventUpdateRoyaltyConfig(res sdk.TxResponse) types.EventUpdateRoyaltyConfig {
+	actualEvent := types.EventUpdateRoyaltyConfig{}
+
+ParseEventUpdateRoyaltyConfig:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventUpdateRoyaltyConfig" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventUpdateRoyaltyConfig
+			}
+		}
+	}
+	return actualEvent
+}
+
+func parseEventDeleteRoyaltyConfig(res sdk.TxResponse) types.EventDeleteRoyaltyConfig {
+	actualEvent := types.EventDeleteRoyaltyConfig{}
+
+ParseEventDeleteRoyaltyConfig:
+	for _, log := range res.Logs {
+		for _, event := range log.Events {
+			if event.Type == "likechain.likenft.EventDeleteRoyaltyConfig" {
+				for _, attr := range event.Attributes {
+					if attr.Key == "class_id" {
+						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
+					}
+				}
+				break ParseEventDeleteRoyaltyConfig
+			}
+		}
+	}
+	return actualEvent
+}
