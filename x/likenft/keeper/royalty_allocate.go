@@ -23,11 +23,13 @@ func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, conf
 	// split by weights
 	for _, stakeholder := range config.Stakeholders {
 		amount := uint64(math.Floor(float64(allocatable) / float64(totalWeight) * float64(stakeholder.Weight)))
-		allocations = append(allocations, RoyaltyAllocation{
-			Account: stakeholder.Account,
-			Amount:  amount,
-		})
-		royaltyAmount += amount
+		if amount > 0 {
+			allocations = append(allocations, types.RoyaltyAllocation{
+				Account: stakeholder.Account,
+				Amount:  amount,
+			})
+			royaltyAmount += amount
+		}
 	}
 	return
 }
