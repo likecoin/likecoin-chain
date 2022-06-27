@@ -55,19 +55,19 @@ service Query {
     option (google.api.http).get = "/likenft/account_by_class/{class_id}";
   }
 
-  // Queries a MintableNFT by index.
-  rpc MintableNFT(QueryMintableNFTRequest) returns (QueryMintableNFTResponse) {
-    option (google.api.http).get = "/likenft/mintable_nft/{class_id}/{id}";
+  // Queries a BlindBoxContent by index.
+  rpc BlindBoxContent(QueryBlindBoxContentRequest) returns (QueryBlindBoxContentResponse) {
+    option (google.api.http).get = "/likenft/blind_box_content/{class_id}/{id}";
   }
 
-  // Queries a list of MintableNFT items.
-  rpc MintableNFTIndex(QueryMintableNFTIndexRequest) returns (QueryMintableNFTIndexResponse) {
-    option (google.api.http).get = "/likenft/mintable_nft";
+  // Queries a list of BlindBoxContent items.
+  rpc BlindBoxContentIndex(QueryBlindBoxContentIndexRequest) returns (QueryBlindBoxContentIndexResponse) {
+    option (google.api.http).get = "/likenft/blind_box_content";
   }
 
-  // Queries a list of MintableNFTs by class_id
-  rpc MintableNFTs(QueryMintableNFTsRequest) returns (QueryMintableNFTsResponse) {
-    option (google.api.http).get = "/likenft/mintable_nft/{class_id}";
+  // Queries a list of BlindBoxContents by class_id
+  rpc BlindBoxContents(QueryBlindBoxContentsRequest) returns (QueryBlindBoxContentsResponse) {
+    option (google.api.http).get = "/likenft/blind_box_content/{class_id}";
   }
 
   // Queries a Offer by index.
@@ -191,31 +191,31 @@ message QueryAccountByClassResponse {
   string address = 1;
 }
 
-message QueryMintableNFTRequest {
+message QueryBlindBoxContentRequest {
   string class_id = 1;
   string id = 2;
 }
 
-message QueryMintableNFTResponse {
-  MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
+message QueryBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryMintableNFTIndexRequest {
+message QueryBlindBoxContentIndexRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryMintableNFTIndexResponse {
-  repeated MintableNFT mintable_nfts = 1 [(gogoproto.nullable) = false];
+message QueryBlindBoxContentIndexResponse {
+  repeated BlindBoxContent blind_box_contents = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryMintableNFTsRequest {
+message QueryBlindBoxContentsRequest {
   string class_id = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryMintableNFTsResponse {
-  repeated MintableNFT mintable_nfts = 1 [(gogoproto.nullable) = false];
+message QueryBlindBoxContentsResponse {
+  repeated BlindBoxContent blind_box_contents = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

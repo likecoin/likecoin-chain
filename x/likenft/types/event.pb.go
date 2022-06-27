@@ -354,25 +354,25 @@ func (m *EventBurnNFT) GetClassParentAccount() string {
 	return ""
 }
 
-type EventCreateMintableNFT struct {
+type EventCreateBlindBoxContent struct {
 	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ContentId               string `protobuf:"bytes,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
 	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
-func (m *EventCreateMintableNFT) Reset()         { *m = EventCreateMintableNFT{} }
-func (m *EventCreateMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*EventCreateMintableNFT) ProtoMessage()    {}
-func (*EventCreateMintableNFT) Descriptor() ([]byte, []int) {
+func (m *EventCreateBlindBoxContent) Reset()         { *m = EventCreateBlindBoxContent{} }
+func (m *EventCreateBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*EventCreateBlindBoxContent) ProtoMessage()    {}
+func (*EventCreateBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ed07ad415525b8f5, []int{5}
 }
-func (m *EventCreateMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *EventCreateBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventCreateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventCreateBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventCreateMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventCreateBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -382,65 +382,65 @@ func (m *EventCreateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *EventCreateMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventCreateMintableNFT.Merge(m, src)
+func (m *EventCreateBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCreateBlindBoxContent.Merge(m, src)
 }
-func (m *EventCreateMintableNFT) XXX_Size() int {
+func (m *EventCreateBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventCreateMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventCreateMintableNFT.DiscardUnknown(m)
+func (m *EventCreateBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCreateBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventCreateMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_EventCreateBlindBoxContent proto.InternalMessageInfo
 
-func (m *EventCreateMintableNFT) GetClassId() string {
+func (m *EventCreateBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *EventCreateMintableNFT) GetMintableNftId() string {
+func (m *EventCreateBlindBoxContent) GetContentId() string {
 	if m != nil {
-		return m.MintableNftId
+		return m.ContentId
 	}
 	return ""
 }
 
-func (m *EventCreateMintableNFT) GetClassParentIscnIdPrefix() string {
+func (m *EventCreateBlindBoxContent) GetClassParentIscnIdPrefix() string {
 	if m != nil {
 		return m.ClassParentIscnIdPrefix
 	}
 	return ""
 }
 
-func (m *EventCreateMintableNFT) GetClassParentAccount() string {
+func (m *EventCreateBlindBoxContent) GetClassParentAccount() string {
 	if m != nil {
 		return m.ClassParentAccount
 	}
 	return ""
 }
 
-type EventUpdateMintableNFT struct {
+type EventUpdateBlindBoxContent struct {
 	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ContentId               string `protobuf:"bytes,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
 	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
-func (m *EventUpdateMintableNFT) Reset()         { *m = EventUpdateMintableNFT{} }
-func (m *EventUpdateMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*EventUpdateMintableNFT) ProtoMessage()    {}
-func (*EventUpdateMintableNFT) Descriptor() ([]byte, []int) {
+func (m *EventUpdateBlindBoxContent) Reset()         { *m = EventUpdateBlindBoxContent{} }
+func (m *EventUpdateBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateBlindBoxContent) ProtoMessage()    {}
+func (*EventUpdateBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ed07ad415525b8f5, []int{6}
 }
-func (m *EventUpdateMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventUpdateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventUpdateMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -450,65 +450,65 @@ func (m *EventUpdateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *EventUpdateMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventUpdateMintableNFT.Merge(m, src)
+func (m *EventUpdateBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateBlindBoxContent.Merge(m, src)
 }
-func (m *EventUpdateMintableNFT) XXX_Size() int {
+func (m *EventUpdateBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventUpdateMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventUpdateMintableNFT.DiscardUnknown(m)
+func (m *EventUpdateBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventUpdateMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateBlindBoxContent proto.InternalMessageInfo
 
-func (m *EventUpdateMintableNFT) GetClassId() string {
+func (m *EventUpdateBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *EventUpdateMintableNFT) GetMintableNftId() string {
+func (m *EventUpdateBlindBoxContent) GetContentId() string {
 	if m != nil {
-		return m.MintableNftId
+		return m.ContentId
 	}
 	return ""
 }
 
-func (m *EventUpdateMintableNFT) GetClassParentIscnIdPrefix() string {
+func (m *EventUpdateBlindBoxContent) GetClassParentIscnIdPrefix() string {
 	if m != nil {
 		return m.ClassParentIscnIdPrefix
 	}
 	return ""
 }
 
-func (m *EventUpdateMintableNFT) GetClassParentAccount() string {
+func (m *EventUpdateBlindBoxContent) GetClassParentAccount() string {
 	if m != nil {
 		return m.ClassParentAccount
 	}
 	return ""
 }
 
-type EventDeleteMintableNFT struct {
+type EventDeleteBlindBoxContent struct {
 	ClassId                 string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	MintableNftId           string `protobuf:"bytes,2,opt,name=mintable_nft_id,json=mintableNftId,proto3" json:"mintable_nft_id,omitempty"`
+	ContentId               string `protobuf:"bytes,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	ClassParentIscnIdPrefix string `protobuf:"bytes,3,opt,name=class_parent_iscn_id_prefix,json=classParentIscnIdPrefix,proto3" json:"class_parent_iscn_id_prefix,omitempty"`
 	ClassParentAccount      string `protobuf:"bytes,4,opt,name=class_parent_account,json=classParentAccount,proto3" json:"class_parent_account,omitempty"`
 }
 
-func (m *EventDeleteMintableNFT) Reset()         { *m = EventDeleteMintableNFT{} }
-func (m *EventDeleteMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*EventDeleteMintableNFT) ProtoMessage()    {}
-func (*EventDeleteMintableNFT) Descriptor() ([]byte, []int) {
+func (m *EventDeleteBlindBoxContent) Reset()         { *m = EventDeleteBlindBoxContent{} }
+func (m *EventDeleteBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*EventDeleteBlindBoxContent) ProtoMessage()    {}
+func (*EventDeleteBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ed07ad415525b8f5, []int{7}
 }
-func (m *EventDeleteMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *EventDeleteBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventDeleteMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventDeleteBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventDeleteMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventDeleteBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -518,40 +518,40 @@ func (m *EventDeleteMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *EventDeleteMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventDeleteMintableNFT.Merge(m, src)
+func (m *EventDeleteBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventDeleteBlindBoxContent.Merge(m, src)
 }
-func (m *EventDeleteMintableNFT) XXX_Size() int {
+func (m *EventDeleteBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventDeleteMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventDeleteMintableNFT.DiscardUnknown(m)
+func (m *EventDeleteBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventDeleteBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventDeleteMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_EventDeleteBlindBoxContent proto.InternalMessageInfo
 
-func (m *EventDeleteMintableNFT) GetClassId() string {
+func (m *EventDeleteBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *EventDeleteMintableNFT) GetMintableNftId() string {
+func (m *EventDeleteBlindBoxContent) GetContentId() string {
 	if m != nil {
-		return m.MintableNftId
+		return m.ContentId
 	}
 	return ""
 }
 
-func (m *EventDeleteMintableNFT) GetClassParentIscnIdPrefix() string {
+func (m *EventDeleteBlindBoxContent) GetClassParentIscnIdPrefix() string {
 	if m != nil {
 		return m.ClassParentIscnIdPrefix
 	}
 	return ""
 }
 
-func (m *EventDeleteMintableNFT) GetClassParentAccount() string {
+func (m *EventDeleteBlindBoxContent) GetClassParentAccount() string {
 	if m != nil {
 		return m.ClassParentAccount
 	}
@@ -1360,9 +1360,9 @@ func init() {
 	proto.RegisterType((*EventRevealClass)(nil), "likechain.likenft.EventRevealClass")
 	proto.RegisterType((*EventMintNFT)(nil), "likechain.likenft.EventMintNFT")
 	proto.RegisterType((*EventBurnNFT)(nil), "likechain.likenft.EventBurnNFT")
-	proto.RegisterType((*EventCreateMintableNFT)(nil), "likechain.likenft.EventCreateMintableNFT")
-	proto.RegisterType((*EventUpdateMintableNFT)(nil), "likechain.likenft.EventUpdateMintableNFT")
-	proto.RegisterType((*EventDeleteMintableNFT)(nil), "likechain.likenft.EventDeleteMintableNFT")
+	proto.RegisterType((*EventCreateBlindBoxContent)(nil), "likechain.likenft.EventCreateBlindBoxContent")
+	proto.RegisterType((*EventUpdateBlindBoxContent)(nil), "likechain.likenft.EventUpdateBlindBoxContent")
+	proto.RegisterType((*EventDeleteBlindBoxContent)(nil), "likechain.likenft.EventDeleteBlindBoxContent")
 	proto.RegisterType((*EventCreateOffer)(nil), "likechain.likenft.EventCreateOffer")
 	proto.RegisterType((*EventUpdateOffer)(nil), "likechain.likenft.EventUpdateOffer")
 	proto.RegisterType((*EventDeleteOffer)(nil), "likechain.likenft.EventDeleteOffer")
@@ -1381,44 +1381,44 @@ func init() {
 func init() { proto.RegisterFile("likechain/likenft/event.proto", fileDescriptor_ed07ad415525b8f5) }
 
 var fileDescriptor_ed07ad415525b8f5 = []byte{
-	// 590 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x5f, 0x6b, 0x13, 0x41,
-	0x10, 0xef, 0xda, 0x24, 0xad, 0xab, 0xf1, 0xcf, 0xd1, 0xd6, 0x88, 0x78, 0x48, 0x40, 0xf1, 0xc5,
-	0x54, 0x11, 0xdf, 0x7c, 0xb1, 0xb1, 0x4a, 0x40, 0x63, 0x89, 0xfa, 0x52, 0xd0, 0xe3, 0xb2, 0x37,
-	0xd7, 0x2e, 0x6e, 0xf7, 0x8e, 0xdd, 0xbd, 0x36, 0xf7, 0x6c, 0x41, 0xf0, 0x41, 0xfc, 0x54, 0x22,
-	0xf8, 0xd2, 0x47, 0x1f, 0x25, 0xf9, 0x22, 0x72, 0xbb, 0x7b, 0xd7, 0x2b, 0xda, 0xc6, 0x86, 0x94,
-	0x52, 0xdf, 0x6e, 0x76, 0x66, 0x7e, 0x37, 0xbf, 0x99, 0x9d, 0xd9, 0xc1, 0x37, 0x19, 0xfd, 0x00,
-	0x64, 0xd3, 0xa7, 0x7c, 0x39, 0xfb, 0xe2, 0xa1, 0x5a, 0x86, 0x6d, 0xe0, 0xaa, 0x15, 0x8b, 0x48,
-	0x45, 0xce, 0xd5, 0x42, 0xdd, 0xb2, 0xea, 0xe6, 0x2e, 0xc2, 0xf5, 0xd5, 0xcc, 0xa4, 0x0b, 0x3b,
-	0x6d, 0xe6, 0x4b, 0xe9, 0x5c, 0xc7, 0xf3, 0x24, 0xfb, 0xf0, 0x68, 0xd0, 0x40, 0xb7, 0xd0, 0xdd,
-	0xf3, 0xbd, 0x39, 0x2d, 0x77, 0x02, 0xe7, 0x01, 0x5e, 0x8c, 0x7d, 0x01, 0x5c, 0x79, 0x54, 0x12,
-	0xee, 0xd1, 0xc0, 0x8b, 0x05, 0x84, 0x74, 0xd0, 0x38, 0xa7, 0xed, 0x1c, 0xa3, 0xec, 0x48, 0xc2,
-	0x3b, 0xc1, 0x9a, 0xd6, 0x38, 0xb7, 0xf1, 0x25, 0xeb, 0xe2, 0x13, 0x12, 0x25, 0x5c, 0x35, 0x66,
-	0xb5, 0x6d, 0xdd, 0x9c, 0x3e, 0x31, 0x87, 0xcd, 0x4f, 0x08, 0x5f, 0xd1, 0x61, 0xbc, 0x8d, 0x03,
-	0x5f, 0xc1, 0x29, 0x46, 0xf2, 0xce, 0x06, 0xd2, 0x83, 0x6d, 0xf0, 0xd9, 0xd8, 0x40, 0x1a, 0x78,
-	0x4e, 0x26, 0x84, 0x80, 0x94, 0xfa, 0xd7, 0xf3, 0xbd, 0x5c, 0x74, 0x16, 0x70, 0x15, 0x84, 0x88,
-	0x84, 0xfd, 0x8d, 0x11, 0x9a, 0xdf, 0x10, 0xbe, 0xa8, 0xf1, 0x5f, 0x52, 0xae, 0xba, 0xcf, 0xde,
-	0x1c, 0x85, 0xbd, 0x88, 0x6b, 0x3c, 0x54, 0x99, 0xc2, 0xb0, 0xaa, 0xf2, 0x50, 0x75, 0x82, 0x0c,
-	0x38, 0xda, 0xe1, 0x50, 0x00, 0x6b, 0xc1, 0x79, 0x8c, 0x6f, 0x18, 0x9c, 0xbf, 0xe7, 0xa5, 0xa2,
-	0x6d, 0xaf, 0x69, 0x93, 0xb5, 0x3f, 0x93, 0x73, 0x1f, 0x2f, 0x1c, 0xf0, 0xce, 0x53, 0x54, 0x35,
-	0xe9, 0x2c, 0xb9, 0xe5, 0x79, 0x2a, 0x88, 0xac, 0x24, 0x82, 0x9f, 0x65, 0x22, 0x3f, 0x10, 0x5e,
-	0xd2, 0x44, 0xda, 0x02, 0x7c, 0x05, 0x59, 0x5d, 0xfc, 0x3e, 0x83, 0x31, 0x94, 0xee, 0xe0, 0xcb,
-	0x5b, 0xd6, 0xd2, 0x3b, 0xc0, 0xad, 0x9e, 0x1f, 0x77, 0x35, 0xc7, 0x31, 0x6c, 0x66, 0x27, 0x63,
-	0x53, 0x19, 0xcf, 0xc6, 0x34, 0xd2, 0xff, 0xc2, 0xe6, 0x29, 0x30, 0x38, 0xf3, 0x6c, 0xd6, 0xed,
-	0x68, 0x31, 0x17, 0xed, 0x55, 0x18, 0x82, 0x98, 0xac, 0x6b, 0xfa, 0x49, 0xba, 0xdf, 0x35, 0x5a,
-	0x28, 0xb0, 0x4d, 0xd9, 0x4f, 0x06, 0xdb, 0x14, 0x61, 0xba, 0xd8, 0xef, 0xb1, 0x53, 0xca, 0xc9,
-	0x0b, 0x2a, 0x15, 0xe5, 0x1b, 0x13, 0xa0, 0x2f, 0xe1, 0x9a, 0x04, 0xc6, 0x0a, 0x78, 0x2b, 0x15,
-	0xf8, 0x26, 0x2f, 0x27, 0x87, 0x6f, 0x72, 0x33, 0x7d, 0xfc, 0xdd, 0x7c, 0xcc, 0xbe, 0x06, 0xc6,
-	0x26, 0x1b, 0xb3, 0x87, 0x40, 0xef, 0x17, 0xa4, 0x52, 0x2a, 0x48, 0x76, 0x1a, 0x0b, 0x4a, 0x40,
-	0x4f, 0xcc, 0x4a, 0xcf, 0x08, 0xcd, 0x8f, 0x08, 0x5f, 0xb0, 0xd3, 0x3e, 0x3d, 0xbd, 0x28, 0x3e,
-	0xe7, 0x5b, 0xc2, 0xea, 0x20, 0xa6, 0x62, 0xba, 0x37, 0xb1, 0xfc, 0x92, 0x57, 0x0e, 0x79, 0xc9,
-	0xab, 0xe5, 0x97, 0xfc, 0x0b, 0xb2, 0xa5, 0x37, 0xc1, 0x4c, 0xbd, 0xf4, 0xc7, 0x0e, 0xe8, 0x11,
-	0x6e, 0x94, 0x5a, 0xa9, 0x17, 0xa5, 0x3e, 0x53, 0x69, 0x3b, 0xe2, 0x21, 0x3d, 0x2a, 0xaa, 0xc2,
-	0xcd, 0x74, 0xc8, 0xb1, 0xdd, 0xcc, 0xc5, 0xff, 0x57, 0xb7, 0x95, 0xe7, 0xdf, 0x87, 0x2e, 0xda,
-	0x1b, 0xba, 0xe8, 0xd7, 0xd0, 0x45, 0x5f, 0x47, 0xee, 0xcc, 0xde, 0xc8, 0x9d, 0xf9, 0x39, 0x72,
-	0x67, 0xd6, 0xef, 0x6d, 0x50, 0xb5, 0x99, 0xf4, 0x5b, 0x24, 0xda, 0xd2, 0xcb, 0x2b, 0x89, 0xec,
-	0x16, 0x6b, 0xf6, 0xd9, 0x41, 0xb1, 0xd1, 0xaa, 0x34, 0x06, 0xd9, 0xaf, 0xe9, 0x95, 0xf6, 0xe1,
-	0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4d, 0x2c, 0x74, 0x47, 0xf3, 0x0a, 0x00, 0x00,
+	// 589 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x51, 0x6b, 0x13, 0x4f,
+	0x10, 0xcf, 0xfe, 0x9b, 0xa4, 0xed, 0xfe, 0xad, 0xe8, 0xd1, 0x6a, 0x54, 0x7a, 0x48, 0x40, 0xf0,
+	0xc5, 0x54, 0x11, 0xdf, 0x7c, 0x31, 0xb1, 0x4a, 0x40, 0x6b, 0x89, 0xfa, 0x52, 0xd0, 0x70, 0xd9,
+	0x9b, 0x6b, 0x17, 0xd7, 0xdd, 0x63, 0x77, 0xd3, 0xe6, 0x9e, 0x2d, 0x08, 0x3e, 0x88, 0x9f, 0x4a,
+	0x7c, 0xec, 0xa3, 0x8f, 0x92, 0x7c, 0x11, 0xb9, 0xdd, 0xbd, 0xcb, 0x89, 0x36, 0xb1, 0x21, 0xa5,
+	0xd4, 0xb7, 0x9b, 0x9d, 0x99, 0xdf, 0xcd, 0x6f, 0x66, 0x67, 0x76, 0xf0, 0x3a, 0xa3, 0xef, 0x80,
+	0xec, 0x05, 0x94, 0x6f, 0xa4, 0x5f, 0x3c, 0xd2, 0x1b, 0xb0, 0x0f, 0x5c, 0x37, 0x62, 0x29, 0xb4,
+	0xf0, 0x2e, 0xe7, 0xea, 0x86, 0x53, 0xd7, 0x0f, 0x11, 0x5e, 0xd9, 0x4c, 0x4d, 0xb6, 0xe0, 0xa0,
+	0xc5, 0x02, 0xa5, 0xbc, 0x6b, 0x78, 0x89, 0xa4, 0x1f, 0x5d, 0x1a, 0xd6, 0xd0, 0x4d, 0x74, 0x7b,
+	0xb9, 0xb3, 0x68, 0xe4, 0x76, 0xe8, 0xdd, 0xc3, 0x6b, 0x71, 0x20, 0x81, 0xeb, 0x2e, 0x55, 0x84,
+	0x77, 0x69, 0xd8, 0x8d, 0x25, 0x44, 0x74, 0x50, 0xfb, 0xcf, 0xd8, 0x79, 0x56, 0xd9, 0x56, 0x84,
+	0xb7, 0xc3, 0x6d, 0xa3, 0xf1, 0x6e, 0xe1, 0x8b, 0xce, 0x25, 0x20, 0x44, 0xf4, 0xb9, 0xae, 0x2d,
+	0x18, 0xdb, 0x15, 0x7b, 0xfa, 0xc8, 0x1e, 0xd6, 0x3f, 0x22, 0x7c, 0xc9, 0x84, 0xf1, 0x3a, 0x0e,
+	0x03, 0x0d, 0x67, 0x18, 0xc9, 0x1b, 0x17, 0x48, 0x07, 0xf6, 0x21, 0x60, 0x53, 0x03, 0xa9, 0xe1,
+	0x45, 0xd5, 0x27, 0x04, 0x94, 0x32, 0xbf, 0x5e, 0xea, 0x64, 0xa2, 0xb7, 0x8a, 0x2b, 0x20, 0xa5,
+	0x90, 0xee, 0x37, 0x56, 0xa8, 0x7f, 0x45, 0xf8, 0x82, 0xc1, 0x7f, 0x4e, 0xb9, 0xde, 0x7a, 0xf2,
+	0x6a, 0x12, 0xf6, 0x1a, 0xae, 0xf2, 0x48, 0xa7, 0x0a, 0xcb, 0xaa, 0xc2, 0x23, 0xdd, 0x0e, 0x53,
+	0x60, 0x71, 0xc0, 0x21, 0x07, 0x36, 0x82, 0xf7, 0x10, 0xdf, 0xb0, 0x38, 0x7f, 0xce, 0x4b, 0xd9,
+	0xd8, 0x5e, 0x35, 0x26, 0xdb, 0xbf, 0x27, 0xe7, 0x2e, 0x5e, 0xfd, 0xc5, 0x3b, 0x4b, 0x51, 0xc5,
+	0xa6, 0xb3, 0xe0, 0x96, 0xe5, 0x29, 0x27, 0xd2, 0xec, 0x4b, 0x7e, 0xce, 0x89, 0x5c, 0x37, 0x44,
+	0x5a, 0x12, 0x02, 0x0d, 0x4d, 0x46, 0x79, 0xd8, 0x14, 0x83, 0x96, 0xe0, 0x1a, 0xb8, 0x9e, 0x44,
+	0x6b, 0x1d, 0x63, 0x62, 0xad, 0xc6, 0xd4, 0x96, 0xdd, 0x49, 0x3b, 0x9c, 0x46, 0x64, 0x61, 0x36,
+	0x22, 0xe5, 0xe9, 0x44, 0x6c, 0x0f, 0xfd, 0x03, 0x44, 0x1e, 0x03, 0x83, 0xf3, 0x4c, 0x64, 0xc7,
+	0xcd, 0x12, 0x7b, 0xb3, 0x5e, 0x44, 0x11, 0xc8, 0xd9, 0xda, 0xa4, 0xd7, 0x4f, 0xc6, 0x6d, 0x62,
+	0x84, 0x1c, 0xdb, 0x16, 0xfb, 0x74, 0xb0, 0x6d, 0xfe, 0xe7, 0x8b, 0xfd, 0x16, 0x7b, 0x85, 0x9c,
+	0x3c, 0xa3, 0x4a, 0x53, 0xbe, 0x3b, 0x03, 0xfa, 0x15, 0x5c, 0x55, 0xc0, 0x58, 0x0e, 0xef, 0xa4,
+	0x1c, 0xdf, 0xe6, 0xe5, 0xf4, 0xf0, 0x6d, 0x6e, 0xe6, 0x8f, 0x7f, 0x98, 0xcd, 0xd5, 0x97, 0xc0,
+	0xd8, 0x6c, 0x73, 0xf5, 0x18, 0xe8, 0x71, 0x41, 0xca, 0x85, 0x82, 0xa4, 0xa7, 0xb1, 0xa4, 0x04,
+	0xcc, 0x88, 0x2c, 0x77, 0xac, 0x50, 0xff, 0x80, 0xf0, 0xff, 0x6e, 0xbc, 0x27, 0x67, 0x17, 0xc5,
+	0xa7, 0x6c, 0x2d, 0xd8, 0x1c, 0xc4, 0x54, 0xce, 0xf7, 0x26, 0x16, 0x9f, 0xee, 0xf2, 0x31, 0x4f,
+	0x77, 0xa5, 0xf8, 0x74, 0x7f, 0x46, 0xae, 0xf4, 0x36, 0x98, 0xb9, 0x97, 0xfe, 0xc4, 0x01, 0x3d,
+	0xc0, 0xb5, 0x42, 0x2b, 0x75, 0x44, 0x12, 0x30, 0x9d, 0xb4, 0x04, 0x8f, 0xe8, 0xa4, 0xa8, 0x72,
+	0x37, 0xdb, 0x21, 0x27, 0x76, 0xb3, 0x17, 0xff, 0x6f, 0xdd, 0x9a, 0x4f, 0xbf, 0x0d, 0x7d, 0x74,
+	0x34, 0xf4, 0xd1, 0x8f, 0xa1, 0x8f, 0xbe, 0x8c, 0xfc, 0xd2, 0xd1, 0xc8, 0x2f, 0x7d, 0x1f, 0xf9,
+	0xa5, 0x9d, 0x3b, 0xbb, 0x54, 0xef, 0xf5, 0x7b, 0x0d, 0x22, 0xde, 0x9b, 0x6d, 0x95, 0x08, 0xb7,
+	0xb6, 0xda, 0x05, 0x76, 0x90, 0xaf, 0xb0, 0x3a, 0x89, 0x41, 0xf5, 0xaa, 0x66, 0x87, 0xbd, 0xff,
+	0x33, 0x00, 0x00, 0xff, 0xff, 0xee, 0x6a, 0xaa, 0x24, 0xe4, 0x0a, 0x00, 0x00,
 }
 
 func (m *EventNewClass) Marshal() (dAtA []byte, err error) {
@@ -1672,7 +1672,7 @@ func (m *EventBurnNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventCreateMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *EventCreateBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1682,12 +1682,12 @@ func (m *EventCreateMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventCreateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventCreateBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventCreateBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1706,10 +1706,10 @@ func (m *EventCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNftId) > 0 {
-		i -= len(m.MintableNftId)
-		copy(dAtA[i:], m.MintableNftId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
+	if len(m.ContentId) > 0 {
+		i -= len(m.ContentId)
+		copy(dAtA[i:], m.ContentId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ContentId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1723,7 +1723,7 @@ func (m *EventCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *EventUpdateMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1733,12 +1733,12 @@ func (m *EventUpdateMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventUpdateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1757,10 +1757,10 @@ func (m *EventUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNftId) > 0 {
-		i -= len(m.MintableNftId)
-		copy(dAtA[i:], m.MintableNftId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
+	if len(m.ContentId) > 0 {
+		i -= len(m.ContentId)
+		copy(dAtA[i:], m.ContentId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ContentId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1774,7 +1774,7 @@ func (m *EventUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *EventDeleteMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *EventDeleteBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1784,12 +1784,12 @@ func (m *EventDeleteMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventDeleteMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventDeleteBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventDeleteBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1808,10 +1808,10 @@ func (m *EventDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MintableNftId) > 0 {
-		i -= len(m.MintableNftId)
-		copy(dAtA[i:], m.MintableNftId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MintableNftId)))
+	if len(m.ContentId) > 0 {
+		i -= len(m.ContentId)
+		copy(dAtA[i:], m.ContentId)
+		i = encodeVarintEvent(dAtA, i, uint64(len(m.ContentId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -2544,7 +2544,7 @@ func (m *EventBurnNFT) Size() (n int) {
 	return n
 }
 
-func (m *EventCreateMintableNFT) Size() (n int) {
+func (m *EventCreateBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2554,7 +2554,7 @@ func (m *EventCreateMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNftId)
+	l = len(m.ContentId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -2569,7 +2569,7 @@ func (m *EventCreateMintableNFT) Size() (n int) {
 	return n
 }
 
-func (m *EventUpdateMintableNFT) Size() (n int) {
+func (m *EventUpdateBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2579,7 +2579,7 @@ func (m *EventUpdateMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNftId)
+	l = len(m.ContentId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -2594,7 +2594,7 @@ func (m *EventUpdateMintableNFT) Size() (n int) {
 	return n
 }
 
-func (m *EventDeleteMintableNFT) Size() (n int) {
+func (m *EventDeleteBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2604,7 +2604,7 @@ func (m *EventDeleteMintableNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MintableNftId)
+	l = len(m.ContentId)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
@@ -3748,7 +3748,7 @@ func (m *EventBurnNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *EventCreateBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3771,10 +3771,10 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventCreateMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventCreateBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventCreateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventCreateBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3811,7 +3811,7 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3839,7 +3839,7 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNftId = string(dAtA[iNdEx:postIndex])
+			m.ContentId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -3926,7 +3926,7 @@ func (m *EventCreateMintableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3949,10 +3949,10 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventUpdateMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventUpdateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3989,7 +3989,7 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4017,7 +4017,7 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNftId = string(dAtA[iNdEx:postIndex])
+			m.ContentId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -4104,7 +4104,7 @@ func (m *EventUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *EventDeleteBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4127,10 +4127,10 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventDeleteMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventDeleteBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventDeleteMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventDeleteBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4167,7 +4167,7 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNftId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4195,7 +4195,7 @@ func (m *EventDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintableNftId = string(dAtA[iNdEx:postIndex])
+			m.ContentId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {

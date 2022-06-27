@@ -21,9 +21,9 @@ service Msg {
   rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
   rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
   rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
-  rpc CreateMintableNFT(MsgCreateMintableNFT) returns (MsgCreateMintableNFTResponse);
-  rpc UpdateMintableNFT(MsgUpdateMintableNFT) returns (MsgUpdateMintableNFTResponse);
-  rpc DeleteMintableNFT(MsgDeleteMintableNFT) returns (MsgDeleteMintableNFTResponse);
+  rpc CreateBlindBoxContent(MsgCreateBlindBoxContent) returns (MsgCreateBlindBoxContentResponse);
+  rpc UpdateBlindBoxContent(MsgUpdateBlindBoxContent) returns (MsgUpdateBlindBoxContentResponse);
+  rpc DeleteBlindBoxContent(MsgDeleteBlindBoxContent) returns (MsgDeleteBlindBoxContentResponse);
   rpc CreateOffer(MsgCreateOffer) returns (MsgCreateOfferResponse);
   rpc UpdateOffer(MsgUpdateOffer) returns (MsgUpdateOfferResponse);
   rpc DeleteOffer(MsgDeleteOffer) returns (MsgDeleteOfferResponse);
@@ -77,35 +77,35 @@ message MsgBurnNFT {
 
 message MsgBurnNFTResponse {}
 
-message MsgCreateMintableNFT {
+message MsgCreateBlindBoxContent {
   string creator = 1;
   string class_id = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgCreateMintableNFTResponse {
-  MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
+message MsgCreateBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateMintableNFT {
+message MsgUpdateBlindBoxContent {
   string creator = 1;
   string class_id = 2;
   string id = 3;
   NFTInput input = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateMintableNFTResponse {
-  MintableNFT mintable_nft = 1 [(gogoproto.nullable) = false];
+message MsgUpdateBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
 }
 
-message MsgDeleteMintableNFT {
+message MsgDeleteBlindBoxContent {
   string creator = 1;
   string class_id = 2;
   string id = 3;
 }
 
-message MsgDeleteMintableNFTResponse {}
+message MsgDeleteBlindBoxContentResponse {}
 
 message MsgCreateOffer {
   string creator = 1;

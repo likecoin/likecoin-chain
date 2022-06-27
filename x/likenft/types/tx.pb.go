@@ -449,25 +449,25 @@ func (m *MsgBurnNFTResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgBurnNFTResponse proto.InternalMessageInfo
 
-type MsgCreateMintableNFT struct {
+type MsgCreateBlindBoxContent struct {
 	Creator string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string   `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	Id      string   `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 	Input   NFTInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input"`
 }
 
-func (m *MsgCreateMintableNFT) Reset()         { *m = MsgCreateMintableNFT{} }
-func (m *MsgCreateMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateMintableNFT) ProtoMessage()    {}
-func (*MsgCreateMintableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgCreateBlindBoxContent) Reset()         { *m = MsgCreateBlindBoxContent{} }
+func (m *MsgCreateBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateBlindBoxContent) ProtoMessage()    {}
+func (*MsgCreateBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{8}
 }
-func (m *MsgCreateMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -477,62 +477,62 @@ func (m *MsgCreateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateMintableNFT.Merge(m, src)
+func (m *MsgCreateBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateBlindBoxContent.Merge(m, src)
 }
-func (m *MsgCreateMintableNFT) XXX_Size() int {
+func (m *MsgCreateBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateMintableNFT.DiscardUnknown(m)
+func (m *MsgCreateBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateBlindBoxContent proto.InternalMessageInfo
 
-func (m *MsgCreateMintableNFT) GetCreator() string {
+func (m *MsgCreateBlindBoxContent) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgCreateMintableNFT) GetClassId() string {
+func (m *MsgCreateBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgCreateMintableNFT) GetId() string {
+func (m *MsgCreateBlindBoxContent) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *MsgCreateMintableNFT) GetInput() NFTInput {
+func (m *MsgCreateBlindBoxContent) GetInput() NFTInput {
 	if m != nil {
 		return m.Input
 	}
 	return NFTInput{}
 }
 
-type MsgCreateMintableNFTResponse struct {
-	MintableNft MintableNFT `protobuf:"bytes,1,opt,name=mintable_nft,json=mintableNft,proto3" json:"mintable_nft"`
+type MsgCreateBlindBoxContentResponse struct {
+	BlindBoxContent BlindBoxContent `protobuf:"bytes,1,opt,name=blind_box_content,json=blindBoxContent,proto3" json:"blind_box_content"`
 }
 
-func (m *MsgCreateMintableNFTResponse) Reset()         { *m = MsgCreateMintableNFTResponse{} }
-func (m *MsgCreateMintableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateMintableNFTResponse) ProtoMessage()    {}
-func (*MsgCreateMintableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateBlindBoxContentResponse) Reset()         { *m = MsgCreateBlindBoxContentResponse{} }
+func (m *MsgCreateBlindBoxContentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateBlindBoxContentResponse) ProtoMessage()    {}
+func (*MsgCreateBlindBoxContentResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{9}
 }
-func (m *MsgCreateMintableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateBlindBoxContentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateBlindBoxContentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateMintableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateBlindBoxContentResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -542,44 +542,44 @@ func (m *MsgCreateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateMintableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateMintableNFTResponse.Merge(m, src)
+func (m *MsgCreateBlindBoxContentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateBlindBoxContentResponse.Merge(m, src)
 }
-func (m *MsgCreateMintableNFTResponse) XXX_Size() int {
+func (m *MsgCreateBlindBoxContentResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateMintableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateMintableNFTResponse.DiscardUnknown(m)
+func (m *MsgCreateBlindBoxContentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateBlindBoxContentResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateMintableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateBlindBoxContentResponse proto.InternalMessageInfo
 
-func (m *MsgCreateMintableNFTResponse) GetMintableNft() MintableNFT {
+func (m *MsgCreateBlindBoxContentResponse) GetBlindBoxContent() BlindBoxContent {
 	if m != nil {
-		return m.MintableNft
+		return m.BlindBoxContent
 	}
-	return MintableNFT{}
+	return BlindBoxContent{}
 }
 
-type MsgUpdateMintableNFT struct {
+type MsgUpdateBlindBoxContent struct {
 	Creator string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string   `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	Id      string   `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 	Input   NFTInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input"`
 }
 
-func (m *MsgUpdateMintableNFT) Reset()         { *m = MsgUpdateMintableNFT{} }
-func (m *MsgUpdateMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateMintableNFT) ProtoMessage()    {}
-func (*MsgUpdateMintableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateBlindBoxContent) Reset()         { *m = MsgUpdateBlindBoxContent{} }
+func (m *MsgUpdateBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBlindBoxContent) ProtoMessage()    {}
+func (*MsgUpdateBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{10}
 }
-func (m *MsgUpdateMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -589,62 +589,62 @@ func (m *MsgUpdateMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateMintableNFT.Merge(m, src)
+func (m *MsgUpdateBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBlindBoxContent.Merge(m, src)
 }
-func (m *MsgUpdateMintableNFT) XXX_Size() int {
+func (m *MsgUpdateBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateMintableNFT.DiscardUnknown(m)
+func (m *MsgUpdateBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateBlindBoxContent proto.InternalMessageInfo
 
-func (m *MsgUpdateMintableNFT) GetCreator() string {
+func (m *MsgUpdateBlindBoxContent) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgUpdateMintableNFT) GetClassId() string {
+func (m *MsgUpdateBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgUpdateMintableNFT) GetId() string {
+func (m *MsgUpdateBlindBoxContent) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *MsgUpdateMintableNFT) GetInput() NFTInput {
+func (m *MsgUpdateBlindBoxContent) GetInput() NFTInput {
 	if m != nil {
 		return m.Input
 	}
 	return NFTInput{}
 }
 
-type MsgUpdateMintableNFTResponse struct {
-	MintableNft MintableNFT `protobuf:"bytes,1,opt,name=mintable_nft,json=mintableNft,proto3" json:"mintable_nft"`
+type MsgUpdateBlindBoxContentResponse struct {
+	BlindBoxContent BlindBoxContent `protobuf:"bytes,1,opt,name=blind_box_content,json=blindBoxContent,proto3" json:"blind_box_content"`
 }
 
-func (m *MsgUpdateMintableNFTResponse) Reset()         { *m = MsgUpdateMintableNFTResponse{} }
-func (m *MsgUpdateMintableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateMintableNFTResponse) ProtoMessage()    {}
-func (*MsgUpdateMintableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateBlindBoxContentResponse) Reset()         { *m = MsgUpdateBlindBoxContentResponse{} }
+func (m *MsgUpdateBlindBoxContentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBlindBoxContentResponse) ProtoMessage()    {}
+func (*MsgUpdateBlindBoxContentResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{11}
 }
-func (m *MsgUpdateMintableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateBlindBoxContentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateBlindBoxContentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateMintableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateBlindBoxContentResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -654,43 +654,43 @@ func (m *MsgUpdateMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateMintableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateMintableNFTResponse.Merge(m, src)
+func (m *MsgUpdateBlindBoxContentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBlindBoxContentResponse.Merge(m, src)
 }
-func (m *MsgUpdateMintableNFTResponse) XXX_Size() int {
+func (m *MsgUpdateBlindBoxContentResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateMintableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateMintableNFTResponse.DiscardUnknown(m)
+func (m *MsgUpdateBlindBoxContentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBlindBoxContentResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateMintableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateBlindBoxContentResponse proto.InternalMessageInfo
 
-func (m *MsgUpdateMintableNFTResponse) GetMintableNft() MintableNFT {
+func (m *MsgUpdateBlindBoxContentResponse) GetBlindBoxContent() BlindBoxContent {
 	if m != nil {
-		return m.MintableNft
+		return m.BlindBoxContent
 	}
-	return MintableNFT{}
+	return BlindBoxContent{}
 }
 
-type MsgDeleteMintableNFT struct {
+type MsgDeleteBlindBoxContent struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	Id      string `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *MsgDeleteMintableNFT) Reset()         { *m = MsgDeleteMintableNFT{} }
-func (m *MsgDeleteMintableNFT) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteMintableNFT) ProtoMessage()    {}
-func (*MsgDeleteMintableNFT) Descriptor() ([]byte, []int) {
+func (m *MsgDeleteBlindBoxContent) Reset()         { *m = MsgDeleteBlindBoxContent{} }
+func (m *MsgDeleteBlindBoxContent) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteBlindBoxContent) ProtoMessage()    {}
+func (*MsgDeleteBlindBoxContent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{12}
 }
-func (m *MsgDeleteMintableNFT) XXX_Unmarshal(b []byte) error {
+func (m *MsgDeleteBlindBoxContent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeleteMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDeleteBlindBoxContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeleteMintableNFT.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDeleteBlindBoxContent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -700,54 +700,54 @@ func (m *MsgDeleteMintableNFT) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgDeleteMintableNFT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteMintableNFT.Merge(m, src)
+func (m *MsgDeleteBlindBoxContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteBlindBoxContent.Merge(m, src)
 }
-func (m *MsgDeleteMintableNFT) XXX_Size() int {
+func (m *MsgDeleteBlindBoxContent) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeleteMintableNFT) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteMintableNFT.DiscardUnknown(m)
+func (m *MsgDeleteBlindBoxContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteBlindBoxContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeleteMintableNFT proto.InternalMessageInfo
+var xxx_messageInfo_MsgDeleteBlindBoxContent proto.InternalMessageInfo
 
-func (m *MsgDeleteMintableNFT) GetCreator() string {
+func (m *MsgDeleteBlindBoxContent) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgDeleteMintableNFT) GetClassId() string {
+func (m *MsgDeleteBlindBoxContent) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgDeleteMintableNFT) GetId() string {
+func (m *MsgDeleteBlindBoxContent) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type MsgDeleteMintableNFTResponse struct {
+type MsgDeleteBlindBoxContentResponse struct {
 }
 
-func (m *MsgDeleteMintableNFTResponse) Reset()         { *m = MsgDeleteMintableNFTResponse{} }
-func (m *MsgDeleteMintableNFTResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteMintableNFTResponse) ProtoMessage()    {}
-func (*MsgDeleteMintableNFTResponse) Descriptor() ([]byte, []int) {
+func (m *MsgDeleteBlindBoxContentResponse) Reset()         { *m = MsgDeleteBlindBoxContentResponse{} }
+func (m *MsgDeleteBlindBoxContentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteBlindBoxContentResponse) ProtoMessage()    {}
+func (*MsgDeleteBlindBoxContentResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5250b68c513f087f, []int{13}
 }
-func (m *MsgDeleteMintableNFTResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgDeleteBlindBoxContentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeleteMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDeleteBlindBoxContentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeleteMintableNFTResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDeleteBlindBoxContentResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -757,17 +757,17 @@ func (m *MsgDeleteMintableNFTResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgDeleteMintableNFTResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteMintableNFTResponse.Merge(m, src)
+func (m *MsgDeleteBlindBoxContentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteBlindBoxContentResponse.Merge(m, src)
 }
-func (m *MsgDeleteMintableNFTResponse) XXX_Size() int {
+func (m *MsgDeleteBlindBoxContentResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeleteMintableNFTResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteMintableNFTResponse.DiscardUnknown(m)
+func (m *MsgDeleteBlindBoxContentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteBlindBoxContentResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeleteMintableNFTResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgDeleteBlindBoxContentResponse proto.InternalMessageInfo
 
 type MsgCreateOffer struct {
 	Creator    string    `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -1970,12 +1970,12 @@ func init() {
 	proto.RegisterType((*MsgMintNFTResponse)(nil), "likechain.likenft.MsgMintNFTResponse")
 	proto.RegisterType((*MsgBurnNFT)(nil), "likechain.likenft.MsgBurnNFT")
 	proto.RegisterType((*MsgBurnNFTResponse)(nil), "likechain.likenft.MsgBurnNFTResponse")
-	proto.RegisterType((*MsgCreateMintableNFT)(nil), "likechain.likenft.MsgCreateMintableNFT")
-	proto.RegisterType((*MsgCreateMintableNFTResponse)(nil), "likechain.likenft.MsgCreateMintableNFTResponse")
-	proto.RegisterType((*MsgUpdateMintableNFT)(nil), "likechain.likenft.MsgUpdateMintableNFT")
-	proto.RegisterType((*MsgUpdateMintableNFTResponse)(nil), "likechain.likenft.MsgUpdateMintableNFTResponse")
-	proto.RegisterType((*MsgDeleteMintableNFT)(nil), "likechain.likenft.MsgDeleteMintableNFT")
-	proto.RegisterType((*MsgDeleteMintableNFTResponse)(nil), "likechain.likenft.MsgDeleteMintableNFTResponse")
+	proto.RegisterType((*MsgCreateBlindBoxContent)(nil), "likechain.likenft.MsgCreateBlindBoxContent")
+	proto.RegisterType((*MsgCreateBlindBoxContentResponse)(nil), "likechain.likenft.MsgCreateBlindBoxContentResponse")
+	proto.RegisterType((*MsgUpdateBlindBoxContent)(nil), "likechain.likenft.MsgUpdateBlindBoxContent")
+	proto.RegisterType((*MsgUpdateBlindBoxContentResponse)(nil), "likechain.likenft.MsgUpdateBlindBoxContentResponse")
+	proto.RegisterType((*MsgDeleteBlindBoxContent)(nil), "likechain.likenft.MsgDeleteBlindBoxContent")
+	proto.RegisterType((*MsgDeleteBlindBoxContentResponse)(nil), "likechain.likenft.MsgDeleteBlindBoxContentResponse")
 	proto.RegisterType((*MsgCreateOffer)(nil), "likechain.likenft.MsgCreateOffer")
 	proto.RegisterType((*MsgCreateOfferResponse)(nil), "likechain.likenft.MsgCreateOfferResponse")
 	proto.RegisterType((*MsgUpdateOffer)(nil), "likechain.likenft.MsgUpdateOffer")
@@ -2003,81 +2003,83 @@ func init() {
 func init() { proto.RegisterFile("likechain/likenft/tx.proto", fileDescriptor_5250b68c513f087f) }
 
 var fileDescriptor_5250b68c513f087f = []byte{
-	// 1183 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0xcd, 0x6e, 0xe3, 0x54,
-	0x14, 0xae, 0xdb, 0xa6, 0x3f, 0xa7, 0xb4, 0xa2, 0x6e, 0x19, 0x32, 0xa6, 0x4d, 0x5b, 0x67, 0xfe,
-	0x10, 0xc2, 0x51, 0x0b, 0x08, 0xc1, 0x8e, 0x76, 0xe8, 0x68, 0xa4, 0x26, 0x45, 0xa6, 0x20, 0xc4,
-	0x20, 0x2a, 0x27, 0xb9, 0xf1, 0x58, 0x38, 0x76, 0x64, 0xdf, 0x40, 0xb3, 0x63, 0x01, 0x1b, 0x56,
-	0xb3, 0xe0, 0x05, 0x58, 0xf0, 0x0e, 0x88, 0x27, 0x98, 0xe5, 0x2c, 0x59, 0x01, 0x6a, 0x5f, 0x04,
-	0xf9, 0xfe, 0xe5, 0xba, 0xbe, 0x76, 0xa2, 0x36, 0x23, 0xa6, 0xbb, 0x38, 0xe7, 0xef, 0xfb, 0xce,
-	0x39, 0xbe, 0xf7, 0x1c, 0x83, 0xe1, 0x7b, 0xdf, 0xa1, 0xd6, 0x53, 0xc7, 0x0b, 0x6a, 0xc9, 0xaf,
-	0xa0, 0x83, 0x6b, 0xf8, 0xcc, 0xea, 0x45, 0x21, 0x0e, 0xf5, 0x55, 0x21, 0xb3, 0x98, 0xcc, 0xd8,
-	0x68, 0x85, 0x71, 0x37, 0x8c, 0x6b, 0x89, 0xde, 0xf7, 0xbb, 0x4d, 0x84, 0x9d, 0xdd, 0xe4, 0x37,
-	0x35, 0x30, 0xd6, 0xdd, 0xd0, 0x0d, 0xc9, 0xcf, 0x5a, 0xf2, 0x8b, 0xfd, 0xbb, 0xe5, 0x86, 0xa1,
-	0xeb, 0xa3, 0x1a, 0x79, 0x6a, 0xf6, 0x3b, 0x35, 0xec, 0x75, 0x51, 0x8c, 0x9d, 0x6e, 0x8f, 0x29,
-	0x54, 0xb3, 0x18, 0x5a, 0xbe, 0x13, 0xc7, 0xa7, 0x5e, 0xd0, 0xeb, 0x73, 0xdf, 0x5b, 0x59, 0x25,
-	0xdf, 0x8b, 0xb1, 0x17, 0xb8, 0x4c, 0xe1, 0x4e, 0x56, 0xa1, 0xeb, 0x05, 0xd8, 0x69, 0xfa, 0xe8,
-	0x74, 0x08, 0x71, 0x27, 0xab, 0x15, 0x74, 0x70, 0x2a, 0xd2, 0x66, 0x56, 0x25, 0xec, 0x74, 0x50,
-	0xc4, 0xc4, 0xf7, 0xb2, 0xe2, 0x28, 0x1c, 0x38, 0x3e, 0x1e, 0x9c, 0xb6, 0xc2, 0xa0, 0xe3, 0x31,
-	0x3c, 0xe6, 0xef, 0x1a, 0x2c, 0xd5, 0x63, 0xb7, 0x81, 0x7e, 0x38, 0x48, 0xc8, 0xe8, 0x65, 0x98,
-	0x6f, 0x45, 0xc8, 0xc1, 0x61, 0x54, 0xd6, 0xb6, 0xb5, 0x07, 0x8b, 0x36, 0x7f, 0xd4, 0x3f, 0x81,
-	0xb9, 0x9e, 0x13, 0xa1, 0x00, 0x97, 0xa7, 0xb7, 0xb5, 0x07, 0x4b, 0x7b, 0x55, 0x2b, 0x93, 0x78,
-	0x8b, 0xf8, 0xf8, 0x8c, 0x68, 0x3d, 0x4e, 0xb0, 0xee, 0xcf, 0x3e, 0xff, 0x7b, 0x6b, 0xca, 0x66,
-	0x86, 0xfa, 0x47, 0x50, 0x22, 0x14, 0xca, 0x33, 0xc4, 0xc3, 0x66, 0x9e, 0x07, 0xd9, 0x96, 0x5a,
-	0x98, 0x47, 0xb0, 0x26, 0xc1, 0xb4, 0x51, 0xdc, 0x0b, 0x83, 0x18, 0xe9, 0x1f, 0x40, 0x89, 0x14,
-	0x81, 0x80, 0x5d, 0xda, 0xbb, 0x6d, 0xd1, 0xca, 0x5b, 0x89, 0x2b, 0x56, 0x79, 0xea, 0x92, 0x7b,
-	0x23, 0xda, 0xe6, 0x8f, 0x1a, 0xac, 0xd4, 0x63, 0xf7, 0x8b, 0x5e, 0xdb, 0xc1, 0x68, 0x14, 0xf1,
-	0xdb, 0xb0, 0xc0, 0x0a, 0xdd, 0x26, 0xd4, 0x13, 0x11, 0x41, 0xd9, 0xbe, 0x0e, 0xa1, 0x63, 0xb8,
-	0x95, 0x46, 0x70, 0x5d, 0x4e, 0xbf, 0x68, 0x00, 0xf5, 0xd8, 0xad, 0x7b, 0x01, 0x6e, 0x1c, 0x9e,
-	0x5c, 0x8d, 0xcf, 0x0a, 0x4c, 0x7b, 0x6d, 0x42, 0x66, 0xd1, 0x9e, 0xf6, 0xda, 0xfa, 0x87, 0x9c,
-	0xdf, 0x2c, 0x81, 0xf2, 0x96, 0x82, 0x5f, 0xe3, 0xf0, 0x64, 0xc8, 0x4e, 0xe3, 0xec, 0x3e, 0x05,
-	0x7d, 0x88, 0x45, 0x30, 0xab, 0xc1, 0x4c, 0xd0, 0xc1, 0x8c, 0xd7, 0x9b, 0x2a, 0x5e, 0x8d, 0xc3,
-	0x13, 0xc6, 0x2a, 0xd1, 0x34, 0xbf, 0x22, 0x94, 0xf6, 0xfb, 0x51, 0x70, 0x65, 0x4a, 0x6f, 0xc0,
-	0x1c, 0x79, 0x75, 0x38, 0xad, 0x52, 0xd0, 0xc1, 0x8f, 0xdb, 0xe6, 0x3a, 0x01, 0xc8, 0x3c, 0x73,
-	0x80, 0xe6, 0xaf, 0x1a, 0xac, 0xd7, 0x63, 0xf7, 0x20, 0x71, 0x8b, 0xea, 0xec, 0xbd, 0xfc, 0xdf,
-	0xb2, 0x29, 0x7a, 0xc5, 0x85, 0x0d, 0x15, 0x2a, 0x91, 0xd7, 0x47, 0xf0, 0x9a, 0x7c, 0x88, 0xb0,
-	0x04, 0x57, 0x14, 0xfe, 0x25, 0x6b, 0x16, 0x62, 0x89, 0x5b, 0x36, 0x3a, 0x98, 0xf3, 0xa7, 0x5d,
-	0xf9, 0xaa, 0xf1, 0xcf, 0xa0, 0x9a, 0x3c, 0xff, 0x27, 0x84, 0xfe, 0x43, 0xe4, 0xa3, 0xc9, 0xd3,
-	0x37, 0x2b, 0x84, 0x45, 0xc6, 0xb9, 0x68, 0xbe, 0x3f, 0xe8, 0xa1, 0x44, 0xcb, 0x7c, 0x9c, 0x9c,
-	0xe5, 0x93, 0xec, 0x78, 0x7d, 0x1d, 0x4a, 0xbd, 0xc8, 0x6b, 0x21, 0x92, 0xfd, 0x59, 0x9b, 0x3e,
-	0xe8, 0x0f, 0x01, 0xd0, 0x59, 0xcf, 0x8b, 0x1c, 0xec, 0x85, 0x41, 0xb9, 0x44, 0x12, 0x67, 0x58,
-	0xf4, 0x2e, 0xb4, 0xf8, 0x5d, 0x68, 0x9d, 0xf0, 0xbb, 0x70, 0x7f, 0x21, 0x49, 0xda, 0xb3, 0x7f,
-	0xb6, 0x34, 0x5b, 0xb2, 0x33, 0x1b, 0xe4, 0x30, 0x93, 0x90, 0x8b, 0xd2, 0xbc, 0x0f, 0x25, 0x72,
-	0x2d, 0xb1, 0x9a, 0x94, 0x15, 0x35, 0x21, 0x06, 0xbc, 0xe0, 0x44, 0x99, 0xa7, 0x82, 0x56, 0xfc,
-	0x26, 0xa6, 0x42, 0x42, 0x7e, 0xcd, 0x54, 0x7c, 0x43, 0x32, 0x41, 0xbb, 0x66, 0xe2, 0x99, 0x30,
-	0xcb, 0x04, 0xad, 0xe4, 0x5d, 0x74, 0xe3, 0x9f, 0x1a, 0xbc, 0x2e, 0x6a, 0x7a, 0x44, 0x67, 0x98,
-	0x1b, 0x53, 0x84, 0x2f, 0xa1, 0x7c, 0x19, 0xbb, 0x28, 0xc3, 0xc7, 0x30, 0xcf, 0x46, 0x32, 0x56,
-	0x08, 0x43, 0x51, 0x08, 0x66, 0xc4, 0x4a, 0xc1, 0x0d, 0x78, 0x52, 0x68, 0x75, 0x6f, 0x66, 0x52,
-	0x52, 0xd8, 0x27, 0x92, 0x94, 0x6f, 0x49, 0x4e, 0x68, 0x0f, 0xbd, 0x84, 0x9c, 0x98, 0x06, 0xc1,
-	0x9d, 0xf2, 0x2f, 0xba, 0xf4, 0x27, 0x3a, 0xf4, 0x7c, 0x8e, 0x7c, 0x7f, 0xc2, 0x13, 0x42, 0x52,
-	0x8a, 0x66, 0x7f, 0x80, 0x22, 0x52, 0x8a, 0x45, 0x9b, 0x3e, 0x0c, 0x0b, 0x54, 0x92, 0x0a, 0xc4,
-	0xa6, 0x09, 0x86, 0x42, 0x80, 0xfb, 0x59, 0x83, 0x45, 0x32, 0x64, 0x0c, 0x26, 0x8d, 0xed, 0x16,
-	0xcc, 0xc5, 0xc8, 0xf7, 0x05, 0x38, 0xf6, 0x94, 0x83, 0x6e, 0x0d, 0x56, 0x05, 0x0c, 0x01, 0xee,
-	0x37, 0x4d, 0x3a, 0xb3, 0x6d, 0xba, 0x1a, 0x1c, 0x90, 0xcd, 0xe0, 0x6a, 0x48, 0x6d, 0x58, 0x49,
-	0x2f, 0x18, 0x6c, 0x26, 0xbe, 0xab, 0x68, 0xa4, 0x54, 0x38, 0xf9, 0xbe, 0x5f, 0x8e, 0x64, 0x89,
-	0x19, 0x42, 0x45, 0x0d, 0x51, 0xf4, 0x6d, 0x3d, 0x13, 0x95, 0xb6, 0xef, 0xf6, 0xa8, 0xa8, 0xea,
-	0x80, 0x2c, 0x29, 0xf4, 0x1d, 0x79, 0xa5, 0x93, 0xa2, 0x80, 0xf8, 0xb2, 0x92, 0x52, 0x97, 0xee,
-	0x88, 0xeb, 0xe7, 0xc4, 0xdc, 0x26, 0xf8, 0x15, 0xee, 0x38, 0xfe, 0xbd, 0x8b, 0x65, 0x98, 0xa9,
-	0xc7, 0xae, 0x6e, 0xc3, 0x82, 0xd8, 0x4b, 0x95, 0xc3, 0xdc, 0x70, 0x21, 0x34, 0xee, 0x15, 0xcb,
-	0x45, 0x6e, 0x9e, 0xc0, 0x92, 0xbc, 0xf5, 0xed, 0xa8, 0xcd, 0x24, 0x15, 0xe3, 0xed, 0x91, 0x2a,
-	0xc2, 0xf9, 0x31, 0xcc, 0xf3, 0xf5, 0x6b, 0x53, 0x6d, 0xc5, 0xc4, 0xc6, 0xdd, 0x42, 0xb1, 0xec,
-	0x90, 0x2f, 0x3f, 0x39, 0x0e, 0x99, 0x38, 0xcf, 0xe1, 0xa5, 0x05, 0x47, 0xef, 0xc2, 0x6a, 0x76,
-	0xb9, 0xb9, 0xaf, 0xb6, 0xcd, 0x28, 0x1a, 0xb5, 0x31, 0x15, 0xe5, 0x70, 0xd9, 0x5d, 0xe2, 0x7e,
-	0x51, 0x42, 0xc7, 0x08, 0x97, 0xbf, 0x07, 0x74, 0x61, 0x35, 0x3b, 0xbb, 0xe7, 0x84, 0xcb, 0x28,
-	0xe6, 0x85, 0xcb, 0x1d, 0xd8, 0x93, 0x5e, 0x92, 0x87, 0xf5, 0x9d, 0xa2, 0xec, 0x10, 0x95, 0xbc,
-	0x5e, 0x52, 0x0d, 0xce, 0xa2, 0x51, 0x0b, 0x9d, 0x4b, 0x2a, 0xc5, 0x8d, 0x9a, 0x71, 0x2e, 0x4f,
-	0x94, 0x3b, 0x45, 0xcc, 0x0b, 0x9d, 0x2b, 0x26, 0x47, 0xdd, 0x81, 0xe5, 0xf4, 0xd4, 0x58, 0x2d,
-	0x62, 0xcd, 0x94, 0x8c, 0x77, 0xc6, 0x50, 0x92, 0x43, 0xa4, 0x67, 0xb0, 0x6a, 0x11, 0xf7, 0x11,
-	0x21, 0xd4, 0x13, 0x91, 0x03, 0xcb, 0xe9, 0x91, 0xa6, 0x5a, 0x94, 0x81, 0x11, 0x21, 0x94, 0xc3,
-	0x4b, 0xf2, 0x76, 0xf3, 0xc1, 0x25, 0xe7, 0xed, 0x66, 0xe2, 0xbc, 0xb7, 0xfb, 0xd2, 0xc0, 0xa1,
-	0x1f, 0xc1, 0x1c, 0x1b, 0x36, 0x36, 0xf2, 0x8e, 0x83, 0x44, 0x6a, 0xdc, 0x29, 0x92, 0x0a, 0x6f,
-	0x31, 0xac, 0xa9, 0xa6, 0x83, 0xc2, 0x1e, 0x4e, 0xa9, 0x1a, 0xbb, 0x63, 0xab, 0xca, 0x41, 0x55,
-	0xb7, 0x6f, 0x61, 0x6f, 0x8f, 0x15, 0xb4, 0xe8, 0xc2, 0x8c, 0x61, 0x4d, 0x75, 0xbd, 0x15, 0xf6,
-	0xfc, 0x58, 0x41, 0x0b, 0x6e, 0xb9, 0xfd, 0x47, 0xcf, 0xcf, 0x2b, 0xda, 0x8b, 0xf3, 0x8a, 0xf6,
-	0xef, 0x79, 0x45, 0x7b, 0x76, 0x51, 0x99, 0x7a, 0x71, 0x51, 0x99, 0xfa, 0xeb, 0xa2, 0x32, 0xf5,
-	0xf5, 0xbb, 0xae, 0x87, 0x9f, 0xf6, 0x9b, 0x56, 0x2b, 0xec, 0x92, 0x8f, 0xb7, 0xad, 0x90, 0x7d,
-	0xc5, 0xa5, 0xdf, 0x73, 0xcf, 0x86, 0xdf, 0xc0, 0x07, 0x3d, 0x14, 0x37, 0xe7, 0xc8, 0x06, 0xf0,
-	0xde, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x56, 0xa9, 0x92, 0xfa, 0x25, 0x17, 0x00, 0x00,
+	// 1203 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0x4d, 0x6f, 0xe3, 0x54,
+	0x17, 0xae, 0xdb, 0xa6, 0x1f, 0xa7, 0x6a, 0xdf, 0xb7, 0x6e, 0x3b, 0x64, 0xcc, 0x34, 0x4d, 0x9d,
+	0x99, 0xd1, 0xa0, 0x0a, 0x47, 0xed, 0x80, 0x10, 0xec, 0x48, 0x87, 0xa2, 0x91, 0x9a, 0x14, 0x99,
+	0x80, 0x10, 0x20, 0x22, 0x27, 0xb9, 0xf1, 0x58, 0x38, 0xbe, 0x91, 0xed, 0x40, 0xb2, 0x63, 0x01,
+	0x42, 0x62, 0x35, 0x4b, 0xb6, 0x2c, 0xf8, 0x0f, 0x88, 0x5f, 0x30, 0xcb, 0x59, 0xb2, 0x02, 0xd4,
+	0xfe, 0x11, 0x74, 0x3f, 0xec, 0x5c, 0x37, 0xd7, 0x4e, 0x68, 0x53, 0x31, 0xdd, 0xc5, 0x39, 0x5f,
+	0xcf, 0x79, 0xce, 0xf1, 0xbd, 0xe7, 0x18, 0x34, 0xd7, 0xf9, 0x1a, 0xb5, 0x9e, 0x59, 0x8e, 0x57,
+	0x26, 0xbf, 0xbc, 0x4e, 0x58, 0x0e, 0x07, 0x46, 0xcf, 0xc7, 0x21, 0x56, 0x37, 0x63, 0x99, 0xc1,
+	0x65, 0xda, 0xbd, 0x16, 0x0e, 0xba, 0x38, 0x28, 0x13, 0xbd, 0x6f, 0x0e, 0x9b, 0x28, 0xb4, 0x0e,
+	0xc9, 0x6f, 0x66, 0xa0, 0x6d, 0xdb, 0xd8, 0xc6, 0xf4, 0x67, 0x99, 0xfc, 0xe2, 0xff, 0xee, 0xd9,
+	0x18, 0xdb, 0x2e, 0x2a, 0xd3, 0xa7, 0x66, 0xbf, 0x53, 0x0e, 0x9d, 0x2e, 0x0a, 0x42, 0xab, 0xdb,
+	0xe3, 0x0a, 0xa5, 0x71, 0x0c, 0x2d, 0xd7, 0x0a, 0x82, 0x86, 0xe3, 0xf5, 0xfa, 0x91, 0xef, 0xbd,
+	0x71, 0x25, 0xd7, 0x09, 0x42, 0xc7, 0xb3, 0xb9, 0xc2, 0xfd, 0x71, 0x85, 0xae, 0xe3, 0x85, 0x56,
+	0xd3, 0x45, 0x8d, 0x11, 0xc4, 0xfd, 0x71, 0x2d, 0xaf, 0x13, 0x26, 0x22, 0xed, 0x8e, 0xab, 0xe0,
+	0x4e, 0x07, 0xf9, 0x5c, 0xfc, 0x70, 0x5c, 0xec, 0xe3, 0xa1, 0xe5, 0x86, 0xc3, 0x46, 0x0b, 0x7b,
+	0x1d, 0x87, 0xe3, 0xd1, 0x7f, 0x55, 0x60, 0xad, 0x1a, 0xd8, 0x35, 0xf4, 0xed, 0x31, 0x49, 0x46,
+	0xcd, 0xc3, 0x72, 0xcb, 0x47, 0x56, 0x88, 0xfd, 0xbc, 0x52, 0x54, 0x1e, 0xad, 0x9a, 0xd1, 0xa3,
+	0xfa, 0x3e, 0x2c, 0xf5, 0x2c, 0x1f, 0x79, 0x61, 0x7e, 0xbe, 0xa8, 0x3c, 0x5a, 0x3b, 0x2a, 0x19,
+	0x63, 0xc4, 0x1b, 0xd4, 0xc7, 0x47, 0x54, 0xeb, 0x29, 0xc1, 0x5a, 0x59, 0x7c, 0xf1, 0xe7, 0xde,
+	0x9c, 0xc9, 0x0d, 0xd5, 0x77, 0x21, 0x47, 0x53, 0xc8, 0x2f, 0x50, 0x0f, 0xbb, 0x69, 0x1e, 0x44,
+	0x5b, 0x66, 0xa1, 0x9f, 0xc2, 0x96, 0x00, 0xd3, 0x44, 0x41, 0x0f, 0x7b, 0x01, 0x52, 0xdf, 0x86,
+	0x1c, 0x2d, 0x02, 0x05, 0xbb, 0x76, 0x74, 0xd7, 0x60, 0x95, 0x37, 0x88, 0x2b, 0x5e, 0x79, 0xe6,
+	0x32, 0xf2, 0x46, 0xb5, 0xf5, 0xef, 0x14, 0xd8, 0xa8, 0x06, 0xf6, 0x27, 0xbd, 0xb6, 0x15, 0xa2,
+	0x49, 0x89, 0xdf, 0x85, 0x15, 0x5e, 0xe8, 0x36, 0x4d, 0x9d, 0x88, 0x28, 0xca, 0xf6, 0x75, 0x12,
+	0x3a, 0x83, 0x3b, 0x49, 0x04, 0xd7, 0xcd, 0xe9, 0x27, 0x05, 0xa0, 0x1a, 0xd8, 0x55, 0xc7, 0x0b,
+	0x6b, 0x27, 0xf5, 0xab, 0xe5, 0xb3, 0x01, 0xf3, 0x4e, 0x9b, 0x26, 0xb3, 0x6a, 0xce, 0x3b, 0x6d,
+	0xf5, 0x9d, 0x28, 0xbf, 0x45, 0x0a, 0xe5, 0x75, 0x49, 0x7e, 0xb5, 0x93, 0xfa, 0x28, 0x3b, 0x25,
+	0xca, 0xee, 0x03, 0x50, 0x47, 0x58, 0xe2, 0xcc, 0xca, 0xb0, 0xe0, 0x75, 0x42, 0x9e, 0xd7, 0x6b,
+	0xb2, 0xbc, 0x6a, 0x27, 0x75, 0x9e, 0x15, 0xd1, 0xd4, 0x3f, 0xa3, 0x29, 0x55, 0xfa, 0xbe, 0x77,
+	0xe5, 0x94, 0x76, 0x60, 0x89, 0xbe, 0x3a, 0x51, 0x5a, 0x39, 0xaf, 0x13, 0x3e, 0x6d, 0xeb, 0xdb,
+	0x14, 0x20, 0xf7, 0x1c, 0x01, 0xd4, 0x7f, 0x56, 0x20, 0x5f, 0x0d, 0xec, 0x63, 0xe2, 0x16, 0x55,
+	0x5c, 0xc7, 0x6b, 0x57, 0xf0, 0xe0, 0x18, 0x7b, 0x21, 0xe9, 0xde, 0xff, 0x84, 0xd1, 0xb8, 0x5f,
+	0x06, 0x50, 0x4c, 0x43, 0x16, 0xf3, 0x5b, 0x87, 0xcd, 0x26, 0x11, 0x35, 0x9a, 0x78, 0x40, 0x5e,
+	0x73, 0x22, 0xe4, 0x6c, 0xeb, 0x92, 0x40, 0x97, 0xdc, 0xf0, 0x78, 0xff, 0x6b, 0x26, 0xff, 0x8e,
+	0x48, 0x61, 0xad, 0xfa, 0x2a, 0x92, 0x22, 0x45, 0x76, 0xc3, 0xa4, 0x34, 0x28, 0x27, 0x4f, 0x90,
+	0x8b, 0x6e, 0x86, 0x13, 0x5d, 0xa7, 0xa9, 0x49, 0x03, 0xc4, 0xed, 0xfa, 0x1b, 0x3b, 0xc6, 0x58,
+	0x53, 0x9c, 0x91, 0xd3, 0x7f, 0x96, 0xef, 0x88, 0xba, 0x0d, 0xb9, 0x9e, 0xef, 0xb4, 0x10, 0x2d,
+	0xcb, 0xa2, 0xc9, 0x1e, 0xd4, 0x27, 0x00, 0x68, 0xd0, 0x73, 0x7c, 0x2b, 0x74, 0xb0, 0x97, 0xcf,
+	0x51, 0x22, 0x35, 0x83, 0xdd, 0x9e, 0x46, 0x74, 0x7b, 0x1a, 0xf5, 0xe8, 0xf6, 0xac, 0xac, 0x10,
+	0x02, 0x9f, 0xff, 0xb5, 0xa7, 0x98, 0x82, 0x9d, 0x5e, 0xa3, 0xc7, 0x9f, 0x80, 0x3c, 0xae, 0xd7,
+	0x5b, 0x90, 0xa3, 0x17, 0x19, 0xaf, 0x51, 0x5e, 0x52, 0x23, 0x6a, 0x10, 0x75, 0x02, 0x55, 0x8e,
+	0xa8, 0x60, 0xad, 0x70, 0x1b, 0xa9, 0x10, 0x90, 0x5f, 0x93, 0x8a, 0x2f, 0x29, 0x13, 0xac, 0x73,
+	0x66, 0xce, 0x84, 0x9e, 0xa7, 0x68, 0x05, 0xef, 0x71, 0x37, 0xfe, 0xae, 0xc0, 0xff, 0xe3, 0x9a,
+	0x9e, 0xb2, 0xa9, 0xe7, 0xd6, 0x14, 0xe1, 0x53, 0xe1, 0xe0, 0xe7, 0xd8, 0xe3, 0x32, 0xbc, 0x07,
+	0xcb, 0x7c, 0x88, 0xe3, 0x85, 0xd0, 0x24, 0x85, 0xe0, 0x46, 0xbc, 0x14, 0x91, 0x41, 0x44, 0x0a,
+	0xab, 0xee, 0xed, 0x24, 0x25, 0x81, 0x7d, 0x26, 0xa4, 0x7c, 0x45, 0x39, 0x61, 0x3d, 0x74, 0x03,
+	0x9c, 0xe8, 0x9a, 0x70, 0x38, 0x5f, 0xc2, 0xad, 0x7f, 0xcf, 0xc6, 0xa4, 0x8f, 0x91, 0xeb, 0xce,
+	0x78, 0xa6, 0x20, 0xa5, 0x68, 0xf6, 0x87, 0xc8, 0xa7, 0xa5, 0x58, 0x35, 0xd9, 0xc3, 0xa8, 0x40,
+	0x39, 0xa1, 0x40, 0x7c, 0xfe, 0xe0, 0x28, 0x62, 0x70, 0x3f, 0x28, 0xb0, 0x4a, 0xc7, 0x92, 0xe1,
+	0xac, 0xb1, 0xdd, 0x81, 0xa5, 0x00, 0xb9, 0x6e, 0x0c, 0x8e, 0x3f, 0xa5, 0xa0, 0xdb, 0x82, 0xcd,
+	0x18, 0x46, 0x0c, 0xee, 0x17, 0x45, 0x38, 0xb3, 0x4d, 0xb6, 0x4c, 0x1c, 0xd3, 0x5d, 0xe2, 0x6a,
+	0x48, 0x4d, 0xd8, 0x48, 0xae, 0x24, 0x7c, 0x8a, 0x7e, 0x20, 0x69, 0xa4, 0x44, 0x38, 0x71, 0x10,
+	0x58, 0xf7, 0x45, 0x89, 0x8e, 0xa1, 0x20, 0x87, 0x18, 0xf7, 0x6d, 0x75, 0x2c, 0x2a, 0x6b, 0xdf,
+	0xe2, 0xa4, 0xa8, 0xf2, 0x80, 0x9c, 0x14, 0xf6, 0x8e, 0xbc, 0xd2, 0xa4, 0x48, 0x20, 0xde, 0x14,
+	0x29, 0x55, 0xe1, 0x8e, 0xb8, 0x3e, 0x27, 0x7a, 0x91, 0xe2, 0x97, 0xb8, 0x8b, 0xf0, 0x1f, 0xfd,
+	0xb8, 0x01, 0x0b, 0xd5, 0xc0, 0x56, 0x4d, 0x58, 0x89, 0x37, 0xd9, 0x82, 0x04, 0xbb, 0xb0, 0x42,
+	0x6a, 0x0f, 0xb3, 0xe5, 0x31, 0x37, 0x5f, 0xc0, 0x9a, 0xb8, 0x27, 0xee, 0xcb, 0xcd, 0x04, 0x15,
+	0xed, 0x8d, 0x89, 0x2a, 0xb1, 0xf3, 0x33, 0x58, 0x8e, 0x16, 0xb6, 0x5d, 0xb9, 0x15, 0x17, 0x6b,
+	0x0f, 0x32, 0xc5, 0xa2, 0xc3, 0x68, 0x5d, 0x4a, 0x71, 0xc8, 0xc5, 0x69, 0x0e, 0x2f, 0xad, 0x44,
+	0xea, 0x10, 0x76, 0xe4, 0xeb, 0xd0, 0x81, 0xdc, 0x5e, 0xaa, 0xac, 0x3d, 0xfe, 0x17, 0xca, 0x62,
+	0x68, 0xf9, 0xd2, 0x71, 0x90, 0x45, 0xf0, 0x94, 0xa1, 0xb3, 0x97, 0x86, 0x21, 0xec, 0xc8, 0x67,
+	0xfb, 0x94, 0xd0, 0x52, 0xe5, 0xb4, 0xd0, 0x99, 0x43, 0x3d, 0xe9, 0x37, 0x71, 0xa0, 0xdf, 0xcf,
+	0x62, 0x8e, 0xaa, 0xa4, 0xf5, 0x9b, 0x6c, 0xb8, 0x8e, 0x9b, 0x39, 0xd3, 0xb9, 0xa0, 0x92, 0xdd,
+	0xcc, 0x63, 0xce, 0xc5, 0xa9, 0x73, 0x3f, 0x2b, 0xfb, 0x4c, 0xe7, 0x92, 0xe9, 0x52, 0xb5, 0x60,
+	0x3d, 0x39, 0x59, 0x96, 0xb2, 0xb2, 0xe6, 0x4a, 0xda, 0xc1, 0x14, 0x4a, 0x62, 0x88, 0xe4, 0x9c,
+	0x56, 0xca, 0xca, 0x7d, 0x42, 0x08, 0xf9, 0xd4, 0x64, 0xc1, 0x7a, 0x72, 0xec, 0x29, 0x65, 0x31,
+	0x30, 0x21, 0x84, 0x74, 0xc0, 0x21, 0x27, 0x40, 0x34, 0xdc, 0xa4, 0x9c, 0x00, 0x5c, 0x9c, 0x76,
+	0x02, 0x5c, 0x1a, 0x4a, 0xd4, 0x53, 0x58, 0xe2, 0x03, 0xc9, 0xbd, 0xb4, 0x23, 0x83, 0x48, 0xb5,
+	0xfb, 0x59, 0xd2, 0xd8, 0x5b, 0x00, 0x5b, 0xb2, 0x09, 0x22, 0xb3, 0x87, 0x13, 0xaa, 0xda, 0xe1,
+	0xd4, 0xaa, 0x62, 0x50, 0xd9, 0x0d, 0x9d, 0xd9, 0xdb, 0x53, 0x05, 0xcd, 0xba, 0x54, 0x03, 0xd8,
+	0x92, 0x5d, 0x81, 0x99, 0x3d, 0x3f, 0x55, 0xd0, 0x8c, 0x9b, 0xb0, 0xf2, 0xe1, 0x8b, 0xf3, 0x82,
+	0xf2, 0xf2, 0xbc, 0xa0, 0xfc, 0x7d, 0x5e, 0x50, 0x9e, 0x5f, 0x14, 0xe6, 0x5e, 0x5e, 0x14, 0xe6,
+	0xfe, 0xb8, 0x28, 0xcc, 0x7d, 0xfe, 0xa6, 0xed, 0x84, 0xcf, 0xfa, 0x4d, 0xa3, 0x85, 0xbb, 0xf4,
+	0x93, 0x70, 0x0b, 0xf3, 0x6f, 0xc3, 0xec, 0x2b, 0xf1, 0x60, 0xf4, 0x65, 0x7d, 0xd8, 0x43, 0x41,
+	0x73, 0x89, 0x6e, 0x09, 0x8f, 0xff, 0x09, 0x00, 0x00, 0xff, 0xff, 0xeb, 0x02, 0xc6, 0xea, 0x7b,
+	0x17, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2096,9 +2098,9 @@ type MsgClient interface {
 	UpdateClass(ctx context.Context, in *MsgUpdateClass, opts ...grpc.CallOption) (*MsgUpdateClassResponse, error)
 	MintNFT(ctx context.Context, in *MsgMintNFT, opts ...grpc.CallOption) (*MsgMintNFTResponse, error)
 	BurnNFT(ctx context.Context, in *MsgBurnNFT, opts ...grpc.CallOption) (*MsgBurnNFTResponse, error)
-	CreateMintableNFT(ctx context.Context, in *MsgCreateMintableNFT, opts ...grpc.CallOption) (*MsgCreateMintableNFTResponse, error)
-	UpdateMintableNFT(ctx context.Context, in *MsgUpdateMintableNFT, opts ...grpc.CallOption) (*MsgUpdateMintableNFTResponse, error)
-	DeleteMintableNFT(ctx context.Context, in *MsgDeleteMintableNFT, opts ...grpc.CallOption) (*MsgDeleteMintableNFTResponse, error)
+	CreateBlindBoxContent(ctx context.Context, in *MsgCreateBlindBoxContent, opts ...grpc.CallOption) (*MsgCreateBlindBoxContentResponse, error)
+	UpdateBlindBoxContent(ctx context.Context, in *MsgUpdateBlindBoxContent, opts ...grpc.CallOption) (*MsgUpdateBlindBoxContentResponse, error)
+	DeleteBlindBoxContent(ctx context.Context, in *MsgDeleteBlindBoxContent, opts ...grpc.CallOption) (*MsgDeleteBlindBoxContentResponse, error)
 	CreateOffer(ctx context.Context, in *MsgCreateOffer, opts ...grpc.CallOption) (*MsgCreateOfferResponse, error)
 	UpdateOffer(ctx context.Context, in *MsgUpdateOffer, opts ...grpc.CallOption) (*MsgUpdateOfferResponse, error)
 	DeleteOffer(ctx context.Context, in *MsgDeleteOffer, opts ...grpc.CallOption) (*MsgDeleteOfferResponse, error)
@@ -2156,27 +2158,27 @@ func (c *msgClient) BurnNFT(ctx context.Context, in *MsgBurnNFT, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *msgClient) CreateMintableNFT(ctx context.Context, in *MsgCreateMintableNFT, opts ...grpc.CallOption) (*MsgCreateMintableNFTResponse, error) {
-	out := new(MsgCreateMintableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/CreateMintableNFT", in, out, opts...)
+func (c *msgClient) CreateBlindBoxContent(ctx context.Context, in *MsgCreateBlindBoxContent, opts ...grpc.CallOption) (*MsgCreateBlindBoxContentResponse, error) {
+	out := new(MsgCreateBlindBoxContentResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/CreateBlindBoxContent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateMintableNFT(ctx context.Context, in *MsgUpdateMintableNFT, opts ...grpc.CallOption) (*MsgUpdateMintableNFTResponse, error) {
-	out := new(MsgUpdateMintableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/UpdateMintableNFT", in, out, opts...)
+func (c *msgClient) UpdateBlindBoxContent(ctx context.Context, in *MsgUpdateBlindBoxContent, opts ...grpc.CallOption) (*MsgUpdateBlindBoxContentResponse, error) {
+	out := new(MsgUpdateBlindBoxContentResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/UpdateBlindBoxContent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DeleteMintableNFT(ctx context.Context, in *MsgDeleteMintableNFT, opts ...grpc.CallOption) (*MsgDeleteMintableNFTResponse, error) {
-	out := new(MsgDeleteMintableNFTResponse)
-	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/DeleteMintableNFT", in, out, opts...)
+func (c *msgClient) DeleteBlindBoxContent(ctx context.Context, in *MsgDeleteBlindBoxContent, opts ...grpc.CallOption) (*MsgDeleteBlindBoxContentResponse, error) {
+	out := new(MsgDeleteBlindBoxContentResponse)
+	err := c.cc.Invoke(ctx, "/likechain.likenft.Msg/DeleteBlindBoxContent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2288,9 +2290,9 @@ type MsgServer interface {
 	UpdateClass(context.Context, *MsgUpdateClass) (*MsgUpdateClassResponse, error)
 	MintNFT(context.Context, *MsgMintNFT) (*MsgMintNFTResponse, error)
 	BurnNFT(context.Context, *MsgBurnNFT) (*MsgBurnNFTResponse, error)
-	CreateMintableNFT(context.Context, *MsgCreateMintableNFT) (*MsgCreateMintableNFTResponse, error)
-	UpdateMintableNFT(context.Context, *MsgUpdateMintableNFT) (*MsgUpdateMintableNFTResponse, error)
-	DeleteMintableNFT(context.Context, *MsgDeleteMintableNFT) (*MsgDeleteMintableNFTResponse, error)
+	CreateBlindBoxContent(context.Context, *MsgCreateBlindBoxContent) (*MsgCreateBlindBoxContentResponse, error)
+	UpdateBlindBoxContent(context.Context, *MsgUpdateBlindBoxContent) (*MsgUpdateBlindBoxContentResponse, error)
+	DeleteBlindBoxContent(context.Context, *MsgDeleteBlindBoxContent) (*MsgDeleteBlindBoxContentResponse, error)
 	CreateOffer(context.Context, *MsgCreateOffer) (*MsgCreateOfferResponse, error)
 	UpdateOffer(context.Context, *MsgUpdateOffer) (*MsgUpdateOfferResponse, error)
 	DeleteOffer(context.Context, *MsgDeleteOffer) (*MsgDeleteOfferResponse, error)
@@ -2320,14 +2322,14 @@ func (*UnimplementedMsgServer) MintNFT(ctx context.Context, req *MsgMintNFT) (*M
 func (*UnimplementedMsgServer) BurnNFT(ctx context.Context, req *MsgBurnNFT) (*MsgBurnNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BurnNFT not implemented")
 }
-func (*UnimplementedMsgServer) CreateMintableNFT(ctx context.Context, req *MsgCreateMintableNFT) (*MsgCreateMintableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMintableNFT not implemented")
+func (*UnimplementedMsgServer) CreateBlindBoxContent(ctx context.Context, req *MsgCreateBlindBoxContent) (*MsgCreateBlindBoxContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateBlindBoxContent not implemented")
 }
-func (*UnimplementedMsgServer) UpdateMintableNFT(ctx context.Context, req *MsgUpdateMintableNFT) (*MsgUpdateMintableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMintableNFT not implemented")
+func (*UnimplementedMsgServer) UpdateBlindBoxContent(ctx context.Context, req *MsgUpdateBlindBoxContent) (*MsgUpdateBlindBoxContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBlindBoxContent not implemented")
 }
-func (*UnimplementedMsgServer) DeleteMintableNFT(ctx context.Context, req *MsgDeleteMintableNFT) (*MsgDeleteMintableNFTResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteMintableNFT not implemented")
+func (*UnimplementedMsgServer) DeleteBlindBoxContent(ctx context.Context, req *MsgDeleteBlindBoxContent) (*MsgDeleteBlindBoxContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBlindBoxContent not implemented")
 }
 func (*UnimplementedMsgServer) CreateOffer(ctx context.Context, req *MsgCreateOffer) (*MsgCreateOfferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOffer not implemented")
@@ -2439,56 +2441,56 @@ func _Msg_BurnNFT_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_CreateMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateMintableNFT)
+func _Msg_CreateBlindBoxContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateBlindBoxContent)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateMintableNFT(ctx, in)
+		return srv.(MsgServer).CreateBlindBoxContent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likechain.likenft.Msg/CreateMintableNFT",
+		FullMethod: "/likechain.likenft.Msg/CreateBlindBoxContent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateMintableNFT(ctx, req.(*MsgCreateMintableNFT))
+		return srv.(MsgServer).CreateBlindBoxContent(ctx, req.(*MsgCreateBlindBoxContent))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateMintableNFT)
+func _Msg_UpdateBlindBoxContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBlindBoxContent)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateMintableNFT(ctx, in)
+		return srv.(MsgServer).UpdateBlindBoxContent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likechain.likenft.Msg/UpdateMintableNFT",
+		FullMethod: "/likechain.likenft.Msg/UpdateBlindBoxContent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateMintableNFT(ctx, req.(*MsgUpdateMintableNFT))
+		return srv.(MsgServer).UpdateBlindBoxContent(ctx, req.(*MsgUpdateBlindBoxContent))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DeleteMintableNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeleteMintableNFT)
+func _Msg_DeleteBlindBoxContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteBlindBoxContent)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DeleteMintableNFT(ctx, in)
+		return srv.(MsgServer).DeleteBlindBoxContent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/likechain.likenft.Msg/DeleteMintableNFT",
+		FullMethod: "/likechain.likenft.Msg/DeleteBlindBoxContent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DeleteMintableNFT(ctx, req.(*MsgDeleteMintableNFT))
+		return srv.(MsgServer).DeleteBlindBoxContent(ctx, req.(*MsgDeleteBlindBoxContent))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2712,16 +2714,16 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_BurnNFT_Handler,
 		},
 		{
-			MethodName: "CreateMintableNFT",
-			Handler:    _Msg_CreateMintableNFT_Handler,
+			MethodName: "CreateBlindBoxContent",
+			Handler:    _Msg_CreateBlindBoxContent_Handler,
 		},
 		{
-			MethodName: "UpdateMintableNFT",
-			Handler:    _Msg_UpdateMintableNFT_Handler,
+			MethodName: "UpdateBlindBoxContent",
+			Handler:    _Msg_UpdateBlindBoxContent_Handler,
 		},
 		{
-			MethodName: "DeleteMintableNFT",
-			Handler:    _Msg_DeleteMintableNFT_Handler,
+			MethodName: "DeleteBlindBoxContent",
+			Handler:    _Msg_DeleteBlindBoxContent_Handler,
 		},
 		{
 			MethodName: "CreateOffer",
@@ -3091,7 +3093,7 @@ func (m *MsgBurnNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3101,12 +3103,12 @@ func (m *MsgCreateMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3145,7 +3147,7 @@ func (m *MsgCreateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateBlindBoxContentResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3155,18 +3157,18 @@ func (m *MsgCreateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateBlindBoxContentResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateBlindBoxContentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.MintableNft.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.BlindBoxContent.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -3178,7 +3180,7 @@ func (m *MsgCreateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3188,12 +3190,12 @@ func (m *MsgUpdateMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3232,7 +3234,7 @@ func (m *MsgUpdateMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateBlindBoxContentResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3242,18 +3244,18 @@ func (m *MsgUpdateMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateBlindBoxContentResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateBlindBoxContentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.MintableNft.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.BlindBoxContent.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -3265,7 +3267,7 @@ func (m *MsgUpdateMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeleteMintableNFT) Marshal() (dAtA []byte, err error) {
+func (m *MsgDeleteBlindBoxContent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3275,12 +3277,12 @@ func (m *MsgDeleteMintableNFT) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeleteMintableNFT) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDeleteBlindBoxContent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDeleteBlindBoxContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3309,7 +3311,7 @@ func (m *MsgDeleteMintableNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeleteMintableNFTResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgDeleteBlindBoxContentResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3319,12 +3321,12 @@ func (m *MsgDeleteMintableNFTResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeleteMintableNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDeleteBlindBoxContentResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeleteMintableNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDeleteBlindBoxContentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4339,7 +4341,7 @@ func (m *MsgBurnNFTResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateMintableNFT) Size() (n int) {
+func (m *MsgCreateBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4362,18 +4364,18 @@ func (m *MsgCreateMintableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateMintableNFTResponse) Size() (n int) {
+func (m *MsgCreateBlindBoxContentResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.MintableNft.Size()
+	l = m.BlindBoxContent.Size()
 	n += 1 + l + sovTx(uint64(l))
 	return n
 }
 
-func (m *MsgUpdateMintableNFT) Size() (n int) {
+func (m *MsgUpdateBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4396,18 +4398,18 @@ func (m *MsgUpdateMintableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateMintableNFTResponse) Size() (n int) {
+func (m *MsgUpdateBlindBoxContentResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.MintableNft.Size()
+	l = m.BlindBoxContent.Size()
 	n += 1 + l + sovTx(uint64(l))
 	return n
 }
 
-func (m *MsgDeleteMintableNFT) Size() (n int) {
+func (m *MsgDeleteBlindBoxContent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4428,7 +4430,7 @@ func (m *MsgDeleteMintableNFT) Size() (n int) {
 	return n
 }
 
-func (m *MsgDeleteMintableNFTResponse) Size() (n int) {
+func (m *MsgDeleteBlindBoxContentResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5733,7 +5735,7 @@ func (m *MsgBurnNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5756,10 +5758,10 @@ func (m *MsgCreateMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5912,7 +5914,7 @@ func (m *MsgCreateMintableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateMintableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateBlindBoxContentResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5935,15 +5937,15 @@ func (m *MsgCreateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateMintableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateBlindBoxContentResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateBlindBoxContentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNft", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BlindBoxContent", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -5970,7 +5972,7 @@ func (m *MsgCreateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.MintableNft.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.BlindBoxContent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5995,7 +5997,7 @@ func (m *MsgCreateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6018,10 +6020,10 @@ func (m *MsgUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6174,7 +6176,7 @@ func (m *MsgUpdateMintableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateMintableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateBlindBoxContentResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6197,15 +6199,15 @@ func (m *MsgUpdateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateMintableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateBlindBoxContentResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateBlindBoxContentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintableNft", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BlindBoxContent", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -6232,7 +6234,7 @@ func (m *MsgUpdateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.MintableNft.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.BlindBoxContent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -6257,7 +6259,7 @@ func (m *MsgUpdateMintableNFTResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeleteMintableNFT) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteBlindBoxContent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6280,10 +6282,10 @@ func (m *MsgDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteMintableNFT: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteBlindBoxContent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteMintableNFT: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteBlindBoxContent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6403,7 +6405,7 @@ func (m *MsgDeleteMintableNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeleteMintableNFTResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteBlindBoxContentResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6426,10 +6428,10 @@ func (m *MsgDeleteMintableNFTResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteMintableNFTResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteBlindBoxContentResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteMintableNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteBlindBoxContentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

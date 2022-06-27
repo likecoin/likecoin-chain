@@ -38,23 +38,23 @@ message EventBurnNFT {
   string class_parent_account = 5;
 }
 
-message EventCreateMintableNFT {
+message EventCreateBlindBoxContent {
   string class_id = 1;
-  string mintable_nft_id = 2;
+  string content_id = 2;
   string class_parent_iscn_id_prefix = 3;
   string class_parent_account = 4;
 }
 
-message EventUpdateMintableNFT {
+message EventUpdateBlindBoxContent {
   string class_id = 1;
-  string mintable_nft_id = 2;
+  string content_id = 2;
   string class_parent_iscn_id_prefix = 3;
   string class_parent_account = 4;
 }
 
-message EventDeleteMintableNFT {
+message EventDeleteBlindBoxContent {
   string class_id = 1;
-  string mintable_nft_id = 2;
+  string content_id = 2;
   string class_parent_iscn_id_prefix = 3;
   string class_parent_account = 4;
 }
