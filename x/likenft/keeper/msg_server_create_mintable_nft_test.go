@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateMintableNFTNormal(t *testing.T) {
+func TestCreateBlindBoxContentNormal(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -90,7 +90,7 @@ func TestCreateMintableNFTNormal(t *testing.T) {
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil)
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -99,17 +99,17 @@ func TestCreateMintableNFTNormal(t *testing.T) {
 
 	// Check output
 	require.NoError(t, err)
-	require.Equal(t, &types.MsgCreateMintableNFTResponse{
-		MintableNft: types.MintableNFT{
+	require.Equal(t, &types.MsgCreateBlindBoxContentResponse{
+		BlindBoxContent: types.BlindBoxContent{
 			ClassId: classId,
 			Id:      mintableId,
 			Input:   nftInput,
 		},
 	}, res)
 
-	created, found := keeper.GetMintableNFT(ctx, classId, mintableId)
+	created, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
 	require.True(t, found)
-	require.Equal(t, types.MintableNFT{
+	require.Equal(t, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      mintableId,
 		Input:   nftInput,
@@ -118,7 +118,7 @@ func TestCreateMintableNFTNormal(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTClassNotFound(t *testing.T) {
+func TestCreateBlindBoxContentClassNotFound(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -147,7 +147,7 @@ func TestCreateMintableNFTClassNotFound(t *testing.T) {
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{}, false).MinTimes(1)
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -162,7 +162,7 @@ func TestCreateMintableNFTClassNotFound(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTBadRelation(t *testing.T) {
+func TestCreateBlindBoxContentBadRelation(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -224,7 +224,7 @@ func TestCreateMintableNFTBadRelation(t *testing.T) {
 	}, true).MinTimes(1)
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -239,7 +239,7 @@ func TestCreateMintableNFTBadRelation(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTAlreadyMinted(t *testing.T) {
+func TestCreateBlindBoxContentAlreadyMinted(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -308,7 +308,7 @@ func TestCreateMintableNFTAlreadyMinted(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(gomock.Any(), classId).Return(uint64(1))
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -323,7 +323,7 @@ func TestCreateMintableNFTAlreadyMinted(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTMaxSupplyReached(t *testing.T) {
+func TestCreateBlindBoxContentMaxSupplyReached(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -393,7 +393,7 @@ func TestCreateMintableNFTMaxSupplyReached(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(gomock.Any(), classId).Return(uint64(0))
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -408,7 +408,7 @@ func TestCreateMintableNFTMaxSupplyReached(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTNotOwner(t *testing.T) {
+func TestCreateBlindBoxContentNotOwner(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -479,7 +479,7 @@ func TestCreateMintableNFTNotOwner(t *testing.T) {
 	// Run
 	notOwnerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
 	notOwnerAddress, _ := sdk.Bech32ifyAddressBytes("like", notOwnerAddressBytes)
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -494,7 +494,7 @@ func TestCreateMintableNFTNotOwner(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestCreateMintableNFTAlreadyExist(t *testing.T) {
+func TestCreateBlindBoxContentAlreadyExist(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -565,13 +565,13 @@ func TestCreateMintableNFTAlreadyExist(t *testing.T) {
 	// called when seeding existing mintable
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil)
 
-	keeper.SetMintableNFT(ctx, types.MintableNFT{
+	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      mintableId,
 	})
 
 	// Run
-	res, err := msgServer.CreateMintableNFT(goCtx, &types.MsgCreateMintableNFT{
+	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,

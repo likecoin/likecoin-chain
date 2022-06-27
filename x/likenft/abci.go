@@ -16,7 +16,7 @@ func tryRevealClassCatchPanic(ctx sdk.Context, keeper keeper.Keeper, classId str
 			err = fmt.Errorf("%s", r)
 		}
 	}()
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	return
 }
 

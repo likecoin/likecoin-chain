@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeleteMintableNFTNormal(t *testing.T) {
+func TestDeleteBlindBoxContentNormal(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -80,13 +80,13 @@ func TestDeleteMintableNFTNormal(t *testing.T) {
 
 	// once at seeding, once at delete
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).Times(2)
-	keeper.SetMintableNFT(ctx, types.MintableNFT{
+	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      mintableId,
 	})
 
 	// Run
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -96,13 +96,13 @@ func TestDeleteMintableNFTNormal(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	_, found := keeper.GetMintableNFT(ctx, classId, mintableId)
+	_, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
 	require.False(t, found)
 
 	ctrl.Finish()
 }
 
-func TestDeleteMintableNFTClassNotFound(t *testing.T) {
+func TestDeleteBlindBoxContentClassNotFound(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -131,7 +131,7 @@ func TestDeleteMintableNFTClassNotFound(t *testing.T) {
 	})
 
 	// Run
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -145,7 +145,7 @@ func TestDeleteMintableNFTClassNotFound(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestDeleteMintableNFTBadRelation(t *testing.T) {
+func TestDeleteBlindBoxContentBadRelation(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -202,7 +202,7 @@ func TestDeleteMintableNFTBadRelation(t *testing.T) {
 	}, true).MinTimes(1)
 
 	// Run
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -216,7 +216,7 @@ func TestDeleteMintableNFTBadRelation(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestDeleteMintableNFTAlreadyMinted(t *testing.T) {
+func TestDeleteBlindBoxContentAlreadyMinted(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -280,7 +280,7 @@ func TestDeleteMintableNFTAlreadyMinted(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(gomock.Any(), classId).Return(uint64(1))
 
 	// Run
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -294,7 +294,7 @@ func TestDeleteMintableNFTAlreadyMinted(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestDeleteMintableNFTNotOwner(t *testing.T) {
+func TestDeleteBlindBoxContentNotOwner(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -360,7 +360,7 @@ func TestDeleteMintableNFTNotOwner(t *testing.T) {
 	// Run
 	notOwnerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
 	notOwnerAddress, _ := sdk.Bech32ifyAddressBytes("like", notOwnerAddressBytes)
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -374,7 +374,7 @@ func TestDeleteMintableNFTNotOwner(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestDeleteMintableNFTDoNotExist(t *testing.T) {
+func TestDeleteBlindBoxContentDoNotExist(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -438,7 +438,7 @@ func TestDeleteMintableNFTDoNotExist(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(gomock.Any(), classId).Return(uint64(0))
 
 	// Run
-	res, err := msgServer.DeleteMintableNFT(goCtx, &types.MsgDeleteMintableNFT{
+	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,

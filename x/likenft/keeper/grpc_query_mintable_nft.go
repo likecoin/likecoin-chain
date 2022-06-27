@@ -11,19 +11,19 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) MintableNFTIndex(c context.Context, req *types.QueryMintableNFTIndexRequest) (*types.QueryMintableNFTIndexResponse, error) {
+func (k Keeper) BlindBoxContentIndex(c context.Context, req *types.QueryBlindBoxContentIndexRequest) (*types.QueryBlindBoxContentIndexResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var mintableNFTs []types.MintableNFT
+	var mintableNFTs []types.BlindBoxContent
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	mintableNFTStore := prefix.NewStore(store, types.KeyPrefix(types.MintableNFTKeyPrefix))
+	mintableNFTStore := prefix.NewStore(store, types.KeyPrefix(types.BlindBoxContentKeyPrefix))
 
 	pageRes, err := query.Paginate(mintableNFTStore, req.Pagination, func(key []byte, value []byte) error {
-		var mintableNFT types.MintableNFT
+		var mintableNFT types.BlindBoxContent
 		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
 			return err
 		}
@@ -36,22 +36,22 @@ func (k Keeper) MintableNFTIndex(c context.Context, req *types.QueryMintableNFTI
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryMintableNFTIndexResponse{MintableNfts: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryBlindBoxContentIndexResponse{BlindBoxContents: mintableNFTs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) MintableNFTs(c context.Context, req *types.QueryMintableNFTsRequest) (*types.QueryMintableNFTsResponse, error) {
+func (k Keeper) BlindBoxContents(c context.Context, req *types.QueryBlindBoxContentsRequest) (*types.QueryBlindBoxContentsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var mintableNFTs []types.MintableNFT
+	var mintableNFTs []types.BlindBoxContent
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.MintableNFTKeyPrefix), types.MintableNFTsKey(req.ClassId)...))
+	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.BlindBoxContentKeyPrefix), types.BlindBoxContentsKey(req.ClassId)...))
 
 	pageRes, err := query.Paginate(subStore, req.Pagination, func(key []byte, value []byte) error {
-		var mintableNFT types.MintableNFT
+		var mintableNFT types.BlindBoxContent
 		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
 			return err
 		}
@@ -64,16 +64,16 @@ func (k Keeper) MintableNFTs(c context.Context, req *types.QueryMintableNFTsRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryMintableNFTsResponse{MintableNfts: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryBlindBoxContentsResponse{BlindBoxContents: mintableNFTs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) MintableNFT(c context.Context, req *types.QueryMintableNFTRequest) (*types.QueryMintableNFTResponse, error) {
+func (k Keeper) BlindBoxContent(c context.Context, req *types.QueryBlindBoxContentRequest) (*types.QueryBlindBoxContentResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetMintableNFT(
+	val, found := k.GetBlindBoxContent(
 		ctx,
 		req.ClassId,
 		req.Id,
@@ -82,5 +82,5 @@ func (k Keeper) MintableNFT(c context.Context, req *types.QueryMintableNFTReques
 		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
-	return &types.QueryMintableNFTResponse{MintableNft: val}, nil
+	return &types.QueryBlindBoxContentResponse{BlindBoxContent: val}, nil
 }

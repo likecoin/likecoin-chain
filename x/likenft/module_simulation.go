@@ -40,17 +40,17 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgBurnNFT int = 100
 
-	opWeightMsgCreateMintableNFT = "op_weight_msg_create_chain"
+	opWeightMsgCreateBlindBoxContent = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateMintableNFT int = 100
+	defaultWeightMsgCreateBlindBoxContent int = 100
 
-	opWeightMsgUpdateMintableNFT = "op_weight_msg_create_chain"
+	opWeightMsgUpdateBlindBoxContent = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateMintableNFT int = 100
+	defaultWeightMsgUpdateBlindBoxContent int = 100
 
-	opWeightMsgDeleteMintableNFT = "op_weight_msg_create_chain"
+	opWeightMsgDeleteBlindBoxContent = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeleteMintableNFT int = 100
+	defaultWeightMsgDeleteBlindBoxContent int = 100
 
 	opWeightMsgCreateOffer = "op_weight_msg_offer"
 	// TODO: Determine the simulation weight value
@@ -185,37 +185,37 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		likenftsimulation.SimulateMsgBurnNFT(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCreateMintableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateMintableNFT, &weightMsgCreateMintableNFT, nil,
+	var weightMsgCreateBlindBoxContent int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateBlindBoxContent, &weightMsgCreateBlindBoxContent, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateMintableNFT = defaultWeightMsgCreateMintableNFT
+			weightMsgCreateBlindBoxContent = defaultWeightMsgCreateBlindBoxContent
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateMintableNFT,
-		likenftsimulation.SimulateMsgCreateMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCreateBlindBoxContent,
+		likenftsimulation.SimulateMsgCreateBlindBoxContent(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgUpdateMintableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateMintableNFT, &weightMsgUpdateMintableNFT, nil,
+	var weightMsgUpdateBlindBoxContent int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateBlindBoxContent, &weightMsgUpdateBlindBoxContent, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateMintableNFT = defaultWeightMsgUpdateMintableNFT
+			weightMsgUpdateBlindBoxContent = defaultWeightMsgUpdateBlindBoxContent
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateMintableNFT,
-		likenftsimulation.SimulateMsgUpdateMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgUpdateBlindBoxContent,
+		likenftsimulation.SimulateMsgUpdateBlindBoxContent(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgDeleteMintableNFT int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteMintableNFT, &weightMsgDeleteMintableNFT, nil,
+	var weightMsgDeleteBlindBoxContent int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteBlindBoxContent, &weightMsgDeleteBlindBoxContent, nil,
 		func(_ *rand.Rand) {
-			weightMsgDeleteMintableNFT = defaultWeightMsgDeleteMintableNFT
+			weightMsgDeleteBlindBoxContent = defaultWeightMsgDeleteBlindBoxContent
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteMintableNFT,
-		likenftsimulation.SimulateMsgDeleteMintableNFT(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgDeleteBlindBoxContent,
+		likenftsimulation.SimulateMsgDeleteBlindBoxContent(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgCreateOffer int

@@ -23,7 +23,7 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []types.MintableNFT) {
+func networkWithBlindBoxContentObjects(t *testing.T, n int) (*network.Network, []types.BlindBoxContent) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	// seed nft class
@@ -46,11 +46,11 @@ func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []typ
 		}
 		nftState.Classes = append(nftState.Classes, &class)
 		// seed mintable
-		mintableNFT := types.MintableNFT{
+		mintableNFT := types.BlindBoxContent{
 			ClassId: strconv.Itoa(i),
 			Id:      strconv.Itoa(i),
 		}
-		state.MintableNftList = append(state.MintableNftList, mintableNFT)
+		state.BlindBoxContentList = append(state.BlindBoxContentList, mintableNFT)
 	}
 	// seed nft class
 	nftBuf, err := cfg.Codec.MarshalJSON(&nftState)
@@ -60,11 +60,11 @@ func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []typ
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.MintableNftList
+	return network.New(t, cfg), state.BlindBoxContentList
 }
 
-func TestShowMintableNFT(t *testing.T) {
-	net, objs := networkWithMintableNFTObjects(t, 2)
+func TestShowBlindBoxContent(t *testing.T) {
+	net, objs := networkWithBlindBoxContentObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -77,7 +77,7 @@ func TestShowMintableNFT(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.MintableNFT
+		obj  types.BlindBoxContent
 	}{
 		{
 			desc:      "found",
@@ -103,27 +103,27 @@ func TestShowMintableNFT(t *testing.T) {
 				tc.idId,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowMintableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowBlindBoxContent(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryMintableNFTResponse
+				var resp types.QueryBlindBoxContentResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.MintableNft)
+				require.NotNil(t, resp.BlindBoxContent)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.MintableNft),
+					nullify.Fill(&resp.BlindBoxContent),
 				)
 			}
 		})
 	}
 }
 
-func TestListMintableNFT(t *testing.T) {
-	net, objs := networkWithMintableNFTObjects(t, 5)
+func TestListBlindBoxContent(t *testing.T) {
+	net, objs := networkWithBlindBoxContentObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
@@ -145,14 +145,14 @@ func TestListMintableNFT(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListBlindBoxContent(), args)
 			require.NoError(t, err)
-			var resp types.QueryMintableNFTIndexResponse
+			var resp types.QueryBlindBoxContentIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.MintableNfts), step)
+			require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.MintableNfts),
+				nullify.Fill(resp.BlindBoxContents),
 			)
 		}
 	})
@@ -161,29 +161,29 @@ func TestListMintableNFT(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListBlindBoxContent(), args)
 			require.NoError(t, err)
-			var resp types.QueryMintableNFTIndexResponse
+			var resp types.QueryBlindBoxContentIndexResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.MintableNfts), step)
+			require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.MintableNfts),
+				nullify.Fill(resp.BlindBoxContents),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMintableNFT(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListBlindBoxContent(), args)
 		require.NoError(t, err)
-		var resp types.QueryMintableNFTIndexResponse
+		var resp types.QueryBlindBoxContentIndexResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.MintableNfts),
+			nullify.Fill(resp.BlindBoxContents),
 		)
 	})
 }

@@ -35,7 +35,7 @@ func TestGenesis(t *testing.T) {
 				Account: accounts[1].String(),
 			},
 		},
-		MintableNftList: []types.MintableNFT{
+		BlindBoxContentList: []types.BlindBoxContent{
 			{
 				ClassId: "0",
 				Id:      "0",
@@ -122,7 +122,7 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.ClassesByIscnList, got.ClassesByIscnList)
 	require.ElementsMatch(t, genesisState.ClassesByAccountList, got.ClassesByAccountList)
-	require.ElementsMatch(t, genesisState.MintableNftList, got.MintableNftList)
+	require.ElementsMatch(t, genesisState.BlindBoxContentList, got.BlindBoxContentList)
 	require.ElementsMatch(t, genesisState.ClassRevealQueue, got.ClassRevealQueue)
 	require.ElementsMatch(t, genesisState.OfferList, got.OfferList)
 	require.ElementsMatch(t, genesisState.ListingList, got.ListingList)

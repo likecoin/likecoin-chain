@@ -10,7 +10,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func SimulateMsgDeleteMintableNFT(
+func SimulateMsgDeleteBlindBoxContent(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgDeleteMintableNFT(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgDeleteMintableNFT{
+		msg := &types.MsgDeleteBlindBoxContent{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the DeleteMintableNFT simulation
+		// TODO: Handling the DeleteBlindBoxContent simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "DeleteMintableNFT simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "DeleteBlindBoxContent simulation not implemented"), nil, nil
 	}
 }

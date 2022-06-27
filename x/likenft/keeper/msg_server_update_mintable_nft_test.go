@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpdateMintableNFTNormal(t *testing.T) {
+func TestUpdateBlindBoxContentNormal(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -85,7 +85,7 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
 	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
-	keeper.SetMintableNFT(ctx, types.MintableNFT{
+	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      mintableId,
 	})
@@ -96,7 +96,7 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -107,9 +107,9 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	updated, found := keeper.GetMintableNFT(ctx, classId, mintableId)
+	updated, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
 	require.True(t, found)
-	require.Equal(t, types.MintableNFT{
+	require.Equal(t, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      mintableId,
 		Input:   nftInput,
@@ -118,7 +118,7 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateMintableNFTClassNotFound(t *testing.T) {
+func TestUpdateBlindBoxContentClassNotFound(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -152,7 +152,7 @@ func TestUpdateMintableNFTClassNotFound(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -167,7 +167,7 @@ func TestUpdateMintableNFTClassNotFound(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateMintableNFTBadRelation(t *testing.T) {
+func TestUpdateBlindBoxContentBadRelation(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -229,7 +229,7 @@ func TestUpdateMintableNFTBadRelation(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -244,7 +244,7 @@ func TestUpdateMintableNFTBadRelation(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateMintableNFTAlreadyMinted(t *testing.T) {
+func TestUpdateBlindBoxContentAlreadyMinted(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -313,7 +313,7 @@ func TestUpdateMintableNFTAlreadyMinted(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -328,7 +328,7 @@ func TestUpdateMintableNFTAlreadyMinted(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateMintableNFTNotOwner(t *testing.T) {
+func TestUpdateBlindBoxContentNotOwner(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -399,7 +399,7 @@ func TestUpdateMintableNFTNotOwner(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
 		Id:      mintableId,
@@ -414,7 +414,7 @@ func TestUpdateMintableNFTNotOwner(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateMintableNFTDoNotExist(t *testing.T) {
+func TestUpdateBlindBoxContentDoNotExist(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
@@ -483,7 +483,7 @@ func TestUpdateMintableNFTDoNotExist(t *testing.T) {
 		UriHash:  "123456",
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
 	}
-	res, err := msgServer.UpdateMintableNFT(goCtx, &types.MsgUpdateMintableNFT{
+	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
 		Id:      mintableId,

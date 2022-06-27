@@ -6,7 +6,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) validateReqToMutateMintableNFT(ctx sdk.Context, creator string, class nft.Class, classData types.ClassData, parent types.ClassParentWithOwner, willCreate bool) error {
+func (k msgServer) validateReqToMutateBlindBoxContent(ctx sdk.Context, creator string, class nft.Class, classData types.ClassData, parent types.ClassParentWithOwner, willCreate bool) error {
 
 	// Verify no tokens minted under class
 	totalSupply := k.nftKeeper.GetTotalSupply(ctx, class.Id)

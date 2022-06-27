@@ -29,14 +29,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgBurnNFT:
 			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgCreateMintableNFT:
-			res, err := msgServer.CreateMintableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCreateBlindBoxContent:
+			res, err := msgServer.CreateBlindBoxContent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateMintableNFT:
-			res, err := msgServer.UpdateMintableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateBlindBoxContent:
+			res, err := msgServer.UpdateBlindBoxContent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeleteMintableNFT:
-			res, err := msgServer.DeleteMintableNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDeleteBlindBoxContent:
+			res, err := msgServer.DeleteBlindBoxContent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCreateOffer:
 			res, err := msgServer.CreateOffer(sdk.WrapSDKContext(ctx), msg)

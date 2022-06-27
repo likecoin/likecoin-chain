@@ -5,12 +5,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgCreateMintableNFT = "create_mintable_nft"
+const TypeMsgCreateBlindBoxContent = "create_mintable_nft"
 
-var _ sdk.Msg = &MsgCreateMintableNFT{}
+var _ sdk.Msg = &MsgCreateBlindBoxContent{}
 
-func NewMsgCreateMintableNFT(creator string, classId string, id string, input NFTInput) *MsgCreateMintableNFT {
-	return &MsgCreateMintableNFT{
+func NewMsgCreateBlindBoxContent(creator string, classId string, id string, input NFTInput) *MsgCreateBlindBoxContent {
+	return &MsgCreateBlindBoxContent{
 		Creator: creator,
 		ClassId: classId,
 		Id:      id,
@@ -18,15 +18,15 @@ func NewMsgCreateMintableNFT(creator string, classId string, id string, input NF
 	}
 }
 
-func (msg *MsgCreateMintableNFT) Route() string {
+func (msg *MsgCreateBlindBoxContent) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCreateMintableNFT) Type() string {
-	return TypeMsgCreateMintableNFT
+func (msg *MsgCreateBlindBoxContent) Type() string {
+	return TypeMsgCreateBlindBoxContent
 }
 
-func (msg *MsgCreateMintableNFT) GetSigners() []sdk.AccAddress {
+func (msg *MsgCreateBlindBoxContent) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -34,12 +34,12 @@ func (msg *MsgCreateMintableNFT) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgCreateMintableNFT) GetSignBytes() []byte {
+func (msg *MsgCreateBlindBoxContent) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgCreateMintableNFT) ValidateBasic() error {
+func (msg *MsgCreateBlindBoxContent) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

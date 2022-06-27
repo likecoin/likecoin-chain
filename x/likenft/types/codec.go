@@ -13,9 +13,9 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateClass{}, "likenft/UpdateClass", nil)
 	cdc.RegisterConcrete(&MsgMintNFT{}, "likenft/MintNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "likenft/BurnNFT", nil)
-	cdc.RegisterConcrete(&MsgCreateMintableNFT{}, "likenft/CreateMintableNFT", nil)
-	cdc.RegisterConcrete(&MsgUpdateMintableNFT{}, "likenft/UpdateMintableNFT", nil)
-	cdc.RegisterConcrete(&MsgDeleteMintableNFT{}, "likenft/DeleteMintableNFT", nil)
+	cdc.RegisterConcrete(&MsgCreateBlindBoxContent{}, "likenft/CreateBlindBoxContent", nil)
+	cdc.RegisterConcrete(&MsgUpdateBlindBoxContent{}, "likenft/UpdateBlindBoxContent", nil)
+	cdc.RegisterConcrete(&MsgDeleteBlindBoxContent{}, "likenft/DeleteBlindBoxContent", nil)
 	cdc.RegisterConcrete(&MsgCreateOffer{}, "likenft/CreateOffer", nil)
 	cdc.RegisterConcrete(&MsgUpdateOffer{}, "likenft/UpdateOffer", nil)
 	cdc.RegisterConcrete(&MsgDeleteOffer{}, "likenft/DeleteOffer", nil)
@@ -48,13 +48,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgBurnNFT{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateMintableNFT{},
+		&MsgCreateBlindBoxContent{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgUpdateMintableNFT{},
+		&MsgUpdateBlindBoxContent{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgDeleteMintableNFT{},
+		&MsgDeleteBlindBoxContent{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateOffer{},

@@ -7,7 +7,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) DeleteMintableNFT(goCtx context.Context, msg *types.MsgDeleteMintableNFT) (*types.MsgDeleteMintableNFTResponse, error) {
+func (k msgServer) DeleteBlindBoxContent(goCtx context.Context, msg *types.MsgDeleteBlindBoxContent) (*types.MsgDeleteBlindBoxContentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	class, classData, err := k.GetClass(ctx, msg.ClassId)
@@ -18,25 +18,25 @@ func (k msgServer) DeleteMintableNFT(goCtx context.Context, msg *types.MsgDelete
 	if err != nil {
 		return nil, err
 	}
-	if err := k.validateReqToMutateMintableNFT(ctx, msg.Creator, class, classData, parent, false); err != nil {
+	if err := k.validateReqToMutateBlindBoxContent(ctx, msg.Creator, class, classData, parent, false); err != nil {
 		return nil, err
 	}
 
 	// check id already exists
-	if _, exists := k.GetMintableNFT(ctx, msg.ClassId, msg.Id); !exists {
+	if _, exists := k.GetBlindBoxContent(ctx, msg.ClassId, msg.Id); !exists {
 		return nil, types.ErrMintableNftNotFound
 	}
 
 	// remove record
-	k.RemoveMintableNFT(ctx, msg.ClassId, msg.Id)
+	k.RemoveBlindBoxContent(ctx, msg.ClassId, msg.Id)
 
 	// Emit event
-	ctx.EventManager().EmitTypedEvent(&types.EventDeleteMintableNFT{
+	ctx.EventManager().EmitTypedEvent(&types.EventDeleteBlindBoxContent{
 		ClassId:                 msg.ClassId,
-		MintableNftId:           msg.Id,
+		ContentId:               msg.Id,
 		ClassParentIscnIdPrefix: parent.IscnIdPrefix,
 		ClassParentAccount:      parent.Account,
 	})
 
-	return &types.MsgDeleteMintableNFTResponse{}, nil
+	return &types.MsgDeleteBlindBoxContentResponse{}, nil
 }

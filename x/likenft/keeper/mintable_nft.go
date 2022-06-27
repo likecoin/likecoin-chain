@@ -8,11 +8,11 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-// SetMintableNFT set a specific mintableNFT in the store from its index
-func (k Keeper) SetMintableNFT(ctx sdk.Context, mintableNFT types.MintableNFT) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+// SetBlindBoxContent set a specific mintableNFT in the store from its index
+func (k Keeper) SetBlindBoxContent(ctx sdk.Context, mintableNFT types.BlindBoxContent) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
 	b := k.cdc.MustMarshal(&mintableNFT)
-	key := types.MintableNFTKey(
+	key := types.BlindBoxContentKey(
 		mintableNFT.ClassId,
 		mintableNFT.Id,
 	)
@@ -25,16 +25,16 @@ func (k Keeper) SetMintableNFT(ctx sdk.Context, mintableNFT types.MintableNFT) {
 	store.Set(key, b)
 }
 
-// GetMintableNFT returns a mintableNFT from its index
-func (k Keeper) GetMintableNFT(
+// GetBlindBoxContent returns a mintableNFT from its index
+func (k Keeper) GetBlindBoxContent(
 	ctx sdk.Context,
 	classId string,
 	id string,
 
-) (val types.MintableNFT, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+) (val types.BlindBoxContent, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
 
-	b := store.Get(types.MintableNFTKey(
+	b := store.Get(types.BlindBoxContentKey(
 		classId,
 		id,
 	))
@@ -46,15 +46,15 @@ func (k Keeper) GetMintableNFT(
 	return val, true
 }
 
-// RemoveMintableNFT removes a mintableNFT from the store
-func (k Keeper) RemoveMintableNFT(
+// RemoveBlindBoxContent removes a mintableNFT from the store
+func (k Keeper) RemoveBlindBoxContent(
 	ctx sdk.Context,
 	classId string,
 	id string,
 
 ) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
-	key := types.MintableNFTKey(
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
+	key := types.BlindBoxContentKey(
 		classId,
 		id,
 	)
@@ -67,13 +67,13 @@ func (k Keeper) RemoveMintableNFT(
 	store.Delete(key)
 }
 
-// RemoveMintableNFT removes a mintableNFT from the store
-func (k Keeper) RemoveMintableNFTs(
+// RemoveBlindBoxContent removes a mintableNFT from the store
+func (k Keeper) RemoveBlindBoxContents(
 	ctx sdk.Context,
 	classId string,
 ) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, types.MintableNFTsKey(classId))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.BlindBoxContentsKey(classId))
 
 	defer iterator.Close()
 
@@ -87,44 +87,44 @@ func (k Keeper) RemoveMintableNFTs(
 	}
 }
 
-// GetMintableNFTs returns all mintableNFT of a class
-func (k Keeper) GetMintableNFTs(ctx sdk.Context, classId string) (list []types.MintableNFT) {
-	k.IterateMintableNFTs(ctx, classId, func(mn types.MintableNFT) {
+// GetBlindBoxContents returns all mintableNFT of a class
+func (k Keeper) GetBlindBoxContents(ctx sdk.Context, classId string) (list []types.BlindBoxContent) {
+	k.IterateBlindBoxContents(ctx, classId, func(mn types.BlindBoxContent) {
 		list = append(list, mn)
 	})
 
 	return
 }
 
-func (k Keeper) IterateMintableNFTs(ctx sdk.Context, classId string, callback func(types.MintableNFT)) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, types.MintableNFTsKey(classId))
+func (k Keeper) IterateBlindBoxContents(ctx sdk.Context, classId string, callback func(types.BlindBoxContent)) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, types.BlindBoxContentsKey(classId))
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.MintableNFT
+		var val types.BlindBoxContent
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		callback(val)
 	}
 }
 
-func (k Keeper) IterateAllMintableNFT(ctx sdk.Context, callback func(types.MintableNFT)) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintableNFTKeyPrefix))
+func (k Keeper) IterateAllBlindBoxContent(ctx sdk.Context, callback func(types.BlindBoxContent)) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.MintableNFT
+		var val types.BlindBoxContent
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		callback(val)
 	}
 }
 
-// GetAllMintableNFT returns all MintableNFT
-func (k Keeper) GetAllMintableNFT(ctx sdk.Context) (list []types.MintableNFT) {
-	k.IterateAllMintableNFT(ctx, func(val types.MintableNFT) {
+// GetAllBlindBoxContent returns all BlindBoxContent
+func (k Keeper) GetAllBlindBoxContent(ctx sdk.Context) (list []types.BlindBoxContent) {
+	k.IterateAllBlindBoxContent(ctx, func(val types.BlindBoxContent) {
 		list = append(list, val)
 	})
 	return

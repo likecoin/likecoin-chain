@@ -44,7 +44,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Params: types.DefaultParams(),
-				MintableNftList: []types.MintableNFT{
+				BlindBoxContentList: []types.BlindBoxContent{
 					{
 						ClassId: "0",
 						Id:      "0",
@@ -245,7 +245,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated mintableNFT",
 			genState: &types.GenesisState{
-				MintableNftList: []types.MintableNFT{
+				BlindBoxContentList: []types.BlindBoxContent{
 					{
 						ClassId: "0",
 						Id:      "0",

@@ -15,28 +15,28 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNMintableNFT(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) []types.MintableNFT {
-	var items []types.MintableNFT
+func createNBlindBoxContent(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int) []types.BlindBoxContent {
+	var items []types.BlindBoxContent
 	for i := 0; i < nClass; i++ {
 		for j := 0; j < nNFT; j++ {
-			item := types.MintableNFT{
+			item := types.BlindBoxContent{
 				ClassId: strconv.Itoa(i),
 				Id:      strconv.Itoa(j),
 			}
 			items = append(items, item)
-			keeper.SetMintableNFT(ctx, item)
+			keeper.SetBlindBoxContent(ctx, item)
 		}
 	}
 	return items
 }
 
-func TestMintableNFTGet(t *testing.T) {
+func TestBlindBoxContentGet(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNMintableNFT(keeper, ctx, 3, 3)
+	items := createNBlindBoxContent(keeper, ctx, 3, 3)
 	for _, item := range items {
-		rst, found := keeper.GetMintableNFT(ctx,
+		rst, found := keeper.GetBlindBoxContent(ctx,
 			item.ClassId,
 			item.Id,
 		)
@@ -47,17 +47,17 @@ func TestMintableNFTGet(t *testing.T) {
 		)
 	}
 }
-func TestMintableNFTRemove(t *testing.T) {
+func TestBlindBoxContentRemove(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNMintableNFT(keeper, ctx, 3, 3)
+	items := createNBlindBoxContent(keeper, ctx, 3, 3)
 	for _, item := range items {
-		keeper.RemoveMintableNFT(ctx,
+		keeper.RemoveBlindBoxContent(ctx,
 			item.ClassId,
 			item.Id,
 		)
-		_, found := keeper.GetMintableNFT(ctx,
+		_, found := keeper.GetBlindBoxContent(ctx,
 			item.ClassId,
 			item.Id,
 		)
@@ -65,46 +65,46 @@ func TestMintableNFTRemove(t *testing.T) {
 	}
 }
 
-func TestMintableNFTRemoveMultiple(t *testing.T) {
+func TestBlindBoxContentRemoveMultiple(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNMintableNFT(keeper, ctx, 1, 5)
-	keeper.RemoveMintableNFTs(ctx,
+	items := createNBlindBoxContent(keeper, ctx, 1, 5)
+	keeper.RemoveBlindBoxContents(ctx,
 		items[0].ClassId,
 	)
-	foundItems := keeper.GetMintableNFTs(ctx,
+	foundItems := keeper.GetBlindBoxContents(ctx,
 		items[0].ClassId,
 	)
 	require.Empty(t, foundItems)
 }
 
-func TestMintableNFTGetByClass(t *testing.T) {
+func TestBlindBoxContentGetByClass(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNMintableNFT(keeper, ctx, 3, 3)
+	items := createNBlindBoxContent(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items[0:3]),
-		nullify.Fill(keeper.GetMintableNFTs(ctx, "0")),
+		nullify.Fill(keeper.GetBlindBoxContents(ctx, "0")),
 	)
 	require.ElementsMatch(t,
 		nullify.Fill(items[3:6]),
-		nullify.Fill(keeper.GetMintableNFTs(ctx, "1")),
+		nullify.Fill(keeper.GetBlindBoxContents(ctx, "1")),
 	)
 	require.ElementsMatch(t,
 		nullify.Fill(items[6:9]),
-		nullify.Fill(keeper.GetMintableNFTs(ctx, "2")),
+		nullify.Fill(keeper.GetBlindBoxContents(ctx, "2")),
 	)
 }
 
-func TestMintableNFTGetAll(t *testing.T) {
+func TestBlindBoxContentGetAll(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
-	items := createNMintableNFT(keeper, ctx, 3, 3)
+	items := createNBlindBoxContent(keeper, ctx, 3, 3)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllMintableNFT(ctx)),
+		nullify.Fill(keeper.GetAllBlindBoxContent(ctx)),
 	)
 }

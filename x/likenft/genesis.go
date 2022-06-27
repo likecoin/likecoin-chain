@@ -18,8 +18,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetClassesByAccount(ctx, elem)
 	}
 	// Set all the mintableNFT
-	for _, elem := range genState.MintableNftList {
-		k.SetMintableNFT(ctx, elem)
+	for _, elem := range genState.BlindBoxContentList {
+		k.SetBlindBoxContent(ctx, elem)
 	}
 
 	// Set all the classRevealQueueEntry
@@ -57,7 +57,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.ClassesByIscnList = k.GetAllClassesByISCN(ctx)
 	genesis.ClassesByAccountList = k.GetAllClassesByAccount(ctx)
-	genesis.MintableNftList = k.GetAllMintableNFT(ctx)
+	genesis.BlindBoxContentList = k.GetAllBlindBoxContent(ctx)
 	genesis.ClassRevealQueue = k.GetClassRevealQueue(ctx)
 	genesis.OfferList = types.MapOffersToPublicRecords(k.GetAllOffer(ctx))
 	genesis.ListingList = types.MapListingsToPublicRecords(k.GetAllListing(ctx))

@@ -18,37 +18,37 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestMintableNFTQuerySingle(t *testing.T) {
+func TestBlindBoxContentQuerySingle(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNMintableNFT(keeper, ctx, 3, 3)
+	msgs := createNBlindBoxContent(keeper, ctx, 3, 3)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryMintableNFTRequest
-		response *types.QueryMintableNFTResponse
+		request  *types.QueryBlindBoxContentRequest
+		response *types.QueryBlindBoxContentResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryMintableNFTRequest{
+			request: &types.QueryBlindBoxContentRequest{
 				ClassId: msgs[0].ClassId,
 				Id:      msgs[0].Id,
 			},
-			response: &types.QueryMintableNFTResponse{MintableNft: msgs[0]},
+			response: &types.QueryBlindBoxContentResponse{BlindBoxContent: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryMintableNFTRequest{
+			request: &types.QueryBlindBoxContentRequest{
 				ClassId: msgs[1].ClassId,
 				Id:      msgs[1].Id,
 			},
-			response: &types.QueryMintableNFTResponse{MintableNft: msgs[1]},
+			response: &types.QueryBlindBoxContentResponse{BlindBoxContent: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryMintableNFTRequest{
+			request: &types.QueryBlindBoxContentRequest{
 				ClassId: strconv.Itoa(100000),
 				Id:      strconv.Itoa(100000),
 			},
@@ -60,7 +60,7 @@ func TestMintableNFTQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.MintableNFT(wctx, tc.request)
+			response, err := keeper.BlindBoxContent(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -74,16 +74,16 @@ func TestMintableNFTQuerySingle(t *testing.T) {
 	}
 }
 
-func TestMintableNFTQueryByClass(t *testing.T) {
+func TestBlindBoxContentQueryByClass(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
 	nClass := 3
 	nItem := 3
-	msgs := createNMintableNFT(keeper, ctx, nClass, nItem)
-	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryMintableNFTsRequest {
-		return &types.QueryMintableNFTsRequest{
+	msgs := createNBlindBoxContent(keeper, ctx, nClass, nItem)
+	request := func(classId string, next []byte, offset, limit uint64, total bool) *types.QueryBlindBoxContentsRequest {
+		return &types.QueryBlindBoxContentsRequest{
 			ClassId: classId,
 			Pagination: &query.PageRequest{
 				Key:        next,
@@ -97,12 +97,12 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 		for classId := 0; classId < nClass; classId++ {
 			step := 2
 			for i := 0; i < nItem; i += step {
-				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), nil, uint64(i), uint64(step), false))
+				resp, err := keeper.BlindBoxContents(wctx, request(strconv.Itoa(classId), nil, uint64(i), uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.MintableNfts), step)
+				require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.MintableNfts),
+					nullify.Fill(resp.BlindBoxContents),
 				)
 			}
 		}
@@ -113,12 +113,12 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 			step := 2
 			var next []byte
 			for i := 0; i < nItem; i += step {
-				resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), next, 0, uint64(step), false))
+				resp, err := keeper.BlindBoxContents(wctx, request(strconv.Itoa(classId), next, 0, uint64(step), false))
 				require.NoError(t, err)
-				require.LessOrEqual(t, len(resp.MintableNfts), step)
+				require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 				require.Subset(t,
 					nullify.Fill(msgs),
-					nullify.Fill(resp.MintableNfts),
+					nullify.Fill(resp.BlindBoxContents),
 				)
 				next = resp.Pagination.NextKey
 			}
@@ -126,30 +126,30 @@ func TestMintableNFTQueryByClass(t *testing.T) {
 	})
 	t.Run("Total", func(t *testing.T) {
 		for classId := 0; classId < nClass; classId++ {
-			resp, err := keeper.MintableNFTs(wctx, request(strconv.Itoa(classId), nil, 0, 0, true))
+			resp, err := keeper.BlindBoxContents(wctx, request(strconv.Itoa(classId), nil, 0, 0, true))
 			require.NoError(t, err)
 			require.Equal(t, nItem, int(resp.Pagination.Total))
 			require.ElementsMatch(t,
 				nullify.Fill(msgs[classId*nItem:classId*nItem+nItem]),
-				nullify.Fill(resp.MintableNfts),
+				nullify.Fill(resp.BlindBoxContents),
 			)
 		}
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.MintableNFTs(wctx, nil)
+		_, err := keeper.BlindBoxContents(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }
 
-func TestMintableNFTQueryPaginated(t *testing.T) {
+func TestBlindBoxContentQueryPaginated(t *testing.T) {
 	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNMintableNFT(keeper, ctx, 3, 3)
+	msgs := createNBlindBoxContent(keeper, ctx, 3, 3)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryMintableNFTIndexRequest {
-		return &types.QueryMintableNFTIndexRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryBlindBoxContentIndexRequest {
+		return &types.QueryBlindBoxContentIndexRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -161,12 +161,12 @@ func TestMintableNFTQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.MintableNFTIndex(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.BlindBoxContentIndex(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.MintableNfts), step)
+			require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.MintableNfts),
+				nullify.Fill(resp.BlindBoxContents),
 			)
 		}
 	})
@@ -174,27 +174,27 @@ func TestMintableNFTQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.MintableNFTIndex(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.BlindBoxContentIndex(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.MintableNfts), step)
+			require.LessOrEqual(t, len(resp.BlindBoxContents), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.MintableNfts),
+				nullify.Fill(resp.BlindBoxContents),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.MintableNFTIndex(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.BlindBoxContentIndex(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.MintableNfts),
+			nullify.Fill(resp.BlindBoxContents),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.MintableNFTIndex(wctx, nil)
+		_, err := keeper.BlindBoxContentIndex(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

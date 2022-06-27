@@ -345,7 +345,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Create mintable 1
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdCreateMintableNFT(),
+		cli.CmdCreateBlindBoxContent(),
 		append([]string{class.Id, "mintable1", createMintable1File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -353,10 +353,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable1Event := parseEventCreateMintableNFT(res)
-	require.Equal(t, types.EventCreateMintableNFT{
+	createMintable1Event := parseEventCreateBlindBoxContent(res)
+	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable1",
+		ContentId:               "mintable1",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, createMintable1Event)
@@ -364,7 +364,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Create mintable 2
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdCreateMintableNFT(),
+		cli.CmdCreateBlindBoxContent(),
 		append([]string{class.Id, "mintable2", createMintable2File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -372,10 +372,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable2Event := parseEventCreateMintableNFT(res)
-	require.Equal(t, types.EventCreateMintableNFT{
+	createMintable2Event := parseEventCreateBlindBoxContent(res)
+	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable2",
+		ContentId:               "mintable2",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, createMintable2Event)
@@ -383,7 +383,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Create mintable 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdCreateMintableNFT(),
+		cli.CmdCreateBlindBoxContent(),
 		append([]string{class.Id, "mintable3", createMintable3File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -391,10 +391,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable3Event := parseEventCreateMintableNFT(res)
-	require.Equal(t, types.EventCreateMintableNFT{
+	createMintable3Event := parseEventCreateBlindBoxContent(res)
+	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable3",
+		ContentId:               "mintable3",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, createMintable3Event)
@@ -402,15 +402,15 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Query created mintables
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdMintableNFTs(),
+		cli.CmdBlindBoxContents(),
 		append([]string{class.Id}, queryArgs...),
 	)
 	require.NoError(t, err)
 
 	// Unmarshal and check created mintables
-	createdMintablesRes := types.QueryMintableNFTsResponse{}
+	createdMintablesRes := types.QueryBlindBoxContentsResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &createdMintablesRes)
-	require.Equal(t, []types.MintableNFT{
+	require.Equal(t, []types.BlindBoxContent{
 		{
 			ClassId: class.Id,
 			Id:      "mintable1",
@@ -438,12 +438,12 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 				Metadata: types.JsonInput(`{}`),
 			},
 		},
-	}, createdMintablesRes.MintableNfts)
+	}, createdMintablesRes.BlindBoxContents)
 
 	// Update mintable 1
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdUpdateMintableNFT(),
+		cli.CmdUpdateBlindBoxContent(),
 		append([]string{class.Id, "mintable1", updateMintable1File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -451,10 +451,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	updateMintable1Event := parseEventUpdateMintableNFT(res)
-	require.Equal(t, types.EventUpdateMintableNFT{
+	updateMintable1Event := parseEventUpdateBlindBoxContent(res)
+	require.Equal(t, types.EventUpdateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable1",
+		ContentId:               "mintable1",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, updateMintable1Event)
@@ -462,7 +462,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Update mintable 2
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdUpdateMintableNFT(),
+		cli.CmdUpdateBlindBoxContent(),
 		append([]string{class.Id, "mintable2", updateMintable2File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -470,10 +470,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	updateMintable2Event := parseEventUpdateMintableNFT(res)
-	require.Equal(t, types.EventUpdateMintableNFT{
+	updateMintable2Event := parseEventUpdateBlindBoxContent(res)
+	require.Equal(t, types.EventUpdateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable2",
+		ContentId:               "mintable2",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, updateMintable2Event)
@@ -481,7 +481,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Delete mintable 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdDeleteMintableNFT(),
+		cli.CmdDeleteBlindBoxContent(),
 		append([]string{class.Id, "mintable3"}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -489,10 +489,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	deleteMintable3Event := parseEventDeleteMintableNFT(res)
-	require.Equal(t, types.EventDeleteMintableNFT{
+	deleteMintable3Event := parseEventDeleteBlindBoxContent(res)
+	require.Equal(t, types.EventDeleteBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable3",
+		ContentId:               "mintable3",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, deleteMintable3Event)
@@ -500,7 +500,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Recreate mintable 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdCreateMintableNFT(),
+		cli.CmdCreateBlindBoxContent(),
 		append([]string{class.Id, "mintable3", updateMintable3File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
@@ -508,10 +508,10 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	recreateMintable3Event := parseEventCreateMintableNFT(res)
-	require.Equal(t, types.EventCreateMintableNFT{
+	recreateMintable3Event := parseEventCreateBlindBoxContent(res)
+	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		MintableNftId:           "mintable3",
+		ContentId:               "mintable3",
 		ClassParentIscnIdPrefix: "",
 		ClassParentAccount:      userAddress.String(),
 	}, recreateMintable3Event)
@@ -519,15 +519,15 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 	// Query created mintables
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
-		cli.CmdMintableNFTs(),
+		cli.CmdBlindBoxContents(),
 		append([]string{class.Id}, queryArgs...),
 	)
 	require.NoError(t, err)
 
 	// Unmarshal and check updated mintables
-	updatedMintablesRes := types.QueryMintableNFTsResponse{}
+	updatedMintablesRes := types.QueryBlindBoxContentsResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedMintablesRes)
-	require.Equal(t, []types.MintableNFT{
+	require.Equal(t, []types.BlindBoxContent{
 		{
 			ClassId: class.Id,
 			Id:      "mintable1",
@@ -555,7 +555,7 @@ func TestEndToEndAccountBlindBox(t *testing.T) {
 				Metadata: types.JsonInput(`{"name":"Smart Chima #2","description":"Chima is very smart","image":"ipfs://QmPztx7RuugPHgP8yQPLSt6QhP5GZCxGqXf4KspNgffDRt","external_url":"ipfs://QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK","attributes":[{"trait_type":"Cat","value":"Chima"}]}`),
 			},
 		},
-	}, updatedMintablesRes.MintableNfts)
+	}, updatedMintablesRes.BlindBoxContents)
 
 	// Mint blind nft
 	// Note non-owner mint covered by unit test, FIXME improve by seeding another

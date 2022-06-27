@@ -33,9 +33,9 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdShowClassesByAccount())
 	cmd.AddCommand(CmdAccountByClass())
 
-	cmd.AddCommand(CmdListMintableNFT())
-	cmd.AddCommand(CmdShowMintableNFT())
-	cmd.AddCommand(CmdMintableNFTs())
+	cmd.AddCommand(CmdListBlindBoxContent())
+	cmd.AddCommand(CmdShowBlindBoxContent())
+	cmd.AddCommand(CmdBlindBoxContents())
 
 	cmd.AddCommand(CmdListOffer())
 	cmd.AddCommand(CmdShowOffer())

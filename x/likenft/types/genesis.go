@@ -14,7 +14,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		ClassesByIscnList:        []ClassesByISCN{},
 		ClassesByAccountList:     []ClassesByAccount{},
-		MintableNftList:          []MintableNFT{},
+		BlindBoxContentList:      []BlindBoxContent{},
 		ClassRevealQueue:         []ClassRevealQueueEntry{},
 		OfferList:                []Offer{},
 		ListingList:              []Listing{},
@@ -58,8 +58,8 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated index in mintableNFT
 	mintableNFTIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.MintableNftList {
-		index := string(MintableNFTKey(elem.ClassId, elem.Id))
+	for _, elem := range gs.BlindBoxContentList {
+		index := string(BlindBoxContentKey(elem.ClassId, elem.Id))
 		if _, ok := mintableNFTIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for mintableNFT")
 		}

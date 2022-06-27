@@ -8,7 +8,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreateMintableNFT) (*types.MsgCreateMintableNFTResponse, error) {
+func (k msgServer) CreateBlindBoxContent(goCtx context.Context, msg *types.MsgCreateBlindBoxContent) (*types.MsgCreateBlindBoxContentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	class, classData, err := k.GetClass(ctx, msg.ClassId)
@@ -19,16 +19,16 @@ func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreate
 	if err != nil {
 		return nil, err
 	}
-	if err := k.validateReqToMutateMintableNFT(ctx, msg.Creator, class, classData, parent, true); err != nil {
+	if err := k.validateReqToMutateBlindBoxContent(ctx, msg.Creator, class, classData, parent, true); err != nil {
 		return nil, err
 	}
 
 	// check id not already exist
-	if _, exists := k.GetMintableNFT(ctx, msg.ClassId, msg.Id); exists {
+	if _, exists := k.GetBlindBoxContent(ctx, msg.ClassId, msg.Id); exists {
 		return nil, types.ErrMintableNftAlreadyExists
 	}
 
-	mintableNFT := types.MintableNFT{
+	mintableNFT := types.BlindBoxContent{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
@@ -45,17 +45,17 @@ func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreate
 	}
 
 	// set record
-	k.SetMintableNFT(ctx, mintableNFT)
+	k.SetBlindBoxContent(ctx, mintableNFT)
 
 	// Emit event
-	ctx.EventManager().EmitTypedEvent(&types.EventCreateMintableNFT{
+	ctx.EventManager().EmitTypedEvent(&types.EventCreateBlindBoxContent{
 		ClassId:                 msg.ClassId,
-		MintableNftId:           msg.Id,
+		ContentId:               msg.Id,
 		ClassParentIscnIdPrefix: parent.IscnIdPrefix,
 		ClassParentAccount:      parent.Account,
 	})
 
-	return &types.MsgCreateMintableNFTResponse{
-		MintableNft: mintableNFT,
+	return &types.MsgCreateBlindBoxContentResponse{
+		BlindBoxContent: mintableNFT,
 	}, nil
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/utils"
 )
 
-func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
+func (k Keeper) RevealBlindBoxContents(ctx sdk.Context, classId string) error {
 	// check if class is using blindbox
 	class, classData, err := k.GetClass(ctx, classId)
 	if err != nil {
@@ -53,7 +53,7 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 
 	// get list of mintable ids and shuffle
 	var mintableIDs []string
-	k.IterateMintableNFTs(ctx, classId, func(val types.MintableNFT) {
+	k.IterateBlindBoxContents(ctx, classId, func(val types.BlindBoxContent) {
 		mintableIDs = append(mintableIDs, val.Id)
 	})
 
@@ -71,7 +71,7 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	}
 	for i, token := range tokens {
 		// get assigned data
-		assigned, found := k.GetMintableNFT(ctx, classId, mintableIDs[i])
+		assigned, found := k.GetBlindBoxContent(ctx, classId, mintableIDs[i])
 		if !found {
 			return types.ErrMintableNftNotFound
 		}
@@ -106,7 +106,7 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	}
 
 	// Delete all mintables
-	k.RemoveMintableNFTs(ctx, classId)
+	k.RemoveBlindBoxContents(ctx, classId)
 
 	return nil
 }

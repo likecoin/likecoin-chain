@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListMintableNFT() *cobra.Command {
+func CmdListBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mintable-nft-index",
 		Short: "Enumerate all Mintable NFT Contents under all classes",
@@ -23,11 +23,11 @@ func CmdListMintableNFT() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryMintableNFTIndexRequest{
+			params := &types.QueryBlindBoxContentIndexRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.MintableNFTIndex(context.Background(), params)
+			res, err := queryClient.BlindBoxContentIndex(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,7 +42,7 @@ func CmdListMintableNFT() *cobra.Command {
 	return cmd
 }
 
-func CmdShowMintableNFT() *cobra.Command {
+func CmdShowBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mintable-nft [class-id] [mintable-id]",
 		Short: "Query a specific Mintable NFT Content",
@@ -55,12 +55,12 @@ func CmdShowMintableNFT() *cobra.Command {
 			argClassId := args[0]
 			argId := args[1]
 
-			params := &types.QueryMintableNFTRequest{
+			params := &types.QueryBlindBoxContentRequest{
 				ClassId: argClassId,
 				Id:      argId,
 			}
 
-			res, err := queryClient.MintableNFT(context.Background(), params)
+			res, err := queryClient.BlindBoxContent(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -74,7 +74,7 @@ func CmdShowMintableNFT() *cobra.Command {
 	return cmd
 }
 
-func CmdMintableNFTs() *cobra.Command {
+func CmdBlindBoxContents() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mintable-nfts [class-id]",
 		Short: "Query Mintable NFT Contents under a class",
@@ -89,7 +89,7 @@ func CmdMintableNFTs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryMintableNFTsRequest{
+			params := &types.QueryBlindBoxContentsRequest{
 
 				ClassId: reqClassId,
 			}
@@ -100,7 +100,7 @@ func CmdMintableNFTs() *cobra.Command {
 			}
 			params.Pagination = pageReq
 
-			res, err := queryClient.MintableNFTs(cmd.Context(), params)
+			res, err := queryClient.BlindBoxContents(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

@@ -12,7 +12,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdUpdateMintableNFT() *cobra.Command {
+func CmdUpdateBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-mintable-nft [class-id] [id] [json-file-input]",
 		Short: "Update mintable nft content",
@@ -36,7 +36,7 @@ func CmdUpdateMintableNFT() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateMintableNFT(
+			msg := types.NewMsgUpdateBlindBoxContent(
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,

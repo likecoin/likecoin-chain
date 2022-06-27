@@ -108,7 +108,7 @@ func TestRevealFeature(t *testing.T) {
 
 	// seed mintables
 
-	app.LikeNftKeeper.SetMintableNFT(ctx, types.MintableNFT{
+	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      "mintable1",
 		Input: types.NFTInput{
@@ -117,7 +117,7 @@ func TestRevealFeature(t *testing.T) {
 			Metadata: types.JsonInput(`1`),
 		},
 	})
-	app.LikeNftKeeper.SetMintableNFT(ctx, types.MintableNFT{
+	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      "mintable2",
 		Input: types.NFTInput{
@@ -126,7 +126,7 @@ func TestRevealFeature(t *testing.T) {
 			Metadata: types.JsonInput(`2`),
 		},
 	})
-	app.LikeNftKeeper.SetMintableNFT(ctx, types.MintableNFT{
+	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      "mintable3",
 		Input: types.NFTInput{
@@ -135,7 +135,7 @@ func TestRevealFeature(t *testing.T) {
 			Metadata: types.JsonInput(`3`),
 		},
 	})
-	app.LikeNftKeeper.SetMintableNFT(ctx, types.MintableNFT{
+	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      "mintable4",
 		Input: types.NFTInput{
@@ -144,7 +144,7 @@ func TestRevealFeature(t *testing.T) {
 			Metadata: types.JsonInput(`4`),
 		},
 	})
-	app.LikeNftKeeper.SetMintableNFT(ctx, types.MintableNFT{
+	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
 		Id:      "mintable5",
 		Input: types.NFTInput{
@@ -227,7 +227,7 @@ func TestRevealFeature(t *testing.T) {
 	require.NotEqual(t, []types.JsonInput{types.JsonInput(`1`), types.JsonInput(`2`), types.JsonInput(`3`), types.JsonInput(`4`), types.JsonInput(`5`)}, metadataSeq)
 
 	// check mintables removed
-	mintables := app.LikeNftKeeper.GetMintableNFTs(ctx, classId)
+	mintables := app.LikeNftKeeper.GetBlindBoxContents(ctx, classId)
 	require.Empty(t, mintables)
 }
 
@@ -304,7 +304,7 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	for i := 0; i < mintableCount; i++ {
-		keeper.SetMintableNFT(ctx, types.MintableNFT{
+		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
 			Id:      fmt.Sprintf("mintable%d", i),
 			Input: types.NFTInput{
@@ -330,7 +330,7 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 	nftKeeper.EXPECT().Update(ctx, gomock.Any()).Return(nil).Times(totalSupply + mintToOwnerCount)
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.NoError(t, err)
 
 	ctrl.Finish()
@@ -405,7 +405,7 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(ctx, classId).Return(uint64(totalSupply))
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	for i := 0; i < mintableCount; i++ {
-		keeper.SetMintableNFT(ctx, types.MintableNFT{
+		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
 			Id:      fmt.Sprintf("mintable%d", i),
 			Input: types.NFTInput{
@@ -431,7 +431,7 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 	nftKeeper.EXPECT().Update(ctx, gomock.Any()).Return(nil).Times(totalSupply)
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.NoError(t, err)
 
 	ctrl.Finish()
@@ -462,7 +462,7 @@ func TestRevealClassNotFound(t *testing.T) {
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{}, false)
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrNftClassNotFound.Error())
 
@@ -527,7 +527,7 @@ func TestRevealNotBlindBox(t *testing.T) {
 	})
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrClassIsNotBlindBox.Error())
 
@@ -607,7 +607,7 @@ func TestRevealFailedToMint(t *testing.T) {
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(fmt.Errorf("Failed to mint"))
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrFailedToMintNFT.Error())
 
@@ -685,7 +685,7 @@ func TestRevealMintableMismatch(t *testing.T) {
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	for i := 0; i < mintableCount; i++ {
-		keeper.SetMintableNFT(ctx, types.MintableNFT{
+		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
 			Id:      fmt.Sprintf("mintable%d", i),
 			Input: types.NFTInput{
@@ -696,7 +696,7 @@ func TestRevealMintableMismatch(t *testing.T) {
 	nftKeeper.EXPECT().GetNFTsOfClass(ctx, classId).Return([]nft.NFT{})
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "length mismatch")
 
@@ -774,7 +774,7 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	for i := 0; i < mintableCount; i++ {
-		keeper.SetMintableNFT(ctx, types.MintableNFT{
+		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
 			Id:      fmt.Sprintf("mintable%d", i),
 			Input: types.NFTInput{
@@ -800,7 +800,7 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 	nftKeeper.EXPECT().Update(ctx, gomock.Any()).Return(fmt.Errorf("Failed to update"))
 
 	// call
-	err = keeper.RevealMintableNFTs(ctx, classId)
+	err = keeper.RevealBlindBoxContents(ctx, classId)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.ErrFailedToUpdateNFT.Error())
 

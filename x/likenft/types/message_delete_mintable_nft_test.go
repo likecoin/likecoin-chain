@@ -8,21 +8,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgDeleteMintableNFT_ValidateBasic(t *testing.T) {
+func TestMsgDeleteBlindBoxContent_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgDeleteMintableNFT
+		msg  MsgDeleteBlindBoxContent
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgDeleteMintableNFT{
+			msg: MsgDeleteBlindBoxContent{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgDeleteMintableNFT{
+			msg: MsgDeleteBlindBoxContent{
 				Creator: sample.AccAddress(),
 			},
 		},

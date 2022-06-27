@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// MintableNFTKeyPrefix is the prefix to retrieve all MintableNFT
-	MintableNFTKeyPrefix = "MintableNFT/value/"
+	// BlindBoxContentKeyPrefix is the prefix to retrieve all BlindBoxContent
+	BlindBoxContentKeyPrefix = "BlindBoxContent/value/"
 )
 
-// MintableNFTsKey gets the first part of the MintableNFT key based on the classID
-func MintableNFTsKey(
+// BlindBoxContentsKey gets the first part of the BlindBoxContent key based on the classID
+func BlindBoxContentsKey(
 	classId string,
 ) []byte {
 	var key []byte
@@ -22,12 +22,12 @@ func MintableNFTsKey(
 	return key
 }
 
-// MintableNFTKey returns the store key to retrieve a MintableNFT from the index fields
-func MintableNFTKey(
+// BlindBoxContentKey returns the store key to retrieve a BlindBoxContent from the index fields
+func BlindBoxContentKey(
 	classId string,
 	id string,
 ) []byte {
-	key := MintableNFTsKey(classId)
+	key := BlindBoxContentsKey(classId)
 
 	idBytes := []byte(id)
 	key = append(key, idBytes...)
