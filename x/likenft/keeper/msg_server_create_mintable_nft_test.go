@@ -35,7 +35,7 @@ func TestCreateBlindBoxContentNormal(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -93,7 +93,7 @@ func TestCreateBlindBoxContentNormal(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -102,16 +102,16 @@ func TestCreateBlindBoxContentNormal(t *testing.T) {
 	require.Equal(t, &types.MsgCreateBlindBoxContentResponse{
 		BlindBoxContent: types.BlindBoxContent{
 			ClassId: classId,
-			Id:      mintableId,
+			Id:      contentId,
 			Input:   nftInput,
 		},
 	}, res)
 
-	created, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
+	created, found := keeper.GetBlindBoxContent(ctx, classId, contentId)
 	require.True(t, found)
 	require.Equal(t, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	}, created)
 
@@ -136,7 +136,7 @@ func TestCreateBlindBoxContentClassNotFound(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -150,7 +150,7 @@ func TestCreateBlindBoxContentClassNotFound(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -180,7 +180,7 @@ func TestCreateBlindBoxContentBadRelation(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -227,7 +227,7 @@ func TestCreateBlindBoxContentBadRelation(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -258,7 +258,7 @@ func TestCreateBlindBoxContentAlreadyMinted(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -311,7 +311,7 @@ func TestCreateBlindBoxContentAlreadyMinted(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -342,7 +342,7 @@ func TestCreateBlindBoxContentMaxSupplyReached(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -396,7 +396,7 @@ func TestCreateBlindBoxContentMaxSupplyReached(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -427,7 +427,7 @@ func TestCreateBlindBoxContentNotOwner(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -482,7 +482,7 @@ func TestCreateBlindBoxContentNotOwner(t *testing.T) {
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -513,7 +513,7 @@ func TestCreateBlindBoxContentAlreadyExist(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 	nftInput := types.NFTInput{
 		Uri:      "ipfs://123456",
 		UriHash:  "123456",
@@ -562,25 +562,25 @@ func TestCreateBlindBoxContentAlreadyExist(t *testing.T) {
 
 	nftKeeper.EXPECT().GetTotalSupply(gomock.Any(), classId).Return(uint64(0))
 
-	// called when seeding existing mintable
+	// called when seeding existing content
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil)
 
 	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Run
 	res, err := msgServer.CreateBlindBoxContent(goCtx, &types.MsgCreateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
 	// Check output
 	require.Error(t, err)
-	require.Contains(t, err.Error(), types.ErrMintableNftAlreadyExists.Error())
+	require.Contains(t, err.Error(), types.ErrBlindBoxContentAlreadyExists.Error())
 	require.Nil(t, res)
 
 	ctrl.Finish()

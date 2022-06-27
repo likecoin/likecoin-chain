@@ -34,7 +34,7 @@ func TestDeleteBlindBoxContentNormal(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -82,21 +82,21 @@ func TestDeleteBlindBoxContentNormal(t *testing.T) {
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).Times(2)
 	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Run
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	_, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
+	_, found := keeper.GetBlindBoxContent(ctx, classId, contentId)
 	require.False(t, found)
 
 	ctrl.Finish()
@@ -121,7 +121,7 @@ func TestDeleteBlindBoxContentClassNotFound(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{}, false).MinTimes(1)
@@ -134,7 +134,7 @@ func TestDeleteBlindBoxContentClassNotFound(t *testing.T) {
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
@@ -163,7 +163,7 @@ func TestDeleteBlindBoxContentBadRelation(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -205,7 +205,7 @@ func TestDeleteBlindBoxContentBadRelation(t *testing.T) {
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
@@ -235,7 +235,7 @@ func TestDeleteBlindBoxContentAlreadyMinted(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -283,7 +283,7 @@ func TestDeleteBlindBoxContentAlreadyMinted(t *testing.T) {
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
@@ -313,7 +313,7 @@ func TestDeleteBlindBoxContentNotOwner(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -363,7 +363,7 @@ func TestDeleteBlindBoxContentNotOwner(t *testing.T) {
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
@@ -393,7 +393,7 @@ func TestDeleteBlindBoxContentDoNotExist(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -441,12 +441,12 @@ func TestDeleteBlindBoxContentDoNotExist(t *testing.T) {
 	res, err := msgServer.DeleteBlindBoxContent(goCtx, &types.MsgDeleteBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Check output
 	require.Error(t, err)
-	require.Contains(t, err.Error(), types.ErrMintableNftNotFound.Error())
+	require.Contains(t, err.Error(), types.ErrBlindBoxContentNotFound.Error())
 	require.Nil(t, res)
 
 	ctrl.Finish()

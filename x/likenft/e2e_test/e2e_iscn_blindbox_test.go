@@ -163,49 +163,49 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 	err = updateClassFile.Close()
 	require.NoError(t, err)
 
-	createMintable1File, err := os.CreateTemp(tempDir, "create_mintable_1_*.json")
+	createContent1File, err := os.CreateTemp(tempDir, "create_content_1_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, createMintable1File)
-	_, err = createMintable1File.WriteString(`{
+	require.NotNil(t, createContent1File)
+	_, err = createContent1File.WriteString(`{
 	"uri": "https://example.com/1",
 	"uri_hash": "111111",
 	"metadata": {}
 }
 `)
 	require.NoError(t, err)
-	err = createMintable1File.Close()
+	err = createContent1File.Close()
 	require.NoError(t, err)
 
-	createMintable2File, err := os.CreateTemp(tempDir, "create_mintable_2_*.json")
+	createContent2File, err := os.CreateTemp(tempDir, "create_content_2_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, createMintable2File)
-	_, err = createMintable2File.WriteString(`{
+	require.NotNil(t, createContent2File)
+	_, err = createContent2File.WriteString(`{
 		"uri": "https://example.com/2",
 		"uri_hash": "222222",
 		"metadata": {}
 }
 `)
 	require.NoError(t, err)
-	err = createMintable2File.Close()
+	err = createContent2File.Close()
 	require.NoError(t, err)
 
-	createMintable3File, err := os.CreateTemp(tempDir, "create_mintable_3_*.json")
+	createContent3File, err := os.CreateTemp(tempDir, "create_content_3_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, createMintable3File)
-	_, err = createMintable3File.WriteString(`{
+	require.NotNil(t, createContent3File)
+	_, err = createContent3File.WriteString(`{
 		"uri": "https://example.com/3",
 		"uri_hash": "333333",
 		"metadata": {}
 }
 `)
 	require.NoError(t, err)
-	err = createMintable3File.Close()
+	err = createContent3File.Close()
 	require.NoError(t, err)
 
-	updateMintable1File, err := os.CreateTemp(tempDir, "update_mintable_1_*.json")
+	updateContent1File, err := os.CreateTemp(tempDir, "update_content_1_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, updateMintable1File)
-	_, err = updateMintable1File.WriteString(`{
+	require.NotNil(t, updateContent1File)
+	_, err = updateContent1File.WriteString(`{
 	"uri": "ipfs://QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
 	"uri_hash": "QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
 	"metadata": {
@@ -223,13 +223,13 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 }	
 `)
 	require.NoError(t, err)
-	err = updateMintable1File.Close()
+	err = updateContent1File.Close()
 	require.NoError(t, err)
 
-	updateMintable2File, err := os.CreateTemp(tempDir, "update_mintable_2_*.json")
+	updateContent2File, err := os.CreateTemp(tempDir, "update_content_2_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, updateMintable2File)
-	_, err = updateMintable2File.WriteString(`{
+	require.NotNil(t, updateContent2File)
+	_, err = updateContent2File.WriteString(`{
 	"uri": "ipfs://QmZLVbWsLP9EJW5pnGVRNV2eMqrvQ3wBnBWWJVkqDrCZjy",
 	"uri_hash": "QmZLVbWsLP9EJW5pnGVRNV2eMqrvQ3wBnBWWJVkqDrCZjy",
 	"metadata": {
@@ -247,13 +247,13 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 }
 `)
 	require.NoError(t, err)
-	err = updateMintable2File.Close()
+	err = updateContent2File.Close()
 	require.NoError(t, err)
 
-	updateMintable3File, err := os.CreateTemp(tempDir, "update_mintable_3_*.json")
+	updateContent3File, err := os.CreateTemp(tempDir, "update_content_3_*.json")
 	require.NoError(t, err)
-	require.NotNil(t, updateMintable3File)
-	_, err = updateMintable3File.WriteString(`{
+	require.NotNil(t, updateContent3File)
+	_, err = updateContent3File.WriteString(`{
 	"uri": "ipfs://QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK",
 	"uri_hash": "QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK",
 	"metadata": {
@@ -271,7 +271,7 @@ func TestEndToEndIscnBlindBox(t *testing.T) {
 }	
 `)
 	require.NoError(t, err)
-	err = updateMintable3File.Close()
+	err = updateContent3File.Close()
 	require.NoError(t, err)
 
 	// Create iscn
@@ -425,64 +425,64 @@ FindIscnIdPrefix:
 		IscnVersionAtMint: 1,
 	}, classData.Parent)
 
-	// Create mintable 1
+	// Create content 1
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateBlindBoxContent(),
-		append([]string{class.Id, "mintable1", createMintable1File.Name()}, txArgs...),
+		append([]string{class.Id, "content1", createContent1File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable1Event := parseEventCreateBlindBoxContent(res)
+	createContent1Event := parseEventCreateBlindBoxContent(res)
 	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable1",
+		ContentId:               "content1",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, createMintable1Event)
+	}, createContent1Event)
 
-	// Create mintable 2
+	// Create content 2
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateBlindBoxContent(),
-		append([]string{class.Id, "mintable2", createMintable2File.Name()}, txArgs...),
+		append([]string{class.Id, "content2", createContent2File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable2Event := parseEventCreateBlindBoxContent(res)
+	createContent2Event := parseEventCreateBlindBoxContent(res)
 	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable2",
+		ContentId:               "content2",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, createMintable2Event)
+	}, createContent2Event)
 
-	// Create mintable 3
+	// Create content 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateBlindBoxContent(),
-		append([]string{class.Id, "mintable3", createMintable3File.Name()}, txArgs...),
+		append([]string{class.Id, "content3", createContent3File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	createMintable3Event := parseEventCreateBlindBoxContent(res)
+	createContent3Event := parseEventCreateBlindBoxContent(res)
 	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable3",
+		ContentId:               "content3",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, createMintable3Event)
+	}, createContent3Event)
 
-	// Query created mintables
+	// Query created contents
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdBlindBoxContents(),
@@ -490,13 +490,13 @@ FindIscnIdPrefix:
 	)
 	require.NoError(t, err)
 
-	// Unmarshal and check created mintables
-	createdMintablesRes := types.QueryBlindBoxContentsResponse{}
-	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &createdMintablesRes)
+	// Unmarshal and check created contents
+	createdContentsRes := types.QueryBlindBoxContentsResponse{}
+	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &createdContentsRes)
 	require.Equal(t, []types.BlindBoxContent{
 		{
 			ClassId: class.Id,
-			Id:      "mintable1",
+			Id:      "content1",
 			Input: types.NFTInput{
 				Uri:      "https://example.com/1",
 				UriHash:  "111111",
@@ -505,7 +505,7 @@ FindIscnIdPrefix:
 		},
 		{
 			ClassId: class.Id,
-			Id:      "mintable2",
+			Id:      "content2",
 			Input: types.NFTInput{
 				Uri:      "https://example.com/2",
 				UriHash:  "222222",
@@ -514,92 +514,92 @@ FindIscnIdPrefix:
 		},
 		{
 			ClassId: class.Id,
-			Id:      "mintable3",
+			Id:      "content3",
 			Input: types.NFTInput{
 				Uri:      "https://example.com/3",
 				UriHash:  "333333",
 				Metadata: types.JsonInput(`{}`),
 			},
 		},
-	}, createdMintablesRes.BlindBoxContents)
+	}, createdContentsRes.BlindBoxContents)
 
-	// Update mintable 1
+	// Update content 1
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdUpdateBlindBoxContent(),
-		append([]string{class.Id, "mintable1", updateMintable1File.Name()}, txArgs...),
+		append([]string{class.Id, "content1", updateContent1File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	updateMintable1Event := parseEventUpdateBlindBoxContent(res)
+	updateContent1Event := parseEventUpdateBlindBoxContent(res)
 	require.Equal(t, types.EventUpdateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable1",
+		ContentId:               "content1",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, updateMintable1Event)
+	}, updateContent1Event)
 
-	// Update mintable 2
+	// Update content 2
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdUpdateBlindBoxContent(),
-		append([]string{class.Id, "mintable2", updateMintable2File.Name()}, txArgs...),
+		append([]string{class.Id, "content2", updateContent2File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	updateMintable2Event := parseEventUpdateBlindBoxContent(res)
+	updateContent2Event := parseEventUpdateBlindBoxContent(res)
 	require.Equal(t, types.EventUpdateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable2",
+		ContentId:               "content2",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, updateMintable2Event)
+	}, updateContent2Event)
 
-	// Delete mintable 3
+	// Delete content 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdDeleteBlindBoxContent(),
-		append([]string{class.Id, "mintable3"}, txArgs...),
+		append([]string{class.Id, "content3"}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	deleteMintable3Event := parseEventDeleteBlindBoxContent(res)
+	deleteContent3Event := parseEventDeleteBlindBoxContent(res)
 	require.Equal(t, types.EventDeleteBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable3",
+		ContentId:               "content3",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, deleteMintable3Event)
+	}, deleteContent3Event)
 
-	// Recreate mintable 3
+	// Recreate content 3
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateBlindBoxContent(),
-		append([]string{class.Id, "mintable3", updateMintable3File.Name()}, txArgs...),
+		append([]string{class.Id, "content3", updateContent3File.Name()}, txArgs...),
 	)
 	require.NoError(t, err)
 
 	// Validate event emitted
 	res = sdk.TxResponse{}
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &res)
-	recreateMintable3Event := parseEventCreateBlindBoxContent(res)
+	recreateContent3Event := parseEventCreateBlindBoxContent(res)
 	require.Equal(t, types.EventCreateBlindBoxContent{
 		ClassId:                 class.Id,
-		ContentId:               "mintable3",
+		ContentId:               "content3",
 		ClassParentIscnIdPrefix: iscnIdPrefix,
 		ClassParentAccount:      "",
-	}, recreateMintable3Event)
+	}, recreateContent3Event)
 
-	// Query created mintables
+	// Query created contents
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdBlindBoxContents(),
@@ -607,13 +607,13 @@ FindIscnIdPrefix:
 	)
 	require.NoError(t, err)
 
-	// Unmarshal and check updated mintables
-	updatedMintablesRes := types.QueryBlindBoxContentsResponse{}
-	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedMintablesRes)
+	// Unmarshal and check updated contents
+	updatedContentsRes := types.QueryBlindBoxContentsResponse{}
+	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &updatedContentsRes)
 	require.Equal(t, []types.BlindBoxContent{
 		{
 			ClassId: class.Id,
-			Id:      "mintable1",
+			Id:      "content1",
 			Input: types.NFTInput{
 				Uri:      "ipfs://QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
 				UriHash:  "QmYXq11iygTghZeyxvTZqpDoTomaX7Vd6Cbv1wuyNxq3Fw",
@@ -622,7 +622,7 @@ FindIscnIdPrefix:
 		},
 		{
 			ClassId: class.Id,
-			Id:      "mintable2",
+			Id:      "content2",
 			Input: types.NFTInput{
 				Uri:      "ipfs://QmZLVbWsLP9EJW5pnGVRNV2eMqrvQ3wBnBWWJVkqDrCZjy",
 				UriHash:  "QmZLVbWsLP9EJW5pnGVRNV2eMqrvQ3wBnBWWJVkqDrCZjy",
@@ -631,14 +631,14 @@ FindIscnIdPrefix:
 		},
 		{
 			ClassId: class.Id,
-			Id:      "mintable3",
+			Id:      "content3",
 			Input: types.NFTInput{
 				Uri:      "ipfs://QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK",
 				UriHash:  "QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK",
 				Metadata: types.JsonInput(`{"name":"Smart Chima #2","description":"Chima is very smart","image":"ipfs://QmPztx7RuugPHgP8yQPLSt6QhP5GZCxGqXf4KspNgffDRt","external_url":"ipfs://QmRg1QfbyfVsxvstH85z3FLzBYXEPdmRBYqg1eZwjKxMtK","attributes":[{"trait_type":"Cat","value":"Chima"}]}`),
 			},
 		},
-	}, updatedMintablesRes.BlindBoxContents)
+	}, updatedContentsRes.BlindBoxContents)
 
 	// Mint blind nft
 	// Note non-owner mint covered by unit test, FIXME improve by seeding another

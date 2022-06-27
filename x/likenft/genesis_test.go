@@ -110,7 +110,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx, ctrl := likenfttestutil.LikenftKeeperForMintableTest(t)
+	k, ctx, ctrl := likenfttestutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	likenft.InitGenesis(ctx, *k, genesisState)

@@ -19,7 +19,7 @@ import (
 var _ = strconv.IntSize
 
 func TestBlindBoxContentQuerySingle(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
@@ -75,7 +75,7 @@ func TestBlindBoxContentQuerySingle(t *testing.T) {
 }
 
 func TestBlindBoxContentQueryByClass(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)
@@ -142,7 +142,7 @@ func TestBlindBoxContentQueryByClass(t *testing.T) {
 }
 
 func TestBlindBoxContentQueryPaginated(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	wctx := sdk.WrapSDKContext(ctx)

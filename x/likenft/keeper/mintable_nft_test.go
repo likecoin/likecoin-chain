@@ -31,7 +31,7 @@ func createNBlindBoxContent(keeper *keeper.Keeper, ctx sdk.Context, nClass int, 
 }
 
 func TestBlindBoxContentGet(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	items := createNBlindBoxContent(keeper, ctx, 3, 3)
@@ -48,7 +48,7 @@ func TestBlindBoxContentGet(t *testing.T) {
 	}
 }
 func TestBlindBoxContentRemove(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	items := createNBlindBoxContent(keeper, ctx, 3, 3)
@@ -66,7 +66,7 @@ func TestBlindBoxContentRemove(t *testing.T) {
 }
 
 func TestBlindBoxContentRemoveMultiple(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	items := createNBlindBoxContent(keeper, ctx, 1, 5)
@@ -80,7 +80,7 @@ func TestBlindBoxContentRemoveMultiple(t *testing.T) {
 }
 
 func TestBlindBoxContentGetByClass(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	items := createNBlindBoxContent(keeper, ctx, 3, 3)
@@ -99,7 +99,7 @@ func TestBlindBoxContentGetByClass(t *testing.T) {
 }
 
 func TestBlindBoxContentGetAll(t *testing.T) {
-	keeper, ctx, ctrl := testutil.LikenftKeeperForMintableTest(t)
+	keeper, ctx, ctrl := testutil.LikenftKeeperForBlindBoxTest(t)
 	defer ctrl.Finish()
 
 	items := createNBlindBoxContent(keeper, ctx, 3, 3)

@@ -2373,7 +2373,7 @@ func TestMintNFTUnlimitedSupply(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestMintBlindBoxNFTNoMintableSupply(t *testing.T) {
+func TestMintBlindBoxNFTNoContentSupply(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)

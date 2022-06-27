@@ -28,7 +28,7 @@ func networkWithBlindBoxContentObjects(t *testing.T, n int) (*network.Network, [
 	cfg := network.DefaultConfig()
 	// seed nft class
 	nftState := nft.GenesisState{}
-	// seed mintable
+	// seed blind box content
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
@@ -45,18 +45,18 @@ func networkWithBlindBoxContentObjects(t *testing.T, n int) (*network.Network, [
 			Data: classDataInAny,
 		}
 		nftState.Classes = append(nftState.Classes, &class)
-		// seed mintable
-		mintableNFT := types.BlindBoxContent{
+		// seed blind box content
+		blindBoxContent := types.BlindBoxContent{
 			ClassId: strconv.Itoa(i),
 			Id:      strconv.Itoa(i),
 		}
-		state.BlindBoxContentList = append(state.BlindBoxContentList, mintableNFT)
+		state.BlindBoxContentList = append(state.BlindBoxContentList, blindBoxContent)
 	}
 	// seed nft class
 	nftBuf, err := cfg.Codec.MarshalJSON(&nftState)
 	require.NoError(t, err)
 	cfg.GenesisState[nft.ModuleName] = nftBuf
-	// seed mintable
+	// seed blind box content
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf

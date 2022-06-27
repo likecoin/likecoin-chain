@@ -2051,7 +2051,7 @@ func TestUpdateClassNoMintPeriod(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestUpdateClassMaxSupplyNotLessThanMintableCount(t *testing.T) {
+func TestUpdateClassMaxSupplyNotLessThanContentCount(t *testing.T) {
 	// Setup
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)

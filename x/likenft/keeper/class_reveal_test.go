@@ -82,7 +82,7 @@ func TestRevealFeature(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: 0, // will be incremented on seed mintables
+			ContentCount: 0, // will be incremented on seed contents
 			ToBeRevealed: true,
 		},
 	}
@@ -106,11 +106,11 @@ func TestRevealFeature(t *testing.T) {
 		ClassId:    classId,
 	})
 
-	// seed mintables
+	// seed contents
 
 	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      "mintable1",
+		Id:      "content1",
 		Input: types.NFTInput{
 			Uri:      "https://testnft.com/1",
 			UriHash:  "1",
@@ -119,7 +119,7 @@ func TestRevealFeature(t *testing.T) {
 	})
 	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      "mintable2",
+		Id:      "content2",
 		Input: types.NFTInput{
 			Uri:      "https://testnft.com/2",
 			UriHash:  "2",
@@ -128,7 +128,7 @@ func TestRevealFeature(t *testing.T) {
 	})
 	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      "mintable3",
+		Id:      "content3",
 		Input: types.NFTInput{
 			Uri:      "https://testnft.com/3",
 			UriHash:  "3",
@@ -137,7 +137,7 @@ func TestRevealFeature(t *testing.T) {
 	})
 	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      "mintable4",
+		Id:      "content4",
 		Input: types.NFTInput{
 			Uri:      "https://testnft.com/4",
 			UriHash:  "4",
@@ -146,7 +146,7 @@ func TestRevealFeature(t *testing.T) {
 	})
 	app.LikeNftKeeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      "mintable5",
+		Id:      "content5",
 		Input: types.NFTInput{
 			Uri:      "https://testnft.com/5",
 			UriHash:  "5",
@@ -226,9 +226,9 @@ func TestRevealFeature(t *testing.T) {
 	require.NotEqual(t, []string{"1", "2", "3", "4", "5"}, uriHashSeq)
 	require.NotEqual(t, []types.JsonInput{types.JsonInput(`1`), types.JsonInput(`2`), types.JsonInput(`3`), types.JsonInput(`4`), types.JsonInput(`5`)}, metadataSeq)
 
-	// check mintables removed
-	mintables := app.LikeNftKeeper.GetBlindBoxContents(ctx, classId)
-	require.Empty(t, mintables)
+	// check contents removed
+	contents := app.LikeNftKeeper.GetBlindBoxContents(ctx, classId)
+	require.Empty(t, contents)
 }
 
 // Tests control flow & external call counts
@@ -256,9 +256,9 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
 	supply := 100
-	mintableCount := 99
+	contentCount := 99
 	totalSupply := 90
-	mintToOwnerCount := mintableCount - totalSupply
+	mintToOwnerCount := contentCount - totalSupply
 
 	classData := types.ClassData{
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
@@ -280,7 +280,7 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: uint64(mintableCount),
+			ContentCount: uint64(contentCount),
 			ToBeRevealed: true,
 		},
 	}
@@ -303,12 +303,12 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(ctx, classId).Return(uint64(totalSupply))
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	for i := 0; i < mintableCount; i++ {
+	for i := 0; i < contentCount; i++ {
 		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
-			Id:      fmt.Sprintf("mintable%d", i),
+			Id:      fmt.Sprintf("content%d", i),
 			Input: types.NFTInput{
-				Uri: fmt.Sprintf("mintable%d", i),
+				Uri: fmt.Sprintf("content%d", i),
 			},
 		})
 	}
@@ -359,7 +359,7 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
 	supply := 100
-	mintableCount := 99
+	contentCount := 99
 	totalSupply := 99
 
 	classData := types.ClassData{
@@ -382,7 +382,7 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: uint64(mintableCount),
+			ContentCount: uint64(contentCount),
 			ToBeRevealed: true,
 		},
 	}
@@ -404,12 +404,12 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 	})
 	nftKeeper.EXPECT().GetTotalSupply(ctx, classId).Return(uint64(totalSupply))
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	for i := 0; i < mintableCount; i++ {
+	for i := 0; i < contentCount; i++ {
 		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
-			Id:      fmt.Sprintf("mintable%d", i),
+			Id:      fmt.Sprintf("content%d", i),
 			Input: types.NFTInput{
-				Uri: fmt.Sprintf("mintable%d", i),
+				Uri: fmt.Sprintf("content%d", i),
 			},
 		})
 	}
@@ -560,7 +560,7 @@ func TestRevealFailedToMint(t *testing.T) {
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
 	supply := 100
-	mintableCount := 99
+	contentCount := 99
 	totalSupply := 90
 
 	classData := types.ClassData{
@@ -583,7 +583,7 @@ func TestRevealFailedToMint(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: uint64(mintableCount),
+			ContentCount: uint64(contentCount),
 			ToBeRevealed: true,
 		},
 	}
@@ -614,7 +614,7 @@ func TestRevealFailedToMint(t *testing.T) {
 	ctrl.Finish()
 }
 
-func TestRevealMintableMismatch(t *testing.T) {
+func TestRevealContentMismatch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
 	bankKeeper := testutil.NewMockBankKeeper(ctrl)
@@ -637,9 +637,9 @@ func TestRevealMintableMismatch(t *testing.T) {
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
 	supply := 100
-	mintableCount := 99
+	contentCount := 99
 	totalSupply := 90
-	mintToOwnerCount := mintableCount - totalSupply
+	mintToOwnerCount := contentCount - totalSupply
 
 	classData := types.ClassData{
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
@@ -661,7 +661,7 @@ func TestRevealMintableMismatch(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: uint64(mintableCount),
+			ContentCount: uint64(contentCount),
 			ToBeRevealed: true,
 		},
 	}
@@ -684,12 +684,12 @@ func TestRevealMintableMismatch(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(ctx, classId).Return(uint64(totalSupply))
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	for i := 0; i < mintableCount; i++ {
+	for i := 0; i < contentCount; i++ {
 		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
-			Id:      fmt.Sprintf("mintable%d", i),
+			Id:      fmt.Sprintf("content%d", i),
 			Input: types.NFTInput{
-				Uri: fmt.Sprintf("mintable%d", i),
+				Uri: fmt.Sprintf("content%d", i),
 			},
 		})
 	}
@@ -726,9 +726,9 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("cosmos", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
 	supply := 100
-	mintableCount := 99
+	contentCount := 99
 	totalSupply := 90
-	mintToOwnerCount := mintableCount - totalSupply
+	mintToOwnerCount := contentCount - totalSupply
 
 	classData := types.ClassData{
 		Metadata: types.JsonInput(`{"aaaa": "bbbb"}`),
@@ -750,7 +750,7 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 			},
 		},
 		BlindBoxState: types.BlindBoxState{
-			ContentCount: uint64(mintableCount),
+			ContentCount: uint64(contentCount),
 			ToBeRevealed: true,
 		},
 	}
@@ -773,12 +773,12 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 	nftKeeper.EXPECT().GetTotalSupply(ctx, classId).Return(uint64(totalSupply))
 	nftKeeper.EXPECT().Mint(gomock.Any(), gomock.Any(), ownerAddressBytes).Return(nil).Times(mintToOwnerCount)
 	nftKeeper.EXPECT().UpdateClass(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	for i := 0; i < mintableCount; i++ {
+	for i := 0; i < contentCount; i++ {
 		keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 			ClassId: classId,
-			Id:      fmt.Sprintf("mintable%d", i),
+			Id:      fmt.Sprintf("content%d", i),
 			Input: types.NFTInput{
-				Uri: fmt.Sprintf("mintable%d", i),
+				Uri: fmt.Sprintf("content%d", i),
 			},
 		})
 	}

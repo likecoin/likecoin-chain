@@ -35,7 +35,7 @@ func TestUpdateBlindBoxContentNormal(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -87,7 +87,7 @@ func TestUpdateBlindBoxContentNormal(t *testing.T) {
 
 	keeper.SetBlindBoxContent(ctx, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 	})
 
 	// Run
@@ -99,7 +99,7 @@ func TestUpdateBlindBoxContentNormal(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -107,11 +107,11 @@ func TestUpdateBlindBoxContentNormal(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	updated, found := keeper.GetBlindBoxContent(ctx, classId, mintableId)
+	updated, found := keeper.GetBlindBoxContent(ctx, classId, contentId)
 	require.True(t, found)
 	require.Equal(t, types.BlindBoxContent{
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	}, updated)
 
@@ -137,7 +137,7 @@ func TestUpdateBlindBoxContentClassNotFound(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{}, false).MinTimes(1)
@@ -155,7 +155,7 @@ func TestUpdateBlindBoxContentClassNotFound(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -185,7 +185,7 @@ func TestUpdateBlindBoxContentBadRelation(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -232,7 +232,7 @@ func TestUpdateBlindBoxContentBadRelation(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -263,7 +263,7 @@ func TestUpdateBlindBoxContentAlreadyMinted(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -316,7 +316,7 @@ func TestUpdateBlindBoxContentAlreadyMinted(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -347,7 +347,7 @@ func TestUpdateBlindBoxContentNotOwner(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -402,7 +402,7 @@ func TestUpdateBlindBoxContentNotOwner(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: notOwnerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
@@ -433,7 +433,7 @@ func TestUpdateBlindBoxContentDoNotExist(t *testing.T) {
 	ownerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
 	ownerAddress, _ := sdk.Bech32ifyAddressBytes("like", ownerAddressBytes)
 	classId := "likenft1aabbccddeeff"
-	mintableId := "mintable1"
+	contentId := "content1"
 
 	// Mock calls
 	classData := types.ClassData{
@@ -486,13 +486,13 @@ func TestUpdateBlindBoxContentDoNotExist(t *testing.T) {
 	res, err := msgServer.UpdateBlindBoxContent(goCtx, &types.MsgUpdateBlindBoxContent{
 		Creator: ownerAddress,
 		ClassId: classId,
-		Id:      mintableId,
+		Id:      contentId,
 		Input:   nftInput,
 	})
 
 	// Check output
 	require.Error(t, err)
-	require.Contains(t, err.Error(), types.ErrMintableNftNotFound.Error())
+	require.Contains(t, err.Error(), types.ErrBlindBoxContentNotFound.Error())
 	require.Nil(t, res)
 
 	ctrl.Finish()

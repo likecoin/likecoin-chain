@@ -243,7 +243,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			desc: "duplicated mintableNFT",
+			desc: "duplicated BlindBoxContent",
 			genState: &types.GenesisState{
 				BlindBoxContentList: []types.BlindBoxContent{
 					{
