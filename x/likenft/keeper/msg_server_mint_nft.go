@@ -20,9 +20,9 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
 	}
 
-	// Check mintable supply
+	// Check blind box content supply
 	if totalSupply >= classData.BlindBoxState.ContentCount {
-		return nil, types.ErrNftNoSupply.Wrapf("All mintable NFTs have been minted")
+		return nil, types.ErrNftNoSupply.Wrapf("All blind box content have been minted")
 	}
 
 	// Resolve the most applicable mint period

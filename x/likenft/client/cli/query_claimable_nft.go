@@ -11,8 +11,8 @@ import (
 
 func CmdListBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mintable-nft-index",
-		Short: "Enumerate all Mintable NFT Contents under all classes",
+		Use:   "blind-box-content-index",
+		Short: "Enumerate all Blind Box Contents under all classes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -44,8 +44,8 @@ func CmdListBlindBoxContent() *cobra.Command {
 
 func CmdShowBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mintable-nft [class-id] [mintable-id]",
-		Short: "Query a specific Mintable NFT Content",
+		Use:   "blind-box-content [class-id] [content-id]",
+		Short: "Query a specific Blind Box Content",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -76,8 +76,8 @@ func CmdShowBlindBoxContent() *cobra.Command {
 
 func CmdBlindBoxContents() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mintable-nfts [class-id]",
-		Short: "Query Mintable NFT Contents under a class",
+		Use:   "blind-box-contents [class-id]",
+		Short: "Query Blind Box Contents under a class",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqClassId := args[0]

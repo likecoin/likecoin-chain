@@ -55,15 +55,15 @@ func (gs GenesisState) Validate() error {
 		}
 		classesByAccountIndexMap[index] = struct{}{}
 	}
-	// Check for duplicated index in mintableNFT
-	mintableNFTIndexMap := make(map[string]struct{})
+	// Check for duplicated index in blind box content
+	contentIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.BlindBoxContentList {
 		index := string(BlindBoxContentKey(elem.ClassId, elem.Id))
-		if _, ok := mintableNFTIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for mintableNFT")
+		if _, ok := contentIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for content")
 		}
-		mintableNFTIndexMap[index] = struct{}{}
+		contentIndexMap[index] = struct{}{}
 	}
 
 	// Check for duplicated index in classRevealQueue

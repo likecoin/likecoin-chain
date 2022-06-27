@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgCreateBlindBoxContent = "create_mintable_nft"
+const TypeMsgCreateBlindBoxContent = "create_blind_box_content"
 
 var _ sdk.Msg = &MsgCreateBlindBoxContent{}
 

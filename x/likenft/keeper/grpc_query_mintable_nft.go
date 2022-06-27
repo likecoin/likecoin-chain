@@ -16,19 +16,19 @@ func (k Keeper) BlindBoxContentIndex(c context.Context, req *types.QueryBlindBox
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var mintableNFTs []types.BlindBoxContent
+	var blindBoxContents []types.BlindBoxContent
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	mintableNFTStore := prefix.NewStore(store, types.KeyPrefix(types.BlindBoxContentKeyPrefix))
+	blindBoxContentStore := prefix.NewStore(store, types.KeyPrefix(types.BlindBoxContentKeyPrefix))
 
-	pageRes, err := query.Paginate(mintableNFTStore, req.Pagination, func(key []byte, value []byte) error {
-		var mintableNFT types.BlindBoxContent
-		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
+	pageRes, err := query.Paginate(blindBoxContentStore, req.Pagination, func(key []byte, value []byte) error {
+		var blindBoxContent types.BlindBoxContent
+		if err := k.cdc.Unmarshal(value, &blindBoxContent); err != nil {
 			return err
 		}
 
-		mintableNFTs = append(mintableNFTs, mintableNFT)
+		blindBoxContents = append(blindBoxContents, blindBoxContent)
 		return nil
 	})
 
@@ -36,7 +36,7 @@ func (k Keeper) BlindBoxContentIndex(c context.Context, req *types.QueryBlindBox
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryBlindBoxContentIndexResponse{BlindBoxContents: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryBlindBoxContentIndexResponse{BlindBoxContents: blindBoxContents, Pagination: pageRes}, nil
 }
 
 func (k Keeper) BlindBoxContents(c context.Context, req *types.QueryBlindBoxContentsRequest) (*types.QueryBlindBoxContentsResponse, error) {
@@ -44,19 +44,19 @@ func (k Keeper) BlindBoxContents(c context.Context, req *types.QueryBlindBoxCont
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var mintableNFTs []types.BlindBoxContent
+	var blindBoxContents []types.BlindBoxContent
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	subStore := prefix.NewStore(store, append(types.KeyPrefix(types.BlindBoxContentKeyPrefix), types.BlindBoxContentsKey(req.ClassId)...))
 
 	pageRes, err := query.Paginate(subStore, req.Pagination, func(key []byte, value []byte) error {
-		var mintableNFT types.BlindBoxContent
-		if err := k.cdc.Unmarshal(value, &mintableNFT); err != nil {
+		var blindBoxContent types.BlindBoxContent
+		if err := k.cdc.Unmarshal(value, &blindBoxContent); err != nil {
 			return err
 		}
 
-		mintableNFTs = append(mintableNFTs, mintableNFT)
+		blindBoxContents = append(blindBoxContents, blindBoxContent)
 		return nil
 	})
 
@@ -64,7 +64,7 @@ func (k Keeper) BlindBoxContents(c context.Context, req *types.QueryBlindBoxCont
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryBlindBoxContentsResponse{BlindBoxContents: mintableNFTs, Pagination: pageRes}, nil
+	return &types.QueryBlindBoxContentsResponse{BlindBoxContents: blindBoxContents, Pagination: pageRes}, nil
 }
 
 func (k Keeper) BlindBoxContent(c context.Context, req *types.QueryBlindBoxContentRequest) (*types.QueryBlindBoxContentResponse, error) {

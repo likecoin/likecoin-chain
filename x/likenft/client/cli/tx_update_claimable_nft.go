@@ -14,8 +14,8 @@ var _ = strconv.Itoa(0)
 
 func CmdUpdateBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-mintable-nft [class-id] [id] [json-file-input]",
-		Short: "Update mintable nft content",
+		Use:   "update-blind-box-content [class-id] [content-id] [json-file-input]",
+		Short: "Update blind box content",
 		Example: `JSON file content:
 {
 	"uri": "",

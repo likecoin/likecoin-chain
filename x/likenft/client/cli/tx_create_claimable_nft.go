@@ -14,8 +14,8 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateBlindBoxContent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-mintable-nft [class-id] [id] [json-file-input]",
-		Short: "Create mintable nft content",
+		Use:   "create-blind-box-content [class-id] [content-id] [json-file-input]",
+		Short: "Create blind box content",
 		Example: `JSON file content:
 {
 	"uri": "",

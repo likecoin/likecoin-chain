@@ -24,7 +24,7 @@ func (k msgServer) DeleteBlindBoxContent(goCtx context.Context, msg *types.MsgDe
 
 	// check id already exists
 	if _, exists := k.GetBlindBoxContent(ctx, msg.ClassId, msg.Id); !exists {
-		return nil, types.ErrMintableNftNotFound
+		return nil, types.ErrBlindBoxContentNotFound
 	}
 
 	// remove record

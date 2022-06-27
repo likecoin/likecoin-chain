@@ -51,29 +51,29 @@ func (k Keeper) RevealBlindBoxContents(ctx sdk.Context, classId string) error {
 		}
 	}
 
-	// get list of mintable ids and shuffle
-	var mintableIDs []string
+	// get list of content ids and shuffle
+	var contentIDs []string
 	k.IterateBlindBoxContents(ctx, classId, func(val types.BlindBoxContent) {
-		mintableIDs = append(mintableIDs, val.Id)
+		contentIDs = append(contentIDs, val.Id)
 	})
 
 	// shuffle with last block hash as seed
 	rand.Seed(utils.RandSeedFromLastBlock(ctx))
-	rand.Shuffle(len(mintableIDs), func(i, j int) {
-		mintableIDs[i], mintableIDs[j] = mintableIDs[j], mintableIDs[i]
+	rand.Shuffle(len(contentIDs), func(i, j int) {
+		contentIDs[i], contentIDs[j] = contentIDs[j], contentIDs[i]
 	})
 
 	// reveal tokens
 	tokens := k.nftKeeper.GetNFTsOfClass(ctx, classId)
-	if len(tokens) != len(mintableIDs) {
+	if len(tokens) != len(contentIDs) {
 		// should not happen
-		return fmt.Errorf("mintable length %d and minted tokens %d length mismatch", len(mintableIDs), len(tokens))
+		return fmt.Errorf("contents length %d and minted tokens %d length mismatch", len(contentIDs), len(tokens))
 	}
 	for i, token := range tokens {
 		// get assigned data
-		assigned, found := k.GetBlindBoxContent(ctx, classId, mintableIDs[i])
+		assigned, found := k.GetBlindBoxContent(ctx, classId, contentIDs[i])
 		if !found {
-			return types.ErrMintableNftNotFound
+			return types.ErrBlindBoxContentNotFound
 		}
 		// write data to token
 		var nftData types.NFTData
@@ -105,7 +105,7 @@ func (k Keeper) RevealBlindBoxContents(ctx sdk.Context, classId string) error {
 		return types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 	}
 
-	// Delete all mintables
+	// Delete all blind box contents
 	k.RemoveBlindBoxContents(ctx, classId)
 
 	return nil

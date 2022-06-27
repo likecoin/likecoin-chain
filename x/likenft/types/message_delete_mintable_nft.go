@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgDeleteBlindBoxContent = "delete_mintable_nft"
+const TypeMsgDeleteBlindBoxContent = "delete_blind_box_content"
 
 var _ sdk.Msg = &MsgDeleteBlindBoxContent{}
 

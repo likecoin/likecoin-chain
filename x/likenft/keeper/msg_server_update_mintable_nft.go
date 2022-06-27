@@ -26,17 +26,17 @@ func (k msgServer) UpdateBlindBoxContent(goCtx context.Context, msg *types.MsgUp
 	// check id already exists
 	oldBlindBoxContent, exists := k.GetBlindBoxContent(ctx, msg.ClassId, msg.Id)
 	if !exists {
-		return nil, types.ErrMintableNftNotFound
+		return nil, types.ErrBlindBoxContentNotFound
 	}
 
-	mintableNFT := types.BlindBoxContent{
+	content := types.BlindBoxContent{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
 	}
 
 	// Deduct minting fee if new content is longer
-	lengthDiff := mintableNFT.Size() - oldBlindBoxContent.Size()
+	lengthDiff := content.Size() - oldBlindBoxContent.Size()
 	if lengthDiff > 0 {
 		userAddress, err := sdk.AccAddressFromBech32(msg.Creator)
 		if err != nil {
@@ -49,7 +49,7 @@ func (k msgServer) UpdateBlindBoxContent(goCtx context.Context, msg *types.MsgUp
 	}
 
 	// set record
-	k.SetBlindBoxContent(ctx, mintableNFT)
+	k.SetBlindBoxContent(ctx, content)
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateBlindBoxContent{
@@ -60,6 +60,6 @@ func (k msgServer) UpdateBlindBoxContent(goCtx context.Context, msg *types.MsgUp
 	})
 
 	return &types.MsgUpdateBlindBoxContentResponse{
-		BlindBoxContent: mintableNFT,
+		BlindBoxContent: content,
 	}, nil
 }

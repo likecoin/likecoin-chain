@@ -17,7 +17,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.ClassesByAccountList {
 		k.SetClassesByAccount(ctx, elem)
 	}
-	// Set all the mintableNFT
+	// Set all the blind box content
 	for _, elem := range genState.BlindBoxContentList {
 		k.SetBlindBoxContent(ctx, elem)
 	}

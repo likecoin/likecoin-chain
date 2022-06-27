@@ -8,24 +8,24 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-// SetBlindBoxContent set a specific mintableNFT in the store from its index
-func (k Keeper) SetBlindBoxContent(ctx sdk.Context, mintableNFT types.BlindBoxContent) {
+// SetBlindBoxContent set a specific blind box content in the store from its index
+func (k Keeper) SetBlindBoxContent(ctx sdk.Context, content types.BlindBoxContent) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlindBoxContentKeyPrefix))
-	b := k.cdc.MustMarshal(&mintableNFT)
+	b := k.cdc.MustMarshal(&content)
 	key := types.BlindBoxContentKey(
-		mintableNFT.ClassId,
-		mintableNFT.Id,
+		content.ClassId,
+		content.Id,
 	)
 	if !store.Has(key) {
-		// new mintable, increment count
-		if err := k.incMintableCount(ctx, mintableNFT.ClassId); err != nil {
-			panic(fmt.Errorf("Failed to increase mintable count: %s", err.Error()))
+		// new content, increment count
+		if err := k.incBlindBoxContentCount(ctx, content.ClassId); err != nil {
+			panic(fmt.Errorf("Failed to increase blind box content count: %s", err.Error()))
 		}
 	}
 	store.Set(key, b)
 }
 
-// GetBlindBoxContent returns a mintableNFT from its index
+// GetBlindBoxContent returns a blind box content from its index
 func (k Keeper) GetBlindBoxContent(
 	ctx sdk.Context,
 	classId string,
@@ -46,7 +46,7 @@ func (k Keeper) GetBlindBoxContent(
 	return val, true
 }
 
-// RemoveBlindBoxContent removes a mintableNFT from the store
+// RemoveBlindBoxContent removes a blind box content from the store
 func (k Keeper) RemoveBlindBoxContent(
 	ctx sdk.Context,
 	classId string,
@@ -59,15 +59,15 @@ func (k Keeper) RemoveBlindBoxContent(
 		id,
 	)
 	if store.Has(key) {
-		// remove existing mintable, decrement count
-		if err := k.decMintableCount(ctx, classId); err != nil {
-			panic(fmt.Errorf("Failed to decrease mintable count: %s", err.Error()))
+		// remove existing blind box content, decrement count
+		if err := k.decBlindBoxContentCount(ctx, classId); err != nil {
+			panic(fmt.Errorf("Failed to decrease blind box content count: %s", err.Error()))
 		}
 	}
 	store.Delete(key)
 }
 
-// RemoveBlindBoxContent removes a mintableNFT from the store
+// RemoveBlindBoxContent removes a blind box content from the store
 func (k Keeper) RemoveBlindBoxContents(
 	ctx sdk.Context,
 	classId string,
@@ -82,12 +82,12 @@ func (k Keeper) RemoveBlindBoxContents(
 	}
 
 	// reset count to 0
-	if err := k.setMintableCount(ctx, classId, 0); err != nil {
-		panic(fmt.Errorf("Failed to reset mintable count: %s", err.Error()))
+	if err := k.setBlindBoxContentCount(ctx, classId, 0); err != nil {
+		panic(fmt.Errorf("Failed to reset blind box content count: %s", err.Error()))
 	}
 }
 
-// GetBlindBoxContents returns all mintableNFT of a class
+// GetBlindBoxContents returns all blind box content of a class
 func (k Keeper) GetBlindBoxContents(ctx sdk.Context, classId string) (list []types.BlindBoxContent) {
 	k.IterateBlindBoxContents(ctx, classId, func(mn types.BlindBoxContent) {
 		list = append(list, mn)

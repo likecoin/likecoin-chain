@@ -12,7 +12,7 @@ import (
 	"github.com/likecoin/likechain/x/likenft/types"
 )
 
-func LikenftKeeperForMintableTest(t *testing.T) (*keeper.Keeper, sdk.Context, *gomock.Controller) {
+func LikenftKeeperForBlindBoxTest(t *testing.T) (*keeper.Keeper, sdk.Context, *gomock.Controller) {
 	ctrl := gomock.NewController(t)
 	accountKeeper := NewMockAccountKeeper(ctrl)
 	bankKeeper := NewMockBankKeeper(ctrl)

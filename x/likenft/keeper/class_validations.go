@@ -73,7 +73,7 @@ func (k msgServer) sanitizeBlindBoxConfig(blindBoxConfig *types.BlindBoxConfig) 
 	return blindBoxConfig, nil
 }
 
-func (k msgServer) sanitizeClassConfig(ctx sdk.Context, classConfig types.ClassConfig, mintableCount uint64) (*types.ClassConfig, error) {
+func (k msgServer) sanitizeClassConfig(ctx sdk.Context, classConfig types.ClassConfig, blindBoxContentCount uint64) (*types.ClassConfig, error) {
 	// Ensure mint periods and reveal time are set when blind box mode is enabled
 	cleanBlindBoxConfig, err := k.sanitizeBlindBoxConfig(classConfig.BlindBoxConfig)
 	if err != nil {
@@ -81,9 +81,9 @@ func (k msgServer) sanitizeClassConfig(ctx sdk.Context, classConfig types.ClassC
 	}
 	classConfig.BlindBoxConfig = cleanBlindBoxConfig
 
-	// Assert new max supply >= mintable count
-	if classConfig.IsBlindBox() && classConfig.MaxSupply < mintableCount {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("New max supply %d is less than mintable count %d", classConfig.MaxSupply, mintableCount)
+	// Assert new max supply >= blind box content count
+	if classConfig.IsBlindBox() && classConfig.MaxSupply < blindBoxContentCount {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("New max supply %d is less than blind box content count %d", classConfig.MaxSupply, blindBoxContentCount)
 	}
 
 	return &classConfig, nil

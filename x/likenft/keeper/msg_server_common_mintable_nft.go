@@ -14,7 +14,7 @@ func (k msgServer) validateReqToMutateBlindBoxContent(ctx sdk.Context, creator s
 		return types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
 
-	// Check max supply vs existing mintable count
+	// Check max supply vs existing blind box content count
 	if willCreate && classData.Config.MaxSupply > 0 && classData.BlindBoxState.ContentCount >= classData.Config.MaxSupply {
 		return types.ErrNftNoSupply.Wrapf("NFT Class has reached its maximum supply: %d", classData.Config.MaxSupply)
 	}

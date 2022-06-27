@@ -25,10 +25,10 @@ func (k msgServer) CreateBlindBoxContent(goCtx context.Context, msg *types.MsgCr
 
 	// check id not already exist
 	if _, exists := k.GetBlindBoxContent(ctx, msg.ClassId, msg.Id); exists {
-		return nil, types.ErrMintableNftAlreadyExists
+		return nil, types.ErrBlindBoxContentAlreadyExists
 	}
 
-	mintableNFT := types.BlindBoxContent{
+	content := types.BlindBoxContent{
 		ClassId: msg.ClassId,
 		Id:      msg.Id,
 		Input:   msg.Input,
@@ -39,13 +39,13 @@ func (k msgServer) CreateBlindBoxContent(goCtx context.Context, msg *types.MsgCr
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 	}
-	err = k.DeductFeePerByte(ctx, userAddress, mintableNFT.Size())
+	err = k.DeductFeePerByte(ctx, userAddress, content.Size())
 	if err != nil {
 		return nil, err
 	}
 
 	// set record
-	k.SetBlindBoxContent(ctx, mintableNFT)
+	k.SetBlindBoxContent(ctx, content)
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventCreateBlindBoxContent{
@@ -56,6 +56,6 @@ func (k msgServer) CreateBlindBoxContent(goCtx context.Context, msg *types.MsgCr
 	})
 
 	return &types.MsgCreateBlindBoxContentResponse{
-		BlindBoxContent: mintableNFT,
+		BlindBoxContent: content,
 	}, nil
 }
