@@ -15,10 +15,16 @@ func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, conf
 	}
 	// max allocable amount
 	allocatable := uint64(math.Floor(float64(txnAmount) / float64(10000) * float64(config.RateBasisPoints)))
+	if allocatable <= 0 {
+		return
+	}
 	// sum total weight
 	totalWeight := uint64(0)
 	for _, stakeholder := range config.Stakeholders {
 		totalWeight += stakeholder.Weight
+	}
+	if totalWeight <= 0 {
+		return
 	}
 	// split by weights
 	for _, stakeholder := range config.Stakeholders {
