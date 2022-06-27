@@ -13,13 +13,13 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Verify class exists
-	class, classData, err := k.GetClass(ctx, msg.ClassId)
+	oldClass, classData, err := k.GetClass(ctx, msg.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
 	// Verify no tokens minted under class
-	totalSupply := k.nftKeeper.GetTotalSupply(ctx, class.Id)
+	totalSupply := k.nftKeeper.GetTotalSupply(ctx, oldClass.Id)
 	if totalSupply > 0 {
 		return nil, types.ErrCannotUpdateClassWithMintedTokens.Wrap("Cannot update class with minted tokens")
 	}
@@ -33,7 +33,7 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 
 	// Check class parent relation is valid and current user is owner
 	// also refresh parent info (e.g. iscn latest version)
-	parent, err := k.ValidateAndRefreshClassParent(ctx, class.Id, classData.Parent)
+	parent, err := k.ValidateAndRefreshClassParent(ctx, oldClass.Id, classData.Parent)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +54,8 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	if err != nil {
 		return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
 	}
-	class = nft.Class{
-		Id:          class.Id,
+	newClass := nft.Class{
+		Id:          oldClass.Id,
 		Name:        msg.Input.Name,
 		Symbol:      msg.Input.Symbol,
 		Description: msg.Input.Description,
@@ -63,31 +63,39 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		UriHash:     msg.Input.UriHash,
 		Data:        classDataInAny,
 	}
-	if err := k.nftKeeper.UpdateClass(ctx, class); err != nil {
+	// Deduct minting fee if new content is longer
+	lengthDiff := newClass.Size() - oldClass.Size()
+	if lengthDiff > 0 {
+		err = k.DeductFeeForMintingNFT(ctx, parent.Owner, lengthDiff)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err := k.nftKeeper.UpdateClass(ctx, newClass); err != nil {
 		return nil, types.ErrFailedToUpdateClass.Wrapf("%s", err.Error())
 	}
 
 	// Dequeue original reveal schedule
 	if originalConfig.IsBlindBox() {
-		k.RemoveClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, class.Id)
+		k.RemoveClassRevealQueueEntry(ctx, originalConfig.BlindBoxConfig.RevealTime, newClass.Id)
 	}
 
 	// Enqueue new reveal schedule
 	if updatedConfig.IsBlindBox() {
 		k.SetClassRevealQueueEntry(ctx, types.ClassRevealQueueEntry{
-			ClassId:    class.Id,
+			ClassId:    newClass.Id,
 			RevealTime: updatedConfig.BlindBoxConfig.RevealTime,
 		})
 	}
 
 	// Emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventUpdateClass{
-		ClassId:            class.Id,
+		ClassId:            newClass.Id,
 		ParentIscnIdPrefix: classData.Parent.IscnIdPrefix,
 		ParentAccount:      classData.Parent.Account,
 	})
 
 	return &types.MsgUpdateClassResponse{
-		Class: class,
+		Class: newClass,
 	}, nil
 }

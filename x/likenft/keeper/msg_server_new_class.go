@@ -77,6 +77,11 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		UriHash:     msg.Input.UriHash,
 		Data:        classDataInAny,
 	}
+	// Deduct fee
+	err = k.DeductFeeForMintingNFT(ctx, parent.Owner, class.Size())
+	if err != nil {
+		return nil, err
+	}
 	err = k.nftKeeper.SaveClass(ctx, class)
 	if err != nil {
 		return nil, types.ErrFailedToSaveClass.Wrapf("%s", err.Error())
