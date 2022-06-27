@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
 	"github.com/likecoin/likechain/testutil/keeper"
 	iscntypes "github.com/likecoin/likechain/x/iscn/types"
@@ -69,6 +70,8 @@ func TestNewClassISCNNormal(t *testing.T) {
 			OwnerAddressBytes: ownerAddressBytes,
 			LatestVersion:     iscnLatestVersion,
 		})
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	nftKeeper.
 		EXPECT().
@@ -167,6 +170,9 @@ func TestNewClassAccountNormal(t *testing.T) {
 }`)
 	burnable := true
 	maxSupply := uint64(5)
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	nftKeeper.
 		EXPECT().
@@ -690,6 +696,9 @@ func TestNewClassNormalMintPeriodConfig(t *testing.T) {
 			OwnerAddressBytes: ownerAddressBytes,
 			LatestVersion:     iscnLatestVersion,
 		})
+
+	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(authtypes.NewBaseAccountWithAddress(ownerAddressBytes))
+	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, gomock.Any()).Return(nil)
 
 	nftKeeper.
 		EXPECT().
