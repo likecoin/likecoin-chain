@@ -14,8 +14,7 @@ message ClassData {
   ];
   ClassParent parent = 2 [(gogoproto.nullable) = false];
   ClassConfig config = 3 [(gogoproto.nullable) = false];
-  uint64 mintable_count = 4;
-  bool to_be_revealed = 5;
+  BlindBoxState blind_box_state = 4 [(gogoproto.nullable) = false];
 }
 
 enum ClassParentType {
@@ -52,4 +51,9 @@ message BlindBoxConfig {
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
+}
+
+message BlindBoxState {
+  uint64 content_count = 1;
+  bool to_be_revealed = 2;
 }

@@ -59,10 +59,12 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 
 	// Create Class
 	classData := types.ClassData{
-		Metadata:     msg.Input.Metadata,
-		Parent:       parent.ClassParent,
-		Config:       msg.Input.Config,
-		ToBeRevealed: msg.Input.Config.IsBlindBox(),
+		Metadata: msg.Input.Metadata,
+		Parent:   parent.ClassParent,
+		Config:   msg.Input.Config,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: msg.Input.Config.IsBlindBox(),
+		},
 	}
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {

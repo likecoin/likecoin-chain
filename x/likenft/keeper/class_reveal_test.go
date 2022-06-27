@@ -81,8 +81,10 @@ func TestRevealFeature(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		MintableCount: 0, // will be incremented on seed mintables
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: 0, // will be incremented on seed mintables
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	require.NoError(t, err)
@@ -277,8 +279,10 @@ func TestRevealNormalMintToOwner(t *testing.T) {
 				},
 			},
 		},
-		MintableCount: uint64(mintableCount),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(mintableCount),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{
@@ -377,8 +381,10 @@ func TestRevealNormalNoMintToOwner(t *testing.T) {
 				},
 			},
 		},
-		MintableCount: uint64(mintableCount),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(mintableCount),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{
@@ -498,8 +504,10 @@ func TestRevealNotBlindBox(t *testing.T) {
 			MaxSupply:      uint64(supply),
 			BlindBoxConfig: nil,
 		},
-		MintableCount: uint64(0),
-		ToBeRevealed:  false,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(0),
+			ToBeRevealed: false,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{
@@ -574,8 +582,10 @@ func TestRevealFailedToMint(t *testing.T) {
 				},
 			},
 		},
-		MintableCount: uint64(mintableCount),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(mintableCount),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{
@@ -650,8 +660,10 @@ func TestRevealMintableMismatch(t *testing.T) {
 				},
 			},
 		},
-		MintableCount: uint64(mintableCount),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(mintableCount),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{
@@ -737,8 +749,10 @@ func TestRevealFailToUpdateToken(t *testing.T) {
 				},
 			},
 		},
-		MintableCount: uint64(mintableCount),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(mintableCount),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	class := nft.Class{

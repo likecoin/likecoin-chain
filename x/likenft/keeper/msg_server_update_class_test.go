@@ -2102,7 +2102,9 @@ func TestUpdateClassMaxSupplyNotLessThanMintableCount(t *testing.T) {
 			Burnable:  false,
 			MaxSupply: uint64(500),
 		},
-		MintableCount: uint64(500),
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(500),
+		},
 	}
 	oldClassDataInAny, _ := cdctypes.NewAnyWithValue(&oldClassData)
 	nftKeeper.

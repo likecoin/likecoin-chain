@@ -16,12 +16,12 @@ func (k msgServer) mintBlindBoxNFT(ctx sdk.Context, classId string, classData *t
 	tokenId := fmt.Sprintf("nft%d", totalSupply+1)
 
 	// Check if the class has already been revealed or not
-	if !classData.ToBeRevealed {
+	if !classData.BlindBoxState.ToBeRevealed {
 		return nil, types.ErrFailedToMintNFT.Wrapf(fmt.Sprintf("The class %s has already been revealed", classId))
 	}
 
 	// Check mintable supply
-	if totalSupply >= classData.MintableCount {
+	if totalSupply >= classData.BlindBoxState.ContentCount {
 		return nil, types.ErrNftNoSupply.Wrapf("All mintable NFTs have been minted")
 	}
 

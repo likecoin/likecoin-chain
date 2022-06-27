@@ -58,7 +58,9 @@ func TestUpdateMintableNFTNormal(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -206,7 +208,9 @@ func TestUpdateMintableNFTBadRelation(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -282,7 +286,9 @@ func TestUpdateMintableNFTAlreadyMinted(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -364,7 +370,9 @@ func TestUpdateMintableNFTNotOwner(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -448,7 +456,9 @@ func TestUpdateMintableNFTDoNotExist(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{

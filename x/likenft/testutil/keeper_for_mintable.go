@@ -25,7 +25,9 @@ func LikenftKeeperForMintableTest(t *testing.T) (*keeper.Keeper, sdk.Context, *g
 		NftKeeper:     nftKeeper,
 	})
 	classData := types.ClassData{
-		MintableCount: 0,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: 0,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.

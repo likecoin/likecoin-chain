@@ -15,7 +15,7 @@ func (k msgServer) validateReqToMutateMintableNFT(ctx sdk.Context, creator strin
 	}
 
 	// Check max supply vs existing mintable count
-	if willCreate && classData.Config.MaxSupply > 0 && classData.MintableCount >= classData.Config.MaxSupply {
+	if willCreate && classData.Config.MaxSupply > 0 && classData.BlindBoxState.ContentCount >= classData.Config.MaxSupply {
 		return types.ErrNftNoSupply.Wrapf("NFT Class has reached its maximum supply: %d", classData.Config.MaxSupply)
 	}
 

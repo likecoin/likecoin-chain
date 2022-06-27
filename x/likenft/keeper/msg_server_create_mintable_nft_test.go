@@ -63,7 +63,9 @@ func TestCreateMintableNFTNormal(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -206,7 +208,9 @@ func TestCreateMintableNFTBadRelation(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -282,7 +286,9 @@ func TestCreateMintableNFTAlreadyMinted(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -364,8 +370,10 @@ func TestCreateMintableNFTMaxSupplyReached(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		MintableCount: uint64(5),
-		ToBeRevealed:  true,
+		BlindBoxState: types.BlindBoxState{
+			ContentCount: uint64(5),
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -447,7 +455,9 @@ func TestCreateMintableNFTNotOwner(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{
@@ -531,7 +541,9 @@ func TestCreateMintableNFTAlreadyExist(t *testing.T) {
 				RevealTime: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
-		ToBeRevealed: true,
+		BlindBoxState: types.BlindBoxState{
+			ToBeRevealed: true,
+		},
 	}
 	classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 	nftKeeper.EXPECT().GetClass(gomock.Any(), classId).Return(nft.Class{

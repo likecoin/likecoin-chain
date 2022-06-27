@@ -27,7 +27,7 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	}
 	// mint all remaining supply to owner
 	totalSupply := k.nftKeeper.GetTotalSupply(ctx, classId)
-	remainingSupply := classData.MintableCount - totalSupply
+	remainingSupply := classData.BlindBoxState.ContentCount - totalSupply
 	for i := 0; i < int(remainingSupply); i++ {
 		tokenId := fmt.Sprintf("nft%d", int(totalSupply)+i+1)
 
@@ -95,7 +95,7 @@ func (k Keeper) RevealMintableNFTs(ctx sdk.Context, classId string) error {
 	}
 
 	// Update revealed flag on class
-	classData.ToBeRevealed = false
+	classData.BlindBoxState.ToBeRevealed = false
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
 		return types.ErrFailedToMarshalData.Wrapf("%s", err.Error())

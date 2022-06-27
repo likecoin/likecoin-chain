@@ -29,7 +29,7 @@ func (k Keeper) _setMintableCount(ctx sdk.Context, classId string, edit func(uin
 	if err != nil {
 		return err
 	}
-	classData.MintableCount = edit(classData.MintableCount)
+	classData.BlindBoxState.ContentCount = edit(classData.BlindBoxState.ContentCount)
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
 		return types.ErrFailedToMarshalData.Wrapf("%s", err.Error())

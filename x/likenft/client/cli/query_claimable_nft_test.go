@@ -35,7 +35,9 @@ func networkWithMintableNFTObjects(t *testing.T, n int) (*network.Network, []typ
 	for i := 0; i < n; i++ {
 		// seed nft class
 		classData := types.ClassData{
-			MintableCount: 0,
+			BlindBoxState: types.BlindBoxState{
+				ContentCount: 0,
+			},
 		}
 		classDataInAny, _ := cdctypes.NewAnyWithValue(&classData)
 		class := nft.Class{

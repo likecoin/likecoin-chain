@@ -25,7 +25,7 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	}
 
 	// Verify and Cleanup class config
-	cleanClassConfig, err := k.sanitizeClassConfig(ctx, msg.Input.Config, classData.MintableCount)
+	cleanClassConfig, err := k.sanitizeClassConfig(ctx, msg.Input.Config, classData.BlindBoxState.ContentCount)
 	if cleanClassConfig == nil || err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	classData.Metadata = msg.Input.Metadata
 	classData.Parent = parent.ClassParent
 	classData.Config = msg.Input.Config
-	classData.ToBeRevealed = msg.Input.Config.IsBlindBox()
+	classData.BlindBoxState.ToBeRevealed = msg.Input.Config.IsBlindBox()
 	classDataInAny, err := cdctypes.NewAnyWithValue(&classData)
 	if err != nil {
 		return nil, types.ErrFailedToMarshalData.Wrapf("%s", err.Error())
