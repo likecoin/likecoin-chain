@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 )
 
-func (k Keeper) DeductFeeForMintingNFT(ctx sdk.Context, feePayer sdk.AccAddress, bytesLength int) error {
+func (k Keeper) DeductFeePerByte(ctx sdk.Context, feePayer sdk.AccAddress, bytesLength int) error {
 	feePerByte := k.GetParams(ctx).FeePerByte
 	amount := feePerByte.Amount.MulInt64(int64(bytesLength))
 	fees := sdk.NewCoins(sdk.NewCoin(feePerByte.Denom, amount.Ceil().RoundInt()))

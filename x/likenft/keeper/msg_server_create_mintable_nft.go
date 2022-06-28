@@ -39,7 +39,7 @@ func (k msgServer) CreateMintableNFT(goCtx context.Context, msg *types.MsgCreate
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 	}
-	err = k.DeductFeeForMintingNFT(ctx, userAddress, mintableNFT.Size())
+	err = k.DeductFeePerByte(ctx, userAddress, mintableNFT.Size())
 	if err != nil {
 		return nil, err
 	}

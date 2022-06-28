@@ -42,7 +42,7 @@ func (k msgServer) UpdateMintableNFT(goCtx context.Context, msg *types.MsgUpdate
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 		}
-		err = k.DeductFeeForMintingNFT(ctx, userAddress, lengthDiff)
+		err = k.DeductFeePerByte(ctx, userAddress, lengthDiff)
 		if err != nil {
 			return nil, err
 		}

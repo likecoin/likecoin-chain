@@ -66,7 +66,7 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 	// Deduct minting fee if new content is longer
 	lengthDiff := newClass.Size() - oldClass.Size()
 	if lengthDiff > 0 {
-		err = k.DeductFeeForMintingNFT(ctx, parent.Owner, lengthDiff)
+		err = k.DeductFeePerByte(ctx, parent.Owner, lengthDiff)
 		if err != nil {
 			return nil, err
 		}

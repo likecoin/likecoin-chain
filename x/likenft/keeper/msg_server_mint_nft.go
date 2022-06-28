@@ -99,7 +99,7 @@ func (k msgServer) mintRegularNFT(ctx sdk.Context, classId string, classData *ty
 		Data:    nftDataInAny,
 	}
 	// Deduct minting fee
-	err = k.DeductFeeForMintingNFT(ctx, userAddress, nft.Size())
+	err = k.DeductFeePerByte(ctx, userAddress, nft.Size())
 	if err != nil {
 		return nil, err
 	}

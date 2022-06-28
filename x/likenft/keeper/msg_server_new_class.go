@@ -78,7 +78,7 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		Data:        classDataInAny,
 	}
 	// Deduct fee
-	err = k.DeductFeeForMintingNFT(ctx, parent.Owner, class.Size())
+	err = k.DeductFeePerByte(ctx, parent.Owner, class.Size())
 	if err != nil {
 		return nil, err
 	}
