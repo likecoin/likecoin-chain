@@ -90,9 +90,9 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 
-	"github.com/likecoin/likecoin-chain/v2/x/iscn"
-	iscnkeeper "github.com/likecoin/likecoin-chain/v2/x/iscn/keeper"
-	iscntypes "github.com/likecoin/likecoin-chain/v2/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v3/x/iscn"
+	iscnkeeper "github.com/likecoin/likecoin-chain/v3/x/iscn/keeper"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
 var (

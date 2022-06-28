@@ -1,4 +1,4 @@
-module github.com/likecoin/likecoin-chain/v2
+module github.com/likecoin/likecoin-chain/v3
 
 go 1.18
 

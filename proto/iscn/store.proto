@@ -5,7 +5,7 @@ package likechain.iscn;
 import "gogoproto/gogo.proto";
 import "iscn/iscnid.proto";
 
-option go_package = "github.com/likecoin/likecoin-chain/v2/x/iscn/types";
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
 
 message StoreRecord {
   IscnId iscn_id = 1 [(gogoproto.nullable) = false];

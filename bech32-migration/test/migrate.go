@@ -10,19 +10,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/likecoin/likecoin-chain/v2/testutil"
+	"github.com/likecoin/likecoin-chain/v3/testutil"
 
-	bech32migrationtestutil "github.com/likecoin/likecoin-chain/v2/bech32-migration/testutil"
+	bech32migrationtestutil "github.com/likecoin/likecoin-chain/v3/bech32-migration/testutil"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	bech32authmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/auth"
-	bech32govmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/gov"
-	bech32slashingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/slashing"
-	bech32stakingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/staking"
+	bech32authmigration "github.com/likecoin/likecoin-chain/v3/bech32-migration/auth"
+	bech32govmigration "github.com/likecoin/likecoin-chain/v3/bech32-migration/gov"
+	bech32slashingmigration "github.com/likecoin/likecoin-chain/v3/bech32-migration/slashing"
+	bech32stakingmigration "github.com/likecoin/likecoin-chain/v3/bech32-migration/staking"
 )
 
 type MTAppOptions struct{}
