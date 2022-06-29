@@ -131,7 +131,7 @@ require (
 // point sdk to fork and follow replaces at https://github.com/cosmos/cosmos-sdk/blob/v0.45.5/go.mod
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
-	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.45.5-dual-prefix
+	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.45.6-dual-prefix
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
