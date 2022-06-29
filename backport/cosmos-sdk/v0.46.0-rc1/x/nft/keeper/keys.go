@@ -3,10 +3,10 @@ package keeper
 import (
 	"bytes"
 
-	"github.com/cosmos/cosmos-sdk/internal/conv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-	"github.com/cosmos/cosmos-sdk/x/nft"
+	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/internal/conv"
+	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
 )
 
 var (
