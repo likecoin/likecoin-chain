@@ -3,7 +3,7 @@ module github.com/likecoin/likecoin-chain/v3
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.5
+	github.com/cosmos/cosmos-sdk v0.45.6
 	github.com/cosmos/ibc-go/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -128,7 +128,7 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-// point sdk to fork and follow replaces at https://github.com/cosmos/cosmos-sdk/blob/v0.45.5/go.mod
+// point sdk to fork and follow replaces at https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/go.mod
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.45.6-dual-prefix
