@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
@@ -21,9 +22,7 @@ message IscnRecord {
   repeated string contentFingerprints = 2;
 
   // Here, `IscnInput` is JSON encoded bytes
-  repeated bytes stakeholders = 3 [
-    (gogoproto.customtype) = "IscnInput"
-  ];
+  repeated bytes stakeholders = 3 [(gogoproto.customtype) = "IscnInput"];
   bytes contentMetadata = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "IscnInput"
@@ -32,9 +31,7 @@ message IscnRecord {
 
 message MsgCreateIscnRecord {
   string from = 1;
-  IscnRecord record = 2 [
-    (gogoproto.nullable) = false
-  ];
+  IscnRecord record = 2 [(gogoproto.nullable) = false];
 }
 
 message MsgCreateIscnRecordResponse {
@@ -45,9 +42,7 @@ message MsgCreateIscnRecordResponse {
 message MsgUpdateIscnRecord {
   string from = 1;
   string iscn_id = 2;
-  IscnRecord record = 3 [
-    (gogoproto.nullable) = false
-  ];
+  IscnRecord record = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgUpdateIscnRecordResponse {
@@ -61,5 +56,4 @@ message MsgChangeIscnRecordOwnership {
   string new_owner = 3;
 }
 
-message MsgChangeIscnRecordOwnershipResponse {
-}
+message MsgChangeIscnRecordOwnershipResponse {}

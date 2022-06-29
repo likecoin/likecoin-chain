@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package likechain.iscn;
 
 import "gogoproto/gogo.proto";
@@ -13,9 +14,7 @@ message GenesisState {
     uint64 latest_version = 3;
   }
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated ContentIdRecord content_id_records = 2 [
-    (gogoproto.nullable) = false
-  ];
+  repeated ContentIdRecord content_id_records = 2 [(gogoproto.nullable) = false];
   repeated bytes iscn_records = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "IscnInput"
