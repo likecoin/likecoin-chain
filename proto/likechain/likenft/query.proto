@@ -27,97 +27,97 @@ service Query {
   }
   // Queries a ClassesByISCN by index.
   rpc ClassesByISCN(QueryClassesByISCNRequest) returns (QueryClassesByISCNResponse) {
-    option (google.api.http).get = "/likenft/classes_by_iscn/{iscn_id_prefix}";
+    option (google.api.http).get = "/likenft/iscn_classes/{iscn_id_prefix}";
   }
 
   // Queries a list of ClassesByISCN items.
   rpc ClassesByISCNIndex(QueryClassesByISCNIndexRequest) returns (QueryClassesByISCNIndexResponse) {
-    option (google.api.http).get = "/likenft/classes_by_iscn";
+    option (google.api.http).get = "/likenft/iscn_classes";
   }
 
   // Queries a list of ISCNByClass items.
   rpc ISCNByClass(QueryISCNByClassRequest) returns (QueryISCNByClassResponse) {
-    option (google.api.http).get = "/likenft/iscn_by_class/{class_id}";
+    option (google.api.http).get = "/likenft/classes/{class_id}/iscn";
   }
 
   // Queries a ClassesByAccount by index.
   rpc ClassesByAccount(QueryClassesByAccountRequest) returns (QueryClassesByAccountResponse) {
-    option (google.api.http).get = "/likenft/classes_by_account/{account}";
+    option (google.api.http).get = "/likenft/account_classes/{account}";
   }
 
   // Queries a list of ClassesByAccount items.
   rpc ClassesByAccountIndex(QueryClassesByAccountIndexRequest) returns (QueryClassesByAccountIndexResponse) {
-    option (google.api.http).get = "/likenft/classes_by_account";
+    option (google.api.http).get = "/likenft/account_classes";
   }
 
   // Queries a list of AccountByClass items.
   rpc AccountByClass(QueryAccountByClassRequest) returns (QueryAccountByClassResponse) {
-    option (google.api.http).get = "/likenft/account_by_class/{class_id}";
+    option (google.api.http).get = "/likenft/classes/{class_id}/account";
   }
 
   // Queries a BlindBoxContent by index.
   rpc BlindBoxContent(QueryBlindBoxContentRequest) returns (QueryBlindBoxContentResponse) {
-    option (google.api.http).get = "/likenft/blind_box_content/{class_id}/{id}";
+    option (google.api.http).get = "/likenft/blind_box_contents/{class_id}/{id}";
   }
 
   // Queries a list of BlindBoxContent items.
   rpc BlindBoxContentIndex(QueryBlindBoxContentIndexRequest) returns (QueryBlindBoxContentIndexResponse) {
-    option (google.api.http).get = "/likenft/blind_box_content";
+    option (google.api.http).get = "/likenft/blind_box_contents";
   }
 
   // Queries a list of BlindBoxContents by class_id
   rpc BlindBoxContents(QueryBlindBoxContentsRequest) returns (QueryBlindBoxContentsResponse) {
-    option (google.api.http).get = "/likenft/blind_box_content/{class_id}";
+    option (google.api.http).get = "/likenft/blind_box_contents/{class_id}";
   }
 
   // Queries a Offer by index.
   rpc Offer(QueryOfferRequest) returns (QueryOfferResponse) {
-    option (google.api.http).get = "/likenft/offer/{class_id}/{nft_id}/{buyer}";
+    option (google.api.http).get = "/likenft/offers/{class_id}/{nft_id}/{buyer}";
   }
 
   // Queries a list of Offer items.
   rpc OfferIndex(QueryOfferIndexRequest) returns (QueryOfferIndexResponse) {
-    option (google.api.http).get = "/likenft/offer";
+    option (google.api.http).get = "/likenft/offers";
   }
 
   // Queries a list of OffersByClass items.
   rpc OffersByClass(QueryOffersByClassRequest) returns (QueryOffersByClassResponse) {
-    option (google.api.http).get = "/likenft/offer/{class_id}";
+    option (google.api.http).get = "/likenft/offers/{class_id}";
   }
 
   // Queries a list of OffersByNFT items.
   rpc OffersByNFT(QueryOffersByNFTRequest) returns (QueryOffersByNFTResponse) {
-    option (google.api.http).get = "/likenft/offer/{class_id}/{nft_id}";
+    option (google.api.http).get = "/likenft/offers/{class_id}/{nft_id}";
   }
 
   // Queries a Listing by index.
   rpc Listing(QueryListingRequest) returns (QueryListingResponse) {
-    option (google.api.http).get = "/likenft/listing/{class_id}/{nft_id}/{seller}";
+    option (google.api.http).get = "/likenft/listings/{class_id}/{nft_id}/{seller}";
   }
 
   // Queries a list of Listing items.
   rpc ListingIndex(QueryListingIndexRequest) returns (QueryListingIndexResponse) {
-    option (google.api.http).get = "/likenft/listing";
+    option (google.api.http).get = "/likenft/listings";
   }
 
   // Queries a list of Listing items by class
   rpc ListingsByClass(QueryListingsByClassRequest) returns (QueryListingsByClassResponse) {
-    option (google.api.http).get = "/likenft/listing/{class_id}";
+    option (google.api.http).get = "/likenft/listings/{class_id}";
   }
 
   // Queries a list of Listing items by nft
   rpc ListingsByNFT(QueryListingsByNFTRequest) returns (QueryListingsByNFTResponse) {
-    option (google.api.http).get = "/likenft/listing/{class_id}/{nft_id}";
+    option (google.api.http).get = "/likenft/listings/{class_id}/{nft_id}";
   }
 
   // Queries a RoyaltyConfig by class
   rpc RoyaltyConfig(QueryRoyaltyConfigRequest) returns (QueryRoyaltyConfigResponse) {
-    option (google.api.http).get = "/likenft/royalty_config/{class_id}";
+    option (google.api.http).get = "/likenft/royalty_configs/{class_id}";
   }
 
   // Queries index of RoyaltyConfig of all classes
   rpc RoyaltyConfigIndex(QueryRoyaltyConfigIndexRequest) returns (QueryRoyaltyConfigIndexResponse) {
-    option (google.api.http).get = "/likenft/royalty_config";
+    option (google.api.http).get = "/likenft/royalty_configs";
   }
 
 // this line is used by starport scaffolding # 2
