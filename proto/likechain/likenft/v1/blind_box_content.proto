@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package likechain.likenft;
+package likechain.likenft.v1;
 
 import "gogoproto/gogo.proto";
-import "likechain/likenft/nft_input.proto";
+import "likechain/likenft/v1/nft_input.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 

@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package likechain.likenft;
+package likechain.likenft.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
-message OfferExpireQueueEntry {
-  google.protobuf.Timestamp expire_time = 1 [
+message ClassRevealQueueEntry {
+  google.protobuf.Timestamp reveal_time = 1 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
-  bytes offer_key = 2;
+  string class_id = 2;
 }

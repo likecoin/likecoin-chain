@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package likechain.likenft;
+package likechain.likenft.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
 
-message Offer {
+message Listing {
   string class_id = 1;
   string nft_id = 2;
-  string buyer = 3;
+  string seller = 3;
   uint64 price = 4;
   google.protobuf.Timestamp expiration = 5 [
     (gogoproto.stdtime) = true,
@@ -18,10 +18,10 @@ message Offer {
   ];
 }
 
-message OfferStoreRecord {
+message ListingStoreRecord {
   string class_id = 1;
   string nft_id = 2;
-  bytes buyer = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  bytes seller = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   uint64 price = 4;
   google.protobuf.Timestamp expiration = 5 [
     (gogoproto.stdtime) = true,

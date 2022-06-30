@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "gogoproto/gogo.proto";
+import "likechain/likenft/v1/class_data.proto";
+
+option go_package = "github.com/likecoin/likechain/x/likenft/types";
+
+message NFTData {
+  bytes metadata = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "JsonInput"
+  ];
+  ClassParent class_parent = 2 [(gogoproto.nullable) = false];
+  bool to_be_revealed = 3;
+}

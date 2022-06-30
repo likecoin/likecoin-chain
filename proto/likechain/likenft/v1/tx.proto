@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package likechain.likenft;
+package likechain.likenft.v1;
 
 import "cosmos/nft/v1beta1/nft.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "likechain/likenft/blind_box_content.proto";
-import "likechain/likenft/class_input.proto";
-import "likechain/likenft/listing.proto";
-import "likechain/likenft/nft_input.proto";
-import "likechain/likenft/offer.proto";
-import "likechain/likenft/royalty_config.proto";
+import "likechain/likenft/v1/blind_box_content.proto";
+import "likechain/likenft/v1/class_input.proto";
+import "likechain/likenft/v1/listing.proto";
+import "likechain/likenft/v1/nft_input.proto";
+import "likechain/likenft/v1/offer.proto";
+import "likechain/likenft/v1/royalty_config.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 option go_package = "github.com/likecoin/likechain/x/likenft/types";
