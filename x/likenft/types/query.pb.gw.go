@@ -2160,45 +2160,45 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ClassesByISCN_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "iscn_classes", "iscn_id_prefix"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ClassesByISCN_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "iscn_classes", "iscn_id_prefix"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ClassesByISCNIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "iscn_classes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ClassesByISCNIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "iscn_classes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ISCNByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"likenft", "classes", "class_id", "iscn"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ISCNByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"likechain", "likenft", "v1", "classes", "class_id", "iscn"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ClassesByAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "account_classes", "account"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ClassesByAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "account_classes", "account"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ClassesByAccountIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "account_classes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ClassesByAccountIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "account_classes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AccountByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"likenft", "classes", "class_id", "account"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AccountByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"likechain", "likenft", "v1", "classes", "class_id", "account"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_BlindBoxContent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"likenft", "blind_box_contents", "class_id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BlindBoxContent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"likechain", "likenft", "v1", "blind_box_contents", "class_id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_BlindBoxContentIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "blind_box_contents"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BlindBoxContentIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "blind_box_contents"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_BlindBoxContents_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "blind_box_contents", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BlindBoxContents_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "blind_box_contents", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Offer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"likenft", "offers", "class_id", "nft_id", "buyer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Offer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"likechain", "likenft", "v1", "offers", "class_id", "nft_id", "buyer"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_OfferIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "offers"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_OfferIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "offers"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_OffersByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "offers", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_OffersByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "offers", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_OffersByNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"likenft", "offers", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_OffersByNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"likechain", "likenft", "v1", "offers", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Listing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"likenft", "listings", "class_id", "nft_id", "seller"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Listing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"likechain", "likenft", "v1", "listings", "class_id", "nft_id", "seller"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListingIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "listings"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListingIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "listings"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListingsByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "listings", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListingsByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "listings", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListingsByNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"likenft", "listings", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListingsByNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"likechain", "likenft", "v1", "listings", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_RoyaltyConfig_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"likenft", "royalty_configs", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_RoyaltyConfig_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"likechain", "likenft", "v1", "royalty_configs", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_RoyaltyConfigIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"likenft", "royalty_configs"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_RoyaltyConfigIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"likechain", "likenft", "v1", "royalty_configs"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
