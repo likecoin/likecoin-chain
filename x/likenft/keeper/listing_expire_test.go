@@ -18,7 +18,7 @@ import (
 
 func parseListingExpireEvent(t *testing.T, ctx sdk.Context) *types.EventExpireListing {
 	for _, event := range ctx.EventManager().Events() {
-		if event.Type != "likechain.likenft.EventExpireListing" {
+		if event.Type != "likechain.likenft.v1.EventExpireListing" {
 			continue
 		}
 		ev := types.EventExpireListing{}

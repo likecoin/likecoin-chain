@@ -15,7 +15,7 @@ func parseEventCreateClass(res sdk.TxResponse) types.EventNewClass {
 ParseEventCreateClass:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventNewClass" {
+			if event.Type == "likechain.likenft.v1.EventNewClass" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -41,7 +41,7 @@ func parseEventUpdateClass(res sdk.TxResponse) types.EventUpdateClass {
 ParseEventUpdateClass:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventUpdateClass" {
+			if event.Type == "likechain.likenft.v1.EventUpdateClass" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -67,7 +67,7 @@ func parseEventMintNFT(res sdk.TxResponse) types.EventMintNFT {
 ParseEventMintNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventMintNFT" {
+			if event.Type == "likechain.likenft.v1.EventMintNFT" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -99,7 +99,7 @@ func parseEventBurnNFT(res sdk.TxResponse) types.EventBurnNFT {
 ParseEventBurnNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventBurnNFT" {
+			if event.Type == "likechain.likenft.v1.EventBurnNFT" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -131,7 +131,7 @@ func parseEventCreateBlindBoxContent(res sdk.TxResponse) types.EventCreateBlindB
 ParseEventCreateBlindBoxContent:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventCreateBlindBoxContent" {
+			if event.Type == "likechain.likenft.v1.EventCreateBlindBoxContent" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -160,7 +160,7 @@ func parseEventUpdateBlindBoxContent(res sdk.TxResponse) types.EventUpdateBlindB
 ParseEventUpdateBlindBoxContent:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventUpdateBlindBoxContent" {
+			if event.Type == "likechain.likenft.v1.EventUpdateBlindBoxContent" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -189,7 +189,7 @@ func parseEventDeleteBlindBoxContent(res sdk.TxResponse) types.EventDeleteBlindB
 ParseEventDeleteBlindBoxContent:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventDeleteBlindBoxContent" {
+			if event.Type == "likechain.likenft.v1.EventDeleteBlindBoxContent" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -218,7 +218,7 @@ func parseEventCreateListing(res sdk.TxResponse) types.EventCreateListing {
 ParseEventCreateListing:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventCreateListing" {
+			if event.Type == "likechain.likenft.v1.EventCreateListing" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -244,7 +244,7 @@ func parseEventUpdateListing(res sdk.TxResponse) types.EventUpdateListing {
 ParseEventUpdateListing:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventUpdateListing" {
+			if event.Type == "likechain.likenft.v1.EventUpdateListing" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -269,7 +269,7 @@ func parseEventBuyNFT(res sdk.TxResponse) types.EventBuyNFT {
 ParseEventBuyNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventBuyNFT" {
+			if event.Type == "likechain.likenft.v1.EventBuyNFT" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -304,7 +304,7 @@ func parseEventCreateOffer(res sdk.TxResponse) types.EventCreateOffer {
 ParseEventCreateOffer:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventCreateOffer" {
+			if event.Type == "likechain.likenft.v1.EventCreateOffer" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -330,7 +330,7 @@ func parseEventUpdateOffer(res sdk.TxResponse) types.EventUpdateOffer {
 ParseEventUpdateOffer:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventUpdateOffer" {
+			if event.Type == "likechain.likenft.v1.EventUpdateOffer" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -356,7 +356,7 @@ func parseEventSellNFT(res sdk.TxResponse) types.EventSellNFT {
 ParseEventSellNFT:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventSellNFT" {
+			if event.Type == "likechain.likenft.v1.EventSellNFT" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -391,7 +391,7 @@ func parseEventCreateRoyaltyConfig(res sdk.TxResponse) types.EventCreateRoyaltyC
 ParseEventCreateRoyaltyConfig:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventCreateRoyaltyConfig" {
+			if event.Type == "likechain.likenft.v1.EventCreateRoyaltyConfig" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -410,7 +410,7 @@ func parseEventUpdateRoyaltyConfig(res sdk.TxResponse) types.EventUpdateRoyaltyC
 ParseEventUpdateRoyaltyConfig:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventUpdateRoyaltyConfig" {
+			if event.Type == "likechain.likenft.v1.EventUpdateRoyaltyConfig" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")
@@ -429,7 +429,7 @@ func parseEventDeleteRoyaltyConfig(res sdk.TxResponse) types.EventDeleteRoyaltyC
 ParseEventDeleteRoyaltyConfig:
 	for _, log := range res.Logs {
 		for _, event := range log.Events {
-			if event.Type == "likechain.likenft.EventDeleteRoyaltyConfig" {
+			if event.Type == "likechain.likenft.v1.EventDeleteRoyaltyConfig" {
 				for _, attr := range event.Attributes {
 					if attr.Key == "class_id" {
 						actualEvent.ClassId = strings.Trim(attr.Value, "\"")

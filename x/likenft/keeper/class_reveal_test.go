@@ -25,7 +25,7 @@ import (
 
 func parseRevealEvent(t *testing.T, ctx sdk.Context) *types.EventRevealClass {
 	for _, event := range ctx.EventManager().Events() {
-		if event.Type != "likechain.likenft.EventRevealClass" {
+		if event.Type != "likechain.likenft.v1.EventRevealClass" {
 			continue
 		}
 		ev := types.EventRevealClass{}
