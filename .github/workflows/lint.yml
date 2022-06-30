@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.18.3
       - name: Install golint
         run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.44.0
       # TODO: Remove after fixing lint
@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.18.3
       # TODO: Remove after fixing format
       - name: Run format check
         if: ${{ false }}

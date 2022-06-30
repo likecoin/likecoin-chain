@@ -1,4 +1,4 @@
-FROM likecoin/rbuilder:cf0d1a9f3731e30540bbfa36a36d13e4dcccf5eb as builder
+FROM likecoin/rbuilder:go1.18.3 as builder
 
 USER root
 ARG LIKED_VERSION=unknown
@@ -20,7 +20,7 @@ ENV COMMIT=$LIKED_COMMIT
 RUN rm -rf /sources/artifacts
 RUN /bin/bash -c /sources/.build.sh
 
-FROM debian:buster
+FROM debian:bullseye
 
 RUN groupadd --gid 1000 likechain \
   && useradd --uid 1000 --gid likechain --shell /bin/bash likechain

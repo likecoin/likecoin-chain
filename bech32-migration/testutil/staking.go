@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/likecoin/likecoin-chain/v2/bech32-migration/utils"
+	"github.com/likecoin/likecoin-chain/v3/bech32-migration/utils"
 )
 
 func AssertStakingAddressBech32(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) bool {

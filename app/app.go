@@ -86,19 +86,13 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcclientclient "github.com/cosmos/ibc-go/v2/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
-	ibcconnectiontypes "github.com/cosmos/ibc-go/v2/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 
-	"github.com/likecoin/likecoin-chain/v2/x/iscn"
-	iscnkeeper "github.com/likecoin/likecoin-chain/v2/x/iscn/keeper"
-	iscntypes "github.com/likecoin/likecoin-chain/v2/x/iscn/types"
-
-	bech32authmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/auth"
-	bech32govmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/gov"
-	bech32slashingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/slashing"
-	bech32stakingmigration "github.com/likecoin/likecoin-chain/v2/bech32-migration/staking"
+	"github.com/likecoin/likecoin-chain/v3/x/iscn"
+	iscnkeeper "github.com/likecoin/likecoin-chain/v3/x/iscn/keeper"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
 var (
@@ -512,32 +506,34 @@ func NewLikeApp(
 
 // Upgrade Handler
 func (app *LikeApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("v2.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-		app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
+	app.UpgradeKeeper.SetUpgradeHandler("v3.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// Migration for ibc-go v2.1.0 to v2.3.0: Support base denoms with slashes
+		// Ref: https://github.com/cosmos/ibc-go/blob/main/docs/migrations/support-denoms-with-slashes.md
 
-		ctx.Logger().Info("First step: Migrate sdk modules")
-		// using 1 as fromVersion to avoid running InitGenesis for existing modules
-		// note newer sdk already guarantees auth module is migrated last
-		fromVM := make(map[string]uint64)
-		for moduleName := range app.mm.Modules {
-			fromVM[moduleName] = 1
+		// list of traces that must replace the old traces in store
+		var newTraces []ibctransfertypes.DenomTrace
+		equalTraces := func(dtA, dtB ibctransfertypes.DenomTrace) bool {
+			return dtA.BaseDenom == dtB.BaseDenom && dtA.Path == dtB.Path
 		}
-		// exclude new modules to not skip InitGenesis
-		delete(fromVM, authz.ModuleName)
-		delete(fromVM, feegrant.ModuleName)
-		// run
-		newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
-		if err != nil {
-			return nil, err
+		app.TransferKeeper.IterateDenomTraces(ctx,
+			func(dt ibctransfertypes.DenomTrace) bool {
+				// check if the new way of splitting FullDenom
+				// into Trace and BaseDenom passes validation and
+				// is the same as the current DenomTrace.
+				// If it isn't then store the new DenomTrace in the list of new traces.
+				newTrace := ibctransfertypes.ParseDenomTrace(dt.GetFullDenomPath())
+				if err := newTrace.Validate(); err == nil && !equalTraces(newTrace, dt) {
+					newTraces = append(newTraces, newTrace)
+				}
+				return false
+			})
+
+		// replace the outdated traces with the new trace information
+		for _, nt := range newTraces {
+			app.TransferKeeper.SetDenomTrace(ctx, nt)
 		}
 
-		ctx.Logger().Info("Second step: Migrate addresses stored in bech32 form to use new prefix")
-		bech32stakingmigration.MigrateAddressBech32(ctx, app.keys[stakingtypes.StoreKey], app.appCodec)
-		bech32slashingmigration.MigrateAddressBech32(ctx, app.keys[slashingtypes.StoreKey], app.appCodec)
-		bech32govmigration.MigrateAddressBech32(ctx, app.keys[govtypes.StoreKey], app.appCodec)
-		bech32authmigration.MigrateAddressBech32(ctx, app.keys[authtypes.StoreKey], app.appCodec)
-
-		return newVM, nil
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
@@ -545,9 +541,10 @@ func (app *LikeApp) registerUpgradeHandlers() {
 		panic(err)
 	}
 
-	if upgradeInfo.Name == "v2.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == "v3.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, feegrant.ModuleName},
+			// TODO: register x/nft and x/likenft here after rebase
+			// Added: []string{},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades

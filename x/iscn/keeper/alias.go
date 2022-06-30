@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/likecoin/likecoin-chain/v2/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
 type (

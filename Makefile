@@ -9,10 +9,10 @@ DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 LIKE_HOME := '$(HOME)/.liked'
 IMAGE_TAG = likecoin/likecoin-chain:$(VERSION)
-RBUILDER_IMAGE_TAG = likecoin/rbuilder:go1.18
+RBUILDER_IMAGE_TAG = likecoin/rbuilder:go1.18.3
 BUILDDIR ?= $(CURDIR)/build
 GOPATH ?= '$(HOME)/go'
-GOLANG_VERSION ?= 1.18
+GOLANG_VERSION ?= 1.18.3
 GOLANG_CROSS_VERSION := v$(GOLANG_VERSION)
 
 ###############################################################################
