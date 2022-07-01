@@ -5,7 +5,7 @@ package likechain.likenft.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/likecoin/likechain/x/likenft/types";
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
 
 message ClassRevealQueueEntry {
   google.protobuf.Timestamp reveal_time = 1 [
