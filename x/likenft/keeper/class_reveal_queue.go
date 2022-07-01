@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 // SetClassRevealQueueEntry set a specific classRevealQueueEntry in the store from its index

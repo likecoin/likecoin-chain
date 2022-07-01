@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/likecoin/likechain/x/likenft/keeper"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 // Prevent strconv unused error

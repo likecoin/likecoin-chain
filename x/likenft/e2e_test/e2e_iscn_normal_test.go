@@ -8,14 +8,14 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	nft "github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	nftcli "github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft/client/cli"
-	"github.com/likecoin/likechain/testutil/network"
-	iscncli "github.com/likecoin/likechain/x/iscn/client/cli"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+	nft "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	nftcli "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft/client/cli"
+	"github.com/likecoin/likecoin-chain/v3/testutil/network"
+	iscncli "github.com/likecoin/likecoin-chain/v3/x/iscn/client/cli"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 
-	cli "github.com/likecoin/likechain/x/likenft/client/cli"
-	types "github.com/likecoin/likechain/x/likenft/types"
+	cli "github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
+	types "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

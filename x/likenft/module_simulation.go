@@ -9,9 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/likecoin/likechain/testutil/sample"
-	likenftsimulation "github.com/likecoin/likechain/x/likenft/simulation"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/testutil/sample"
+	likenftsimulation "github.com/likecoin/likecoin-chain/v3/x/likenft/simulation"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 // avoid unused import issue

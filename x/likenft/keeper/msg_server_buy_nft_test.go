@@ -7,9 +7,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/likecoin/likechain/testutil/keeper"
-	"github.com/likecoin/likechain/x/likenft/testutil"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/testutil/keeper"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/testutil"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

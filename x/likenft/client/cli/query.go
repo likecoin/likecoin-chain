@@ -10,7 +10,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

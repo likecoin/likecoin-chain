@@ -7,9 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

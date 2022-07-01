@@ -6,9 +6,9 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keepertest "github.com/likecoin/likechain/testutil/keeper"
-	"github.com/likecoin/likechain/x/likenft/keeper"
-	"github.com/likecoin/likechain/x/likenft/types"
+	keepertest "github.com/likecoin/likecoin-chain/v3/testutil/keeper"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

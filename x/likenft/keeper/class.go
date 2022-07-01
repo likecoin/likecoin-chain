@@ -2,8 +2,8 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 func (k Keeper) GetClass(ctx sdk.Context, classId string) (nft.Class, types.ClassData, error) {

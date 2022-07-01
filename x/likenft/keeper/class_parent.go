@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 func (k Keeper) NewClassParentFromInput(ctx sdk.Context, input types.ClassParentInput, parentAccBech32 string) (types.ClassParentWithOwner, error) {

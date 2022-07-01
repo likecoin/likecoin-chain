@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 func (k Keeper) ExpireOffer(ctx sdk.Context, offer types.OfferStoreRecord) error {

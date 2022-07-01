@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/likecoin/likechain/testutil"
-	"github.com/likecoin/likechain/testutil/nullify"
-	"github.com/likecoin/likechain/x/likenft"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/testutil"
+	"github.com/likecoin/likecoin-chain/v3/testutil/nullify"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 
-	likenfttestutil "github.com/likecoin/likechain/x/likenft/testutil"
+	likenfttestutil "github.com/likecoin/likecoin-chain/v3/x/likenft/testutil"
 )
 
 func TestGenesis(t *testing.T) {

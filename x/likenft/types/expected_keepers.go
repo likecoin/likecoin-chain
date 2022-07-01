@@ -4,8 +4,8 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	nft "github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
+	nft "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
 type IscnKeeper interface {

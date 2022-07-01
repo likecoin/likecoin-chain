@@ -13,10 +13,10 @@ import (
 	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likechain/testutil/network"
+	"github.com/likecoin/likecoin-chain/v3/testutil/network"
 
-	cli "github.com/likecoin/likechain/x/likenft/client/cli"
-	types "github.com/likecoin/likechain/x/likenft/types"
+	cli "github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
+	types "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

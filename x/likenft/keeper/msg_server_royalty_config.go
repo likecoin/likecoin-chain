@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 func (k msgServer) validateReqToMutateRoyaltyConfig(ctx sdk.Context, msgCreator string, classId string, configInput *types.RoyaltyConfigInput) error {

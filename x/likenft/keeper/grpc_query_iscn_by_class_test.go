@@ -6,11 +6,11 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/likecoin/likechain/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
-	keepertest "github.com/likecoin/likechain/testutil/keeper"
-	iscntypes "github.com/likecoin/likechain/x/iscn/types"
-	"github.com/likecoin/likechain/x/likenft/testutil"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	keepertest "github.com/likecoin/likecoin-chain/v3/testutil/keeper"
+	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/testutil"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

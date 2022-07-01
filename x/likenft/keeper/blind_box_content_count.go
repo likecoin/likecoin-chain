@@ -3,7 +3,7 @@ package keeper
 import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 func (k Keeper) incBlindBoxContentCount(ctx sdk.Context, classId string) error {

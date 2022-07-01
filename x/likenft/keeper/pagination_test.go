@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/likecoin/likechain/x/likenft/keeper"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
 	"github.com/stretchr/testify/require"
 )
 

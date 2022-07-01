@@ -98,9 +98,9 @@ import (
 	nftkeeper "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft/keeper"
 	nftmodule "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft/module"
 
-	"github.com/likecoin/likechain/x/likenft"
-	likenftkeeper "github.com/likecoin/likechain/x/likenft/keeper"
-	likenfttypes "github.com/likecoin/likechain/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likenft"
+	likenftkeeper "github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
+	likenfttypes "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
 var (
