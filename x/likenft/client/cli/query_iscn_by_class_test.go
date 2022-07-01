@@ -8,7 +8,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	nfttypes "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-alpha2/x/nft"
+	nfttypes "github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
 	"github.com/likecoin/likecoin-chain/v3/testutil/network"
 	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
