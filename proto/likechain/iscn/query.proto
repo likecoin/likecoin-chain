@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "likechain/iscn/params.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
+
+service Query {
+  // Usage:
+  // /iscn/api/endpoint?param1=blablabla&param2=blablabla...
+  // Example:
+  // /iscn/records/id?iscn_id=iscn://likecoin-chain/btC7CJvMm4WLj9Tau9LAPTfGK7sfymTJW7ORcFdruCU&from_version=2
+
+  rpc RecordsById(QueryRecordsByIdRequest) returns (QueryRecordsByIdResponse) {
+    option (google.api.http).get = "/iscn/records/id";
+  }
+
+  rpc RecordsByFingerprint(QueryRecordsByFingerprintRequest) returns (QueryRecordsByFingerprintResponse) {
+    option (google.api.http).get = "/iscn/records/fingerprint";
+  }
+
+  rpc RecordsByOwner(QueryRecordsByOwnerRequest) returns (QueryRecordsByOwnerResponse) {
+    option (google.api.http).get = "/iscn/records/owner";
+  }
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/iscn/parameters";
+  }
+
+  // Below are endpoints reserved for IPFS plugin
+
+  rpc GetCid(QueryGetCidRequest) returns (QueryGetCidResponse) {
+    option (google.api.http).get = "/iscn/get_cid/{cid}";
+  }
+
+  rpc HasCid(QueryHasCidRequest) returns (QueryHasCidResponse) {
+    option (google.api.http).get = "/iscn/has_cid/{cid}";
+  }
+
+  rpc GetCidSize(QueryGetCidSizeRequest) returns (QueryGetCidSizeResponse) {
+    option (google.api.http).get = "/iscn/get_cid_size/{cid}";
+  }
+}
+
+message QueryResponseRecord {
+  string ipld = 1;
+  bytes data = 2 [
+    (gogoproto.customtype) = "IscnInput",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryRecordsByIdRequest {
+  // The ISCN ID of the record(s) to be queried.
+  // Format: iscn://REGISTRY_NAME/CONTENT_ID[/VERSION]
+  // If version part omitted, version is default to 0.
+  // if non-zero version exists, then from_version and to_version are ignored.
+  string iscn_id = 1;
+
+  // The initial version in the resulting records.
+  // If omitted or is 0, then it will be interpreted as the latest version.
+  uint64 from_version = 2;
+
+  // The final version in the resulting records.
+  // If omitted or is 0, then it will be interpreted as the latest version.
+  uint64 to_version = 3;
+}
+
+message QueryRecordsByIdResponse {
+  string owner = 1;
+  uint64 latest_version = 2;
+  repeated QueryResponseRecord records = 3 [(gogoproto.nullable) = false];
+}
+
+message QueryRecordsByFingerprintRequest {
+  // The fingerprint of the record(s) to be queried.
+  // All fingerprints in records should be URIs.
+  string fingerprint = 1;
+
+  // For pagination.
+  // For the first query, fill in 0 or just omit this field.
+  // For continuous queries, fill in the `next_sequence` field in the previous response.
+  uint64 from_sequence = 2;
+}
+
+message QueryRecordsByFingerprintResponse {
+  repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
+
+  // For pagination.
+  uint64 next_sequence = 2;
+}
+
+message QueryRecordsByOwnerRequest {
+  // Owner address of the record(s) to be queried.
+  string owner = 1;
+
+  // For pagination.
+  // For the first query, fill in 0 or just omit this field.
+  // For continuous queries, fill in the `next_sequence` field in the previous response.
+  uint64 from_sequence = 2;
+}
+
+message QueryRecordsByOwnerResponse {
+  repeated QueryResponseRecord records = 1 [(gogoproto.nullable) = false];
+  uint64 next_sequence = 2;
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetCidRequest {
+  string cid = 1;
+}
+
+message QueryGetCidResponse {
+  bytes data = 1;
+}
+
+message QueryGetCidSizeRequest {
+  string cid = 1;
+}
+
+message QueryGetCidSizeResponse {
+  uint64 size = 1;
+}
+
+message QueryHasCidRequest {
+  string cid = 1;
+}
+
+message QueryHasCidResponse {
+  bool exist = 1;
+}

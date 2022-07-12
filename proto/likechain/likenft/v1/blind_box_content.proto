@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "gogoproto/gogo.proto";
+import "likechain/likenft/v1/nft_input.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+message BlindBoxContent {
+  string class_id = 1;
+  string id = 2;
+  NFTInput input = 3 [(gogoproto.nullable) = false];
+}

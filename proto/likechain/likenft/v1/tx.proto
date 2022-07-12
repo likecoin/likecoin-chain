@@ -1,0 +1,224 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "cosmos/nft/v1beta1/nft.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "likechain/likenft/v1/blind_box_content.proto";
+import "likechain/likenft/v1/class_input.proto";
+import "likechain/likenft/v1/listing.proto";
+import "likechain/likenft/v1/nft_input.proto";
+import "likechain/likenft/v1/offer.proto";
+import "likechain/likenft/v1/royalty_config.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc NewClass(MsgNewClass) returns (MsgNewClassResponse);
+  rpc UpdateClass(MsgUpdateClass) returns (MsgUpdateClassResponse);
+  rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
+  rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
+  rpc CreateBlindBoxContent(MsgCreateBlindBoxContent) returns (MsgCreateBlindBoxContentResponse);
+  rpc UpdateBlindBoxContent(MsgUpdateBlindBoxContent) returns (MsgUpdateBlindBoxContentResponse);
+  rpc DeleteBlindBoxContent(MsgDeleteBlindBoxContent) returns (MsgDeleteBlindBoxContentResponse);
+  rpc CreateOffer(MsgCreateOffer) returns (MsgCreateOfferResponse);
+  rpc UpdateOffer(MsgUpdateOffer) returns (MsgUpdateOfferResponse);
+  rpc DeleteOffer(MsgDeleteOffer) returns (MsgDeleteOfferResponse);
+  rpc CreateListing(MsgCreateListing) returns (MsgCreateListingResponse);
+  rpc UpdateListing(MsgUpdateListing) returns (MsgUpdateListingResponse);
+  rpc DeleteListing(MsgDeleteListing) returns (MsgDeleteListingResponse);
+  rpc SellNFT(MsgSellNFT) returns (MsgSellNFTResponse);
+  rpc BuyNFT(MsgBuyNFT) returns (MsgBuyNFTResponse);
+  rpc CreateRoyaltyConfig(MsgCreateRoyaltyConfig) returns (MsgCreateRoyaltyConfigResponse);
+  rpc UpdateRoyaltyConfig(MsgUpdateRoyaltyConfig) returns (MsgUpdateRoyaltyConfigResponse);
+  rpc DeleteRoyaltyConfig(MsgDeleteRoyaltyConfig) returns (MsgDeleteRoyaltyConfigResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgNewClass {
+  string creator = 1;
+  ClassParentInput parent = 2 [(gogoproto.nullable) = false];
+  ClassInput input = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgNewClassResponse {
+  cosmos.nft.v1beta1.Class class = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateClass {
+  string creator = 1;
+  string class_id = 2;
+  ClassInput input = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateClassResponse {
+  cosmos.nft.v1beta1.Class class = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgMintNFT {
+  string creator = 1;
+  string class_id = 2;
+  string id = 3;
+  NFTInput input = 4 [(gogoproto.nullable) = true];
+}
+
+message MsgMintNFTResponse {
+  cosmos.nft.v1beta1.NFT nft = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgBurnNFT {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+}
+
+message MsgBurnNFTResponse {}
+
+message MsgCreateBlindBoxContent {
+  string creator = 1;
+  string class_id = 2;
+  string id = 3;
+  NFTInput input = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgCreateBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateBlindBoxContent {
+  string creator = 1;
+  string class_id = 2;
+  string id = 3;
+  NFTInput input = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgDeleteBlindBoxContent {
+  string creator = 1;
+  string class_id = 2;
+  string id = 3;
+}
+
+message MsgDeleteBlindBoxContentResponse {}
+
+message MsgCreateOffer {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgCreateOfferResponse {
+  Offer offer = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateOffer {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgUpdateOfferResponse {
+  Offer offer = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgDeleteOffer {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+}
+message MsgDeleteOfferResponse {}
+
+message MsgCreateListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgCreateListingResponse {
+  Listing listing = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  uint64 price = 4;
+  google.protobuf.Timestamp expiration = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgUpdateListingResponse {
+  Listing listing = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgDeleteListing {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+}
+message MsgDeleteListingResponse {}
+
+message MsgSellNFT {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  string buyer = 4;
+  uint64 price = 5;
+}
+
+message MsgSellNFTResponse {}
+
+message MsgBuyNFT {
+  string creator = 1;
+  string class_id = 2;
+  string nft_id = 3;
+  string seller = 4;
+  uint64 price = 5;
+}
+
+message MsgBuyNFTResponse {}
+
+message MsgCreateRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+  RoyaltyConfigInput royalty_config = 3 [(gogoproto.nullable) = false];
+}
+message MsgCreateRoyaltyConfigResponse {
+  RoyaltyConfig royalty_config = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+  RoyaltyConfigInput royalty_config = 3 [(gogoproto.nullable) = false];
+}
+message MsgUpdateRoyaltyConfigResponse {
+  RoyaltyConfig royalty_config = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgDeleteRoyaltyConfig {
+  string creator = 1;
+  string class_id = 2;
+}
+message MsgDeleteRoyaltyConfigResponse {}
+
+// this line is used by starport scaffolding # proto/tx/message

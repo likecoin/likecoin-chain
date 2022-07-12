@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  string price_denom = 1;
+  cosmos.base.v1beta1.DecCoin fee_per_byte = 2 [(gogoproto.nullable) = false];
+  uint64 max_offer_duration_days = 3;
+  uint64 max_listing_duration_days = 4;
+  uint64 max_royalty_basis_points = 5;
+}

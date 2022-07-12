@@ -41,7 +41,11 @@ go.sum: go.mod
 install: go.sum $(BUILDDIR)/
 	go install -mod=readonly $(BUILD_FLAGS) ./...
 
-test:
+codegen:
+	go install github.com/golang/mock/mockgen@v1.6.0
+	go generate ./...
+
+test: codegen
 	go test -v ./...
 
 clean:

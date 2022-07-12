@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package likechain.iscn;
+
+import "gogoproto/gogo.proto";
+import "likechain/iscn/params.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
+
+message GenesisState {
+  message ContentIdRecord {
+    string iscn_id = 1;
+    string owner = 2;
+    uint64 latest_version = 3;
+  }
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated ContentIdRecord content_id_records = 2 [(gogoproto.nullable) = false];
+  repeated bytes iscn_records = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "IscnInput"
+  ];
+}

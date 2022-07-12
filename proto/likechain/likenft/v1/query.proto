@@ -1,0 +1,319 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/nft/v1beta1/nft.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "likechain/iscn/query.proto";
+import "likechain/likenft/v1/blind_box_content.proto";
+import "likechain/likenft/v1/classes_by_account.proto";
+import "likechain/likenft/v1/classes_by_iscn.proto";
+import "likechain/likenft/v1/listing.proto";
+import "likechain/likenft/v1/offer.proto";
+import "likechain/likenft/v1/params.proto";
+import "likechain/likenft/v1/royalty_config.proto";
+// this line is used by starport scaffolding # 1
+
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/params";
+  }
+  // Queries a ClassesByISCN by index.
+  rpc ClassesByISCN(QueryClassesByISCNRequest) returns (QueryClassesByISCNResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/iscn_classes/{iscn_id_prefix}";
+  }
+
+  // Queries a list of ClassesByISCN items.
+  rpc ClassesByISCNIndex(QueryClassesByISCNIndexRequest) returns (QueryClassesByISCNIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/iscn_classes";
+  }
+
+  // Queries a list of ISCNByClass items.
+  rpc ISCNByClass(QueryISCNByClassRequest) returns (QueryISCNByClassResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/classes/{class_id}/iscn";
+  }
+
+  // Queries a ClassesByAccount by index.
+  rpc ClassesByAccount(QueryClassesByAccountRequest) returns (QueryClassesByAccountResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/account_classes/{account}";
+  }
+
+  // Queries a list of ClassesByAccount items.
+  rpc ClassesByAccountIndex(QueryClassesByAccountIndexRequest) returns (QueryClassesByAccountIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/account_classes";
+  }
+
+  // Queries a list of AccountByClass items.
+  rpc AccountByClass(QueryAccountByClassRequest) returns (QueryAccountByClassResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/classes/{class_id}/account";
+  }
+
+  // Queries a BlindBoxContent by index.
+  rpc BlindBoxContent(QueryBlindBoxContentRequest) returns (QueryBlindBoxContentResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/blind_box_contents/{class_id}/{id}";
+  }
+
+  // Queries a list of BlindBoxContent items.
+  rpc BlindBoxContentIndex(QueryBlindBoxContentIndexRequest) returns (QueryBlindBoxContentIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/blind_box_contents";
+  }
+
+  // Queries a list of BlindBoxContents by class_id
+  rpc BlindBoxContents(QueryBlindBoxContentsRequest) returns (QueryBlindBoxContentsResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/blind_box_contents/{class_id}";
+  }
+
+  // Queries a Offer by index.
+  rpc Offer(QueryOfferRequest) returns (QueryOfferResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/offers/{class_id}/{nft_id}/{buyer}";
+  }
+
+  // Queries a list of Offer items.
+  rpc OfferIndex(QueryOfferIndexRequest) returns (QueryOfferIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/offers";
+  }
+
+  // Queries a list of OffersByClass items.
+  rpc OffersByClass(QueryOffersByClassRequest) returns (QueryOffersByClassResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/offers/{class_id}";
+  }
+
+  // Queries a list of OffersByNFT items.
+  rpc OffersByNFT(QueryOffersByNFTRequest) returns (QueryOffersByNFTResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/offers/{class_id}/{nft_id}";
+  }
+
+  // Queries a Listing by index.
+  rpc Listing(QueryListingRequest) returns (QueryListingResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/listings/{class_id}/{nft_id}/{seller}";
+  }
+
+  // Queries a list of Listing items.
+  rpc ListingIndex(QueryListingIndexRequest) returns (QueryListingIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/listings";
+  }
+
+  // Queries a list of Listing items by class
+  rpc ListingsByClass(QueryListingsByClassRequest) returns (QueryListingsByClassResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/listings/{class_id}";
+  }
+
+  // Queries a list of Listing items by nft
+  rpc ListingsByNFT(QueryListingsByNFTRequest) returns (QueryListingsByNFTResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/listings/{class_id}/{nft_id}";
+  }
+
+  // Queries a RoyaltyConfig by class
+  rpc RoyaltyConfig(QueryRoyaltyConfigRequest) returns (QueryRoyaltyConfigResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/royalty_configs/{class_id}";
+  }
+
+  // Queries index of RoyaltyConfig of all classes
+  rpc RoyaltyConfigIndex(QueryRoyaltyConfigIndexRequest) returns (QueryRoyaltyConfigIndexResponse) {
+    option (google.api.http).get = "/likechain/likenft/v1/royalty_configs";
+  }
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryClassesByISCNRequest {
+  string iscn_id_prefix = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryClassesByISCNResponse {
+  string iscn_id_prefix = 1;
+  repeated cosmos.nft.v1beta1.Class classes = 2 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}
+
+message QueryClassesByISCNIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryClassesByISCNIndexResponse {
+  repeated ClassesByISCN classes_by_iscns = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryISCNByClassRequest {
+  string class_id = 1;
+}
+
+message QueryISCNByClassResponse {
+  string iscn_id_prefix = 1;
+  string owner = 2;
+  uint64 latest_version = 3;
+  likechain.iscn.QueryResponseRecord latest_record = 4 [(gogoproto.nullable) = false];
+}
+
+message QueryClassesByAccountRequest {
+  string account = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryClassesByAccountResponse {
+  string account = 1;
+  repeated cosmos.nft.v1beta1.Class classes = 2 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}
+
+message QueryClassesByAccountIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryClassesByAccountIndexResponse {
+  repeated ClassesByAccount classes_by_accounts = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAccountByClassRequest {
+  string class_id = 1;
+}
+
+message QueryAccountByClassResponse {
+  string address = 1;
+}
+
+message QueryBlindBoxContentRequest {
+  string class_id = 1;
+  string id = 2;
+}
+
+message QueryBlindBoxContentResponse {
+  BlindBoxContent blind_box_content = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryBlindBoxContentIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryBlindBoxContentIndexResponse {
+  repeated BlindBoxContent blind_box_contents = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryBlindBoxContentsRequest {
+  string class_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryBlindBoxContentsResponse {
+  repeated BlindBoxContent blind_box_contents = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOfferRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message QueryOfferResponse {
+  Offer offer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryOfferIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryOfferIndexResponse {
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOffersByClassRequest {
+  string class_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryOffersByClassResponse {
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOffersByNFTRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryOffersByNFTResponse {
+  repeated Offer offers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListingRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+}
+
+message QueryListingResponse {
+  Listing listing = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryListingIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListingIndexResponse {
+  repeated Listing listings = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListingsByClassRequest {
+  string class_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryListingsByClassResponse {
+  repeated Listing listings = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListingsByNFTRequest {
+  string class_id = 1;
+  string nft_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryListingsByNFTResponse {
+  repeated Listing listings = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryRoyaltyConfigRequest {
+  string class_id = 1;
+}
+
+message QueryRoyaltyConfigResponse {
+  RoyaltyConfig royalty_config = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryRoyaltyConfigIndexRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryRoyaltyConfigIndexResponse {
+  repeated RoyaltyConfigByClass royalty_config_by_class = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// this line is used by starport scaffolding # 3

@@ -12,3 +12,5 @@ build
 dist
 release
 deploy/liked.service
+
+x/likenft/testutil/generated_*

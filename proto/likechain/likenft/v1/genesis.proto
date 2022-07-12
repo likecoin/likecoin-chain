@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "gogoproto/gogo.proto";
+import "likechain/likenft/v1/blind_box_content.proto";
+import "likechain/likenft/v1/class_reveal_queue.proto";
+import "likechain/likenft/v1/classes_by_account.proto";
+import "likechain/likenft/v1/classes_by_iscn.proto";
+import "likechain/likenft/v1/listing.proto";
+import "likechain/likenft/v1/listing_expire_queue.proto";
+import "likechain/likenft/v1/offer.proto";
+import "likechain/likenft/v1/offer_expire_queue.proto";
+import "likechain/likenft/v1/params.proto";
+import "likechain/likenft/v1/royalty_config.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+// GenesisState defines the likenft module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated ClassesByISCN classes_by_iscn_list = 2 [(gogoproto.nullable) = false];
+  repeated ClassesByAccount classes_by_account_list = 3 [(gogoproto.nullable) = false];
+  repeated BlindBoxContent blind_box_content_list = 4 [(gogoproto.nullable) = false];
+  repeated ClassRevealQueueEntry class_reveal_queue = 5 [(gogoproto.nullable) = false];
+  repeated Offer offer_list = 6 [(gogoproto.nullable) = false];
+  repeated Listing listing_list = 7 [(gogoproto.nullable) = false];
+  repeated OfferExpireQueueEntry offer_expire_queue = 8 [(gogoproto.nullable) = false];
+  repeated ListingExpireQueueEntry listing_expire_queue = 9 [(gogoproto.nullable) = false];
+  repeated RoyaltyConfigByClass royalty_config_by_class_list = 10 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

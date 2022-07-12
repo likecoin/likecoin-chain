@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+message EventNewClass {
+  string class_id = 1;
+  string parent_iscn_id_prefix = 2;
+  string parent_account = 3;
+}
+
+message EventUpdateClass {
+  string class_id = 1;
+  string parent_iscn_id_prefix = 2;
+  string parent_account = 3;
+}
+
+message EventRevealClass {
+  string class_id = 1;
+  bool success = 2;
+  string error = 3;
+}
+
+message EventMintNFT {
+  string class_id = 1;
+  string nft_id = 2;
+  string owner = 3;
+  string class_parent_iscn_id_prefix = 4;
+  string class_parent_account = 5;
+}
+
+message EventBurnNFT {
+  string class_id = 1;
+  string nft_id = 2;
+  string owner = 3;
+  string class_parent_iscn_id_prefix = 4;
+  string class_parent_account = 5;
+}
+
+message EventCreateBlindBoxContent {
+  string class_id = 1;
+  string content_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
+}
+
+message EventUpdateBlindBoxContent {
+  string class_id = 1;
+  string content_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
+}
+
+message EventDeleteBlindBoxContent {
+  string class_id = 1;
+  string content_id = 2;
+  string class_parent_iscn_id_prefix = 3;
+  string class_parent_account = 4;
+}
+
+message EventCreateOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message EventUpdateOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message EventDeleteOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+}
+
+message EventCreateListing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+}
+
+message EventUpdateListing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+}
+
+message EventDeleteListing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+}
+
+message EventSellNFT {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  string buyer = 4;
+  uint64 price = 5;
+}
+
+message EventBuyNFT {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  string buyer = 4;
+  uint64 price = 5;
+}
+
+message EventExpireOffer {
+  string class_id = 1;
+  string nft_id = 2;
+  string buyer = 3;
+  bool success = 4;
+  string error = 5;
+}
+
+message EventExpireListing {
+  string class_id = 1;
+  string nft_id = 2;
+  string seller = 3;
+  bool success = 4;
+  string error = 5;
+}
+
+message EventCreateRoyaltyConfig {
+  string class_id = 1;
+}
+
+message EventUpdateRoyaltyConfig {
+  string class_id = 1;
+}
+
+message EventDeleteRoyaltyConfig {
+  string class_id = 1;
+}

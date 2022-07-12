@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package likechain.likenft.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+message ClassData {
+  bytes metadata = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "JsonInput"
+  ];
+  ClassParent parent = 2 [(gogoproto.nullable) = false];
+  ClassConfig config = 3 [(gogoproto.nullable) = false];
+  BlindBoxState blind_box_state = 4 [(gogoproto.nullable) = false];
+}
+
+enum ClassParentType {
+  UNKNOWN = 0;
+  ISCN = 1;
+  ACCOUNT = 2;
+}
+
+message ClassParent {
+  ClassParentType type = 1;
+  string iscn_id_prefix = 2 [(gogoproto.nullable) = true];
+  uint64 iscn_version_at_mint = 3 [(gogoproto.nullable) = true];
+  string account = 4 [(gogoproto.nullable) = true];
+}
+
+message MintPeriod {
+  google.protobuf.Timestamp start_time = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  repeated string allowed_addresses = 2;
+  uint64 mint_price = 3;
+}
+
+message ClassConfig {
+  bool burnable = 1;
+  uint64 max_supply = 2;
+  BlindBoxConfig blind_box_config = 3 [(gogoproto.nullable) = true];
+}
+
+message BlindBoxConfig {
+  repeated MintPeriod mint_periods = 1 [(gogoproto.nullable) = false];
+  google.protobuf.Timestamp reveal_time = 2 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+
+message BlindBoxState {
+  uint64 content_count = 1;
+  bool to_be_revealed = 2;
+}
