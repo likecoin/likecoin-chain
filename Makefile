@@ -38,7 +38,7 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	go mod verify
 
-install: go.sum $(BUILDDIR)/
+install: codegen go.sum $(BUILDDIR)/
 	go install -mod=readonly $(BUILD_FLAGS) ./...
 
 codegen:
