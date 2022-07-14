@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.0](https://github.com/likecoin/likecoin-chain/releases/v3.0.0)
+
+- Upgrade cosmos-sdk to 0.45.6, ibc-go to 2.3.0
+- Backport x/nft module from cosmos-sdk 0.46.0-rc1
+- Add x/likenft module, support minting NFT via ISCN, blindbox NFT and NFT marketplace
+
 ## [v2.0.2](https://github.com/likecoin/likecoin-chain/releases/v2.0.2)
 
 - Further hotfix on panic when unbonding unbonded validator
