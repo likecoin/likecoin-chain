@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.1.0](https://github.com/likecoin/likecoin-chain/releases/v3.1.0)
+
+- Upgrade cosmos-sdk to 0.45.9 which patches ibc security vulnerability dragonberry
+
 ## [v3.0.0](https://github.com/likecoin/likecoin-chain/releases/v3.0.0)
 
 - Upgrade cosmos-sdk to 0.45.6, ibc-go to 2.3.0
