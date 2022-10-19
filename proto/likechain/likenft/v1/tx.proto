@@ -183,6 +183,7 @@ message MsgSellNFT {
   string nft_id = 3;
   string buyer = 4;
   uint64 price = 5;
+  bool full_pay_to_royalty = 6;
 }
 
 message MsgSellNFTResponse {}
