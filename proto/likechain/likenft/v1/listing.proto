@@ -16,6 +16,7 @@ message Listing {
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
+  bool full_pay_to_royalty = 6;
 }
 
 message ListingStoreRecord {
@@ -27,4 +28,5 @@ message ListingStoreRecord {
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
+  bool full_pay_to_royalty = 6;
 }
