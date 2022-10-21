@@ -14,14 +14,18 @@ var _ = strconv.Itoa(0)
 
 func CmdSellNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell-nft [class-id] [nft-id] [buyer] [price]",
+		Use:   "sell-nft [class-id] [nft-id] [buyer] [price] [full-pay-to-royalty]",
 		Short: "Broadcast message SellNFT",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argNftId := args[1]
 			argBuyer := args[2]
 			argPrice, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+			argFullPayToRoyalty, err := strconv.ParseBool(args[4])
 			if err != nil {
 				return err
 			}
@@ -37,6 +41,7 @@ func CmdSellNFT() *cobra.Command {
 				argNftId,
 				argBuyer,
 				argPrice,
+				argFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

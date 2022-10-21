@@ -8,13 +8,17 @@ import (
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
-func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, config types.RoyaltyConfig) (royaltyAmount uint64, allocations []types.RoyaltyAllocation, err error) {
+func (k Keeper) ComputeRoyaltyAllocation(ctx sdk.Context, txnAmount uint64, fullPayToRoyalty bool, config types.RoyaltyConfig) (royaltyAmount uint64, allocations []types.RoyaltyAllocation, err error) {
 	err = k.validateRoyaltyConfig(ctx, config)
 	if err != nil {
 		return
 	}
 	// max allocable amount
-	allocatable := uint64(math.Floor(float64(txnAmount) / float64(10000) * float64(config.RateBasisPoints)))
+	rateBasisPoint := config.RateBasisPoints
+	if fullPayToRoyalty {
+		rateBasisPoint = 10000
+	}
+	allocatable := uint64(math.Floor(float64(txnAmount) / float64(10000) * float64(rateBasisPoint)))
 	if allocatable <= 0 {
 		return
 	}

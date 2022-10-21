@@ -45,7 +45,7 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 	royaltyConfig, found := k.GetRoyaltyConfig(ctx, msg.ClassId)
 	var royaltyAmount uint64
 	if found {
-		_royaltyAmount, allocations, err := k.ComputeRoyaltyAllocation(ctx, msg.Price, royaltyConfig)
+		_royaltyAmount, allocations, err := k.ComputeRoyaltyAllocation(ctx, msg.Price, msg.FullPayToRoyalty, royaltyConfig)
 		if err != nil {
 			return nil, err
 		}
@@ -101,11 +101,12 @@ func (k msgServer) SellNFT(goCtx context.Context, msg *types.MsgSellNFT) (*types
 
 	// emit event
 	ctx.EventManager().EmitTypedEvent(&types.EventSellNFT{
-		ClassId: msg.ClassId,
-		NftId:   msg.NftId,
-		Seller:  sellerAddress.String(),
-		Buyer:   buyerAddress.String(),
-		Price:   msg.Price,
+		ClassId:          msg.ClassId,
+		NftId:            msg.NftId,
+		Seller:           sellerAddress.String(),
+		Buyer:            buyerAddress.String(),
+		Price:            msg.Price,
+		FullPayToRoyalty: msg.FullPayToRoyalty,
 	})
 
 	return &types.MsgSellNFTResponse{}, nil

@@ -51,7 +51,7 @@ func (k msgServer) BuyNFT(goCtx context.Context, msg *types.MsgBuyNFT) (*types.M
 	royaltyConfig, found := k.GetRoyaltyConfig(ctx, msg.ClassId)
 	var royaltyAmount uint64
 	if found {
-		_royaltyAmount, allocations, err := k.ComputeRoyaltyAllocation(ctx, msg.Price, royaltyConfig)
+		_royaltyAmount, allocations, err := k.ComputeRoyaltyAllocation(ctx, msg.Price, false, royaltyConfig) // TODO: remove hardcode false
 		if err != nil {
 			return nil, err
 		}

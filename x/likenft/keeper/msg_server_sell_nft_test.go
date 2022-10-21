@@ -44,6 +44,7 @@ func TestSellNFTNormalRoyalty(t *testing.T) {
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
 	royaltyBasisPoints := uint64(234)
 	finalPrice := uint64(100000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -92,11 +93,112 @@ func TestSellNFTNormalRoyalty(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
+	})
+	require.NoError(t, err)
+	require.Equal(t, &types.MsgSellNFTResponse{}, res)
+
+	// Check state
+	// Expect offer removed
+	_, found := k.GetOffer(ctx, classId, nftId, buyerAddressBytes)
+	require.False(t, found)
+	// Expect listing removed
+	_, found = k.GetListing(ctx, classId, nftId, sellerAddressBytes)
+	require.False(t, found)
+
+	ctrl.Finish()
+}
+
+// normal royalty and full pay
+func TestSellNFTNormalRoyaltyAndFullPay(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, k := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockTime(time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC))
+	goCtx = sdk.WrapSDKContext(ctx)
+
+	// Data
+	creatorAddressBytes := []byte{1, 1, 1, 1, 0, 0, 0, 0}
+	sellerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	sellerAddress, _ := sdk.Bech32ifyAddressBytes("like", sellerAddressBytes)
+	buyerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
+	buyerAddress, _ := sdk.Bech32ifyAddressBytes("like", buyerAddressBytes)
+	classId := "likenft1abcdef"
+	nftId := "nft1"
+	price := uint64(123456)
+	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	royaltyBasisPoints := uint64(234)
+	finalPrice := uint64(100000)
+	fullPayToRoyalty := true
+
+	// Seed listing to test deletion after txn
+	k.SetListing(ctx, types.ListingStoreRecord{
+		ClassId:    classId,
+		NftId:      nftId,
+		Seller:     sellerAddressBytes,
+		Price:      uint64(999999),
+		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+	})
+
+	// Seed offer
+	k.SetOffer(ctx, types.OfferStoreRecord{
+		ClassId:    classId,
+		NftId:      nftId,
+		Buyer:      buyerAddressBytes,
+		Price:      price,
+		Expiration: expiration,
+	})
+
+	// Seed royalty config
+	k.SetRoyaltyConfig(ctx, types.RoyaltyConfigByClass{
 		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		RoyaltyConfig: types.RoyaltyConfig{
+			RateBasisPoints: royaltyBasisPoints,
+			Stakeholders: []types.RoyaltyStakeholder{
+				{
+					Account: creatorAddressBytes,
+					Weight:  uint64(1),
+				},
+			},
+		},
+	})
+	royaltyAmount := uint64(math.Floor(float64(finalPrice) / 10000 * float64(10000)))
+	royaltyAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(royaltyAmount))))
+
+	// Mock
+	nftKeeper.EXPECT().GetOwner(gomock.Any(), classId, nftId).Return(sellerAddressBytes)
+	bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), types.ModuleName, creatorAddressBytes, royaltyAmountCoins).Return(nil)
+	netAmount := finalPrice - royaltyAmount
+	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
+	bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), types.ModuleName, sellerAddressBytes, netAmountCoins).Return(nil)
+	refundAmount := price - finalPrice
+	refundAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(refundAmount))))
+	bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), types.ModuleName, buyerAddressBytes, refundAmountCoins).Return(nil)
+	nftKeeper.EXPECT().Transfer(gomock.Any(), classId, nftId, buyerAddressBytes).Return(nil)
+
+	// Call
+	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.NoError(t, err)
 	require.Equal(t, &types.MsgSellNFTResponse{}, res)
@@ -140,6 +242,7 @@ func TestSellNFTNormalNoRoyalty(t *testing.T) {
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
 	finalPrice := uint64(100000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -173,11 +276,95 @@ func TestSellNFTNormalNoRoyalty(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
+	})
+	require.NoError(t, err)
+	require.Equal(t, &types.MsgSellNFTResponse{}, res)
+
+	// Check state
+	// Expect offer removed
+	_, found := k.GetOffer(ctx, classId, nftId, buyerAddressBytes)
+	require.False(t, found)
+	// Expect listing removed
+	_, found = k.GetListing(ctx, classId, nftId, sellerAddressBytes)
+	require.False(t, found)
+
+	ctrl.Finish()
+}
+
+// normal no royalty and full pay
+func TestSellNFTNormalNoRoyaltyAndFullPay(t *testing.T) {
+	// Setup
+	ctrl := gomock.NewController(t)
+	accountKeeper := testutil.NewMockAccountKeeper(ctrl)
+	bankKeeper := testutil.NewMockBankKeeper(ctrl)
+	iscnKeeper := testutil.NewMockIscnKeeper(ctrl)
+	nftKeeper := testutil.NewMockNftKeeper(ctrl)
+	msgServer, goCtx, k := setupMsgServer(t, keeper.LikenftDependedKeepers{
+		AccountKeeper: accountKeeper,
+		BankKeeper:    bankKeeper,
+		IscnKeeper:    iscnKeeper,
+		NftKeeper:     nftKeeper,
+	})
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx = ctx.WithBlockTime(time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC))
+	goCtx = sdk.WrapSDKContext(ctx)
+
+	// Data
+	sellerAddressBytes := []byte{0, 1, 0, 1, 0, 1, 0, 1}
+	sellerAddress, _ := sdk.Bech32ifyAddressBytes("like", sellerAddressBytes)
+	buyerAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
+	buyerAddress, _ := sdk.Bech32ifyAddressBytes("like", buyerAddressBytes)
+	classId := "likenft1abcdef"
+	nftId := "nft1"
+	price := uint64(123456)
+	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	finalPrice := uint64(100000)
+	fullPayToRoyalty := true
+
+	// Seed listing to test deletion after txn
+	k.SetListing(ctx, types.ListingStoreRecord{
+		ClassId:    classId,
+		NftId:      nftId,
+		Seller:     sellerAddressBytes,
+		Price:      uint64(999999),
+		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+	})
+
+	// Seed offer
+	k.SetOffer(ctx, types.OfferStoreRecord{
+		ClassId:    classId,
+		NftId:      nftId,
+		Buyer:      buyerAddressBytes,
+		Price:      price,
+		Expiration: expiration,
+	})
+
+	// no royalty config, full pay do not affect
+
+	// Mock
+	nftKeeper.EXPECT().GetOwner(gomock.Any(), classId, nftId).Return(sellerAddressBytes)
+	netAmount := finalPrice
+	netAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(netAmount))))
+	bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), types.ModuleName, sellerAddressBytes, netAmountCoins).Return(nil)
+	refundAmount := price - finalPrice
+	refundAmountCoins := sdk.NewCoins(sdk.NewCoin(k.GetParams(ctx).PriceDenom, sdk.NewInt(int64(refundAmount))))
+	bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), types.ModuleName, buyerAddressBytes, refundAmountCoins).Return(nil)
+	nftKeeper.EXPECT().Transfer(gomock.Any(), classId, nftId, buyerAddressBytes).Return(nil)
+
+	// Call
+	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.NoError(t, err)
 	require.Equal(t, &types.MsgSellNFTResponse{}, res)
@@ -223,6 +410,7 @@ func TestSellNFTNoRefund(t *testing.T) {
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
 	royaltyBasisPoints := uint64(234)
 	finalPrice := uint64(123456)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -268,11 +456,12 @@ func TestSellNFTNoRefund(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.NoError(t, err)
 	require.Equal(t, &types.MsgSellNFTResponse{}, res)
@@ -317,6 +506,7 @@ func TestSellNFTUserNotOwner(t *testing.T) {
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
 	finalPrice := uint64(100000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -341,11 +531,12 @@ func TestSellNFTUserNotOwner(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -388,6 +579,7 @@ func TestSellNFTOfferNotFound(t *testing.T) {
 	classId := "likenft1abcdef"
 	nftId := "nft1"
 	finalPrice := uint64(100000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -403,11 +595,12 @@ func TestSellNFTOfferNotFound(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -449,6 +642,7 @@ func TestSellNFTOfferExpired(t *testing.T) {
 	price := uint64(123456)
 	expiration := time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)
 	finalPrice := uint64(100000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -473,11 +667,12 @@ func TestSellNFTOfferExpired(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -522,6 +717,7 @@ func TestSellNFTPriceTooHigh(t *testing.T) {
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
 	finalPrice := uint64(200000)
+	fullPayToRoyalty := false
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
@@ -546,11 +742,12 @@ func TestSellNFTPriceTooHigh(t *testing.T) {
 
 	// Call
 	res, err := msgServer.SellNFT(goCtx, &types.MsgSellNFT{
-		Creator: sellerAddress,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyerAddress,
-		Price:   finalPrice,
+		Creator:          sellerAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyerAddress,
+		Price:            finalPrice,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)

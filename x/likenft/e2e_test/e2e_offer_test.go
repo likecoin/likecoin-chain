@@ -149,6 +149,7 @@ func TestEndToEndOffer(t *testing.T) {
 	// Create Offer
 	price := 123456
 	expiration := time.Now().UTC().Add(30 * 24 * time.Hour)
+	fullPayToRoyalty := true
 
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
@@ -230,7 +231,7 @@ func TestEndToEndOffer(t *testing.T) {
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdSellNFT(),
-		append([]string{classId, nftId, user2Address, fmt.Sprintf("%d", newPrice)}, txArgs...),
+		append([]string{classId, nftId, user2Address, fmt.Sprintf("%d", newPrice), fmt.Sprintf("%t", fullPayToRoyalty)}, txArgs...),
 	)
 	require.NoError(t, err)
 
@@ -240,10 +241,11 @@ func TestEndToEndOffer(t *testing.T) {
 
 	actualSellEvent := parseEventSellNFT(res)
 	require.Equal(t, types.EventSellNFT{
-		ClassId: classId,
-		NftId:   nftId,
-		Seller:  userAddress.String(),
-		Buyer:   user2Address,
-		Price:   uint64(newPrice),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddress.String(),
+		Buyer:            user2Address,
+		Price:            uint64(newPrice),
+		FullPayToRoyalty: fullPayToRoyalty,
 	}, actualSellEvent)
 }
