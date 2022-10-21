@@ -37,15 +37,17 @@ func TestUpdateListingNormal(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 
 	// Seed listing
 	prevExpiration := time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC)
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddressBytes,
-		Price:      uint64(987654),
-		Expiration: prevExpiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       prevExpiration,
+		FullPayToRoyalty: false,
 	})
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
 		ExpireTime: prevExpiration,
@@ -54,19 +56,21 @@ func TestUpdateListingNormal(t *testing.T) {
 
 	// Call
 	res, err := msgServer.UpdateListing(goCtx, &types.MsgUpdateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.NoError(t, err)
 	expectedListing := types.Listing{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddress,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddress,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}
 	require.Equal(t, &types.MsgUpdateListingResponse{
 		Listing: expectedListing,
@@ -111,14 +115,16 @@ func TestUpdateListingNotExist(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 
 	// Call
 	res, err := msgServer.UpdateListing(goCtx, &types.MsgUpdateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -152,14 +158,16 @@ func TestUpdateListingExpirationInPast(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 
 	// Seed listing
 	prevListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -169,11 +177,12 @@ func TestUpdateListingExpirationInPast(t *testing.T) {
 
 	// Call
 	res, err := msgServer.UpdateListing(goCtx, &types.MsgUpdateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)

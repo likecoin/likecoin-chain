@@ -24,11 +24,12 @@ func createNListing(keeper *keeper.Keeper, ctx sdk.Context, nClass int, nNFT int
 		for j := 0; j < nNFT; j++ {
 			for k := 0; k < nListing; k++ {
 				listing := types.ListingStoreRecord{
-					ClassId:    strconv.Itoa(i),
-					NftId:      strconv.Itoa(j),
-					Seller:     accounts[k],
-					Price:      uint64(k),
-					Expiration: time.Date(2022, 1, 1+k, 0, 0, 0, 0, time.UTC),
+					ClassId:          strconv.Itoa(i),
+					NftId:            strconv.Itoa(j),
+					Seller:           accounts[k],
+					Price:            uint64(k),
+					Expiration:       time.Date(2022, 1, 1+k, 0, 0, 0, 0, time.UTC),
+					FullPayToRoyalty: false,
 				}
 				items = append(items, listing)
 				keeper.SetListing(ctx, listing)

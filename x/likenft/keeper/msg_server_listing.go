@@ -42,11 +42,12 @@ func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateList
 
 	// Create new listing
 	var listing = types.ListingStoreRecord{
-		ClassId:    msg.ClassId,
-		NftId:      msg.NftId,
-		Seller:     userAddress,
-		Price:      msg.Price,
-		Expiration: msg.Expiration,
+		ClassId:          msg.ClassId,
+		NftId:            msg.NftId,
+		Seller:           userAddress,
+		Price:            msg.Price,
+		Expiration:       msg.Expiration,
+		FullPayToRoyalty: msg.FullPayToRoyalty,
 	}
 
 	k.SetListing(
@@ -97,11 +98,12 @@ func (k msgServer) UpdateListing(goCtx context.Context, msg *types.MsgUpdateList
 	}
 
 	var newListing = types.ListingStoreRecord{
-		ClassId:    msg.ClassId,
-		NftId:      msg.NftId,
-		Seller:     userAddress,
-		Price:      msg.Price,
-		Expiration: msg.Expiration,
+		ClassId:          msg.ClassId,
+		NftId:            msg.NftId,
+		Seller:           userAddress,
+		Price:            msg.Price,
+		Expiration:       msg.Expiration,
+		FullPayToRoyalty: msg.FullPayToRoyalty,
 	}
 
 	k.SetListing(ctx, newListing)

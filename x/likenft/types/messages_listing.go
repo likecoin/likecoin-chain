@@ -21,14 +21,16 @@ func NewMsgCreateListing(
 	nftId string,
 	price uint64,
 	expiration time.Time,
+	fullPayToRoyalty bool,
 
 ) *MsgCreateListing {
 	return &MsgCreateListing{
-		Creator:    creator,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          creator,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}
 }
 
@@ -69,14 +71,16 @@ func NewMsgUpdateListing(
 	nftId string,
 	price uint64,
 	expiration time.Time,
+	fullPayToRoyalty bool,
 
 ) *MsgUpdateListing {
 	return &MsgUpdateListing{
-		Creator:    creator,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          creator,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}
 }
 

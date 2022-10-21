@@ -37,15 +37,17 @@ func TestCreateListingNormal(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 	notUserAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
 
 	// Seed listing by previous owner
 	prevOwnerListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     notUserAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           notUserAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevOwnerListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -58,19 +60,21 @@ func TestCreateListingNormal(t *testing.T) {
 
 	// Call
 	res, err := msgServer.CreateListing(goCtx, &types.MsgCreateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.NoError(t, err)
 	expectedListing := types.Listing{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddress,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddress,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}
 	require.Equal(t, &types.MsgCreateListingResponse{
 		Listing: expectedListing,
@@ -118,6 +122,7 @@ func TestCreateListingUserNotOwner(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 	notUserAddressBytes := []byte{1, 0, 1, 0, 1, 0, 1, 0}
 
 	// Mock
@@ -125,11 +130,12 @@ func TestCreateListingUserNotOwner(t *testing.T) {
 
 	// Call
 	res, err := msgServer.CreateListing(goCtx, &types.MsgCreateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -161,6 +167,7 @@ func TestCreateListingExpirationInPast(t *testing.T) {
 	classId := "likenft1abcdef"
 	nftId := "nft1"
 	price := uint64(123456)
+	fullPayToRoyalty := true
 	expiration := time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)
 
 	// Mock
@@ -168,11 +175,12 @@ func TestCreateListingExpirationInPast(t *testing.T) {
 
 	// Call
 	res, err := msgServer.CreateListing(goCtx, &types.MsgCreateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -205,17 +213,19 @@ func TestCreateListingExpirationTooFarInFuture(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 7, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 
 	// Mock
 	nftKeeper.EXPECT().GetOwner(gomock.Any(), classId, nftId).Return(userAddressBytes).MinTimes(1)
 
 	// Call
 	res, err := msgServer.CreateListing(goCtx, &types.MsgCreateListing{
-		Creator:    userAddress,
-		ClassId:    classId,
-		NftId:      nftId,
-		Price:      price,
-		Expiration: expiration,
+		Creator:          userAddress,
+		ClassId:          classId,
+		NftId:            nftId,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -249,14 +259,16 @@ func TestCreateListingAlreadyExists(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := true
 
 	// Seed listing by current owner
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Mock

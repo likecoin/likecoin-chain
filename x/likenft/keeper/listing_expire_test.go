@@ -62,12 +62,14 @@ func TestListingExpireFeatureNormal(t *testing.T) {
 	nftId := "nft1"
 	seller := sdk.AccAddress([]byte{0, 1, 0, 1, 0, 1, 0, 1})
 	expireTime := time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	app.LikeNftKeeper.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     seller,
-		Price:      uint64(123456),
-		Expiration: expireTime,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           seller,
+		Price:            uint64(123456),
+		Expiration:       expireTime,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
 		ExpireTime: expireTime,
@@ -78,11 +80,12 @@ func TestListingExpireFeatureNormal(t *testing.T) {
 	seller2 := sdk.AccAddress([]byte{1, 1, 1, 1, 0, 0, 0, 0})
 	expireTime2 := time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC)
 	app.LikeNftKeeper.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     seller2,
-		Price:      uint64(987654),
-		Expiration: expireTime2,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           seller2,
+		Price:            uint64(987654),
+		Expiration:       expireTime2,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
 		ExpireTime: expireTime2,
@@ -133,12 +136,14 @@ func TestListingExpireFeatureQueueMismatch(t *testing.T) {
 	nftId := "nft1"
 	seller := sdk.AccAddress([]byte{0, 1, 0, 1, 0, 1, 0, 1})
 	expireTime := time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	app.LikeNftKeeper.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     seller,
-		Price:      uint64(123456),
-		Expiration: expireTime,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           seller,
+		Price:            uint64(123456),
+		Expiration:       expireTime,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 	app.LikeNftKeeper.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
 		ExpireTime: expireTime,

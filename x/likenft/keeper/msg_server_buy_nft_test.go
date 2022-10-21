@@ -41,16 +41,18 @@ func TestBuyNFTNormalRoyalty(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	royaltyBasisPoints := uint64(234)
 	finalPrice := uint64(200000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Seed royalty config
@@ -124,15 +126,17 @@ func TestBuyNFTNormalNoRoyalty(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	finalPrice := uint64(200000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// no royalty config
@@ -234,15 +238,17 @@ func TestBuyNFTListingOwnerInvalid(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	finalPrice := uint64(200000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Mock
@@ -290,15 +296,17 @@ func TestBuyNFTListingExpired(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	finalPrice := uint64(200000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Mock
@@ -346,15 +354,17 @@ func TestBuyNFTPriceTooLow(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	finalPrice := uint64(100000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Mock
@@ -402,15 +412,17 @@ func TestBuyNFTNotEnoughBalance(t *testing.T) {
 	nftId := "nft1"
 	price := uint64(123456)
 	expiration := time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	fullPayToRoyalty := false
 	finalPrice := uint64(200000)
 
 	// Seed listing
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      price,
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            price,
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	})
 
 	// Mock

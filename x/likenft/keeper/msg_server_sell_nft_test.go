@@ -48,11 +48,12 @@ func TestSellNFTNormalRoyalty(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -148,11 +149,12 @@ func TestSellNFTNormalRoyaltyAndFullPay(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -246,11 +248,12 @@ func TestSellNFTNormalNoRoyalty(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -329,11 +332,12 @@ func TestSellNFTNormalNoRoyaltyAndFullPay(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -414,11 +418,12 @@ func TestSellNFTNoRefund(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -510,11 +515,12 @@ func TestSellNFTUserNotOwner(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -583,11 +589,12 @@ func TestSellNFTOfferNotFound(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Mock
@@ -646,11 +653,12 @@ func TestSellNFTOfferExpired(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer
@@ -721,11 +729,12 @@ func TestSellNFTPriceTooHigh(t *testing.T) {
 
 	// Seed listing to test deletion after txn
 	k.SetListing(ctx, types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     sellerAddressBytes,
-		Price:      uint64(999999),
-		Expiration: time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           sellerAddressBytes,
+		Price:            uint64(999999),
+		Expiration:       time.Date(2022, 2, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	})
 
 	// Seed offer

@@ -9,21 +9,23 @@ func (l Listing) ToStoreRecord() ListingStoreRecord {
 	}
 
 	return ListingStoreRecord{
-		ClassId:    l.ClassId,
-		NftId:      l.NftId,
-		Seller:     seller,
-		Price:      l.Price,
-		Expiration: l.Expiration,
+		ClassId:          l.ClassId,
+		NftId:            l.NftId,
+		Seller:           seller,
+		Price:            l.Price,
+		Expiration:       l.Expiration,
+		FullPayToRoyalty: l.FullPayToRoyalty,
 	}
 }
 
 func (r ListingStoreRecord) ToPublicRecord() Listing {
 	return Listing{
-		ClassId:    r.ClassId,
-		NftId:      r.NftId,
-		Seller:     r.Seller.String(),
-		Price:      r.Price,
-		Expiration: r.Expiration,
+		ClassId:          r.ClassId,
+		NftId:            r.NftId,
+		Seller:           r.Seller.String(),
+		Price:            r.Price,
+		Expiration:       r.Expiration,
+		FullPayToRoyalty: r.FullPayToRoyalty,
 	}
 }
 

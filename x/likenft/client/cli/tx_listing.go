@@ -13,9 +13,9 @@ import (
 
 func CmdCreateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-listing [class-id] [nft-id] [price] [expiration]",
+		Use:   "create-listing [class-id] [nft-id] [price] [expiration] [full-pay-to-royalty]",
 		Short: "Create a new listing",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexClassId := args[0]
@@ -31,6 +31,11 @@ func CmdCreateListing() *cobra.Command {
 				return nil
 			}
 
+			argFullPayToRoyalty, err := strconv.ParseBool(args[4])
+			if err != nil {
+				return err
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -42,6 +47,7 @@ func CmdCreateListing() *cobra.Command {
 				indexNftId,
 				argPrice,
 				argExpiration,
+				argFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -57,9 +63,9 @@ func CmdCreateListing() *cobra.Command {
 
 func CmdUpdateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-listing [class-id] [nft-id] [price] [expiration]",
+		Use:   "update-listing [class-id] [nft-id] [price] [expiration] [full-pay-to-royalty]",
 		Short: "Update a listing",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexClassId := args[0]
@@ -80,12 +86,18 @@ func CmdUpdateListing() *cobra.Command {
 				return err
 			}
 
+			argFullPayToRoyalty, err := strconv.ParseBool(args[4])
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgUpdateListing(
 				clientCtx.GetFromAddress().String(),
 				indexClassId,
 				indexNftId,
 				argPrice,
 				argExpiration,
+				argFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
