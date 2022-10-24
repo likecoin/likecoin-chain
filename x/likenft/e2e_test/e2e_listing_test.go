@@ -156,7 +156,7 @@ func TestEndToEndListing(t *testing.T) {
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateListing(),
-		append([]string{classId, nftId, fmt.Sprintf("%d", price), expiration.Format(time.RFC3339Nano), fmt.Sprintf("%t", fullPayToRoyalty)}, txArgs...),
+		append([]string{classId, nftId, fmt.Sprintf("%d", price), expiration.Format(time.RFC3339Nano)}, append(txArgs, "--full-pay-to-royalty")...),
 	)
 	require.NoError(t, err)
 
@@ -198,7 +198,7 @@ func TestEndToEndListing(t *testing.T) {
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdUpdateListing(),
-		append([]string{classId, nftId, fmt.Sprintf("%d", newPrice), newExpiration.Format(time.RFC3339Nano), fmt.Sprintf("%t", newFullPayToRoyalty)}, txArgs...),
+		append([]string{classId, nftId, fmt.Sprintf("%d", newPrice), newExpiration.Format(time.RFC3339Nano)}, txArgs...),
 	)
 	require.NoError(t, err)
 

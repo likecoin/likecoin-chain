@@ -231,7 +231,7 @@ func TestEndToEndOffer(t *testing.T) {
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdSellNFT(),
-		append([]string{classId, nftId, user2Address, fmt.Sprintf("%d", newPrice), fmt.Sprintf("%t", fullPayToRoyalty)}, txArgs...),
+		append([]string{classId, nftId, user2Address, fmt.Sprintf("%d", newPrice)}, append(txArgs, "--full-pay-to-royalty")...),
 	)
 	require.NoError(t, err)
 

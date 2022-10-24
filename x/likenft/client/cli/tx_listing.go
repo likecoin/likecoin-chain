@@ -13,9 +13,9 @@ import (
 
 func CmdCreateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-listing [class-id] [nft-id] [price] [expiration] [full-pay-to-royalty]",
+		Use:   "create-listing [class-id] [nft-id] [price] [expiration] (--full-pay-to-royalty)",
 		Short: "Create a new listing",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexClassId := args[0]
@@ -31,7 +31,7 @@ func CmdCreateListing() *cobra.Command {
 				return nil
 			}
 
-			argFullPayToRoyalty, err := strconv.ParseBool(args[4])
+			flagFullPayToRoyalty, err := cmd.Flags().GetBool("full-pay-to-royalty")
 			if err != nil {
 				return err
 			}
@@ -47,7 +47,7 @@ func CmdCreateListing() *cobra.Command {
 				indexNftId,
 				argPrice,
 				argExpiration,
-				argFullPayToRoyalty,
+				flagFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -57,15 +57,16 @@ func CmdCreateListing() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Bool("full-pay-to-royalty", false, "Pay full price to royalty")
 
 	return cmd
 }
 
 func CmdUpdateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-listing [class-id] [nft-id] [price] [expiration] [full-pay-to-royalty]",
+		Use:   "update-listing [class-id] [nft-id] [price] [expiration] (--full-pay-to-royalty)",
 		Short: "Update a listing",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexClassId := args[0]
@@ -86,7 +87,7 @@ func CmdUpdateListing() *cobra.Command {
 				return err
 			}
 
-			argFullPayToRoyalty, err := strconv.ParseBool(args[4])
+			flagFullPayToRoyalty, err := cmd.Flags().GetBool("full-pay-to-royalty")
 			if err != nil {
 				return err
 			}
@@ -97,7 +98,7 @@ func CmdUpdateListing() *cobra.Command {
 				indexNftId,
 				argPrice,
 				argExpiration,
-				argFullPayToRoyalty,
+				flagFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -107,6 +108,7 @@ func CmdUpdateListing() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Bool("full-pay-to-royalty", false, "Pay full price to royalty")
 
 	return cmd
 }
