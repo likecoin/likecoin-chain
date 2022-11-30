@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.1.1](https://github.com/likecoin/likecoin-chain/releases/v3.1.1)
+
+- Upgrade cosmos-sdk to 0.45.11
+- Upgrade ibc-go to 2.4.2
+- Upgrade cosmosvisor in Dockerfile to 1.3.0
+- Implement ApplicationQueryService for min gas prices query
+
 ## [v3.1.0](https://github.com/likecoin/likecoin-chain/releases/v3.1.0)
 
 - Upgrade cosmos-sdk to 0.45.9 which patches ibc security vulnerability dragonberry
