@@ -151,11 +151,12 @@ func TestEndToEndListing(t *testing.T) {
 	// Create Listing
 	price := 123456
 	expiration := time.Now().UTC().Add(30 * 24 * time.Hour)
+	fullPayToRoyalty := true
 
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
 		cli.CmdCreateListing(),
-		append([]string{classId, nftId, fmt.Sprintf("%d", price), expiration.Format(time.RFC3339Nano)}, txArgs...),
+		append([]string{classId, nftId, fmt.Sprintf("%d", price), expiration.Format(time.RFC3339Nano)}, append(txArgs, "--full-pay-to-royalty")...),
 	)
 	require.NoError(t, err)
 
@@ -181,16 +182,18 @@ func TestEndToEndListing(t *testing.T) {
 
 	require.Len(t, listingRes.Listings, 1)
 	require.Equal(t, types.Listing{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddress.String(),
-		Price:      uint64(price),
-		Expiration: expiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddress.String(),
+		Price:            uint64(price),
+		Expiration:       expiration,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}, listingRes.Listings[0])
 
 	// Update Listing
 	newPrice := 987654
 	newExpiration := time.Now().UTC().Add(60 * 24 * time.Hour)
+	newFullPayToRoyalty := false
 
 	out, err = clitestutil.ExecTestCLICmd(
 		ctx,
@@ -220,11 +223,12 @@ func TestEndToEndListing(t *testing.T) {
 	cfg.Codec.MustUnmarshalJSON(out.Bytes(), &listingRes)
 	require.Len(t, listingRes.Listings, 1)
 	require.Equal(t, types.Listing{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddress.String(),
-		Price:      uint64(newPrice),
-		Expiration: newExpiration,
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddress.String(),
+		Price:            uint64(newPrice),
+		Expiration:       newExpiration,
+		FullPayToRoyalty: newFullPayToRoyalty,
 	}, listingRes.Listings[0])
 
 	// Buy NFT

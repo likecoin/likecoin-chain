@@ -13,7 +13,7 @@ import (
 
 func CmdCreateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-listing [class-id] [nft-id] [price] [expiration]",
+		Use:   "create-listing [class-id] [nft-id] [price] [expiration] (--full-pay-to-royalty)",
 		Short: "Create a new listing",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -31,6 +31,11 @@ func CmdCreateListing() *cobra.Command {
 				return nil
 			}
 
+			flagFullPayToRoyalty, err := cmd.Flags().GetBool("full-pay-to-royalty")
+			if err != nil {
+				return err
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -42,6 +47,7 @@ func CmdCreateListing() *cobra.Command {
 				indexNftId,
 				argPrice,
 				argExpiration,
+				flagFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -51,13 +57,14 @@ func CmdCreateListing() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Bool("full-pay-to-royalty", false, "Pay full price to royalty")
 
 	return cmd
 }
 
 func CmdUpdateListing() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-listing [class-id] [nft-id] [price] [expiration]",
+		Use:   "update-listing [class-id] [nft-id] [price] [expiration] (--full-pay-to-royalty)",
 		Short: "Update a listing",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -80,12 +87,18 @@ func CmdUpdateListing() *cobra.Command {
 				return err
 			}
 
+			flagFullPayToRoyalty, err := cmd.Flags().GetBool("full-pay-to-royalty")
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgUpdateListing(
 				clientCtx.GetFromAddress().String(),
 				indexClassId,
 				indexNftId,
 				argPrice,
 				argExpiration,
+				flagFullPayToRoyalty,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -95,6 +108,7 @@ func CmdUpdateListing() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Bool("full-pay-to-royalty", false, "Pay full price to royalty")
 
 	return cmd
 }

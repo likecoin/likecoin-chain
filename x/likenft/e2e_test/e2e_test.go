@@ -377,6 +377,13 @@ ParseEventSellNFT:
 						}
 						actualEvent.Price = price
 					}
+					if attr.Key == "full_pay_to_royalty" {
+						fullPayToRoyalty, err := strconv.ParseBool(strings.Trim(attr.Value, "\""))
+						if err != nil {
+							panic(err)
+						}
+						actualEvent.FullPayToRoyalty = fullPayToRoyalty
+					}
 				}
 				break ParseEventSellNFT
 			}

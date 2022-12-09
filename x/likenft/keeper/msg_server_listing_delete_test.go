@@ -38,11 +38,12 @@ func TestDeleteListingNormalOwner(t *testing.T) {
 
 	// Seed listing
 	prevUserListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevUserListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -50,11 +51,12 @@ func TestDeleteListingNormalOwner(t *testing.T) {
 		ListingKey: types.ListingKey(classId, nftId, userAddressBytes),
 	})
 	prevNotUserListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     notUserAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           notUserAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevNotUserListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -115,11 +117,12 @@ func TestDeleteListingNormalNotOwner(t *testing.T) {
 
 	// Seed listing
 	prevUserListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     userAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           userAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevUserListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -127,11 +130,12 @@ func TestDeleteListingNormalNotOwner(t *testing.T) {
 		ListingKey: types.ListingKey(classId, nftId, userAddressBytes),
 	})
 	prevNotUserListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     notUserAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           notUserAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevNotUserListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{
@@ -192,11 +196,12 @@ func TestDeleteListingNormalNotOwnerNotFound(t *testing.T) {
 
 	// Seed listing
 	prevNotUserListing := types.ListingStoreRecord{
-		ClassId:    classId,
-		NftId:      nftId,
-		Seller:     notUserAddressBytes,
-		Price:      uint64(987654),
-		Expiration: time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		ClassId:          classId,
+		NftId:            nftId,
+		Seller:           notUserAddressBytes,
+		Price:            uint64(987654),
+		Expiration:       time.Date(2022, 3, 1, 0, 0, 0, 0, time.UTC),
+		FullPayToRoyalty: false,
 	}
 	k.SetListing(ctx, prevNotUserListing)
 	k.SetListingExpireQueueEntry(ctx, types.ListingExpireQueueEntry{

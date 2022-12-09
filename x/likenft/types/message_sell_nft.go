@@ -9,13 +9,14 @@ const TypeMsgSellNFT = "sell_nft"
 
 var _ sdk.Msg = &MsgSellNFT{}
 
-func NewMsgSellNFT(creator string, classId string, nftId string, buyer string, price uint64) *MsgSellNFT {
+func NewMsgSellNFT(creator string, classId string, nftId string, buyer string, price uint64, fullPayToRoyalty bool) *MsgSellNFT {
 	return &MsgSellNFT{
-		Creator: creator,
-		ClassId: classId,
-		NftId:   nftId,
-		Buyer:   buyer,
-		Price:   price,
+		Creator:          creator,
+		ClassId:          classId,
+		NftId:            nftId,
+		Buyer:            buyer,
+		Price:            price,
+		FullPayToRoyalty: fullPayToRoyalty,
 	}
 }
 
