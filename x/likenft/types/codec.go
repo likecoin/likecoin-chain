@@ -5,6 +5,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/gogo/protobuf/proto"
 )
 
@@ -82,6 +83,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*proto.Message)(nil), &ClassParent{})
 	registry.RegisterImplementations((*proto.Message)(nil), &ClassConfig{})
 	registry.RegisterImplementations((*proto.Message)(nil), &NFTData{})
+
+	registry.RegisterImplementations(
+		(*authz.Authorization)(nil),
+		&UpdateRoyaltyConfigAuthorization{},
+		&UpdateListingAuthorization{},
+		&UpdateOfferAuthorization{},
+		&UpdateClassAuthorization{},
+		&MintNFTAuthorization{},
+	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package likechain.iscn;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
+
+message UpdateAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string iscn_id_prefix = 1;
+}

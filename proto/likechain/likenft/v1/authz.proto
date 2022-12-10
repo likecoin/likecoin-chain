@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package likechain.iscn;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+
+message UpdateRoyaltyConfigAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+}
+
+message UpdateListingAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
+message UpdateOfferAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
+message UpdateClassAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+}
+
+message MintNFTAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+}
