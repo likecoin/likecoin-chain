@@ -84,7 +84,7 @@ func TestBasicCreateAndUpdateAndChangeOwnership(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result := app.DeliverMsgNoError(t, msg, priv1)
 
 	events := result.GetEvents()
@@ -327,8 +327,8 @@ func TestMultipleCreateInOneTx(t *testing.T) {
 		ContentMetadata:     contentMetadata1,
 	}
 	msgs := []sdk.Msg{
-		types.NewMsgCreateIscnRecord(addr1, &record1),
-		types.NewMsgCreateIscnRecord(addr1, &record2),
+		types.NewMsgCreateIscnRecord(addr1, &record1, 0),
+		types.NewMsgCreateIscnRecord(addr1, &record2, 0),
 	}
 	app.DeliverMsgsNoError(t, msgs, priv1)
 }
@@ -347,7 +347,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 		ContentMetadata:     contentMetadata1,
 		RecordNotes:         fmt.Sprintf("update record 1 to version %010d", 1),
 	}
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result := app.DeliverMsgNoError(t, msg, priv1)
 	events := result.GetEvents()
 	iscnId1StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
@@ -362,7 +362,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 	}
 
 	record.RecordNotes = fmt.Sprintf("update record 2 to version %010d", 1)
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result = app.DeliverMsgNoError(t, msg, priv1)
 	events = result.GetEvents()
 	iscnId2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
@@ -374,7 +374,7 @@ func TestOwnerQueryPagination(t *testing.T) {
 	app.DeliverMsgNoError(t, msg, priv1)
 
 	record.RecordNotes = fmt.Sprintf("update record 3 to version %010d", 1)
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result = app.DeliverMsgNoError(t, msg, priv1)
 	events = result.GetEvents()
 	iscnId3StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
@@ -436,7 +436,7 @@ func TestFingerprintQueryPagination(t *testing.T) {
 	}
 	for i := 0; i < 2*keeper.FingerprintRecordsPageLimit-1; i++ {
 		record.RecordNotes = fmt.Sprintf("record %010d", i)
-		msg = types.NewMsgCreateIscnRecord(addr1, &record)
+		msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 		app.DeliverMsgNoError(t, msg, priv1)
 	}
 
@@ -489,14 +489,14 @@ func TestFailureCases(t *testing.T) {
 
 	// ensure everything works fine when no modification is made
 	record = goodRecord()
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	res := app.DeliverMsgNoError(t, msg, priv1)
 	iscnId, err := types.ParseIscnId(string(testutil.GetEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
 	require.NoError(t, err)
 
 	// wrong sender address checksum
 	record = goodRecord()
-	msg = &types.MsgCreateIscnRecord{"cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag", record}
+	msg = &types.MsgCreateIscnRecord{"cosmos1ww3qews2y5jxe8apw2zt8stqqrcu2tptejfwag", record, 0}
 	_, err, simErr, _ := app.DeliverMsg(msg, priv1)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -504,7 +504,7 @@ func TestFailureCases(t *testing.T) {
 
 	// wrong sender address prefix
 	record = goodRecord()
-	msg = &types.MsgCreateIscnRecord{"iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f", record}
+	msg = &types.MsgCreateIscnRecord{"iaa1nr4zjtg87mtgvf2zetvmny8htuxplsduyc0h9f", record, 0}
 	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -513,7 +513,7 @@ func TestFailureCases(t *testing.T) {
 	// invalid fingerprint
 	record = goodRecord()
 	record.ContentFingerprints[0] = ""
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -522,7 +522,7 @@ func TestFailureCases(t *testing.T) {
 	// invalid stakeholder
 	record = goodRecord()
 	record.Stakeholders[0] = types.IscnInput(``)
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -531,7 +531,7 @@ func TestFailureCases(t *testing.T) {
 	// invalid content metadata
 	record = goodRecord()
 	record.ContentMetadata = types.IscnInput(``)
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	_, err, simErr, _ = app.DeliverMsg(msg, priv1)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -539,7 +539,7 @@ func TestFailureCases(t *testing.T) {
 
 	// balance not enough for ISCN fee
 	record = goodRecord()
-	msg = types.NewMsgCreateIscnRecord(addr2, &record)
+	msg = types.NewMsgCreateIscnRecord(addr2, &record, 0)
 	_, err, simErr, _ = app.DeliverMsg(msg, priv2)
 	require.NoError(t, err)
 	require.Error(t, simErr)
@@ -750,7 +750,7 @@ func TestSimulation(t *testing.T) {
 				record := goodRecord()
 				notes := fmt.Sprintf("create notes %d", r.Int63())
 				record.RecordNotes = notes
-				msg := types.NewMsgCreateIscnRecord(addr, &record)
+				msg := types.NewMsgCreateIscnRecord(addr, &record, 0)
 				res := app.DeliverMsgNoError(t, msg, privKey)
 				iscnId, err := types.ParseIscnId(string(testutil.GetEventAttribute(res.GetEvents(), "iscn_record", []byte("iscn_id"))))
 				require.NoError(t, err)
