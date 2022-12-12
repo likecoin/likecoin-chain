@@ -17,6 +17,10 @@ import (
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
+const (
+	flagNonce = "nonce"
+)
+
 func NewTxCmd() *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -88,7 +92,13 @@ Where:
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgCreateIscnRecord(clientCtx.GetFromAddress(), record)
+
+			nonce, err := cmd.Flags().GetUint64(flagNonce)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCreateIscnRecord(clientCtx.GetFromAddress(), record, nonce)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
