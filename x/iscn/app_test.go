@@ -868,12 +868,7 @@ func TestUpdateAuthorization(t *testing.T) {
 	}
 	msg = types.NewMsgCreateIscnRecord(addr1, &record)
 	result := app.DeliverMsgNoError(t, msg, priv1)
-
-	events := result.GetEvents()
-	iscnIdStrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
-	require.NotNil(t, iscnIdStrBytes)
-	iscnId, err := types.ParseIscnId(string(iscnIdStrBytes))
-	require.NoError(t, err)
+	iscnId := testutil.GetIscnIdFromResult(t, result)
 
 	record = types.IscnRecord{
 		RecordNotes:         "new update",
@@ -881,7 +876,7 @@ func TestUpdateAuthorization(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata2,
 	}
-	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateAuthorization(iscnId.Prefix.String()), time.Unix(2000000000, 0))
+	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateAuthorization(iscnId.Prefix.String()), time.Unix(2000000000, 0))
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
@@ -890,7 +885,7 @@ func TestUpdateAuthorization(t *testing.T) {
 	msg = &msgExec
 	result = app.DeliverMsgNoError(t, msg, priv2)
 
-	events = result.GetEvents()
+	events := result.GetEvents()
 	iscnId2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
 	require.NotNil(t, iscnId2StrBytes)
 	iscnId2, err := types.ParseIscnId(string(iscnId2StrBytes))
@@ -907,7 +902,7 @@ func TestUpdateAuthorization(t *testing.T) {
 	msgExec = authz.NewMsgExec(addr3, []sdk.Msg{updateMsg})
 	msg = &msgExec
 	_, _, simErr, _ := app.DeliverMsg(msg, priv3)
-	require.Error(t, simErr)
+	require.ErrorContains(t, simErr, "authorization not found")
 
 	record = types.IscnRecord{
 		RecordNotes:         "another record",
@@ -917,11 +912,7 @@ func TestUpdateAuthorization(t *testing.T) {
 	}
 	msg = types.NewMsgCreateIscnRecord(addr3, &record)
 	result = app.DeliverMsgNoError(t, msg, priv3)
-	events = result.GetEvents()
-	iscnId3StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
-	require.NotNil(t, iscnId3StrBytes)
-	iscnId3, err := types.ParseIscnId(string(iscnId3StrBytes))
-	require.NoError(t, err)
+	iscnId3 := testutil.GetIscnIdFromResult(t, result)
 
 	record = types.IscnRecord{
 		RecordNotes:         "another record updated",
@@ -934,5 +925,5 @@ func TestUpdateAuthorization(t *testing.T) {
 	msgExec = authz.NewMsgExec(addr2, []sdk.Msg{updateMsg})
 	msg = &msgExec
 	_, _, simErr, _ = app.DeliverMsg(msg, priv2)
-	require.Error(t, simErr)
+	require.ErrorContains(t, simErr, "authorization not found")
 }

@@ -231,3 +231,20 @@ func GetEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
 	}
 	return nil
 }
+
+func GetIscnIdFromResult(t *testing.T, result *sdk.Result) types.IscnId {
+	events := result.GetEvents()
+	iscnIdStrBytes := GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnIdStrBytes)
+	iscnId, err := types.ParseIscnId(string(iscnIdStrBytes))
+	require.NoError(t, err)
+	return iscnId
+}
+
+func GetClassIdFromResult(t *testing.T, result *sdk.Result) string {
+	events := result.GetEvents()
+	classIdEvent := GetEventAttribute(events, "likechain.likenft.v1.EventNewClass", []byte("class_id"))
+	require.NotNil(t, classIdEvent)
+	// strip the leading and trailing quotes
+	return string(classIdEvent[1 : len(classIdEvent)-1])
+}
