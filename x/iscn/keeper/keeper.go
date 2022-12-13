@@ -284,7 +284,7 @@ func (k Keeper) AddIscnRecord(
 		}
 	}
 	if k.GetIscnIdSequence(ctx, iscnId) != 0 {
-		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s", iscnId.String())
+		return nil, sdkerrors.Wrapf(types.ErrReusingIscnId, "%s, please set a different nonce in MsgCreateIscnRecord", iscnId.String())
 	}
 	cid := types.ComputeDataCid(data)
 	if k.GetCidSequence(ctx, cid) != 0 {
