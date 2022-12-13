@@ -25,14 +25,14 @@ func (a UpdateAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptR
 	}
 	iscnId, err := ParseIscnId(msgUpdate.IscnId)
 	if err != nil {
-		return authz.AcceptResponse{}, ErrInvalidIscnId.Wrapf("%w", err)
+		return authz.AcceptResponse{}, ErrInvalidIscnId.Wrapf("%v", err)
 	}
 	authIscnIdPrefix, err := ParseIscnId(a.IscnIdPrefix)
 	if err != nil {
-		return authz.AcceptResponse{}, sdkerrors.ErrLogic.Wrapf("authorization has invalid ISCN ID prefix: %w", err)
+		return authz.AcceptResponse{}, sdkerrors.ErrLogic.Wrapf("authorization has invalid ISCN ID prefix: %v", err)
 	}
 	if !iscnId.PrefixEqual(&authIscnIdPrefix) {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("iscn id prefix mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("iscn id prefix mismatch")
 	}
 
 	return authz.AcceptResponse{Accept: true}, nil
@@ -41,7 +41,7 @@ func (a UpdateAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptR
 func (a UpdateAuthorization) ValidateBasic() error {
 	_, err := ParseIscnId(a.IscnIdPrefix)
 	if err != nil {
-		return ErrInvalidIscnId.Wrapf("%w", err)
+		return ErrInvalidIscnId.Wrapf("%v", err)
 	}
 	return nil
 }

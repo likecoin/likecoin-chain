@@ -28,7 +28,7 @@ func (a UpdateRoyaltyConfigAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
 	if msgUpdate.ClassId != a.ClassId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("class ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
 }
@@ -54,10 +54,10 @@ func (a UpdateListingAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
 	if msgUpdate.ClassId != a.ClassId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("class ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	if msgUpdate.NftId != a.NftId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("NFT ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("NFT ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
 }
@@ -83,10 +83,10 @@ func (a UpdateOfferAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.Ac
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
 	if msgUpdate.ClassId != a.ClassId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("class ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	if msgUpdate.NftId != a.NftId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("NFT ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("NFT ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
 }
@@ -111,7 +111,7 @@ func (a UpdateClassAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.Ac
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
 	if msgUpdate.ClassId != a.ClassId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("class ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
 }
@@ -136,7 +136,7 @@ func (a MintNFTAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.Accept
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
 	if msgUpdate.ClassId != a.ClassId {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("class ID mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
 }
