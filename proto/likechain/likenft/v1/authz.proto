@@ -1,9 +1,8 @@
 syntax = "proto3";
 
-package likechain.iscn;
+package likechain.likenft.v1;
 
 import "cosmos_proto/cosmos.proto";
-import "gogoproto/gogo.proto";
 
 option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
 
