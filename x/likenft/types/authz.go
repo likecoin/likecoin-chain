@@ -131,11 +131,11 @@ func (a MintNFTAuthorization) MsgTypeURL() string {
 }
 
 func (a MintNFTAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptResponse, error) {
-	msgUpdate, ok := msg.(*MsgMintNFT)
+	msgMint, ok := msg.(*MsgMintNFT)
 	if !ok {
 		return authz.AcceptResponse{}, sdkerrors.ErrInvalidType.Wrap("type mismatch")
 	}
-	if msgUpdate.ClassId != a.ClassId {
+	if msgMint.ClassId != a.ClassId {
 		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("class ID mismatch")
 	}
 	return authz.AcceptResponse{Accept: true}, nil
