@@ -910,8 +910,8 @@ func TestUpdateAuthorization(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata2,
 	}
-	msg = types.NewMsgCreateIscnRecord(addr3, &record)
-	result = app.DeliverMsgNoError(t, msg, priv3)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result = app.DeliverMsgNoError(t, msg, priv1)
 	iscnId3 := testutil.GetIscnIdFromResult(t, result)
 
 	record = types.IscnRecord{
@@ -921,9 +921,9 @@ func TestUpdateAuthorization(t *testing.T) {
 		ContentMetadata:     contentMetadata2,
 	}
 
-	updateMsg = types.NewMsgUpdateIscnRecord(addr3, iscnId3, &record)
+	updateMsg = types.NewMsgUpdateIscnRecord(addr1, iscnId3, &record)
 	msgExec = authz.NewMsgExec(addr2, []sdk.Msg{updateMsg})
 	msg = &msgExec
 	_, _, simErr, _ = app.DeliverMsg(msg, priv2)
-	require.ErrorContains(t, simErr, "authorization not found")
+	require.ErrorContains(t, simErr, "ISCN ID prefix mismatch")
 }

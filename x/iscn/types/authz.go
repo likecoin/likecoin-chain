@@ -32,7 +32,7 @@ func (a UpdateAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptR
 		return authz.AcceptResponse{}, sdkerrors.ErrLogic.Wrapf("authorization has invalid ISCN ID prefix: %v", err)
 	}
 	if !iscnId.PrefixEqual(&authIscnIdPrefix) {
-		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("iscn id prefix mismatch")
+		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrap("ISCN ID prefix mismatch")
 	}
 
 	return authz.AcceptResponse{Accept: true}, nil
