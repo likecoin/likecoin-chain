@@ -1,6 +1,7 @@
 package likenft_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -58,6 +59,99 @@ var (
 	"keywords": "matrix,recursion"
 }`)
 )
+
+type authorizationTestSetupClass struct {
+	ClassId string
+	NftIds  []string
+}
+
+type authorizationTestSetupIscn struct {
+	IscnId  iscntypes.IscnId
+	Record  iscntypes.IscnRecord
+	Classes []authorizationTestSetupClass
+}
+
+type authorizationTestSetupOwner struct {
+	PrivKey *secp256k1.PrivKey
+	Addr    sdk.AccAddress
+	Iscns   []authorizationTestSetupIscn
+}
+
+type authorizationTestSetup struct {
+	App        *testutil.TestingApp
+	Owners     []authorizationTestSetupOwner
+	OtherAddrs []authorizationTestSetupOwner
+}
+
+func setupAppAndNfts(t *testing.T) authorizationTestSetup {
+	var msg sdk.Msg
+
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{
+		{addr1.String(), "1000000000000000000nanolike"},
+		{addr2.String(), "1000000000000000000nanolike"},
+		{addr3.String(), "1000000000000000000nanolike"},
+	})
+
+	baseRecord := iscntypes.IscnRecord{
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []iscntypes.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+	}
+	nftIds := []string{"test-nft-id-a", "test-nft-id-b"}
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+
+	setup := authorizationTestSetup{
+		App:        app,
+		OtherAddrs: []authorizationTestSetupOwner{{PrivKey: priv3, Addr: addr3}},
+	}
+	for i, privKey := range []*secp256k1.PrivKey{priv1, priv2} {
+		owner := authorizationTestSetupOwner{
+			PrivKey: privKey,
+			Addr:    sdk.AccAddress(privKey.PubKey().Address()),
+		}
+		for j := 0; j < 2; j++ {
+			record := baseRecord
+			record.RecordNotes = fmt.Sprintf("%d-%d", i, j)
+			msg = iscntypes.NewMsgCreateIscnRecord(owner.Addr, &record)
+			res := app.DeliverMsgNoError(t, msg, owner.PrivKey)
+			iscnId := testutil.GetIscnIdFromResult(t, res)
+			iscn := authorizationTestSetupIscn{
+				IscnId: iscnId,
+				Record: record,
+			}
+			for k := 0; k < 2; k++ {
+				msg := types.NewMsgNewClass(
+					owner.Addr.String(),
+					types.ClassParentInput{
+						Type:         types.ClassParentType_ISCN,
+						IscnIdPrefix: iscnId.Prefix.String(),
+					},
+					types.ClassInput{
+						Name:     fmt.Sprintf("testclass%d-%d-%d", i, j, k),
+						Symbol:   fmt.Sprintf("TEST%d-%d-%d", i, j, k),
+						Metadata: types.JsonInput(`{}`),
+					},
+				)
+				res = app.DeliverMsgNoError(t, msg, owner.PrivKey)
+				classId := testutil.GetClassIdFromResult(t, res)
+				class := authorizationTestSetupClass{
+					ClassId: classId,
+					NftIds:  nftIds,
+				}
+				for _, nftId := range nftIds {
+					msg := types.NewMsgMintNFT(owner.Addr.String(), classId, nftId, &types.NFTInput{})
+					app.DeliverMsgNoError(t, msg, owner.PrivKey)
+				}
+				iscn.Classes = append(iscn.Classes, class)
+			}
+			owner.Iscns = append(owner.Iscns, iscn)
+		}
+		setup.Owners = append(setup.Owners, owner)
+	}
+	return setup
+}
 
 func TestAuthorization(t *testing.T) {
 	var msg sdk.Msg

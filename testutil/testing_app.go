@@ -219,6 +219,12 @@ func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptot
 	return app.DeliverMsgsNoError(t, []sdk.Msg{msg}, priv)
 }
 
+func (app *TestingApp) DeliverMsgSimError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey, errContains string, args ...interface{}) {
+	_, err, simErr, _ := app.DeliverMsg(msg, priv)
+	require.NoError(t, err)
+	require.ErrorContains(t, simErr, errContains, args...)
+}
+
 func GetEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
 	for _, e := range events {
 		if e.Type == typ {

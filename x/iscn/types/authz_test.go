@@ -5,10 +5,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )

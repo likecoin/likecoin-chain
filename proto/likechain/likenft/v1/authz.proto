@@ -6,13 +6,46 @@ import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
 
+message CreateRoyaltyConfigAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+}
+
 message UpdateRoyaltyConfigAuthorization {
   option (cosmos_proto.implements_interface) = "Authorization";
 
   string class_id = 1;
 }
 
+message DeleteRoyaltyConfigAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+}
+
+message CreateListingAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
 message UpdateListingAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
+message DeleteListingAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
+message CreateOfferAuthorization {
   option (cosmos_proto.implements_interface) = "Authorization";
 
   string class_id = 1;
@@ -26,6 +59,19 @@ message UpdateOfferAuthorization {
   string nft_id = 2;
 }
 
+message DeleteOfferAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string nft_id = 2;
+}
+
+message NewClassAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string iscn_id_prefix = 1;
+}
+
 message UpdateClassAuthorization {
   option (cosmos_proto.implements_interface) = "Authorization";
 
@@ -36,4 +82,11 @@ message MintNFTAuthorization {
   option (cosmos_proto.implements_interface) = "Authorization";
 
   string class_id = 1;
+}
+
+message SendNFTAuthorization {
+  option (cosmos_proto.implements_interface) = "Authorization";
+
+  string class_id = 1;
+  string id = 2;
 }

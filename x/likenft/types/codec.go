@@ -1,12 +1,13 @@
 package types
 
 import (
+	"github.com/gogo/protobuf/proto"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"github.com/gogo/protobuf/proto"
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
@@ -86,10 +87,18 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*authz.Authorization)(nil),
+		&CreateRoyaltyConfigAuthorization{},
 		&UpdateRoyaltyConfigAuthorization{},
+		&DeleteRoyaltyConfigAuthorization{},
+		&CreateListingAuthorization{},
 		&UpdateListingAuthorization{},
+		&DeleteListingAuthorization{},
+		&CreateOfferAuthorization{},
 		&UpdateOfferAuthorization{},
+		&DeleteOfferAuthorization{},
+		&NewClassAuthorization{},
 		&UpdateClassAuthorization{},
+		&SendNFTAuthorization{},
 		&MintNFTAuthorization{},
 	)
 
