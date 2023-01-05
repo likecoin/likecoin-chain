@@ -3,12 +3,13 @@ package types
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	addr1 = "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47"
+	addr1 = "like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn"
 
 	fingerprint1 = "hash://sha256/9564b85669d5e96ac969dd0161b8475bbced9e5999c6ec598da718a3045d6f2e"
 
@@ -64,28 +65,50 @@ var (
 		Nonce:  1,
 	}
 
-	msgCreateIscnRecordBytesNoNonce = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47","record":{"contentMetadata":{}}}}`)
-	msgCreateIscnRecordBytesNonce1  = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47","nonce":"1","record":{"contentMetadata":{}}}}`)
+	msgCreateIscnRecordBytesNoNonce = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","record":{"contentMetadata":{}}}}`)
+	msgCreateIscnRecordBytesNonce1  = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","nonce":"1","record":{"contentMetadata":{}}}}`)
 
 	registryName = "likecoin-chain"
 
 	iscnIdNoNonce = IscnId{
 		Prefix: IscnIdPrefix{
 			RegistryName: registryName,
-			ContentId:    "L0pDvwnj_9yt1ZajXpV_lsZf8niv-UQWADKoancbfAw",
+			ContentId:    "rv5ahVKmxSu93jZlO6-X0oHP5NoIk0uQJj0zg84qKqs",
 		},
 		Version: 1,
 	}
 	iscnIdNonce1 = IscnId{
 		Prefix: IscnIdPrefix{
 			RegistryName: registryName,
-			ContentId:    "tKcMZedw5ktnw74K-1kyg5Tw8u4N3ZbE5mkRa1sOewo",
+			ContentId:    "5e1QGL5xM8GUFNU87poFMOQHcMATyqvPiGKIUQduuKw",
 		},
 		Version: 1,
 	}
 )
 
+func SetAddressPrefixes() {
+	bech32PrefixesAccAddr := []string{"like", "cosmos"}
+	bech32PrefixesAccPub := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesValAddr := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesValPub := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesConsAddr := make([]string, 0, len(bech32PrefixesAccAddr))
+	bech32PrefixesConsPub := make([]string, 0, len(bech32PrefixesAccAddr))
+
+	for _, prefix := range bech32PrefixesAccAddr {
+		bech32PrefixesAccPub = append(bech32PrefixesAccPub, prefix+"pub")
+		bech32PrefixesValAddr = append(bech32PrefixesValAddr, prefix+"valoper")
+		bech32PrefixesValPub = append(bech32PrefixesValPub, prefix+"valoperpub")
+		bech32PrefixesConsAddr = append(bech32PrefixesConsAddr, prefix+"valcons")
+		bech32PrefixesConsPub = append(bech32PrefixesConsPub, prefix+"valconspub")
+	}
+	config := sdk.GetConfig()
+	config.SetBech32PrefixesForAccount(bech32PrefixesAccAddr, bech32PrefixesAccPub)
+	config.SetBech32PrefixesForValidator(bech32PrefixesValAddr, bech32PrefixesValPub)
+	config.SetBech32PrefixesForConsensusNode(bech32PrefixesConsAddr, bech32PrefixesConsPub)
+}
+
 func TestMsgCreateIscnRecord_ValidateBasic(t *testing.T) {
+	SetAddressPrefixes()
 	tests := []struct {
 		name string
 		msg  MsgCreateIscnRecord
