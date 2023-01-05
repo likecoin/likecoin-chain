@@ -17,6 +17,10 @@ import (
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 )
 
+const (
+	flagNonce = "nonce"
+)
+
 func NewTxCmd() *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -48,7 +52,7 @@ func readIscnRecordFile(path string) (*types.IscnRecord, error) {
 
 func NewCreateIscnTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-iscn [iscn_record_json_file]",
+		Use:   "create-iscn [iscn_record_json_file] (--nonce [nonce])",
 		Short: `Create an ISCN record from the given file. The ISCN record will be registered on chain and assigned an ISCN ID.`,
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create an ISCN record on the chain. The record and the related parameters are given in the JSON file.
@@ -88,7 +92,13 @@ Where:
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgCreateIscnRecord(clientCtx.GetFromAddress(), record)
+
+			nonce, err := cmd.Flags().GetUint64(flagNonce)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCreateIscnRecord(clientCtx.GetFromAddress(), record, nonce)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -97,6 +107,7 @@ Where:
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Uint64(flagNonce, 0, "Nonce of the ISCN registration transaction")
 	return cmd
 }
 

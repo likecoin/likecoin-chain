@@ -15,10 +15,11 @@ var _ sdk.Msg = &MsgCreateIscnRecord{}
 var _ sdk.Msg = &MsgUpdateIscnRecord{}
 var _ sdk.Msg = &MsgChangeIscnRecordOwnership{}
 
-func NewMsgCreateIscnRecord(from sdk.AccAddress, record *IscnRecord) *MsgCreateIscnRecord {
+func NewMsgCreateIscnRecord(from sdk.AccAddress, record *IscnRecord, nonce uint64) *MsgCreateIscnRecord {
 	return &MsgCreateIscnRecord{
 		From:   from.String(),
 		Record: *record,
+		Nonce:  nonce,
 	}
 }
 

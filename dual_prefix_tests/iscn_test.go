@@ -64,7 +64,7 @@ func testCreateAndTransferISCNWithBech32(t *testing.T, from string, to string) {
 		Stakeholders:        []iscntypes.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	msg := iscntypes.NewMsgCreateIscnRecord(fromAddr, &record)
+	msg := iscntypes.NewMsgCreateIscnRecord(fromAddr, &record, 0)
 	result := app.DeliverMsgNoError(t, msg, priv1)
 	events := result.GetEvents()
 

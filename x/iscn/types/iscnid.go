@@ -84,6 +84,7 @@ func (iscnId *IscnId) UnmarshalJSON(bz []byte) error {
 func GenerateNewIscnIdWithSeed(registryName string, seed []byte) IscnId {
 	hasher := tmhash.New()
 	hasher.Write([]byte(registryName))
+	hasher.Write([]byte{'/'})
 	hasher.Write(seed)
 	contentIdBytes := hasher.Sum(nil)
 	contentId := base64.RawURLEncoding.EncodeToString(contentIdBytes)
