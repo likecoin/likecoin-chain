@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -13,6 +14,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/keeper"
@@ -846,4 +848,82 @@ func TestSimulation(t *testing.T) {
 		r := rand.New(rand.NewSource(seed))
 		testWithRand(r)
 	}
+}
+
+func TestUpdateAuthorization(t *testing.T) {
+	var msg sdk.Msg
+	app := testutil.SetupTestApp([]testutil.GenesisBalance{
+		{addr1.String(), "1000000000000000000nanolike"},
+		{addr2.String(), "1000000000000000000nanolike"},
+		{addr3.String(), "1000000000000000000nanolike"},
+	})
+
+	app.NextHeader(1234567890)
+	app.SetForTx()
+	record := types.IscnRecord{
+		RecordNotes:         "some update",
+		ContentFingerprints: []string{fingerprint1},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata1,
+	}
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result := app.DeliverMsgNoError(t, msg, priv1)
+	iscnId := testutil.GetIscnIdFromResult(t, result)
+
+	record = types.IscnRecord{
+		RecordNotes:         "new update",
+		ContentFingerprints: []string{fingerprint1, fingerprint2},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata2,
+	}
+	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateAuthorization(iscnId.Prefix.String()), time.Unix(2000000000, 0))
+	require.NoError(t, err)
+	app.DeliverMsgNoError(t, msg, priv1)
+
+	updateMsg := types.NewMsgUpdateIscnRecord(addr1, iscnId, &record)
+	msgExec := authz.NewMsgExec(addr2, []sdk.Msg{updateMsg})
+	msg = &msgExec
+	result = app.DeliverMsgNoError(t, msg, priv2)
+
+	events := result.GetEvents()
+	iscnId2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnId2StrBytes)
+	iscnId2, err := types.ParseIscnId(string(iscnId2StrBytes))
+	require.NoError(t, err)
+	require.Equal(t, iscnId.Prefix, iscnId2.Prefix)
+	require.Equal(t, iscnId.Version+1, iscnId2.Version)
+	ipld2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("ipld"))
+	require.NotNil(t, ipld2StrBytes)
+	owner2StrBytes := testutil.GetEventAttribute(events, "iscn_record", []byte("owner"))
+	require.NotNil(t, owner2StrBytes)
+	require.Equal(t, string(owner2StrBytes), addr1.String())
+
+	updateMsg = types.NewMsgUpdateIscnRecord(addr1, iscnId2, &record)
+	msgExec = authz.NewMsgExec(addr3, []sdk.Msg{updateMsg})
+	msg = &msgExec
+	_, _, simErr, _ := app.DeliverMsg(msg, priv3)
+	require.ErrorContains(t, simErr, "authorization not found")
+
+	record = types.IscnRecord{
+		RecordNotes:         "another record",
+		ContentFingerprints: []string{fingerprint1, fingerprint2},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata2,
+	}
+	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	result = app.DeliverMsgNoError(t, msg, priv1)
+	iscnId3 := testutil.GetIscnIdFromResult(t, result)
+
+	record = types.IscnRecord{
+		RecordNotes:         "another record updated",
+		ContentFingerprints: []string{fingerprint1, fingerprint2},
+		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
+		ContentMetadata:     contentMetadata2,
+	}
+
+	updateMsg = types.NewMsgUpdateIscnRecord(addr1, iscnId3, &record)
+	msgExec = authz.NewMsgExec(addr2, []sdk.Msg{updateMsg})
+	msg = &msgExec
+	_, _, simErr, _ = app.DeliverMsg(msg, priv2)
+	require.ErrorContains(t, simErr, "ISCN ID prefix mismatch")
 }

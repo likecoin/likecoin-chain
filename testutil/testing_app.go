@@ -219,6 +219,12 @@ func (app *TestingApp) DeliverMsgNoError(t *testing.T, msg sdk.Msg, priv cryptot
 	return app.DeliverMsgsNoError(t, []sdk.Msg{msg}, priv)
 }
 
+func (app *TestingApp) DeliverMsgSimError(t *testing.T, msg sdk.Msg, priv cryptotypes.PrivKey, errContains string, args ...interface{}) {
+	_, err, simErr, _ := app.DeliverMsg(msg, priv)
+	require.NoError(t, err)
+	require.ErrorContains(t, simErr, errContains, args...)
+}
+
 func GetEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
 	for _, e := range events {
 		if e.Type == typ {
@@ -230,4 +236,21 @@ func GetEventAttribute(events sdk.Events, typ string, attrKey []byte) []byte {
 		}
 	}
 	return nil
+}
+
+func GetIscnIdFromResult(t *testing.T, result *sdk.Result) types.IscnId {
+	events := result.GetEvents()
+	iscnIdStrBytes := GetEventAttribute(events, "iscn_record", []byte("iscn_id"))
+	require.NotNil(t, iscnIdStrBytes)
+	iscnId, err := types.ParseIscnId(string(iscnIdStrBytes))
+	require.NoError(t, err)
+	return iscnId
+}
+
+func GetClassIdFromResult(t *testing.T, result *sdk.Result) string {
+	events := result.GetEvents()
+	classIdEvent := GetEventAttribute(events, "likechain.likenft.v1.EventNewClass", []byte("class_id"))
+	require.NotNil(t, classIdEvent)
+	// strip the leading and trailing quotes
+	return string(classIdEvent[1 : len(classIdEvent)-1])
 }
