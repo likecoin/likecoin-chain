@@ -866,7 +866,7 @@ func TestUpdateAuthorization(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result := app.DeliverMsgNoError(t, msg, priv1)
 	iscnId := testutil.GetIscnIdFromResult(t, result)
 
@@ -910,7 +910,7 @@ func TestUpdateAuthorization(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata2,
 	}
-	msg = types.NewMsgCreateIscnRecord(addr1, &record)
+	msg = types.NewMsgCreateIscnRecord(addr1, &record, 0)
 	result = app.DeliverMsgNoError(t, msg, priv1)
 	iscnId3 := testutil.GetIscnIdFromResult(t, result)
 

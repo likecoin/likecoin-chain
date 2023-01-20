@@ -114,7 +114,7 @@ func setupAppAndNfts(t *testing.T) authorizationTestSetup {
 		for j := 0; j < 2; j++ {
 			record := baseRecord
 			record.RecordNotes = fmt.Sprintf("%d-%d", i, j)
-			msg = iscntypes.NewMsgCreateIscnRecord(owner.Addr, &record)
+			msg = iscntypes.NewMsgCreateIscnRecord(owner.Addr, &record, 0)
 			res := app.DeliverMsgNoError(t, msg, owner.PrivKey)
 			iscnId := testutil.GetIscnIdFromResult(t, res)
 			iscn := authorizationTestSetupIscn{
@@ -169,7 +169,7 @@ func TestAuthorization(t *testing.T) {
 		Stakeholders:        []iscntypes.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	msg = iscntypes.NewMsgCreateIscnRecord(addr1, &record)
+	msg = iscntypes.NewMsgCreateIscnRecord(addr1, &record, 0)
 	res := app.DeliverMsgNoError(t, msg, priv1)
 	iscnId1 := testutil.GetIscnIdFromResult(t, res)
 
@@ -179,7 +179,7 @@ func TestAuthorization(t *testing.T) {
 		Stakeholders:        []iscntypes.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata1,
 	}
-	msg = iscntypes.NewMsgCreateIscnRecord(addr3, &record)
+	msg = iscntypes.NewMsgCreateIscnRecord(addr3, &record, 0)
 	res = app.DeliverMsgNoError(t, msg, priv3)
 	iscnId3 := testutil.GetIscnIdFromResult(t, res)
 
