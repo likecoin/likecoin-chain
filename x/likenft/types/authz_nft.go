@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 )
 
 var _ authz.Authorization = &SendNFTAuthorization{}

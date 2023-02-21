@@ -876,7 +876,8 @@ func TestUpdateAuthorization(t *testing.T) {
 		Stakeholders:        []types.IscnInput{stakeholder1, stakeholder2},
 		ContentMetadata:     contentMetadata2,
 	}
-	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateAuthorization(iscnId.Prefix.String()), time.Unix(2000000000, 0))
+	expiration := time.Unix(2000000000, 0)
+	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateAuthorization(iscnId.Prefix.String()), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 

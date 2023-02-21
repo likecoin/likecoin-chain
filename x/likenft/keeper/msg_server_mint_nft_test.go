@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
-	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	"github.com/likecoin/likecoin-chain/v3/testutil/keeper"
 	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/testutil"

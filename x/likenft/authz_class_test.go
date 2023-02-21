@@ -43,9 +43,10 @@ func TestClassAuthorizations(t *testing.T) {
 		Metadata: types.JsonInput(`{}`),
 	}
 
+	expiration := time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.NewClassAuthorization{
 		IscnIdPrefix: grantedIscnIdPrefix,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -59,9 +60,11 @@ func TestClassAuthorizations(t *testing.T) {
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "ISCN ID prefix mismatch")
 
 	ungrantedClassId := setup.Owners[0].Iscns[0].Classes[0].ClassId
+
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.UpdateClassAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 

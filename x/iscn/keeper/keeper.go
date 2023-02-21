@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	prefixstore "github.com/cosmos/cosmos-sdk/store/prefix"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -19,7 +20,7 @@ type AccountKeeper interface {
 }
 
 type Keeper struct {
-	storeKey      sdk.StoreKey
+	storeKey      storetypes.StoreKey
 	cdc           codec.BinaryCodec
 	paramstore    paramTypes.Subspace
 	accountKeeper AccountKeeper
@@ -27,7 +28,7 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, accountKeeper AccountKeeper,
+	cdc codec.BinaryCodec, key storetypes.StoreKey, accountKeeper AccountKeeper,
 	bankKeeper authTypes.BankKeeper, paramstore paramTypes.Subspace,
 ) Keeper {
 	return Keeper{
