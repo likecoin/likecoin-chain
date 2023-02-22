@@ -110,6 +110,10 @@ import (
 	likenfttypes "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
+const (
+	UpgradeName = "v4.0.0"
+)
+
 var (
 	// default home directories for liked
 	DefaultNodeHome = os.ExpandEnv("$HOME/.liked")
@@ -563,49 +567,9 @@ func NewLikeApp(
 
 // Upgrade Handler
 func (app *LikeApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("v3.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// Migration for ibc-go v2.1.0 to v2.3.0: Support base denoms with slashes
-		// Ref: https://github.com/cosmos/ibc-go/blob/main/docs/migrations/support-denoms-with-slashes.md
-
-		// list of traces that must replace the old traces in store
-		var newTraces []ibctransfertypes.DenomTrace
-		equalTraces := func(dtA, dtB ibctransfertypes.DenomTrace) bool {
-			return dtA.BaseDenom == dtB.BaseDenom && dtA.Path == dtB.Path
-		}
-		app.TransferKeeper.IterateDenomTraces(ctx,
-			func(dt ibctransfertypes.DenomTrace) bool {
-				// check if the new way of splitting FullDenom
-				// into Trace and BaseDenom passes validation and
-				// is the same as the current DenomTrace.
-				// If it isn't then store the new DenomTrace in the list of new traces.
-				newTrace := ibctransfertypes.ParseDenomTrace(dt.GetFullDenomPath())
-				if err := newTrace.Validate(); err == nil && !equalTraces(newTrace, dt) {
-					newTraces = append(newTraces, newTrace)
-				}
-				return false
-			})
-
-		// replace the outdated traces with the new trace information
-		for _, nt := range newTraces {
-			app.TransferKeeper.SetDenomTrace(ctx, nt)
-		}
-
+	app.UpgradeKeeper.SetUpgradeHandler(UpgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if upgradeInfo.Name == "v3.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{nft.StoreKey, likenfttypes.StoreKey},
-		}
-
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
 }
 
 func (app *LikeApp) Name() string {
