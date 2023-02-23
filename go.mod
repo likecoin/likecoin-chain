@@ -3,7 +3,7 @@ module github.com/likecoin/likecoin-chain/v3
 go 1.18
 
 require (
-	github.com/bianjieai/nft-transfer v1.1.1-beta
+	github.com/bianjieai/nft-transfer v1.0.0-beta
 	github.com/cosmos/cosmos-sdk v0.46.11
 	github.com/cosmos/ibc-go/v5 v5.2.0
 	github.com/gogo/protobuf v1.3.3

@@ -21,6 +21,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
+	"github.com/bianjieai/nft-transfer"
+	nfttransferkeeper "github.com/bianjieai/nft-transfer/keeper"
+	nfttransfertypes "github.com/bianjieai/nft-transfer/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
@@ -157,6 +160,9 @@ var (
 		// LikeCoin
 		iscn.AppModuleBasic{},
 		likenft.AppModuleBasic{},
+
+		// NFT transfer
+		nfttransfer.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -170,6 +176,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		nft.ModuleName:                 nil,
 		likenfttypes.ModuleName:        nil,
+		nfttransfertypes.ModuleName:    nil,
 	}
 )
 
@@ -191,30 +198,32 @@ type LikeApp struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper    authkeeper.AccountKeeper
-	BankKeeper       bankkeeper.Keeper
-	CapabilityKeeper *capabilitykeeper.Keeper
-	StakingKeeper    stakingkeeper.Keeper
-	SlashingKeeper   slashingkeeper.Keeper
-	MintKeeper       mintkeeper.Keeper
-	DistrKeeper      distrkeeper.Keeper
-	GovKeeper        govkeeper.Keeper
-	CrisisKeeper     crisiskeeper.Keeper
-	ParamsKeeper     paramskeeper.Keeper
-	UpgradeKeeper    upgradekeeper.Keeper
-	IBCKeeper        *ibckeeper.Keeper
-	EvidenceKeeper   evidencekeeper.Keeper
-	TransferKeeper   ibctransferkeeper.Keeper
-	AuthzKeeper      authzkeeper.Keeper
-	FeeGrantKeeper   feegrantkeeper.Keeper
-	GroupKeeper      groupkeeper.Keeper
-	IscnKeeper       iscnkeeper.Keeper
-	NftKeeper        nftkeeper.Keeper
-	LikeNftKeeper    likenftkeeper.Keeper
+	AccountKeeper     authkeeper.AccountKeeper
+	BankKeeper        bankkeeper.Keeper
+	CapabilityKeeper  *capabilitykeeper.Keeper
+	StakingKeeper     stakingkeeper.Keeper
+	SlashingKeeper    slashingkeeper.Keeper
+	MintKeeper        mintkeeper.Keeper
+	DistrKeeper       distrkeeper.Keeper
+	GovKeeper         govkeeper.Keeper
+	CrisisKeeper      crisiskeeper.Keeper
+	ParamsKeeper      paramskeeper.Keeper
+	UpgradeKeeper     upgradekeeper.Keeper
+	IBCKeeper         *ibckeeper.Keeper
+	EvidenceKeeper    evidencekeeper.Keeper
+	TransferKeeper    ibctransferkeeper.Keeper
+	AuthzKeeper       authzkeeper.Keeper
+	FeeGrantKeeper    feegrantkeeper.Keeper
+	GroupKeeper       groupkeeper.Keeper
+	IscnKeeper        iscnkeeper.Keeper
+	NftKeeper         nftkeeper.Keeper
+	LikeNftKeeper     likenftkeeper.Keeper
+	NftTransferKeeper nfttransferkeeper.Keeper
 
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper    capabilitykeeper.ScopedKeeper
+	ScopedNFTTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -259,6 +268,7 @@ func NewLikeApp(
 		nftkeeper.StoreKey,
 		likenfttypes.StoreKey,
 		group.StoreKey,
+		nfttransfertypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, likenfttypes.MemStoreKey)
@@ -301,6 +311,7 @@ func NewLikeApp(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	scopedNFTTransferKeeper := app.CapabilityKeeper.ScopeToModule(nfttransfertypes.ModuleName)
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
@@ -374,12 +385,14 @@ func NewLikeApp(
 		&stakingKeeper, govRouter, app.MsgServiceRouter(), govConfig,
 	)
 
+	ics4Wrapper := app.IBCKeeper.ChannelKeeper
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		ibcTransferSubspace,
-		app.IBCKeeper.ChannelKeeper,
+		ics4Wrapper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -387,9 +400,16 @@ func NewLikeApp(
 		scopedTransferKeeper,
 	)
 
+	app.NftTransferKeeper = nfttransferkeeper.NewKeeper(
+		appCodec, keys[nfttransfertypes.StoreKey], ics4Wrapper,
+		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
+		app.AccountKeeper, app.NftKeeper, scopedNFTTransferKeeper,
+	)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transfer.NewIBCModule(app.TransferKeeper))
+	ibcRouter.AddRoute(nfttransfertypes.ModuleName, nfttransfer.NewIBCModule(app.NftTransferKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
@@ -435,6 +455,7 @@ func NewLikeApp(
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		likenft.NewAppModule(appCodec, app.LikeNftKeeper, app.AccountKeeper, app.BankKeeper),
+		nfttransfer.NewAppModule(app.NftTransferKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -465,6 +486,7 @@ func NewLikeApp(
 		iscntypes.ModuleName,
 		nft.ModuleName,
 		likenfttypes.ModuleName,
+		nfttransfertypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -489,6 +511,7 @@ func NewLikeApp(
 		iscntypes.ModuleName,
 		nft.ModuleName,
 		likenfttypes.ModuleName,
+		nfttransfertypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -518,6 +541,7 @@ func NewLikeApp(
 		iscntypes.ModuleName,
 		nft.ModuleName,
 		likenfttypes.ModuleName,
+		nfttransfertypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -561,6 +585,7 @@ func NewLikeApp(
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedNFTTransferKeeper = scopedNFTTransferKeeper
 
 	return app
 }
