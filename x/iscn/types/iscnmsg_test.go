@@ -55,9 +55,32 @@ var (
 		ContentMetadata: IscnInput(`{}`),
 	}
 
-	msgCreateIscnRecord1NoNonce = MsgCreateIscnRecord{
+	createIscnRecord3 = IscnRecord{
+		RecordNotes:         "",
+		ContentFingerprints: []string{},
+		Stakeholders:        []IscnInput{},
+		ContentMetadata:     IscnInput(`{}`),
+	}
+
+	createIscnRecord4 = IscnRecord{
+		ContentMetadata: IscnInput(`{
+			"emptyField": "",
+			"emptyArray": [],
+			"emptyObject": {}
+		}`),
+	}
+
+	msgCreateIscnRecord1NoNonce1 = MsgCreateIscnRecord{
 		From:   addr1,
 		Record: createIscnRecord2,
+	}
+	msgCreateIscnRecord1NoNonce2 = MsgCreateIscnRecord{
+		From:   addr1,
+		Record: createIscnRecord3,
+	}
+	msgCreateIscnRecord1NoNonce3 = MsgCreateIscnRecord{
+		From:   addr1,
+		Record: createIscnRecord4,
 	}
 	msgCreateIscnRecord1Nonce1 = MsgCreateIscnRecord{
 		From:   addr1,
@@ -65,8 +88,9 @@ var (
 		Nonce:  1,
 	}
 
-	msgCreateIscnRecordBytesNoNonce = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","record":{"contentMetadata":{}}}}`)
-	msgCreateIscnRecordBytesNonce1  = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","nonce":"1","record":{"contentMetadata":{}}}}`)
+	msgCreateIscnRecordBytesNoNonce1 = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","record":{"contentMetadata":{}}}}`)
+	msgCreateIscnRecordBytesNoNonce2 = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","record":{"contentMetadata":{"emptyArray":[],"emptyField":"","emptyObject":{}}}}}`)
+	msgCreateIscnRecordBytesNonce1   = []byte(`{"type":"likecoin-chain/MsgCreateIscnRecord","value":{"from":"like1ukmjl5s6pnw2txkvz2hd2n0f6dulw34h9rw5zn","nonce":"1","record":{"contentMetadata":{}}}}`)
 
 	registryName = "likecoin-chain"
 
@@ -163,8 +187,18 @@ func TestMsgCreateIscnRecord_GetSignBytes(t *testing.T) {
 	}{
 		{
 			name: "valid with no nonce",
-			msg:  msgCreateIscnRecord1NoNonce,
-			want: msgCreateIscnRecordBytesNoNonce,
+			msg:  msgCreateIscnRecord1NoNonce1,
+			want: msgCreateIscnRecordBytesNoNonce1,
+		},
+		{
+			name: "valid with no nonce and ignore empty optional fields in IscnRecord",
+			msg:  msgCreateIscnRecord1NoNonce2,
+			want: msgCreateIscnRecordBytesNoNonce1,
+		},
+		{
+			name: "valid with no nonce and keep empty fields in ContentMetadata",
+			msg:  msgCreateIscnRecord1NoNonce3,
+			want: msgCreateIscnRecordBytesNoNonce2,
 		},
 		{
 			name: "valid with assigned nonce",
@@ -189,7 +223,7 @@ func TestMsgCreateIscnRecord_GenerateNewIscnIdWithSeed(t *testing.T) {
 	}{
 		{
 			name: "valid with no nonce",
-			seed: msgCreateIscnRecordBytesNoNonce,
+			seed: msgCreateIscnRecordBytesNoNonce1,
 			want: iscnIdNoNonce,
 		},
 		{
