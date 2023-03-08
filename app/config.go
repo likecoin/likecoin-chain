@@ -15,6 +15,9 @@ const (
 	HumanCoinUnit = "like"
 	BaseCoinUnit  = "nanolike"
 	LikeExponent  = 9
+
+	Bech32MainPrefix   = "like"
+	Bech32LegacyPrefix = "cosmos"
 )
 
 func RegisterDenoms() {
@@ -29,7 +32,7 @@ func RegisterDenoms() {
 }
 
 func SetAddressPrefixes() {
-	bech32PrefixesAccAddr := []string{"like", "cosmos"}
+	bech32PrefixesAccAddr := []string{Bech32MainPrefix, Bech32LegacyPrefix}
 	bech32PrefixesAccPub := make([]string, 0, len(bech32PrefixesAccAddr))
 	bech32PrefixesValAddr := make([]string, 0, len(bech32PrefixesAccAddr))
 	bech32PrefixesValPub := make([]string, 0, len(bech32PrefixesAccAddr))

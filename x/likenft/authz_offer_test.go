@@ -29,10 +29,11 @@ func TestOfferAuthorizations(t *testing.T) {
 	grantedNftId := setup.Owners[0].Iscns[0].Classes[0].NftIds[0]
 	ungrantedNftId := setup.Owners[0].Iscns[0].Classes[0].NftIds[1]
 
+	expiration := time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.CreateOfferAuthorization{
 		ClassId: grantedClassId,
 		NftId:   grantedNftId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -48,10 +49,11 @@ func TestOfferAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.UpdateOfferAuthorization{
 		ClassId: grantedClassId,
 		NftId:   grantedNftId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -67,10 +69,11 @@ func TestOfferAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.DeleteOfferAuthorization{
 		ClassId: grantedClassId,
 		NftId:   grantedNftId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -104,9 +107,10 @@ func TestOfferAuthorizationsForAllNftIds(t *testing.T) {
 	nftId0 := setup.Owners[0].Iscns[0].Classes[0].NftIds[0]
 	nftId1 := setup.Owners[0].Iscns[0].Classes[0].NftIds[1]
 
+	expiration := time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.CreateOfferAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -122,9 +126,10 @@ func TestOfferAuthorizationsForAllNftIds(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.UpdateOfferAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -140,9 +145,10 @@ func TestOfferAuthorizationsForAllNftIds(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.DeleteOfferAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	"github.com/likecoin/likecoin-chain/v3/testutil/network"
 	"github.com/likecoin/likecoin-chain/v3/testutil/nullify"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
