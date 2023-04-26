@@ -3,8 +3,7 @@ module github.com/likecoin/likecoin-chain/v3
 go 1.18
 
 require (
-	github.com/bianjieai/nft-transfer v1.1.1-beta
-	github.com/cosmos/cosmos-sdk v0.46.11
+	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/ibc-go/v5 v5.2.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
@@ -170,9 +169,13 @@ require (
 )
 
 replace (
+
+	// below are from the go.mod in cosmos-sdk
+
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.46.11-dual-prefix
+	// likecoin fork for dual address prefix
+	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.46.12-dual-prefix
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
