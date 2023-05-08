@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
@@ -45,6 +46,7 @@ func LikenftKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -56,10 +58,11 @@ func LikenftKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 }
 
 type LikenftDependedKeepers struct {
-	AccountKeeper types.AccountKeeper
-	BankKeeper    types.BankKeeper
-	IscnKeeper    types.IscnKeeper
-	NftKeeper     types.NftKeeper
+	AccountKeeper  types.AccountKeeper
+	BankKeeper     types.BankKeeper
+	IscnKeeper     types.IscnKeeper
+	NftKeeper      types.NftKeeper
+	FeegrantKeeper ante.FeegrantKeeper
 }
 
 func LikenftKeeperOverrideDependedKeepers(t testing.TB, dependedKeepers LikenftDependedKeepers) (*keeper.Keeper, sdk.Context) {
@@ -90,6 +93,7 @@ func LikenftKeeperOverrideDependedKeepers(t testing.TB, dependedKeepers LikenftD
 		dependedKeepers.BankKeeper,
 		dependedKeepers.IscnKeeper,
 		dependedKeepers.NftKeeper,
+		dependedKeepers.FeegrantKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

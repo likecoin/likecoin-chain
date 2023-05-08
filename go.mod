@@ -169,7 +169,6 @@ require (
 )
 
 replace (
-
 	// below are from the go.mod in cosmos-sdk
 
 	// use cosmos fork of keyring

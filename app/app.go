@@ -345,10 +345,10 @@ func NewLikeApp(
 		app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.registerUpgradeHandlers()
-	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, iscnSubspace)
+	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, iscnSubspace)
 
 	app.NftKeeper = nftkeeper.NewKeeper(keys[nftkeeper.StoreKey], appCodec, app.AccountKeeper, app.BankKeeper)
-	app.LikeNftKeeper = *likenftkeeper.NewKeeper(app.appCodec, keys[likenfttypes.StoreKey], app.memKeys[likenfttypes.MemStoreKey], likeNftSubspace, app.AccountKeeper, app.BankKeeper, app.IscnKeeper, app.NftKeeper)
+	app.LikeNftKeeper = *likenftkeeper.NewKeeper(app.appCodec, keys[likenfttypes.StoreKey], app.memKeys[likenfttypes.MemStoreKey], likeNftSubspace, app.AccountKeeper, app.BankKeeper, app.IscnKeeper, app.NftKeeper, app.FeeGrantKeeper)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks

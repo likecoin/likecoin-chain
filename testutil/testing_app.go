@@ -26,11 +26,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	// helpers from cosmos-sdk is not helpful enough, need ibc-go helpers to backup
-	// (which is just the old version of "github.com/cosmos/cosmos-sdk/simapp/helpers")
-	// (maybe they think it is too helpful, so they modified it in the new version to be less helpful)
-	ibcgohelpers "github.com/cosmos/ibc-go/v5/testing/simapp/helpers"
-
 	likeapp "github.com/likecoin/likecoin-chain/v3/app"
 
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
@@ -167,7 +162,7 @@ func (app *TestingApp) SetForTx() {
 	app.Commit()
 }
 
-func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
+func (app *TestingApp) DeliverMsgsWithFeeGranter(msgs []sdk.Msg, priv cryptotypes.PrivKey, feeGranter sdk.AccAddress) (res *sdk.Result, err error, simErr error, deliverErr error) {
 	app.Header.Height = app.LastBlockHeight() + 1
 	app.BeginBlock(abci.RequestBeginBlock{Header: app.Header})
 	app.Context = app.BaseApp.NewContext(false, app.Header)
@@ -177,7 +172,7 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 	accNum := acc.GetAccountNumber()
 	accSeq := acc.GetSequence()
 	txCfg := app.txCfg
-	tx, err := ibcgohelpers.GenTx(
+	tx, err := GenerateTx(
 		app.txCfg,
 		msgs,
 		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
@@ -185,6 +180,7 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 		chainId,
 		[]uint64{accNum},
 		[]uint64{accSeq},
+		feeGranter,
 		priv,
 	)
 	if err != nil {
@@ -202,6 +198,10 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 	app.EndBlock(abci.RequestEndBlock{})
 	app.Commit()
 	return res, nil, nil, deliverErr
+}
+
+func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {
+	return app.DeliverMsgsWithFeeGranter(msgs, priv, nil)
 }
 
 func (app *TestingApp) DeliverMsg(msg sdk.Msg, priv cryptotypes.PrivKey) (res *sdk.Result, err error, simErr error, deliverErr error) {

@@ -10,6 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
@@ -20,10 +22,11 @@ type (
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
 
-		accountKeeper types.AccountKeeper
-		bankKeeper    types.BankKeeper
-		iscnKeeper    types.IscnKeeper
-		nftKeeper     types.NftKeeper
+		accountKeeper  types.AccountKeeper
+		bankKeeper     types.BankKeeper
+		iscnKeeper     types.IscnKeeper
+		nftKeeper      types.NftKeeper
+		feegrantKeeper ante.FeegrantKeeper
 	}
 )
 
@@ -33,7 +36,7 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 
-	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, iscnKeeper types.IscnKeeper, nftKeeper types.NftKeeper,
+	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, iscnKeeper types.IscnKeeper, nftKeeper types.NftKeeper, feegrantKeeper ante.FeegrantKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -47,6 +50,7 @@ func NewKeeper(
 		memKey:        memKey,
 		paramstore:    ps,
 		accountKeeper: accountKeeper, bankKeeper: bankKeeper, iscnKeeper: iscnKeeper, nftKeeper: nftKeeper,
+		feegrantKeeper: feegrantKeeper,
 	}
 }
 

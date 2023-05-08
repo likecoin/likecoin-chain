@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	prefixstore "github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -13,6 +11,7 @@ import (
 	paramTypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v3/x/likefeegrant"
 )
 
 type AccountKeeper interface {
@@ -20,23 +19,25 @@ type AccountKeeper interface {
 }
 
 type Keeper struct {
-	storeKey      storetypes.StoreKey
-	cdc           codec.BinaryCodec
-	paramstore    paramTypes.Subspace
-	accountKeeper AccountKeeper
-	bankKeeper    authTypes.BankKeeper
+	storeKey       storetypes.StoreKey
+	cdc            codec.BinaryCodec
+	paramstore     paramTypes.Subspace
+	accountKeeper  AccountKeeper
+	bankKeeper     authTypes.BankKeeper
+	feegrantKeeper ante.FeegrantKeeper
 }
 
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, accountKeeper AccountKeeper,
-	bankKeeper authTypes.BankKeeper, paramstore paramTypes.Subspace,
+	bankKeeper authTypes.BankKeeper, feegrantKeeper ante.FeegrantKeeper, paramstore paramTypes.Subspace,
 ) Keeper {
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		paramstore:    paramstore.WithKeyTable(ParamKeyTable()),
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
+		storeKey:       key,
+		cdc:            cdc,
+		paramstore:     paramstore.WithKeyTable(ParamKeyTable()),
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		feegrantKeeper: feegrantKeeper,
 	}
 }
 
@@ -250,25 +251,19 @@ func (k Keeper) IterateIscnIds(ctx sdk.Context, f func(iscnId IscnId, contentIdR
 	})
 }
 
-func (k Keeper) DeductFeeForIscn(ctx sdk.Context, feePayer sdk.AccAddress, data []byte) error {
-	acc := k.accountKeeper.GetAccount(ctx, feePayer)
-	if acc == nil {
-		return fmt.Errorf("cannot find account %s for deducting fee", feePayer.String())
-	}
+func (k Keeper) DeductFeeForIscn(ctx sdk.Context, msgSender sdk.AccAddress, data []byte, msg sdk.Msg) error {
 	feePerByte := k.GetParams(ctx).FeePerByte
 	feeAmount := feePerByte.Amount.MulInt64(int64(len(data)))
 	fees := sdk.NewCoins(sdk.NewCoin(feePerByte.Denom, feeAmount.Ceil().RoundInt()))
-	if !fees.IsZero() {
-		err := ante.DeductFees(k.bankKeeper, ctx, acc, fees)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return likefeegrant.DeductFeePerByte(
+		ctx,
+		k.accountKeeper, k.bankKeeper, k.feegrantKeeper,
+		msgSender, fees, msg,
+	)
 }
 
 func (k Keeper) AddIscnRecord(
-	ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress, data []byte, fingerprints []string,
+	ctx sdk.Context, iscnId IscnId, owner sdk.AccAddress, data []byte, fingerprints []string, msg sdk.Msg,
 ) (*CID, error) {
 	contentIdRecord := k.GetContentIdRecord(ctx, iscnId.Prefix)
 	if contentIdRecord == nil {
@@ -291,7 +286,7 @@ func (k Keeper) AddIscnRecord(
 	if k.GetCidSequence(ctx, cid) != 0 {
 		return nil, sdkerrors.Wrapf(types.ErrRecordAlreadyExist, "%s", cid.String())
 	}
-	err := k.DeductFeeForIscn(ctx, owner, data)
+	err := k.DeductFeeForIscn(ctx, owner, data, msg)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrDeductIscnFee, "%s", err.Error())
 	}

@@ -37,7 +37,7 @@ func (k msgServer) CreateIscnRecord(goCtx context.Context, msg *MsgCreateIscnRec
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrEncodingJsonLd, "%s", err.Error())
 	}
-	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints)
+	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (k msgServer) UpdateIscnRecord(goCtx context.Context, msg *MsgUpdateIscnRec
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrEncodingJsonLd, "%s", err.Error())
 	}
-	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints)
+	cid, err := k.AddIscnRecord(ctx, id, from, recordJsonLd, msg.Record.ContentFingerprints, msg)
 	if err != nil {
 		return nil, err
 	}

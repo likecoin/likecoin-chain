@@ -68,7 +68,7 @@ func TestMintFeeNormal(t *testing.T) {
 	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), ownerAddressBytes, authtypes.FeeCollectorName, coinsMatcher(expectedCoins)).Return(nil)
 
 	// call
-	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength)
+	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength, nil)
 
 	require.NoError(t, err)
 
@@ -99,7 +99,7 @@ func TestMintFeeFreeForEmpty(t *testing.T) {
 	bytesLength := 0
 
 	// call
-	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength)
+	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength, nil)
 
 	require.NoError(t, err)
 
@@ -130,7 +130,7 @@ func TestMintFeeFreeForZeroRate(t *testing.T) {
 	bytesLength := 123456
 
 	// call
-	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength)
+	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength, nil)
 
 	require.NoError(t, err)
 
@@ -164,7 +164,7 @@ func TestMintFeeAccNotFound(t *testing.T) {
 	accountKeeper.EXPECT().GetAccount(gomock.Any(), ownerAddressBytes).Return(nil)
 
 	// call
-	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength)
+	err := keeper.DeductFeePerByte(ctx, ownerAddressBytes, bytesLength, nil)
 
 	require.Error(t, err)
 
