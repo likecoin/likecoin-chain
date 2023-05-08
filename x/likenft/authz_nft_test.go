@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/likecoin/likecoin-chain/v3/backport/cosmos-sdk/v0.46.0-rc1/x/nft"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
 )
 
@@ -31,9 +31,10 @@ func TestNFTAuthorizations(t *testing.T) {
 	grantedNftId := "this-is-granted"
 	ungrantedNftId := setup.Owners[0].Iscns[0].Classes[0].NftIds[0]
 
+	expiration := time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.MintNFTAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -45,10 +46,11 @@ func TestNFTAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.SendNFTAuthorization{
 		ClassId: grantedClassId,
 		Id:      grantedNftId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -70,9 +72,10 @@ func TestNFTAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "NFT ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.SendNFTAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 

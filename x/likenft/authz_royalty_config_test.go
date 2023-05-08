@@ -35,9 +35,10 @@ func TestRoyaltyConfigAuthorizations(t *testing.T) {
 		},
 	}
 
+	expiration := time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.CreateRoyaltyConfigAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -49,9 +50,10 @@ func TestRoyaltyConfigAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.UpdateRoyaltyConfigAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 
@@ -65,9 +67,10 @@ func TestRoyaltyConfigAuthorizations(t *testing.T) {
 	msgExec = authz.NewMsgExec(grantee.Addr, []sdk.Msg{msg})
 	app.DeliverMsgSimError(t, &msgExec, grantee.PrivKey, "class ID mismatch")
 
+	expiration = time.Unix(1300000000, 0)
 	msgGrant, err = authz.NewMsgGrant(granter.Addr, grantee.Addr, &types.DeleteRoyaltyConfigAuthorization{
 		ClassId: grantedClassId,
-	}, time.Unix(1300000000, 0))
+	}, &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msgGrant, granter.PrivKey)
 

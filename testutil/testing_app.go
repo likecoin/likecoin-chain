@@ -3,6 +3,7 @@ package testutil
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -22,6 +23,13 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	// helpers from cosmos-sdk is not helpful enough, need ibc-go helpers to backup
+	// (which is just the old version of "github.com/cosmos/cosmos-sdk/simapp/helpers")
+	// (maybe they think it is too helpful, so they modified it in the new version to be less helpful)
+	ibcgohelpers "github.com/cosmos/ibc-go/v5/testing/simapp/helpers"
 
 	likeapp "github.com/likecoin/likecoin-chain/v3/app"
 
@@ -30,6 +38,12 @@ import (
 
 const DefaultNodeHome = "/tmp/.liked-test"
 const invCheckPeriod = 1
+
+const TestChainId = "test-chain-VhVyAD"
+const ValidatorLikeAddr = "like1tf9tg46d82lm32xwq4ms7xj6xse3qu4m5n2h5h"
+const ValidatorLikeValAddr = "likevaloper1tf9tg46d82lm32xwq4ms7xj6xse3qu4mzuufyy"
+const ValidatorMnemonic = "celery milk ahead display high either family win pool potato plunge crunch siren table become slush bracket dust tumble talent gadget fossil wet lobster"
+const GenTx = `{"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"asdf","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"like1tf9tg46d82lm32xwq4ms7xj6xse3qu4m5n2h5h","validator_address":"likevaloper1tf9tg46d82lm32xwq4ms7xj6xse3qu4mzuufyy","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"omjQHY80Kp/8VAWXZ5bAf0dffldUETXPENkGo/0jFxQ="},"value":{"denom":"nanolike","amount":"100000000000000"}}],"memo":"d539239b11be3bd8716b0f5b7d80536f3f211118@localhost:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AvsqtnuPtaAIaGbsqf3rs1ELvT+1ztNP5VdUdyZreWeE"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["lArPx+wmsLj4d+/NEFB/OCaoA2RAYaDjjjQLVkNXift3KCUjzS51pp07sAURENpBK9ruy9I54sOozdswIY27JA=="]}`
 
 type TestingApp struct {
 	*likeapp.LikeApp
@@ -44,17 +58,6 @@ type GenesisBalance struct {
 	Coin    string
 }
 
-func SetupTestAppWithDefaultState() *TestingApp {
-	encodingCfg := likeapp.MakeEncodingConfig()
-	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Marshaler)
-	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
-	if err != nil {
-		panic(err)
-	}
-
-	return SetupTestAppWithState(stateBytes, simapp.EmptyAppOptions{})
-}
-
 func SetupTestAppWithState(appState json.RawMessage, appOptions servertypes.AppOptions) *TestingApp {
 	db := dbm.NewMemDB()
 	encodingCfg := likeapp.MakeEncodingConfig()
@@ -63,6 +66,7 @@ func SetupTestAppWithState(appState json.RawMessage, appOptions servertypes.AppO
 
 	app.InitChain(
 		abci.RequestInitChain{
+			ChainId:         TestChainId,
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: simapp.DefaultConsensusParams,
 			AppStateBytes:   appState,
@@ -83,8 +87,11 @@ func SetupTestAppWithState(appState json.RawMessage, appOptions servertypes.AppO
 }
 
 func SetupTestAppWithIscnGenesis(genesisBalances []GenesisBalance, iscnGenesisJson json.RawMessage) *TestingApp {
-	genAccs := []authtypes.GenesisAccount{}
-	balances := []banktypes.Balance{}
+	genAccs := []authtypes.GenesisAccount{&authtypes.BaseAccount{Address: ValidatorLikeAddr}}
+	balances := []banktypes.Balance{{
+		Address: ValidatorLikeAddr,
+		Coins:   sdk.NewCoins(sdk.NewCoin("nanolike", sdk.NewInt(1000000000000000000))),
+	}}
 	for _, balance := range genesisBalances {
 		addr := balance.Address
 		genAccs = append(genAccs, &authtypes.BaseAccount{Address: addr})
@@ -99,6 +106,7 @@ func SetupTestAppWithIscnGenesis(genesisBalances []GenesisBalance, iscnGenesisJs
 	encodingCfg := likeapp.MakeEncodingConfig()
 	logger := log.NewTMLogger(os.Stdout)
 	app := likeapp.NewLikeApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encodingCfg, simapp.EmptyAppOptions{})
+
 	genesisState := likeapp.ModuleBasics.DefaultGenesis(encodingCfg.Marshaler)
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
@@ -111,6 +119,11 @@ func SetupTestAppWithIscnGenesis(genesisBalances []GenesisBalance, iscnGenesisJs
 	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
+	stakingParams := stakingtypes.DefaultParams()
+	stakingParams.BondDenom = "nanolike"
+	stakingGenesis := stakingtypes.NewGenesisState(stakingParams, nil, nil)
+	genesisState[stakingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(stakingGenesis)
+
 	crisisGenesis := crisistypes.NewGenesisState(sdk.NewInt64Coin("nanolike", 1))
 	genesisState[crisistypes.ModuleName] = app.AppCodec().MustMarshalJSON(crisisGenesis)
 
@@ -118,34 +131,22 @@ func SetupTestAppWithIscnGenesis(genesisBalances []GenesisBalance, iscnGenesisJs
 		genesisState[types.ModuleName] = iscnGenesisJson
 	}
 
+	genesisState[genutiltypes.ModuleName] = json.RawMessage(fmt.Sprintf(`{"gen_txs":[%s]}`, GenTx))
+
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
 		panic(err)
 	}
 
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simapp.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-		},
-	)
-
-	app.Commit()
-
-	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-
-	return &TestingApp{
-		LikeApp: app,
-		txCfg:   simapp.MakeTestEncodingConfig().TxConfig,
-		Header:  header,
-		Context: app.BaseApp.NewContext(false, header),
-	}
+	return SetupTestAppWithState(stateBytes, simapp.EmptyAppOptions{})
 }
 
 func SetupTestApp(genesisBalances []GenesisBalance) *TestingApp {
 	return SetupTestAppWithIscnGenesis(genesisBalances, nil)
+}
+
+func SetupTestAppWithDefaultState() *TestingApp {
+	return SetupTestApp(nil)
 }
 
 func (app *TestingApp) NextHeader(unixTimestamp int64) {
@@ -176,7 +177,7 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 	accNum := acc.GetAccountNumber()
 	accSeq := acc.GetSequence()
 	txCfg := app.txCfg
-	tx, err := helpers.GenTx(
+	tx, err := ibcgohelpers.GenTx(
 		app.txCfg,
 		msgs,
 		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
@@ -197,7 +198,7 @@ func (app *TestingApp) DeliverMsgs(msgs []sdk.Msg, priv cryptotypes.PrivKey) (re
 	if simErr != nil {
 		return nil, nil, simErr, nil
 	}
-	_, res, deliverErr = app.Deliver(txCfg.TxEncoder(), tx)
+	_, res, deliverErr = app.SimDeliver(txCfg.TxEncoder(), tx)
 	app.EndBlock(abci.RequestEndBlock{})
 	app.Commit()
 	return res, nil, nil, deliverErr

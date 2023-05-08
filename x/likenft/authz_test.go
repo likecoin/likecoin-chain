@@ -215,7 +215,8 @@ func TestAuthorization(t *testing.T) {
 	res = app.DeliverMsgNoError(t, msg, priv3)
 	classId3 := testutil.GetClassIdFromResult(t, res)
 
-	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateClassAuthorization(classId1), time.Unix(2000000000, 0))
+	expiration := time.Unix(2000000000, 0)
+	msg, err := authz.NewMsgGrant(addr1, addr2, types.NewUpdateClassAuthorization(classId1), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
@@ -264,7 +265,8 @@ func TestAuthorization(t *testing.T) {
 	_, _, simErr, _ = app.DeliverMsg(msg, priv2)
 	require.ErrorContains(t, simErr, "authorization not found")
 
-	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewMintNFTAuthorization(classId1), time.Unix(2000000000, 0))
+	expiration = time.Unix(2000000000, 0)
+	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewMintNFTAuthorization(classId1), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
@@ -308,7 +310,8 @@ func TestAuthorization(t *testing.T) {
 	})
 	app.DeliverMsgNoError(t, msg, priv3)
 
-	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateRoyaltyConfigAuthorization(classId1), time.Unix(2000000000, 0))
+	expiration = time.Unix(2000000000, 0)
+	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateRoyaltyConfigAuthorization(classId1), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
@@ -354,7 +357,8 @@ func TestAuthorization(t *testing.T) {
 	msg = types.NewMsgCreateOffer(addr3.String(), classId3, "token-3-by-3", 1, time.Unix(1240000000, 0))
 	app.DeliverMsgNoError(t, msg, priv3)
 
-	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateOfferAuthorization(classId1, "token-1-by-2"), time.Unix(2000000000, 0))
+	expiration = time.Unix(2000000000, 0)
+	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateOfferAuthorization(classId1, "token-1-by-2"), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
@@ -381,7 +385,8 @@ func TestAuthorization(t *testing.T) {
 	msg = types.NewMsgCreateListing(addr3.String(), classId3, "token-3-by-3", 1, time.Unix(1240000000, 0), false)
 	app.DeliverMsgNoError(t, msg, priv3)
 
-	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateListingAuthorization(classId1, "token-1-by-2"), time.Unix(2000000000, 0))
+	expiration = time.Unix(2000000000, 0)
+	msg, err = authz.NewMsgGrant(addr1, addr2, types.NewUpdateListingAuthorization(classId1, "token-1-by-2"), &expiration)
 	require.NoError(t, err)
 	app.DeliverMsgNoError(t, msg, priv1)
 
