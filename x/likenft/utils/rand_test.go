@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"testing"
 
-	testkeeper "github.com/likecoin/likecoin-chain/v3/testutil/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/utils"
+	testkeeper "github.com/likecoin/likecoin-chain/v4/testutil/keeper"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/utils"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )

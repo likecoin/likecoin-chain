@@ -97,17 +97,17 @@ import (
 
 	ibctestingtypes "github.com/cosmos/ibc-go/v5/testing/types"
 
-	"github.com/likecoin/likecoin-chain/v3/x/iscn"
-	iscnkeeper "github.com/likecoin/likecoin-chain/v3/x/iscn/keeper"
-	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/iscn"
+	iscnkeeper "github.com/likecoin/likecoin-chain/v4/x/iscn/keeper"
+	iscntypes "github.com/likecoin/likecoin-chain/v4/x/iscn/types"
 
 	"github.com/cosmos/cosmos-sdk/x/nft"
 	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 	nftmodule "github.com/cosmos/cosmos-sdk/x/nft/module"
 
-	"github.com/likecoin/likecoin-chain/v3/x/likenft"
-	likenftkeeper "github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
-	likenfttypes "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft"
+	likenftkeeper "github.com/likecoin/likecoin-chain/v4/x/likenft/keeper"
+	likenfttypes "github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 const (

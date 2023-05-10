@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	likeapp "github.com/likecoin/likecoin-chain/v3/app"
+	likeapp "github.com/likecoin/likecoin-chain/v4/app"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/libs/log"

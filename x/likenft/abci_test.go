@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/likecoin/likecoin-chain/v3/testutil"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/testutil"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"

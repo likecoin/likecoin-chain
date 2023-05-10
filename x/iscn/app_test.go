@@ -17,10 +17,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
-	"github.com/likecoin/likecoin-chain/v3/x/iscn/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/iscn/keeper"
+	"github.com/likecoin/likecoin-chain/v4/x/iscn/types"
 
-	testutil "github.com/likecoin/likecoin-chain/v3/testutil"
+	testutil "github.com/likecoin/likecoin-chain/v4/testutil"
 )
 
 var (

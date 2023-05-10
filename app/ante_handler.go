@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	ibcante "github.com/cosmos/ibc-go/v5/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/likefeegrant"
+	"github.com/likecoin/likecoin-chain/v4/x/likefeegrant"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC

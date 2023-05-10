@@ -11,10 +11,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	iscntypes "github.com/likecoin/likecoin-chain/v4/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 
-	testutil "github.com/likecoin/likecoin-chain/v3/testutil"
+	testutil "github.com/likecoin/likecoin-chain/v4/testutil"
 )
 
 var (

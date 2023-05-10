@@ -7,9 +7,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"github.com/cosmos/cosmos-sdk/x/nft"
-	keepertest "github.com/likecoin/likecoin-chain/v3/testutil/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	keepertest "github.com/likecoin/likecoin-chain/v4/testutil/keeper"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/keeper"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 func LikenftKeeperForBlindBoxTest(t *testing.T) (*keeper.Keeper, sdk.Context, *gomock.Controller) {

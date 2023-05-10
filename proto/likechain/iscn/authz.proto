@@ -5,7 +5,7 @@ package likechain.iscn;
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
+option go_package = "github.com/likecoin/likecoin-chain/v4/x/iscn/types";
 
 message UpdateAuthorization {
   option (cosmos_proto.implements_interface) = "Authorization";
