@@ -10,12 +10,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	nft "github.com/cosmos/cosmos-sdk/x/nft"
 	nftcli "github.com/cosmos/cosmos-sdk/x/nft/client/cli"
-	"github.com/likecoin/likecoin-chain/v3/testutil/network"
-	iscncli "github.com/likecoin/likecoin-chain/v3/x/iscn/client/cli"
-	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/testutil/network"
+	iscncli "github.com/likecoin/likecoin-chain/v4/x/iscn/client/cli"
+	iscntypes "github.com/likecoin/likecoin-chain/v4/x/iscn/types"
 
-	cli "github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
-	types "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	cli "github.com/likecoin/likecoin-chain/v4/x/likenft/client/cli"
+	types "github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 	"github.com/stretchr/testify/require"
 )
 

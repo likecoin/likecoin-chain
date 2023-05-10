@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/likecoin/likecoin-chain/v3/x/likefeegrant"
+	"github.com/likecoin/likecoin-chain/v4/x/likefeegrant"
 )
 
 func (k Keeper) DeductFeePerByte(ctx sdk.Context, msgSender sdk.AccAddress, bytesLength int, msg sdk.Msg) error {

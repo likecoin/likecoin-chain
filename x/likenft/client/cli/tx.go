@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 var (

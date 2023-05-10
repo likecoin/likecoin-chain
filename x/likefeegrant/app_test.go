@@ -11,9 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 
-	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/iscn/types"
 
-	testutil "github.com/likecoin/likecoin-chain/v3/testutil"
+	testutil "github.com/likecoin/likecoin-chain/v4/testutil"
 )
 
 var (

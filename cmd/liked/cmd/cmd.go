@@ -14,7 +14,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/likecoin/likecoin-chain/v3/app"
+	"github.com/likecoin/likecoin-chain/v4/app"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 
@@ -42,7 +42,7 @@ import (
 
 	simappcli "github.com/cosmos/cosmos-sdk/simapp/simd/cmd"
 
-	"github.com/likecoin/likecoin-chain/v3/ip"
+	"github.com/likecoin/likecoin-chain/v4/ip"
 
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 )

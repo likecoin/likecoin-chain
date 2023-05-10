@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 func TestOfferAuthorizations(t *testing.T) {

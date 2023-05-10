@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 func (k Keeper) ExpireListing(ctx sdk.Context, listing types.ListingStoreRecord) error {

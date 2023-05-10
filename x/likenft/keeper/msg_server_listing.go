@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 func (k msgServer) CreateListing(goCtx context.Context, msg *types.MsgCreateListing) (*types.MsgCreateListingResponse, error) {

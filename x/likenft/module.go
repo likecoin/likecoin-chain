@@ -16,9 +16,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/client/cli"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/keeper"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/client/cli"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/keeper"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 var (

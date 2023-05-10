@@ -5,7 +5,7 @@ package likechain.likenft.v1;
 import "gogoproto/gogo.proto";
 import "likechain/likenft/v1/nft_input.proto";
 
-option go_package = "github.com/likecoin/likecoin-chain/v3/x/likenft/types";
+option go_package = "github.com/likecoin/likecoin-chain/v4/x/likenft/types";
 
 message BlindBoxContent {
   string class_id = 1;

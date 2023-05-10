@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "github.com/likecoin/likecoin-chain/v3/testutil/keeper"
-	"github.com/likecoin/likecoin-chain/v3/testutil/nullify"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/testutil"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	keepertest "github.com/likecoin/likecoin-chain/v4/testutil/keeper"
+	"github.com/likecoin/likecoin-chain/v4/testutil/nullify"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/testutil"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 // Prevent strconv unused error

@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/x/nft"
-	iscntypes "github.com/likecoin/likecoin-chain/v3/x/iscn/types"
-	"github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	iscntypes "github.com/likecoin/likecoin-chain/v4/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

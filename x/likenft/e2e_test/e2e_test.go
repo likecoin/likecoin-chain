@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	types "github.com/likecoin/likecoin-chain/v3/x/likenft/types"
+	types "github.com/likecoin/likecoin-chain/v4/x/likenft/types"
 )
 
 func parseEventCreateClass(res sdk.TxResponse) types.EventNewClass {

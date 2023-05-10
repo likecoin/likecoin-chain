@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/likecoin/likecoin-chain/v3/testutil"
+	"github.com/likecoin/likecoin-chain/v4/testutil"
 	"github.com/stretchr/testify/require"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"

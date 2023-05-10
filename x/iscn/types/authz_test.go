@@ -11,7 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/likecoin/likecoin-chain/v3/x/iscn/types"
+	"github.com/likecoin/likecoin-chain/v4/x/iscn/types"
 )
 
 func TestUpdateAuthorization(t *testing.T) {

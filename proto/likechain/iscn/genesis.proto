@@ -5,7 +5,7 @@ package likechain.iscn;
 import "gogoproto/gogo.proto";
 import "likechain/iscn/params.proto";
 
-option go_package = "github.com/likecoin/likecoin-chain/v3/x/iscn/types";
+option go_package = "github.com/likecoin/likecoin-chain/v4/x/iscn/types";
 
 message GenesisState {
   message ContentIdRecord {
