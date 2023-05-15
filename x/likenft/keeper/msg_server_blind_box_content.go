@@ -61,7 +61,7 @@ func (k msgServer) CreateBlindBoxContent(goCtx context.Context, msg *types.MsgCr
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 	}
-	err = k.DeductFeePerByte(ctx, userAddress, content.Size(), nil)
+	err = k.DeductFeePerByte(ctx, userAddress, content.Size(), msg)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (k msgServer) UpdateBlindBoxContent(goCtx context.Context, msg *types.MsgUp
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidAddress.Wrapf(err.Error())
 		}
-		err = k.DeductFeePerByte(ctx, userAddress, lengthDiff, nil)
+		err = k.DeductFeePerByte(ctx, userAddress, lengthDiff, msg)
 		if err != nil {
 			return nil, err
 		}
