@@ -80,7 +80,7 @@ func (k msgServer) NewClass(goCtx context.Context, msg *types.MsgNewClass) (*typ
 		Data:        classDataInAny,
 	}
 	// Deduct fee
-	err = k.DeductFeePerByte(ctx, parent.Owner, class.Size(), nil)
+	err = k.DeductFeePerByte(ctx, parent.Owner, class.Size(), msg)
 	if err != nil {
 		return nil, err
 	}
