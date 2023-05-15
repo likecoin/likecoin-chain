@@ -13,6 +13,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateIscnRecord{}, "likecoin-chain/MsgCreateIscnRecord", nil)
 	cdc.RegisterConcrete(&MsgUpdateIscnRecord{}, "likecoin-chain/MsgUpdateIscnRecord", nil)
 	cdc.RegisterConcrete(&MsgChangeIscnRecordOwnership{}, "likecoin-chain/MsgChangeIscnRecordOwnership", nil)
+	cdc.RegisterConcrete(&UpdateAuthorization{}, "likecoin-chain/UpdateAuthorization", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {

@@ -34,6 +34,20 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&ClassParent{}, "likenft/ClassParent", nil)
 	cdc.RegisterConcrete(&ClassConfig{}, "likenft/ClassConfig", nil)
 	cdc.RegisterConcrete(&NFTData{}, "likenft/NFTData", nil)
+
+	cdc.RegisterConcrete(&CreateRoyaltyConfigAuthorization{}, "likenft/CreateRoyaltyConfigAuthorization", nil)
+	cdc.RegisterConcrete(&UpdateRoyaltyConfigAuthorization{}, "likenft/UpdateRoyaltyConfigAuthorization", nil)
+	cdc.RegisterConcrete(&DeleteRoyaltyConfigAuthorization{}, "likenft/DeleteRoyaltyConfigAuthorization", nil)
+	cdc.RegisterConcrete(&CreateListingAuthorization{}, "likenft/CreateListingAuthorization", nil)
+	cdc.RegisterConcrete(&UpdateListingAuthorization{}, "likenft/UpdateListingAuthorization", nil)
+	cdc.RegisterConcrete(&DeleteListingAuthorization{}, "likenft/DeleteListingAuthorization", nil)
+	cdc.RegisterConcrete(&CreateOfferAuthorization{}, "likenft/CreateOfferAuthorization", nil)
+	cdc.RegisterConcrete(&UpdateOfferAuthorization{}, "likenft/UpdateOfferAuthorization", nil)
+	cdc.RegisterConcrete(&DeleteOfferAuthorization{}, "likenft/DeleteOfferAuthorization", nil)
+	cdc.RegisterConcrete(&NewClassAuthorization{}, "likenft/NewClassAuthorization", nil)
+	cdc.RegisterConcrete(&UpdateClassAuthorization{}, "likenft/UpdateClassAuthorization", nil)
+	cdc.RegisterConcrete(&SendNFTAuthorization{}, "likenft/SendNFTAuthorization", nil)
+	cdc.RegisterConcrete(&MintNFTAuthorization{}, "likenft/MintNFTAuthorization", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
