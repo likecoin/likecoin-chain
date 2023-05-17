@@ -344,6 +344,7 @@ func NewLikeApp(
 		skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath,
 		app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	app.setupUpgradeStoreLoaders()
 	app.registerUpgradeHandlers()
 	app.IscnKeeper = iscnkeeper.NewKeeper(appCodec, keys[iscntypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, iscnSubspace)
 
@@ -570,6 +571,19 @@ func (app *LikeApp) registerUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(UpgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
+}
+
+func (app *LikeApp) setupUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{"group"},
+		}
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
 }
 
 func (app *LikeApp) Name() string {
