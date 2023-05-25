@@ -1,4 +1,4 @@
-FROM golang:1.18.3-alpine AS base
+FROM golang:1.19.5-alpine AS base
 
 RUN apk update && apk add --no-cache build-base git bash curl linux-headers ca-certificates
 WORKDIR /

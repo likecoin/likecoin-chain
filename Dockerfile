@@ -1,4 +1,4 @@
-FROM likecoin/rbuilder:go1.18.3 as builder
+FROM likecoin/rbuilder:go1.19.5 as builder
 
 USER root
 ARG LIKED_VERSION=unknown
@@ -11,6 +11,7 @@ RUN tar -xzvf cosmovisor-v1.3.0-linux-amd64.tar.gz
 USER builder
 COPY . /sources
 WORKDIR /sources
+RUN git config --global --add safe.directory /sources
 
 ENV TARGET_PLATFORMS='linux/amd64'
 ENV APP='liked'
