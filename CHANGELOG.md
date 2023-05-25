@@ -2,6 +2,7 @@
 
 ## [v4.0.0](https://github.com/likecoin/likecoin-chain/releases/v4.0.0)
 
+- Upgrade golang to 1.19.9
 - Upgrade cosmos-sdk to 0.46.12
 - Upgrade ibc-go to 5.3.1
 - Remove x/nft backport

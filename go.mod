@@ -1,6 +1,6 @@
 module github.com/likecoin/likecoin-chain/v4
 
-go 1.18
+go 1.19
 
 require (
 	github.com/cosmos/cosmos-sdk v0.46.12
