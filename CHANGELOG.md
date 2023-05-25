@@ -3,7 +3,7 @@
 ## [v4.0.0](https://github.com/likecoin/likecoin-chain/releases/v4.0.0)
 
 - Upgrade cosmos-sdk to 0.46.12
-- Upgrade ibc-go to 5.2.0
+- Upgrade ibc-go to 5.3.1
 - Remove x/nft backport
 - Add `full_pay_to_royalty` flag to sell NFT event
 - Add deterministic ISCN ID when creating ISCN
