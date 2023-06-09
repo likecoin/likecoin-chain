@@ -1,5 +1,10 @@
 # Changelog
 
+## [v4.0.1](https://github.com/likecoin/likecoin-chain/releases/v4.0.1)
+
+- Upgrade cosmos-sdk to 0.46.13 which includes barberry security fix:
+- Add commands for snapshots management
+
 ## [v4.0.0](https://github.com/likecoin/likecoin-chain/releases/v4.0.0)
 
 - Upgrade golang to 1.19.5
