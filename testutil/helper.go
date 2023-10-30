@@ -1,6 +1,6 @@
 package testutil
 
-// Modified from source: github.com/cosmos/ibc-go/v5/testing/simapp/helpers
+// Modified from source: github.com/cosmos/ibc-go/v6/testing/simapp/helpers
 
 import (
 	"math/rand"

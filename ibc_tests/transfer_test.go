@@ -12,10 +12,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
-	ibctesting "github.com/cosmos/ibc-go/v5/testing"
+	"github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	ibctesting "github.com/cosmos/ibc-go/v6/testing"
 )
 
 func SetupTestingLikeApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
@@ -99,6 +99,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		suite.chainB.SenderAccount.GetAddress().String(),
 		timeoutHeight,
 		0,
+		"",
 	)
 
 	_, err := suite.chainA.SendMsgs(msg)
@@ -110,6 +111,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		coinToSendToB.Amount.String(),
 		suite.chainA.SenderAccount.GetAddress().String(),
 		suite.chainB.SenderAccount.GetAddress().String(),
+		"",
 	)
 	packet := channeltypes.NewPacket(fungibleTokenPacket.GetBytes(), 1, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, timeoutHeight, 0)
 	err = path.RelayPacket(packet)
@@ -138,6 +140,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		suite.chainC.SenderAccount.GetAddress().String(),
 		timeoutHeight,
 		0,
+		"",
 	)
 
 	_, err = suite.chainB.SendMsgs(msg)
@@ -151,6 +154,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		coinSentFromAToB.Amount.String(),
 		suite.chainB.SenderAccount.GetAddress().String(),
 		suite.chainC.SenderAccount.GetAddress().String(),
+		"",
 	)
 	packet = channeltypes.NewPacket(fungibleTokenPacket.GetBytes(), 1, pathBtoC.EndpointA.ChannelConfig.PortID, pathBtoC.EndpointA.ChannelID, pathBtoC.EndpointB.ChannelConfig.PortID, pathBtoC.EndpointB.ChannelID, timeoutHeight, 0)
 	err = pathBtoC.RelayPacket(packet)
@@ -175,6 +179,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		suite.chainB.SenderAccount.GetAddress().String(),
 		timeoutHeight,
 		0,
+		"",
 	)
 
 	_, err = suite.chainC.SendMsgs(msg)
@@ -186,6 +191,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 		coinSentFromBToC.Amount.String(),
 		suite.chainC.SenderAccount.GetAddress().String(),
 		suite.chainB.SenderAccount.GetAddress().String(),
+		"",
 	)
 	packet = channeltypes.NewPacket(fungibleTokenPacket.GetBytes(), 1, pathBtoC.EndpointB.ChannelConfig.PortID, pathBtoC.EndpointB.ChannelID, pathBtoC.EndpointA.ChannelConfig.PortID, pathBtoC.EndpointA.ChannelID, timeoutHeight, 0)
 	err = pathBtoC.RelayPacket(packet)
