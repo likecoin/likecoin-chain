@@ -28,7 +28,7 @@ if [ -z $LIKED_VERSION ]; then
 fi
 
 if [ -z $COSMOVISOR_VERSION ]; then
-	COSMOVISOR_VERSION="1.1.0"
+	COSMOVISOR_VERSION="1.5.0"
 fi
 
 if [ -z $LIKED_USER ]; then

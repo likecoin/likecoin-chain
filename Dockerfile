@@ -5,8 +5,8 @@ ARG LIKED_VERSION=unknown
 ARG LIKED_COMMIT=unknown
 
 WORKDIR /cosmovisor
-RUN wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz
-RUN tar -xzvf cosmovisor-v1.3.0-linux-amd64.tar.gz
+RUN wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.5.0/cosmovisor-v1.5.0-linux-amd64.tar.gz
+RUN tar -xzvf cosmovisor-v1.5.0-linux-amd64.tar.gz
 
 USER builder
 COPY . /sources
