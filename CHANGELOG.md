@@ -1,6 +1,7 @@
 # Changelog
 
 ## [unreleased]
+- Upgrade ibc-go to 6.2.1
 
 ## [v4.0.2](https://github.com/likecoin/likecoin-chain/releases/v4.0.2)
 - Upgrade cosmos-sdk to 0.46.15
