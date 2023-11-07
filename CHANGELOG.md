@@ -1,6 +1,8 @@
 # Changelog
 
 ## [unreleased]
+
+## [v4.1.0](https://github.com/likecoin/likecoin-chain/releases/v4.1.0)
 - Upgrade cosmovisor included in docker image to 1.5.0
 - Upgrade ibc-go to 6.2.1
 
