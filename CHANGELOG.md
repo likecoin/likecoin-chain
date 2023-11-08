@@ -1,6 +1,7 @@
 # Changelog
 
 ## [unreleased]
+- Fix missing upgrade handler for 4.1.x upgrade
 
 ## [v4.1.0](https://github.com/likecoin/likecoin-chain/releases/v4.1.0)
 - Upgrade cosmovisor included in docker image to 1.5.0
