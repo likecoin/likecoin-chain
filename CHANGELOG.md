@@ -1,7 +1,12 @@
 # Changelog
 
 ## [unreleased]
+
+## [v4.1.1](https://github.com/likecoin/likecoin-chain/releases/v4.1.1)
 - Fix missing upgrade handler for 4.1.x upgrade
+- Remove unneeded module handlers
+- Fix reproducible build not working in macos
+- Fix unclear ignite version instruction for protobuf generation and dev env
 
 ## [v4.1.0](https://github.com/likecoin/likecoin-chain/releases/v4.1.0)
 - Upgrade cosmovisor included in docker image to 1.5.0
