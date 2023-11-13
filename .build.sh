@@ -2,6 +2,8 @@
 
 set -ue
 
+git config --global --add safe.directory /sources
+
 # Expect the following envvars to be set:
 # - APP
 # - VERSION
