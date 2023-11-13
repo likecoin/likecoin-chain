@@ -98,9 +98,7 @@ func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 	keeper.RegisterInvariants(ir, am.keeper)
 }
 
-func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper))
-}
+func (am AppModule) Route() sdk.Route { return sdk.Route{} }
 
 func (AppModule) QuerierRoute() string {
 	return types.QuerierRoute
