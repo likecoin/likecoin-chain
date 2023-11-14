@@ -8,6 +8,8 @@ LikeCoin chain is a blockchain built on the Cosmos SDK. Project page: https://li
 
 LikeCoin chain support ignite cli (previously called starport). Please follow instructions to install [here](https://docs.ignite.com/guide/install.html)
 
+Please use [ignite v0.24.x](https://github.com/ignite/cli/releases/tag/v0.24.1) due to [protobuf generation issue](https://github.com/ignite/cli/issues/3298)
+
 After installation, run
 `ignite chain serve`
 
