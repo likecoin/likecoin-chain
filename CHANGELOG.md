@@ -2,6 +2,9 @@
 
 ## [unreleased]
 
+## [v4.1.2](https://github.com/likecoin/likecoin-chain/releases/v4.1.2)
+- Update ledger-cosmos-go version for compatible with new Ledger firmwire
+
 ## [v4.1.1](https://github.com/likecoin/likecoin-chain/releases/v4.1.1)
 - Fix missing upgrade handler for 4.1.x upgrade
 - Remove unneeded module handlers
