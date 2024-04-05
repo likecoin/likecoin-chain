@@ -3,7 +3,7 @@ module github.com/likecoin/likecoin-chain/v4
 go 1.19
 
 require (
-	github.com/cosmos/cosmos-sdk v0.46.15
+	github.com/cosmos/cosmos-sdk v0.46.16
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
@@ -178,7 +178,7 @@ replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// likecoin fork for dual address prefix
-	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.46.15-dual-prefix
+	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.46.16-dual-prefix
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
