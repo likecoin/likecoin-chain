@@ -111,7 +111,7 @@ import (
 )
 
 const (
-	UpgradeName = "v4.1.1"
+	UpgradeName = "v4.2.0"
 )
 
 var (

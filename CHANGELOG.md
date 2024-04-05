@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+## [v4.2.0](https://github.com/likecoin/likecoin-chain/releases/v4.2.0)
+- Upgrade cosmos-sdk to 0.46.16
+- Upgrade ibc-go to 6.3.0
+
 ## [v4.1.2](https://github.com/likecoin/likecoin-chain/releases/v4.1.2)
 - Update ledger-cosmos-go version for compatible with new Ledger firmwire
 
